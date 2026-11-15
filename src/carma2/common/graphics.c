@@ -349,6 +349,87 @@ extern int gGraf_spec_index;
 #ifdef CARPOCALYPSE2_MATCHING
 extern void __cdecl _CIfmod();
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gData_0058ae00[];
+extern char gData_0074d640[];
+extern char gDouble_0058a1e8[];
+extern char gDouble_0058a348[];
+extern char gDouble_0058a390[];
+extern char gDouble_0058a398[];
+extern char gDouble_0058a3a8[];
+extern char gDouble_0058ad68[];
+extern char gDouble_0058ad80[];
+extern char gDouble_0058ad88[];
+extern char gDouble_0058ad90[];
+extern char gDouble_0058ad98[];
+extern char gDouble_0058ada0[];
+extern char gDouble_0058ada8[];
+extern char gDouble_0058ae08[];
+extern char gDouble_0058ae18[];
+extern char gDouble_0058ae30[];
+extern char gDouble_0058ae40[];
+extern char gDouble_0058ae50[];
+extern char gDouble_0058ae58[];
+extern char gDouble_0058ae68[];
+extern char gDouble_0058ae70[];
+extern char gDouble_0058ae78[];
+extern char gDouble_0058ae80[];
+extern char gDouble_0058ae88[];
+extern char gFloat_0058a388[];
+extern char gFloat_0058a3a0[];
+extern char gFloat_0058adb0[];
+extern char gFloat_0058adb4[];
+extern char gFloat_0058adfc[];
+extern char gFloat_0058ae04[];
+extern char gFloat_0058ae10[];
+extern char gFloat_0058ae20[];
+extern char gFloat_0058ae2c[];
+extern char gFloat_0058ae38[];
+extern char gFloat_0058ae3c[];
+extern char gFloat_0058ae48[];
+extern char gFloat_0058ae4c[];
+extern tGraf_spec gGraf_specs[2];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchData_0058ae00[];
+extern char gMatchData_0074d640[];
+extern char gMatchDouble_0058a1e8[];
+extern char gMatchDouble_0058a348[];
+extern char gMatchDouble_0058a390[];
+extern char gMatchDouble_0058a398[];
+extern char gMatchDouble_0058a3a8[];
+extern char gMatchDouble_0058ad68[];
+extern char gMatchDouble_0058ad80[];
+extern char gMatchDouble_0058ad88[];
+extern char gMatchDouble_0058ad90[];
+extern char gMatchDouble_0058ad98[];
+extern char gMatchDouble_0058ada0[];
+extern char gMatchDouble_0058ada8[];
+extern char gMatchDouble_0058ae08[];
+extern char gMatchDouble_0058ae18[];
+extern char gMatchDouble_0058ae30[];
+extern char gMatchDouble_0058ae40[];
+extern char gMatchDouble_0058ae50[];
+extern char gMatchDouble_0058ae58[];
+extern char gMatchDouble_0058ae68[];
+extern char gMatchDouble_0058ae70[];
+extern char gMatchDouble_0058ae78[];
+extern char gMatchDouble_0058ae80[];
+extern char gMatchDouble_0058ae88[];
+extern char gMatchFloat_0058a388[];
+extern char gMatchFloat_0058a3a0[];
+extern char gMatchFloat_0058adb0[];
+extern char gMatchFloat_0058adb4[];
+extern char gMatchFloat_0058adfc[];
+extern char gMatchFloat_0058ae04[];
+extern char gMatchFloat_0058ae10[];
+extern char gMatchFloat_0058ae20[];
+extern char gMatchFloat_0058ae2c[];
+extern char gMatchFloat_0058ae38[];
+extern char gMatchFloat_0058ae3c[];
+extern char gMatchFloat_0058ae48[];
+extern char gMatchFloat_0058ae4c[];
+#endif
 // FUNCTION: CARMA2_HW 0x004b5460
 void C2_HOOK_FASTCALL FadePaletteDown(void) {
 }
@@ -1004,11 +1085,11 @@ void C2_NAKED C2_HOOK_FASTCALL RenderAFrame(int pDepth_mask_on) {
             mov eax, dword ptr [gRender_screen]
             xor ebp, ebp
             mov ecx, dword ptr [eax + 8]
-            mov eax, dword ptr ds:[0x75bbcc]
+            mov eax, dword ptr [gProgram_state+0x4c]
             cmp eax, ebp
             mov dword ptr [esp + 0x28], ecx
             je L004e4e92
-            cmp dword ptr ds:[0x75bbd0], ebp
+            cmp dword ptr [gProgram_state+0x50], ebp
             jl L004e4e92
             mov eax, dword ptr [gMap_view]
             mov dword ptr [esp + 0x18], 1
@@ -1017,11 +1098,11 @@ void C2_NAKED C2_HOOK_FASTCALL RenderAFrame(int pDepth_mask_on) {
     L004e4e92:
             mov dword ptr [esp + 0x18], ebp
     L004e4e96:
-            cmp dword ptr ds:[0x75bbc4], ebp
+            cmp dword ptr [gProgram_state+0x44], ebp
             je L004e4eb8
             cmp dword ptr [esp + 0x18], ebp
             je L004e4eb8
-            mov eax, dword ptr ds:[0x75bc10]
+            mov eax, dword ptr [gProgram_state+0x90]
             mov dword ptr [gMirror_on__graphics], 1
             cmp eax, 2
             je L004e4ebe
@@ -1053,13 +1134,13 @@ void C2_NAKED C2_HOOK_FASTCALL RenderAFrame(int pDepth_mask_on) {
             call MapStuffBeforeRender
             cmp dword ptr [gPed_676914], ebp
             jne L004e50b0
-            cmp dword ptr ds:[0x75bc14], ebp
+            cmp dword ptr [gProgram_state+0x94], ebp
             jne L004e50b0
             xor ebx, ebx
             xor eax, eax
             mov dword ptr [gScreen_wobble_x], ebx
             mov dword ptr [gScreen_wobble_y], eax
-            mov esi, 0x6a2304
+            mov esi, offset gWobble_array+0xc
     L004e4f2e:
             mov ecx, dword ptr [esi]
             cmp ecx, ebp
@@ -1071,20 +1152,20 @@ void C2_NAKED C2_HOOK_FASTCALL RenderAFrame(int pDepth_mask_on) {
             mov dword ptr [esi], ebp
             jmp L004e5063
     L004e4f4d:
-            fld qword ptr ds:[0x58ad80]
+            fld qword ptr [gMatchDouble_0058ad80]
             mov dword ptr [esp + 0x1c], edi
             mov dword ptr [esp + 0x20], ebp
             fild qword ptr [esp + 0x1c]
             fdiv dword ptr [esi - 4]
             fxch st(1)
             call _CIfmod
-            fcom qword ptr ds:[0x58ad88]
+            fcom qword ptr [gMatchDouble_0058ad88]
             fnstsw ax
             test ah, 0x41
             jne L004e4f99
-            fld qword ptr ds:[0x58ad80]
+            fld qword ptr [gMatchDouble_0058ad80]
             fsub st(0), st(1)
-            fmul qword ptr ds:[0x58ad90]
+            fmul qword ptr [gMatchDouble_0058ad90]
             call _ftol
             shl eax, 2
             mov edx, offset gCosine_array
@@ -1094,12 +1175,12 @@ void C2_NAKED C2_HOOK_FASTCALL RenderAFrame(int pDepth_mask_on) {
         _emit 0x02
             jmp L004e5010
     L004e4f99:
-            fcom qword ptr ds:[0x58ad98]
+            fcom qword ptr [gMatchDouble_0058ad98]
             fnstsw ax
             test ah, 0x41
             jne L004e4fc7
-            fsub qword ptr ds:[0x58ad98]
-            fmul qword ptr ds:[0x58ad90]
+            fsub qword ptr [gMatchDouble_0058ad98]
+            fmul qword ptr [gMatchDouble_0058ad90]
             call _ftol
             mov ecx, offset gCosine_array
             shl eax, 2
@@ -1109,13 +1190,13 @@ void C2_NAKED C2_HOOK_FASTCALL RenderAFrame(int pDepth_mask_on) {
             fchs
             jmp L004e5010
     L004e4fc7:
-            fcom qword ptr ds:[0x58ada0]
+            fcom qword ptr [gMatchDouble_0058ada0]
             fnstsw ax
             test ah, 0x41
             jne L004e4ff9
-            fld qword ptr ds:[0x58ad98]
+            fld qword ptr [gMatchDouble_0058ad98]
             fsub st(0), st(1)
-            fmul qword ptr ds:[0x58ad90]
+            fmul qword ptr [gMatchDouble_0058ad90]
             call _ftol
             mov edx, offset gCosine_array
             shl eax, 2
@@ -1126,7 +1207,7 @@ void C2_NAKED C2_HOOK_FASTCALL RenderAFrame(int pDepth_mask_on) {
             fchs
             jmp L004e5010
     L004e4ff9:
-            fmul qword ptr ds:[0x58ad90]
+            fmul qword ptr [gMatchDouble_0058ad90]
             call _ftol
             shl eax, 2
             mov ecx, offset gCosine_array
@@ -1138,10 +1219,10 @@ void C2_NAKED C2_HOOK_FASTCALL RenderAFrame(int pDepth_mask_on) {
             mov dword ptr [esp + 0x10], edi
             mov dword ptr [esp + 0x14], ebp
             fild qword ptr [esp + 0x10]
-            fmul qword ptr ds:[0x58ada8]
+            fmul qword ptr [gMatchDouble_0058ada8]
             fild dword ptr [gScreen_wobble_x]
             fxch st(1)
-            fsubr qword ptr ds:[0x58ad68]
+            fsubr qword ptr [gMatchDouble_0058ad68]
             fdivp st(3), st(0)
             fxch st(1)
             fmul st(0), st(2)
@@ -1275,13 +1356,13 @@ void C2_NAKED C2_HOOK_FASTCALL RenderAFrame(int pDepth_mask_on) {
             mov dword ptr [esp + 0x20], ecx
             push eax
             fdivp st(1), st(0)
-            fstp dword ptr ds:[0x65fb3c]
+            fstp dword ptr [gSheer_mat+0x1c]
             mov dx, word ptr [ebx + 0x34]
             fild dword ptr [esp + 0x24]
             mov dword ptr [esp + 0x24], edx
             fild dword ptr [esp + 0x24]
             fdivp st(1), st(0)
-            fstp dword ptr ds:[0x65fb38]
+            fstp dword ptr [gSheer_mat+0x18]
             call BrMatrix34Pre
             mov edx, dword ptr [gRender_screen]
             xor ecx, ecx
@@ -1292,11 +1373,11 @@ void C2_NAKED C2_HOOK_FASTCALL RenderAFrame(int pDepth_mask_on) {
             add esp, 8
             fild dword ptr [esp + 0x1c]
             fxch st(1)
-            fmul dword ptr ds:[0x58adb0]
+            fmul dword ptr [gMatchFloat_0058adb0]
             fxch st(1)
             xor ecx, ecx
             fdivp st(1), st(0)
-            fmul dword ptr ds:[0x58adb4]
+            fmul dword ptr [gMatchFloat_0058adb4]
             fsubr dword ptr [eax + 0x50]
             fstp dword ptr [eax + 0x50]
             mov edx, dword ptr [gRender_screen]
@@ -1306,10 +1387,10 @@ void C2_NAKED C2_HOOK_FASTCALL RenderAFrame(int pDepth_mask_on) {
             mov dword ptr [esp + 0x1c], ecx
             fild dword ptr [esp + 0x1c]
             fxch st(1)
-            fmul dword ptr ds:[0x58adb0]
+            fmul dword ptr [gMatchFloat_0058adb0]
             fxch st(1)
             fdivp st(1), st(0)
-            fmul dword ptr ds:[0x58adb4]
+            fmul dword ptr [gMatchFloat_0058adb4]
             fadd dword ptr [eax + 0x54]
             fstp dword ptr [eax + 0x54]
             mov ebx, dword ptr [gRender_screen]
@@ -1328,13 +1409,13 @@ void C2_NAKED C2_HOOK_FASTCALL RenderAFrame(int pDepth_mask_on) {
             cmp dword ptr [gMap_view], ebx
             je L004e5347
             mov eax, dword ptr [gGraf_spec_index]
-            mov ecx, dword ptr ds:[0x75bbd8]
+            mov ecx, dword ptr [gProgram_state+0x58]
             push 0
             push ecx
             lea edx, [eax + eax*2]
             lea eax, [eax + edx*4]
             mov edx, dword ptr [gBack_screen]
-            mov ecx, dword ptr [eax*4 + 0x662214]
+            mov ecx, dword ptr [eax*4 + gGraf_specs+0xc]
             push ecx
             push 0
             push 0
@@ -1345,10 +1426,10 @@ void C2_NAKED C2_HOOK_FASTCALL RenderAFrame(int pDepth_mask_on) {
             lea ecx, [eax + eax*2]
             push 0
             lea eax, [eax + ecx*4]
-            mov ecx, dword ptr ds:[0x75bbe0]
+            mov ecx, dword ptr [gProgram_state+0x60]
             shl eax, 2
-            mov edx, dword ptr [eax + 0x662218]
-            mov eax, dword ptr [eax + 0x662214]
+            mov edx, dword ptr [eax + gGraf_specs+0x10]
+            mov eax, dword ptr [eax + gGraf_specs+0xc]
             sub edx, ecx
             push edx
             push eax
@@ -1357,9 +1438,9 @@ void C2_NAKED C2_HOOK_FASTCALL RenderAFrame(int pDepth_mask_on) {
             push 0
             push ecx
             call BrPixelmapRectangleFill
-            mov edx, dword ptr ds:[0x75bbe0]
-            mov eax, dword ptr ds:[0x75bbd8]
-            mov ecx, dword ptr ds:[0x75bbd4]
+            mov edx, dword ptr [gProgram_state+0x60]
+            mov eax, dword ptr [gProgram_state+0x58]
+            mov ecx, dword ptr [gProgram_state+0x54]
             add esp, 0x18
             sub edx, eax
             push 0
@@ -1370,8 +1451,8 @@ void C2_NAKED C2_HOOK_FASTCALL RenderAFrame(int pDepth_mask_on) {
             push 0
             push edx
             call BrPixelmapRectangleFill
-            mov eax, dword ptr ds:[0x75bbe0]
-            mov ecx, dword ptr ds:[0x75bbd8]
+            mov eax, dword ptr [gProgram_state+0x60]
+            mov ecx, dword ptr [gProgram_state+0x58]
             add esp, 0x18
             sub eax, ecx
             push 0
@@ -1379,8 +1460,8 @@ void C2_NAKED C2_HOOK_FASTCALL RenderAFrame(int pDepth_mask_on) {
             mov eax, dword ptr [gGraf_spec_index]
             lea edx, [eax + eax*2]
             lea eax, [eax + edx*4]
-            mov edx, dword ptr [eax*4 + 0x662214]
-            mov eax, dword ptr ds:[0x75bbdc]
+            mov edx, dword ptr [eax*4 + gGraf_specs+0xc]
+            mov eax, dword ptr [gProgram_state+0x5c]
             sub edx, eax
             push edx
             push ecx
@@ -1642,7 +1723,7 @@ void C2_NAKED C2_HOOK_FASTCALL MungeClipPlane(br_vector3* pLight, tCar_spec* pCa
             _emit 0xd8
         _emit 0x0e
             fxch st(3)
-            fcomp qword ptr [gConst_kangeroo_force_factor+0x178]
+            fcomp qword ptr [gMatchDouble_0058ae08]
             fxch st(1)
             fmul dword ptr [esp + 0x28]
             fxch st(1)
@@ -1662,13 +1743,13 @@ void C2_NAKED C2_HOOK_FASTCALL MungeClipPlane(br_vector3* pLight, tCar_spec* pCa
             je L004e9766
             fld dword ptr [esp + 0x14]
             fabs
-            fcomp qword ptr [gConst_kangeroo_force_factor+0x178]
+            fcomp qword ptr [gMatchDouble_0058ae08]
             fnstsw ax
             test ah, 1
             je L004e9766
             fld dword ptr [esp + 0x18]
             fabs
-            fcomp qword ptr [gConst_kangeroo_force_factor+0x178]
+            fcomp qword ptr [gMatchDouble_0058ae08]
             fnstsw ax
             test ah, 1
             jne L004e9928
@@ -1697,7 +1778,7 @@ void C2_NAKED C2_HOOK_FASTCALL MungeClipPlane(br_vector3* pLight, tCar_spec* pCa
             fxch st(1)
             faddp st(2), st(0)
             faddp st(1), st(0)
-            fcomp dword ptr [gConst_kangeroo_force_factor+0x170]
+            fcomp dword ptr [gMatchData_0058ae00]
             fnstsw ax
             test ah, 0x41
             fstp st(0)
@@ -1725,11 +1806,11 @@ void C2_NAKED C2_HOOK_FASTCALL MungeClipPlane(br_vector3* pLight, tCar_spec* pCa
             fxch st(1)
             faddp st(1), st(0)
             fsqrt
-            fcom dword ptr [gConst_kangeroo_force_factor+0x180]
+            fcom dword ptr [gMatchFloat_0058ae10]
             fnstsw ax
             test ah, 0x41
             jne L004e9834
-            fdivr qword ptr [gConst_kangeroo_force_factor+0x188]
+            fdivr qword ptr [gMatchDouble_0058ae18]
             fld st(0)
             fld st(1)
             fxch st(1)
@@ -1821,6 +1902,20 @@ void C2_NAKED C2_HOOK_FASTCALL MungeClipPlane(br_vector3* pLight, tCar_spec* pCa
             pop ebx
             add esp, 0x30
             ret 0xc
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -2232,7 +2327,7 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessShadow(tCar_spec* pCar, br_actor* pWorld, 
             fadd dword ptr [esp + 0x6c]
             add esp, 0xc
             mov esi, 6
-            fmul dword ptr [gConst_kangeroo_force_factor+0x16c]
+            fmul dword ptr [gMatchFloat_0058adfc]
             fstp dword ptr [esp + 0x50]
             fld dword ptr [esp + 0x30]
             fmul dword ptr [esp + 0x34]
@@ -2242,28 +2337,28 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessShadow(tCar_spec* pCar, br_actor* pWorld, 
             fxch st(1)
             fadd dword ptr [esp + 0x1c]
             fld st(2)
-            fcomp dword ptr [gConst_kangeroo_force_factor+0x170]
+            fcomp dword ptr [gMatchData_0058ae00]
             fxch st(1)
-            fmul dword ptr [gConst_kangeroo_force_factor+0x16c]
+            fmul dword ptr [gMatchFloat_0058adfc]
             fxch st(1)
-            fmul dword ptr [gConst_kangeroo_force_factor+0x16c]
+            fmul dword ptr [gMatchFloat_0058adfc]
             fxch st(1)
             fstp dword ptr [esp + 0x54]
             fnstsw ax
             fstp dword ptr [esp + 0x58]
             test ah, 1
             jne L004e7858
-            fcomp dword ptr [gConst_kangeroo_force_factor+0x170]
+            fcomp dword ptr [gMatchData_0058ae00]
             fnstsw ax
             test ah, 0x40
             je L004e787c
             fld dword ptr [esp + 0x34]
-            fcomp dword ptr [gConst_kangeroo_force_factor+0x170]
+            fcomp dword ptr [gMatchData_0058ae00]
             fnstsw ax
             test ah, 0x41
             je L004e785a
             fld dword ptr [esp + 0x30]
-            fcomp dword ptr [gConst_kangeroo_force_factor+0x170]
+            fcomp dword ptr [gMatchData_0058ae00]
             fnstsw ax
             test ah, 0x41
             jne L004e787c
@@ -2282,23 +2377,23 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessShadow(tCar_spec* pCar, br_actor* pWorld, 
             call MungeClipPlane
     L004e787c:
             fld dword ptr [esp + 0x34]
-            fmul dword ptr [gConst_kangeroo_force_factor+0x174]
+            fmul dword ptr [gMatchFloat_0058ae04]
             fld st(0)
             fmul dword ptr [esp + 0x30]
-            fcom dword ptr [gConst_kangeroo_force_factor+0x170]
+            fcom dword ptr [gMatchData_0058ae00]
             fnstsw ax
             test ah, 1
             jne L004e78c6
-            fcomp dword ptr [gConst_kangeroo_force_factor+0x170]
+            fcomp dword ptr [gMatchData_0058ae00]
             fnstsw ax
             test ah, 0x40
             je L004e78ee
-            fcomp dword ptr [gConst_kangeroo_force_factor+0x170]
+            fcomp dword ptr [gMatchData_0058ae00]
             fnstsw ax
             test ah, 0x41
             je L004e78ca
             fld dword ptr [esp + 0x30]
-            fcomp dword ptr [gConst_kangeroo_force_factor+0x170]
+            fcomp dword ptr [gMatchData_0058ae00]
             fnstsw ax
             test ah, 0x41
             jne L004e78f0
@@ -2322,26 +2417,26 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessShadow(tCar_spec* pCar, br_actor* pWorld, 
     L004e78f0:
             fld dword ptr [esp + 0x34]
             fld dword ptr [esp + 0x30]
-            fmul dword ptr [gConst_kangeroo_force_factor+0x174]
+            fmul dword ptr [gMatchFloat_0058ae04]
             fxch st(1)
-            fmul dword ptr [gConst_kangeroo_force_factor+0x174]
+            fmul dword ptr [gMatchFloat_0058ae04]
             fxch st(1)
             fst dword ptr [esp + 0x1c]
             fmul st(0), st(1)
-            fcom dword ptr [gConst_kangeroo_force_factor+0x170]
+            fcom dword ptr [gMatchData_0058ae00]
             fnstsw ax
             test ah, 1
             jne L004e7948
-            fcomp dword ptr [gConst_kangeroo_force_factor+0x170]
+            fcomp dword ptr [gMatchData_0058ae00]
             fnstsw ax
             test ah, 0x40
             je L004e7970
-            fcomp dword ptr [gConst_kangeroo_force_factor+0x170]
+            fcomp dword ptr [gMatchData_0058ae00]
             fnstsw ax
             test ah, 0x41
             je L004e794c
             fld dword ptr [esp + 0x1c]
-            fcomp dword ptr [gConst_kangeroo_force_factor+0x170]
+            fcomp dword ptr [gMatchData_0058ae00]
             fnstsw ax
             test ah, 0x41
             jne L004e7972
@@ -2364,24 +2459,24 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessShadow(tCar_spec* pCar, br_actor* pWorld, 
             fstp st(0)
     L004e7972:
             fld dword ptr [esp + 0x30]
-            fmul dword ptr [gConst_kangeroo_force_factor+0x174]
+            fmul dword ptr [gMatchFloat_0058ae04]
             fst dword ptr [esp + 0x1c]
             fmul dword ptr [esp + 0x34]
-            fcom dword ptr [gConst_kangeroo_force_factor+0x170]
+            fcom dword ptr [gMatchData_0058ae00]
             fnstsw ax
             test ah, 1
             jne L004e79c2
-            fcomp dword ptr [gConst_kangeroo_force_factor+0x170]
+            fcomp dword ptr [gMatchData_0058ae00]
             fnstsw ax
             test ah, 0x40
             je L004e79e6
             fld dword ptr [esp + 0x34]
-            fcomp dword ptr [gConst_kangeroo_force_factor+0x170]
+            fcomp dword ptr [gMatchData_0058ae00]
             fnstsw ax
             test ah, 0x41
             je L004e79c4
             fld dword ptr [esp + 0x1c]
-            fcomp dword ptr [gConst_kangeroo_force_factor+0x170]
+            fcomp dword ptr [gMatchData_0058ae00]
             fnstsw ax
             test ah, 0x41
             jne L004e79e6
@@ -2401,21 +2496,21 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessShadow(tCar_spec* pCar, br_actor* pWorld, 
     L004e79e6:
             fld dword ptr [esp + 0x30]
             fmul dword ptr [esp + 0x2c]
-            fcom dword ptr [gConst_kangeroo_force_factor+0x170]
+            fcom dword ptr [gMatchData_0058ae00]
             fnstsw ax
             test ah, 1
             jne L004e7a2c
-            fcomp dword ptr [gConst_kangeroo_force_factor+0x170]
+            fcomp dword ptr [gMatchData_0058ae00]
             fnstsw ax
             test ah, 0x40
             je L004e7a50
             fld dword ptr [esp + 0x2c]
-            fcomp dword ptr [gConst_kangeroo_force_factor+0x170]
+            fcomp dword ptr [gMatchData_0058ae00]
             fnstsw ax
             test ah, 0x41
             je L004e7a2e
             fld dword ptr [esp + 0x30]
-            fcomp dword ptr [gConst_kangeroo_force_factor+0x170]
+            fcomp dword ptr [gMatchData_0058ae00]
             fnstsw ax
             test ah, 0x41
             jne L004e7a50
@@ -2434,23 +2529,23 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessShadow(tCar_spec* pCar, br_actor* pWorld, 
             call MungeClipPlane
     L004e7a50:
             fld dword ptr [esp + 0x2c]
-            fmul dword ptr [gConst_kangeroo_force_factor+0x174]
+            fmul dword ptr [gMatchFloat_0058ae04]
             fld st(0)
             fmul dword ptr [esp + 0x30]
-            fcom dword ptr [gConst_kangeroo_force_factor+0x170]
+            fcom dword ptr [gMatchData_0058ae00]
             fnstsw ax
             test ah, 1
             jne L004e7aa2
-            fcomp dword ptr [gConst_kangeroo_force_factor+0x170]
+            fcomp dword ptr [gMatchData_0058ae00]
             fnstsw ax
             test ah, 0x40
             je L004e7d73
-            fcomp dword ptr [gConst_kangeroo_force_factor+0x170]
+            fcomp dword ptr [gMatchData_0058ae00]
             fnstsw ax
             test ah, 0x41
             je L004e7aa6
             fld dword ptr [esp + 0x30]
-            fcomp dword ptr [gConst_kangeroo_force_factor+0x170]
+            fcomp dword ptr [gMatchData_0058ae00]
             fnstsw ax
             test ah, 0x41
             jne L004e7d75
@@ -2507,7 +2602,7 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessShadow(tCar_spec* pCar, br_actor* pWorld, 
             fxch st(3)
             fmul dword ptr [esp + 0x38]
             fxch st(3)
-            fcomp qword ptr [gConst_kangeroo_force_factor+0x178]
+            fcomp qword ptr [gMatchDouble_0058ae08]
             fxch st(1)
             fmul dword ptr [esp + 0x2c]
             fxch st(1)
@@ -2527,13 +2622,13 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessShadow(tCar_spec* pCar, br_actor* pWorld, 
             je L004e7ba9
             fld dword ptr [esp + 0x14]
             fabs
-            fcomp qword ptr [gConst_kangeroo_force_factor+0x178]
+            fcomp qword ptr [gMatchDouble_0058ae08]
             fnstsw ax
             test ah, 1
             je L004e7ba9
             fld dword ptr [esp + 0x18]
             fabs
-            fcomp qword ptr [gConst_kangeroo_force_factor+0x178]
+            fcomp qword ptr [gMatchDouble_0058ae08]
             fnstsw ax
             test ah, 1
             jne L004e7d75
@@ -2559,7 +2654,7 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessShadow(tCar_spec* pCar, br_actor* pWorld, 
             fxch st(1)
             faddp st(2), st(0)
             faddp st(1), st(0)
-            fcomp dword ptr [gConst_kangeroo_force_factor+0x170]
+            fcomp dword ptr [gMatchData_0058ae00]
             fnstsw ax
             test ah, 0x41
             fstp st(0)
@@ -2587,11 +2682,11 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessShadow(tCar_spec* pCar, br_actor* pWorld, 
             fxch st(1)
             faddp st(1), st(0)
             fsqrt
-            fcom dword ptr [gConst_kangeroo_force_factor+0x180]
+            fcom dword ptr [gMatchFloat_0058ae10]
             fnstsw ax
             test ah, 0x41
             jne L004e7c81
-            fdivr qword ptr [gConst_kangeroo_force_factor+0x188]
+            fdivr qword ptr [gMatchDouble_0058ae18]
             fld st(0)
             fld st(1)
             fxch st(1)
@@ -2682,26 +2777,26 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessShadow(tCar_spec* pCar, br_actor* pWorld, 
     L004e7d75:
             fld dword ptr [esp + 0x2c]
             fld dword ptr [esp + 0x30]
-            fmul dword ptr [gConst_kangeroo_force_factor+0x174]
+            fmul dword ptr [gMatchFloat_0058ae04]
             fxch st(1)
-            fmul dword ptr [gConst_kangeroo_force_factor+0x174]
+            fmul dword ptr [gMatchFloat_0058ae04]
             fxch st(1)
             fst dword ptr [esp + 0x1c]
             fmul st(0), st(1)
-            fcom dword ptr [gConst_kangeroo_force_factor+0x170]
+            fcom dword ptr [gMatchData_0058ae00]
             fnstsw ax
             test ah, 1
             jne L004e7dd5
-            fcomp dword ptr [gConst_kangeroo_force_factor+0x170]
+            fcomp dword ptr [gMatchData_0058ae00]
             fnstsw ax
             test ah, 0x40
             je L004e80aa
-            fcomp dword ptr [gConst_kangeroo_force_factor+0x170]
+            fcomp dword ptr [gMatchData_0058ae00]
             fnstsw ax
             test ah, 0x41
             je L004e7dd9
             fld dword ptr [esp + 0x1c]
-            fcomp dword ptr [gConst_kangeroo_force_factor+0x170]
+            fcomp dword ptr [gMatchData_0058ae00]
             fnstsw ax
             test ah, 0x41
             jne L004e80ac
@@ -2758,7 +2853,7 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessShadow(tCar_spec* pCar, br_actor* pWorld, 
             fxch st(3)
             fmul dword ptr [esp + 0x38]
             fxch st(3)
-            fcomp qword ptr [gConst_kangeroo_force_factor+0x178]
+            fcomp qword ptr [gMatchDouble_0058ae08]
             fxch st(1)
             fmul dword ptr [esp + 0x2c]
             fxch st(1)
@@ -2778,13 +2873,13 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessShadow(tCar_spec* pCar, br_actor* pWorld, 
             je L004e7edc
             fld dword ptr [esp + 0x14]
             fabs
-            fcomp qword ptr [gConst_kangeroo_force_factor+0x178]
+            fcomp qword ptr [gMatchDouble_0058ae08]
             fnstsw ax
             test ah, 1
             je L004e7edc
             fld dword ptr [esp + 0x18]
             fabs
-            fcomp qword ptr [gConst_kangeroo_force_factor+0x178]
+            fcomp qword ptr [gMatchDouble_0058ae08]
             fnstsw ax
             test ah, 1
             jne L004e80ac
@@ -2810,7 +2905,7 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessShadow(tCar_spec* pCar, br_actor* pWorld, 
             fxch st(1)
             faddp st(2), st(0)
             faddp st(1), st(0)
-            fcomp dword ptr [gConst_kangeroo_force_factor+0x170]
+            fcomp dword ptr [gMatchData_0058ae00]
             fnstsw ax
             test ah, 0x41
             fstp st(0)
@@ -2838,11 +2933,11 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessShadow(tCar_spec* pCar, br_actor* pWorld, 
             fxch st(1)
             faddp st(1), st(0)
             fsqrt
-            fcom dword ptr [gConst_kangeroo_force_factor+0x180]
+            fcom dword ptr [gMatchFloat_0058ae10]
             fnstsw ax
             test ah, 0x41
             jne L004e7fb4
-            fdivr qword ptr [gConst_kangeroo_force_factor+0x188]
+            fdivr qword ptr [gMatchDouble_0058ae18]
             fld st(0)
             fld st(1)
             fxch st(1)
@@ -2932,24 +3027,24 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessShadow(tCar_spec* pCar, br_actor* pWorld, 
             fstp st(0)
     L004e80ac:
             fld dword ptr [esp + 0x30]
-            fmul dword ptr [gConst_kangeroo_force_factor+0x174]
+            fmul dword ptr [gMatchFloat_0058ae04]
             fst dword ptr [esp + 0x1c]
             fmul dword ptr [esp + 0x2c]
-            fcom dword ptr [gConst_kangeroo_force_factor+0x170]
+            fcom dword ptr [gMatchData_0058ae00]
             fnstsw ax
             test ah, 1
             jne L004e80fc
-            fcomp dword ptr [gConst_kangeroo_force_factor+0x170]
+            fcomp dword ptr [gMatchData_0058ae00]
             fnstsw ax
             test ah, 0x40
             je L004e8120
             fld dword ptr [esp + 0x2c]
-            fcomp dword ptr [gConst_kangeroo_force_factor+0x170]
+            fcomp dword ptr [gMatchData_0058ae00]
             fnstsw ax
             test ah, 0x41
             je L004e80fe
             fld dword ptr [esp + 0x1c]
-            fcomp dword ptr [gConst_kangeroo_force_factor+0x170]
+            fcomp dword ptr [gMatchData_0058ae00]
             fnstsw ax
             test ah, 0x41
             jne L004e8120
@@ -2969,21 +3064,21 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessShadow(tCar_spec* pCar, br_actor* pWorld, 
     L004e8120:
             fld dword ptr [esp + 0x34]
             fmul dword ptr [esp + 0x2c]
-            fcom dword ptr [gConst_kangeroo_force_factor+0x170]
+            fcom dword ptr [gMatchData_0058ae00]
             fnstsw ax
             test ah, 1
             jne L004e816e
-            fcomp dword ptr [gConst_kangeroo_force_factor+0x170]
+            fcomp dword ptr [gMatchData_0058ae00]
             fnstsw ax
             test ah, 0x40
             je L004e843b
             fld dword ptr [esp + 0x2c]
-            fcomp dword ptr [gConst_kangeroo_force_factor+0x170]
+            fcomp dword ptr [gMatchData_0058ae00]
             fnstsw ax
             test ah, 0x41
             je L004e8170
             fld dword ptr [esp + 0x34]
-            fcomp dword ptr [gConst_kangeroo_force_factor+0x170]
+            fcomp dword ptr [gMatchData_0058ae00]
             fnstsw ax
             test ah, 0x41
             jne L004e843b
@@ -3039,7 +3134,7 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessShadow(tCar_spec* pCar, br_actor* pWorld, 
             fxch st(3)
             fmul dword ptr [esp + 0x38]
             fxch st(3)
-            fcomp qword ptr [gConst_kangeroo_force_factor+0x178]
+            fcomp qword ptr [gMatchDouble_0058ae08]
             fxch st(1)
             fmul dword ptr [esp + 0x2c]
             fxch st(1)
@@ -3059,13 +3154,13 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessShadow(tCar_spec* pCar, br_actor* pWorld, 
             je L004e8273
             fld dword ptr [esp + 0x14]
             fabs
-            fcomp qword ptr [gConst_kangeroo_force_factor+0x178]
+            fcomp qword ptr [gMatchDouble_0058ae08]
             fnstsw ax
             test ah, 1
             je L004e8273
             fld dword ptr [esp + 0x18]
             fabs
-            fcomp qword ptr [gConst_kangeroo_force_factor+0x178]
+            fcomp qword ptr [gMatchDouble_0058ae08]
             fnstsw ax
             test ah, 1
             jne L004e843b
@@ -3091,7 +3186,7 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessShadow(tCar_spec* pCar, br_actor* pWorld, 
             fxch st(1)
             faddp st(2), st(0)
             faddp st(1), st(0)
-            fcomp dword ptr [gConst_kangeroo_force_factor+0x170]
+            fcomp dword ptr [gMatchData_0058ae00]
             fnstsw ax
             test ah, 0x41
             fstp st(0)
@@ -3119,11 +3214,11 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessShadow(tCar_spec* pCar, br_actor* pWorld, 
             fxch st(1)
             faddp st(1), st(0)
             fsqrt
-            fcom dword ptr [gConst_kangeroo_force_factor+0x180]
+            fcom dword ptr [gMatchFloat_0058ae10]
             fnstsw ax
             test ah, 0x41
             jne L004e834b
-            fdivr qword ptr [gConst_kangeroo_force_factor+0x188]
+            fdivr qword ptr [gMatchDouble_0058ae18]
             fld st(0)
             fld st(1)
             fxch st(1)
@@ -3210,23 +3305,23 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessShadow(tCar_spec* pCar, br_actor* pWorld, 
             mov dword ptr [gShadow_clip_plane_count], eax
     L004e843b:
             fld dword ptr [esp + 0x2c]
-            fmul dword ptr [gConst_kangeroo_force_factor+0x174]
+            fmul dword ptr [gMatchFloat_0058ae04]
             fld st(0)
             fmul dword ptr [esp + 0x34]
-            fcom dword ptr [gConst_kangeroo_force_factor+0x170]
+            fcom dword ptr [gMatchData_0058ae00]
             fnstsw ax
             test ah, 1
             jne L004e848d
-            fcomp dword ptr [gConst_kangeroo_force_factor+0x170]
+            fcomp dword ptr [gMatchData_0058ae00]
             fnstsw ax
             test ah, 0x40
             je L004e8762
-            fcomp dword ptr [gConst_kangeroo_force_factor+0x170]
+            fcomp dword ptr [gMatchData_0058ae00]
             fnstsw ax
             test ah, 0x41
             je L004e8491
             fld dword ptr [esp + 0x34]
-            fcomp dword ptr [gConst_kangeroo_force_factor+0x170]
+            fcomp dword ptr [gMatchData_0058ae00]
             fnstsw ax
             test ah, 0x41
             jne L004e8764
@@ -3283,7 +3378,7 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessShadow(tCar_spec* pCar, br_actor* pWorld, 
             fxch st(3)
             fmul dword ptr [esp + 0x38]
             fxch st(3)
-            fcomp qword ptr [gConst_kangeroo_force_factor+0x178]
+            fcomp qword ptr [gMatchDouble_0058ae08]
             fxch st(1)
             fmul dword ptr [esp + 0x2c]
             fxch st(1)
@@ -3303,13 +3398,13 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessShadow(tCar_spec* pCar, br_actor* pWorld, 
             je L004e8594
             fld dword ptr [esp + 0x14]
             fabs
-            fcomp qword ptr [gConst_kangeroo_force_factor+0x178]
+            fcomp qword ptr [gMatchDouble_0058ae08]
             fnstsw ax
             test ah, 1
             je L004e8594
             fld dword ptr [esp + 0x18]
             fabs
-            fcomp qword ptr [gConst_kangeroo_force_factor+0x178]
+            fcomp qword ptr [gMatchDouble_0058ae08]
             fnstsw ax
             test ah, 1
             jne L004e8764
@@ -3335,7 +3430,7 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessShadow(tCar_spec* pCar, br_actor* pWorld, 
             fxch st(1)
             faddp st(2), st(0)
             faddp st(1), st(0)
-            fcomp dword ptr [gConst_kangeroo_force_factor+0x170]
+            fcomp dword ptr [gMatchData_0058ae00]
             fnstsw ax
             test ah, 0x41
             fstp st(0)
@@ -3363,11 +3458,11 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessShadow(tCar_spec* pCar, br_actor* pWorld, 
             fxch st(1)
             faddp st(1), st(0)
             fsqrt
-            fcom dword ptr [gConst_kangeroo_force_factor+0x180]
+            fcom dword ptr [gMatchFloat_0058ae10]
             fnstsw ax
             test ah, 0x41
             jne L004e866c
-            fdivr qword ptr [gConst_kangeroo_force_factor+0x188]
+            fdivr qword ptr [gMatchDouble_0058ae18]
             fld st(0)
             fld st(1)
             fxch st(1)
@@ -3458,26 +3553,26 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessShadow(tCar_spec* pCar, br_actor* pWorld, 
     L004e8764:
             fld dword ptr [esp + 0x2c]
             fld dword ptr [esp + 0x34]
-            fmul dword ptr [gConst_kangeroo_force_factor+0x174]
+            fmul dword ptr [gMatchFloat_0058ae04]
             fxch st(1)
-            fmul dword ptr [gConst_kangeroo_force_factor+0x174]
+            fmul dword ptr [gMatchFloat_0058ae04]
             fxch st(1)
             fst dword ptr [esp + 0x1c]
             fmul st(0), st(1)
-            fcom dword ptr [gConst_kangeroo_force_factor+0x170]
+            fcom dword ptr [gMatchData_0058ae00]
             fnstsw ax
             test ah, 1
             jne L004e87c4
-            fcomp dword ptr [gConst_kangeroo_force_factor+0x170]
+            fcomp dword ptr [gMatchData_0058ae00]
             fnstsw ax
             test ah, 0x40
             je L004e8a99
-            fcomp dword ptr [gConst_kangeroo_force_factor+0x170]
+            fcomp dword ptr [gMatchData_0058ae00]
             fnstsw ax
             test ah, 0x41
             je L004e87c8
             fld dword ptr [esp + 0x1c]
-            fcomp dword ptr [gConst_kangeroo_force_factor+0x170]
+            fcomp dword ptr [gMatchData_0058ae00]
             fnstsw ax
             test ah, 0x41
             jne L004e8a9b
@@ -3534,7 +3629,7 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessShadow(tCar_spec* pCar, br_actor* pWorld, 
             fxch st(3)
             fmul dword ptr [esp + 0x38]
             fxch st(3)
-            fcomp qword ptr [gConst_kangeroo_force_factor+0x178]
+            fcomp qword ptr [gMatchDouble_0058ae08]
             fxch st(1)
             fmul dword ptr [esp + 0x2c]
             fxch st(1)
@@ -3554,13 +3649,13 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessShadow(tCar_spec* pCar, br_actor* pWorld, 
             je L004e88cb
             fld dword ptr [esp + 0x14]
             fabs
-            fcomp qword ptr [gConst_kangeroo_force_factor+0x178]
+            fcomp qword ptr [gMatchDouble_0058ae08]
             fnstsw ax
             test ah, 1
             je L004e88cb
             fld dword ptr [esp + 0x18]
             fabs
-            fcomp qword ptr [gConst_kangeroo_force_factor+0x178]
+            fcomp qword ptr [gMatchDouble_0058ae08]
             fnstsw ax
             test ah, 1
             jne L004e8a9b
@@ -3586,7 +3681,7 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessShadow(tCar_spec* pCar, br_actor* pWorld, 
             fxch st(1)
             faddp st(2), st(0)
             faddp st(1), st(0)
-            fcomp dword ptr [gConst_kangeroo_force_factor+0x170]
+            fcomp dword ptr [gMatchData_0058ae00]
             fnstsw ax
             test ah, 0x41
             fstp st(0)
@@ -3614,11 +3709,11 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessShadow(tCar_spec* pCar, br_actor* pWorld, 
             fxch st(1)
             faddp st(1), st(0)
             fsqrt
-            fcom dword ptr [gConst_kangeroo_force_factor+0x180]
+            fcom dword ptr [gMatchFloat_0058ae10]
             fnstsw ax
             test ah, 0x41
             jne L004e89a3
-            fdivr qword ptr [gConst_kangeroo_force_factor+0x188]
+            fdivr qword ptr [gMatchDouble_0058ae18]
             fld st(0)
             fld st(1)
             fxch st(1)
@@ -3708,24 +3803,24 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessShadow(tCar_spec* pCar, br_actor* pWorld, 
             fstp st(0)
     L004e8a9b:
             fld dword ptr [esp + 0x34]
-            fmul dword ptr [gConst_kangeroo_force_factor+0x174]
+            fmul dword ptr [gMatchFloat_0058ae04]
             fst dword ptr [esp + 0x1c]
             fmul dword ptr [esp + 0x2c]
-            fcom dword ptr [gConst_kangeroo_force_factor+0x170]
+            fcom dword ptr [gMatchData_0058ae00]
             fnstsw ax
             test ah, 1
             jne L004e8af3
-            fcomp dword ptr [gConst_kangeroo_force_factor+0x170]
+            fcomp dword ptr [gMatchData_0058ae00]
             fnstsw ax
             test ah, 0x40
             je L004e8dc0
             fld dword ptr [esp + 0x2c]
-            fcomp dword ptr [gConst_kangeroo_force_factor+0x170]
+            fcomp dword ptr [gMatchData_0058ae00]
             fnstsw ax
             test ah, 0x41
             je L004e8af5
             fld dword ptr [esp + 0x1c]
-            fcomp dword ptr [gConst_kangeroo_force_factor+0x170]
+            fcomp dword ptr [gMatchData_0058ae00]
             fnstsw ax
             test ah, 0x41
             jne L004e8dc0
@@ -3781,7 +3876,7 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessShadow(tCar_spec* pCar, br_actor* pWorld, 
             fxch st(3)
             fmul dword ptr [esp + 0x38]
             fxch st(3)
-            fcomp qword ptr [gConst_kangeroo_force_factor+0x178]
+            fcomp qword ptr [gMatchDouble_0058ae08]
             fxch st(1)
             fmul dword ptr [esp + 0x2c]
             fxch st(1)
@@ -3801,13 +3896,13 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessShadow(tCar_spec* pCar, br_actor* pWorld, 
             je L004e8bf8
             fld dword ptr [esp + 0x14]
             fabs
-            fcomp qword ptr [gConst_kangeroo_force_factor+0x178]
+            fcomp qword ptr [gMatchDouble_0058ae08]
             fnstsw ax
             test ah, 1
             je L004e8bf8
             fld dword ptr [esp + 0x18]
             fabs
-            fcomp qword ptr [gConst_kangeroo_force_factor+0x178]
+            fcomp qword ptr [gMatchDouble_0058ae08]
             fnstsw ax
             test ah, 1
             jne L004e8dc0
@@ -3833,7 +3928,7 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessShadow(tCar_spec* pCar, br_actor* pWorld, 
             fxch st(1)
             faddp st(2), st(0)
             faddp st(1), st(0)
-            fcomp dword ptr [gConst_kangeroo_force_factor+0x170]
+            fcomp dword ptr [gMatchData_0058ae00]
             fnstsw ax
             test ah, 0x41
             fstp st(0)
@@ -3861,11 +3956,11 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessShadow(tCar_spec* pCar, br_actor* pWorld, 
             fxch st(1)
             faddp st(1), st(0)
             fsqrt
-            fcom dword ptr [gConst_kangeroo_force_factor+0x180]
+            fcom dword ptr [gMatchFloat_0058ae10]
             fnstsw ax
             test ah, 0x41
             jne L004e8cd0
-            fdivr qword ptr [gConst_kangeroo_force_factor+0x188]
+            fdivr qword ptr [gMatchDouble_0058ae18]
             fld st(0)
             fld st(1)
             fxch st(1)
@@ -4055,7 +4150,7 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessShadow(tCar_spec* pCar, br_actor* pWorld, 
             cmp edi, 0x60
             jl L004e8e62
             fld dword ptr [esp + 0xa0]
-            fsub dword ptr [gConst_kangeroo_force_factor+0x19c]
+            fsub dword ptr [gMatchFloat_0058ae2c]
             push ebp
             push 0x64
             lea edx, [esp + 0xb6c]
@@ -4065,8 +4160,8 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessShadow(tCar_spec* pCar, br_actor* pWorld, 
             call FindFacesInBox
             fld dword ptr [esp + 0xac]
             fsub dword ptr [esp + 0xa0]
-            fld dword ptr [gConst_kangeroo_force_factor+0x170]
-            fld dword ptr [gConst_kangeroo_force_factor+0x170]
+            fld dword ptr [gMatchData_0058ae00]
+            fld dword ptr [gMatchData_0058ae00]
             fxch st(2)
             fst dword ptr [esp + 0x5c]
             mov ecx, dword ptr [ebx + 0x10]
@@ -4100,7 +4195,7 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessShadow(tCar_spec* pCar, br_actor* pWorld, 
             lea ecx, [eax + 0xc]
     L004e9032:
             fld dword ptr [ecx + 0x2c]
-            fcomp qword ptr [gConst_kangeroo_force_factor+0x1a0]
+            fcomp qword ptr [gMatchDouble_0058ae30]
             fnstsw ax
             test ah, 1
             je L004e90f3
@@ -4122,7 +4217,7 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessShadow(tCar_spec* pCar, br_actor* pWorld, 
             _emit 0xd8
         _emit 0x01
             fxch st(1)
-            fmul dword ptr [gConst_kangeroo_force_factor+0x1a8]
+            fmul dword ptr [gMatchFloat_0058ae38]
             fxch st(2)
             fadd dword ptr [ecx + 0x10]
             fxch st(1)
@@ -4134,9 +4229,9 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessShadow(tCar_spec* pCar, br_actor* pWorld, 
             fxch st(1)
             fst dword ptr [esp + 0x44]
             fxch st(1)
-            fmul dword ptr [gConst_kangeroo_force_factor+0x1a8]
+            fmul dword ptr [gMatchFloat_0058ae38]
             fxch st(1)
-            fmul dword ptr [gConst_kangeroo_force_factor+0x1a8]
+            fmul dword ptr [gMatchFloat_0058ae38]
             fnstsw ax
             test ah, 0x41
             jne L004e90eb
@@ -4158,7 +4253,7 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessShadow(tCar_spec* pCar, br_actor* pWorld, 
             fmul dword ptr [ecx + 0x30]
             faddp st(2), st(0)
             fxch st(1)
-            fcomp dword ptr [gConst_kangeroo_force_factor+0x170]
+            fcomp dword ptr [gMatchData_0058ae00]
             fnstsw ax
             test ah, 0x41
             fstp st(0)
@@ -4173,7 +4268,7 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessShadow(tCar_spec* pCar, br_actor* pWorld, 
             jmp L004e9152
     L004e90f3:
             fld dword ptr [ecx + 0x2c]
-            fcomp dword ptr [gConst_kangeroo_force_factor+0x170]
+            fcomp dword ptr [gMatchData_0058ae00]
             fnstsw ax
             test ah, 1
             jne L004e9152
@@ -4206,13 +4301,13 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessShadow(tCar_spec* pCar, br_actor* pWorld, 
             jne L004e915e
     L004e9142:
             fld dword ptr [ecx + 0x2c]
-            fcomp qword ptr [gConst_kangeroo_force_factor+0x1b0]
+            fcomp qword ptr [gMatchDouble_0058ae40]
             fnstsw ax
             test ah, 1
             je L004e915e
     L004e9152:
             fld dword ptr [ecx + 0x38]
-            fsub dword ptr [gConst_kangeroo_force_factor+0x1ac]
+            fsub dword ptr [gMatchFloat_0058ae3c]
             fstp dword ptr [ecx + 0x38]
     L004e915e:
             add ecx, 0x50
@@ -4229,13 +4324,13 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessShadow(tCar_spec* pCar, br_actor* pWorld, 
     L004e918c:
             _emit 0xd9
         _emit 0x06
-            fcomp dword ptr [gConst_kangeroo_force_factor+0x1b8]
+            fcomp dword ptr [gMatchFloat_0058ae48]
             fnstsw ax
             test ah, 1
             jne L004e91aa
             _emit 0xd9
         _emit 0x06
-            fsub dword ptr [gConst_kangeroo_force_factor+0x1bc]
+            fsub dword ptr [gMatchFloat_0058ae4c]
             _emit 0xd9
         _emit 0x1e
             jmp L004e9339
@@ -4269,7 +4364,7 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessShadow(tCar_spec* pCar, br_actor* pWorld, 
             test eax, eax
             je L004e9215
             fld dword ptr [gLighting_data+0xc]
-            fmul qword ptr [gConst_kangeroo_force_factor+0x1c0]
+            fmul qword ptr [gMatchDouble_0058ae50]
             mov ecx, dword ptr [esi - 0x44]
             push 4
             fstp dword ptr [ecx + 0x10]
@@ -4319,7 +4414,7 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessShadow(tCar_spec* pCar, br_actor* pWorld, 
             mov edx, dword ptr [ecx]
             mov dword ptr [edi + 8], edx
             mov eax, dword ptr [esi - 0x1c]
-            fcomp dword ptr [gConst_kangeroo_force_factor+0x170]
+            fcomp dword ptr [gMatchData_0058ae00]
             mov ecx, dword ptr [eax + 4]
             mov dword ptr [edi + 0xc], ecx
             mov edx, dword ptr [esi - 0x18]
@@ -4359,7 +4454,7 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessShadow(tCar_spec* pCar, br_actor* pWorld, 
             lea ecx, [esi - 0x44]
             call CheckSingleFace
             fld dword ptr [esp + 0x68]
-            fcomp dword ptr [gConst_kangeroo_force_factor+0x190]
+            fcomp dword ptr [gMatchFloat_0058ae20]
             fnstsw ax
             test ah, 1
             je L004e9332
@@ -4389,7 +4484,7 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessShadow(tCar_spec* pCar, br_actor* pWorld, 
             fsub dword ptr [esp + 0x6c]
             fsubr dword ptr [esp + 0x38]
             fst dword ptr [esp + 0x38]
-            fcomp qword ptr [gConst_kangeroo_force_factor+0x1c8]
+            fcomp qword ptr [gMatchDouble_0058ae58]
             fnstsw ax
             test ah, 0x41
             jne L004e9378
@@ -4397,7 +4492,7 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessShadow(tCar_spec* pCar, br_actor* pWorld, 
             jmp L004e9391
     L004e9378:
             fld dword ptr [esp + 0x38]
-            fcomp dword ptr [gConst_kangeroo_force_factor+0x170]
+            fcomp dword ptr [gMatchData_0058ae00]
             fnstsw ax
             test ah, 1
             je L004e9391
@@ -4407,10 +4502,10 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessShadow(tCar_spec* pCar, br_actor* pWorld, 
             test eax, eax
             je L004e9416
             fld dword ptr [esp + 0x38]
-            fsubr qword ptr [gConst_kangeroo_force_factor+0x1c8]
-            fmul qword ptr [gConst_kangeroo_force_factor+0x1d8]
-            fmul qword ptr [gConst_kangeroo_force_factor+0x1e0]
-            fsubr qword ptr [gConst_kangeroo_force_factor+0x1e8]
+            fsubr qword ptr [gMatchDouble_0058ae58]
+            fmul qword ptr [gMatchDouble_0058ae68]
+            fmul qword ptr [gMatchDouble_0058ae70]
+            fsubr qword ptr [gMatchDouble_0058ae78]
             call _ftol
             mov ecx, dword ptr [gSaved_table_count]
             mov dword ptr [gShadow_dim_amount], eax
@@ -4441,15 +4536,15 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessShadow(tCar_spec* pCar, br_actor* pWorld, 
             jl L004e93d9
     L004e9416:
             fld dword ptr [esp + 0x38]
-            fsubr qword ptr [gConst_kangeroo_force_factor+0x1c8]
+            fsubr qword ptr [gMatchDouble_0058ae58]
             mov eax, dword ptr [gShadow_clip_plane_count]
             mov ebp, 0
             test eax, eax
-            fmul qword ptr [gConst_kangeroo_force_factor+0x1f0]
-            fmul qword ptr [gConst_kangeroo_force_factor+0x1e0]
-            fsubr qword ptr [gConst_kangeroo_force_factor+0x1f8]
+            fmul qword ptr [gMatchDouble_0058ae80]
+            fmul qword ptr [gMatchDouble_0058ae70]
+            fsubr qword ptr [gMatchDouble_0058ae88]
             jle L004e94b4
-            fsubr qword ptr [gConst_kangeroo_force_factor+0x188]
+            fsubr qword ptr [gMatchDouble_0058ae18]
             mov edi, offset gShadow_clip_planes
             fstp qword ptr [esp + 0x48]
     L004e944f:
@@ -4632,6 +4727,20 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessShadow(tCar_spec* pCar, br_actor* pWorld, 
             pop ebx
             add esp, 0x2a94
             ret 0x10
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -5226,7 +5335,7 @@ void C2_NAKED C2_HOOK_FASTCALL DoARenderPass(br_matrix34* pMat34, br_actor* pCam
     L004e598f:
             sub esi, 4
             dec edi
-            cmp esi, offset gCop_speed_factor+0xc
+            cmp esi, offset gMatchData_0074d640
             jg L004e5973
             push 0
             call BrSetScreenZOffset
@@ -5472,9 +5581,9 @@ void C2_NAKED C2_HOOK_FASTCALL DrawCheckpoint(br_pixelmap* pMap, int pCheckpoint
             test esi, esi
             mov ebx, ecx
             jl L00496a04
-            cmp esi, dword ptr ds:[0x7623a8]
+            cmp esi, dword ptr [gCurrent_race+0x8]
             jge L00496a04
-            mov eax, dword ptr ds:[gTrack_version]
+            mov eax, dword ptr [gTrack_version]
             test eax, eax
             jle L00496a04
             mov eax, dword ptr [esp + 0x14]
@@ -5492,9 +5601,14 @@ void C2_NAKED C2_HOOK_FASTCALL DrawCheckpoint(br_pixelmap* pMap, int pCheckpoint
             shl eax, 3
             sub eax, esi
             lea eax, [eax + eax*2]
-            fld dword ptr [eax*4 + 0x7626c8]
-            fcomp dword ptr ds:[0x58a350]
-            lea edi, [eax*4 + 0x7625bc]
+            fld dword ptr [eax*4 + gCurrent_race+0x328]
+            _emit 0xd8
+        _emit 0x1d
+        _emit 0x50
+        _emit 0xa3
+        _emit 0x58
+        _emit 0x00
+            lea edi, [eax*4 + gCurrent_race+0x21c]
             fnstsw ax
             test ah, 1
             jne L00496b08
@@ -5507,7 +5621,12 @@ void C2_NAKED C2_HOOK_FASTCALL DrawCheckpoint(br_pixelmap* pMap, int pCheckpoint
             test ah, 0x41
             jne L00496b08
             fld dword ptr [edi + 0x110]
-            fcomp dword ptr ds:[0x58a350]
+            _emit 0xd8
+        _emit 0x1d
+        _emit 0x50
+        _emit 0xa3
+        _emit 0x58
+        _emit 0x00
             fnstsw ax
             test ah, 1
             jne L00496b08
@@ -5519,32 +5638,32 @@ void C2_NAKED C2_HOOK_FASTCALL DrawCheckpoint(br_pixelmap* pMap, int pCheckpoint
             fnstsw ax
             test ah, 0x41
             jne L00496b08
-            cmp dword ptr ds:[gMap_view], 2
+            cmp dword ptr [gMap_view], 2
             jne L00496aae
             mov ecx, 1
             call PossibleLock
     L00496aae:
-            mov eax, dword ptr ds:[gCheckpoint_digit_height]
-            fild dword ptr ds:[gCheckpoint_digit_center_y]
+            mov eax, dword ptr [gCheckpoint_digit_height]
+            fild dword ptr [gCheckpoint_digit_center_y]
             imul esi, eax
             fsubr dword ptr [edi + 0x110]
             mov cx, ax
             push ecx
-            mov ecx, dword ptr ds:[gCheckpoint_numbers]
+            mov ecx, dword ptr [gCheckpoint_numbers]
             mov dx, word ptr [ecx + 0x34]
             push edx
             push esi
             push 0
             push ecx
             call _ftol
-            fild dword ptr ds:[gCheckpoint_digit_center_x]
+            fild dword ptr [gCheckpoint_digit_center_x]
             push eax
             fsubr dword ptr [edi + 0x10c]
             call _ftol
             mov edx, eax
             mov ecx, ebx
             call DRPixelmapRectangleMaskedCopy
-            cmp dword ptr ds:[gMap_view], 2
+            cmp dword ptr [gMap_view], 2
             jne L00496b08
             mov ecx, 1
             call PossibleUnlock
@@ -5553,6 +5672,8 @@ void C2_NAKED C2_HOOK_FASTCALL DrawCheckpoint(br_pixelmap* pMap, int pCheckpoint
             pop esi
             pop ebx
             ret 8
+            nop
+            nop
     }
 #endif
 }
@@ -5616,7 +5737,12 @@ void C2_NAKED C2_HOOK_FASTCALL DrawMapSmallBlip(br_pixelmap* pScreen, tU32 pTime
             push ecx
             call BrMatrix34ApplyP
             fld dword ptr [esp + 0x18]
-            fcomp dword ptr [gDouble_0058a068+0x2e8]
+            _emit 0xd8
+        _emit 0x1d
+        _emit 0x50
+        _emit 0xa3
+        _emit 0x58
+        _emit 0x00
             add esp, 0xc
             fnstsw ax
             test ah, 1
@@ -5630,7 +5756,12 @@ void C2_NAKED C2_HOOK_FASTCALL DrawMapSmallBlip(br_pixelmap* pScreen, tU32 pTime
             test ah, 0x41
             jne L004968d8
             fld dword ptr [esp + 0x10]
-            fcomp dword ptr [gDouble_0058a068+0x2e8]
+            _emit 0xd8
+        _emit 0x1d
+        _emit 0x50
+        _emit 0xa3
+        _emit 0x58
+        _emit 0x00
             fnstsw ax
             test ah, 1
             jne L004968d8
@@ -5684,6 +5815,21 @@ void C2_NAKED C2_HOOK_FASTCALL DrawMapSmallBlip(br_pixelmap* pScreen, tU32 pTime
             pop ebx
             add esp, 0xc
             ret 8
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -6183,12 +6329,12 @@ void C2_NAKED C2_HOOK_FASTCALL DrawMapBlip(br_pixelmap* pScreen, tCar_spec* pCar
             push eax
             push ecx
             call FastScalarArcTan2
-            fsubr dword ptr [gDouble_0058a068+0x320]
-            fsub qword ptr [gDouble_0058a068+0x328]
+            fsubr dword ptr [gMatchFloat_0058a388]
+            fsub qword ptr [gMatchDouble_0058a390]
             call _ftol
             mov dword ptr [esp + 0x38], eax
             fild dword ptr [esp + 0x38]
-            fmul qword ptr [gDouble_0058a068+0x330]
+            fmul qword ptr [gMatchDouble_0058a398]
             call _ftol
             cdq
             xor eax, edx
@@ -6261,16 +6407,21 @@ void C2_NAKED C2_HOOK_FASTCALL DrawMapBlip(br_pixelmap* pScreen, tCar_spec* pCar
             cmp esi, dword ptr [ecx*4 + gNet_players+0xc8]
             jne L00496669
             fld dword ptr [esp + 0x24]
-            fsub dword ptr [gDouble_0058a068+0x338]
+            fsub dword ptr [gMatchFloat_0058a3a0]
             call _ftol
             fld dword ptr [esp + 0x20]
-            fsub dword ptr [gDouble_0058a068+0x2fc]
+            _emit 0xd8
+        _emit 0x25
+        _emit 0x64
+        _emit 0xa3
+        _emit 0x58
+        _emit 0x00
             mov ebx, eax
             push edi
             push ebx
             call _ftol
             fld dword ptr [esp + 0x28]
-            fsub dword ptr [gDouble_0058a068+0x338]
+            fsub dword ptr [gMatchFloat_0058a3a0]
             push eax
             push ebx
             call _ftol
@@ -6278,17 +6429,27 @@ void C2_NAKED C2_HOOK_FASTCALL DrawMapBlip(br_pixelmap* pScreen, tCar_spec* pCar
             push ebp
             call BrPixelmapLine
             fld dword ptr [esp + 0x3c]
-            fsub dword ptr [gDouble_0058a068+0x2fc]
+            _emit 0xd8
+        _emit 0x25
+        _emit 0x64
+        _emit 0xa3
+        _emit 0x58
+        _emit 0x00
             add esp, 0x18
             call _ftol
             fld dword ptr [esp + 0x20]
-            fsub dword ptr [gDouble_0058a068+0x2fc]
+            _emit 0xd8
+        _emit 0x25
+        _emit 0x64
+        _emit 0xa3
+        _emit 0x58
+        _emit 0x00
             mov ebx, eax
             push edi
             push ebx
             call _ftol
             fld dword ptr [esp + 0x28]
-            fsub dword ptr [gDouble_0058a068+0x338]
+            fsub dword ptr [gMatchFloat_0058a3a0]
             push eax
             push ebx
             call _ftol
@@ -6296,16 +6457,21 @@ void C2_NAKED C2_HOOK_FASTCALL DrawMapBlip(br_pixelmap* pScreen, tCar_spec* pCar
             push ebp
             call BrPixelmapLine
             fld dword ptr [esp + 0x38]
-            fsub dword ptr [gDouble_0058a068+0x338]
+            fsub dword ptr [gMatchFloat_0058a3a0]
             add esp, 0x18
             call _ftol
             fld dword ptr [esp + 0x24]
-            fsub dword ptr [gDouble_0058a068+0x2fc]
+            _emit 0xd8
+        _emit 0x25
+        _emit 0x64
+        _emit 0xa3
+        _emit 0x58
+        _emit 0x00
             mov ebx, eax
             push edi
             call _ftol
             fld dword ptr [esp + 0x28]
-            fsub dword ptr [gDouble_0058a068+0x338]
+            fsub dword ptr [gMatchFloat_0058a3a0]
             push eax
             push ebx
             call _ftol
@@ -6314,16 +6480,26 @@ void C2_NAKED C2_HOOK_FASTCALL DrawMapBlip(br_pixelmap* pScreen, tCar_spec* pCar
             push ebp
             call BrPixelmapLine
             fld dword ptr [esp + 0x38]
-            fsub dword ptr [gDouble_0058a068+0x2fc]
+            _emit 0xd8
+        _emit 0x25
+        _emit 0x64
+        _emit 0xa3
+        _emit 0x58
+        _emit 0x00
             add esp, 0x18
             call _ftol
             fld dword ptr [esp + 0x24]
-            fsub dword ptr [gDouble_0058a068+0x2fc]
+            _emit 0xd8
+        _emit 0x25
+        _emit 0x64
+        _emit 0xa3
+        _emit 0x58
+        _emit 0x00
             mov ebx, eax
             push edi
             call _ftol
             fld dword ptr [esp + 0x28]
-            fsub dword ptr [gDouble_0058a068+0x338]
+            fsub dword ptr [gMatchFloat_0058a3a0]
             push eax
             push ebx
             call _ftol
@@ -6350,19 +6526,19 @@ void C2_NAKED C2_HOOK_FASTCALL DrawMapBlip(br_pixelmap* pScreen, tCar_spec* pCar
             shl edx, 1
             sub ecx, edx
             mul ecx
-            fsub qword ptr [gDouble_0058a068+0x340]
+            fsub qword ptr [gMatchDouble_0058a3a8]
             mov esi, edx
             shr esi, 5
             call _ftol
             fld dword ptr [esp + 0x20]
-            fsub qword ptr [gDouble_0058a068+0x2e0]
+            fsub qword ptr [gMatchDouble_0058a348]
             mov ebx, eax
             push edi
             sub ebx, esi
             push ebx
             call _ftol
             fld dword ptr [esp + 0x28]
-            fsub qword ptr [gDouble_0058a068+0x340]
+            fsub qword ptr [gMatchDouble_0058a3a8]
             add eax, esi
             push eax
             push ebx
@@ -6372,17 +6548,17 @@ void C2_NAKED C2_HOOK_FASTCALL DrawMapBlip(br_pixelmap* pScreen, tCar_spec* pCar
             push ebp
             call BrPixelmapLine
             fld dword ptr [esp + 0x3c]
-            fsub qword ptr [gDouble_0058a068+0x2e0]
+            fsub qword ptr [gMatchDouble_0058a348]
             add esp, 0x18
             call _ftol
             fld dword ptr [esp + 0x20]
-            fsub qword ptr [gDouble_0058a068+0x2e0]
+            fsub qword ptr [gMatchDouble_0058a348]
             lea ebx, [eax + esi]
             push edi
             push ebx
             call _ftol
             fld dword ptr [esp + 0x28]
-            fsub qword ptr [gDouble_0058a068+0x340]
+            fsub qword ptr [gMatchDouble_0058a3a8]
             add eax, esi
             push eax
             push ebx
@@ -6392,17 +6568,17 @@ void C2_NAKED C2_HOOK_FASTCALL DrawMapBlip(br_pixelmap* pScreen, tCar_spec* pCar
             push ebp
             call BrPixelmapLine
             fld dword ptr [esp + 0x38]
-            fsub qword ptr [gDouble_0058a068+0x340]
+            fsub qword ptr [gMatchDouble_0058a3a8]
             add esp, 0x18
             call _ftol
             fld dword ptr [esp + 0x24]
-            fsub qword ptr [gDouble_0058a068+0x2e0]
+            fsub qword ptr [gMatchDouble_0058a348]
             mov ebx, eax
             push edi
             sub ebx, esi
             call _ftol
             fld dword ptr [esp + 0x28]
-            fsub qword ptr [gDouble_0058a068+0x340]
+            fsub qword ptr [gMatchDouble_0058a3a8]
             add eax, esi
             push eax
             push ebx
@@ -6413,16 +6589,16 @@ void C2_NAKED C2_HOOK_FASTCALL DrawMapBlip(br_pixelmap* pScreen, tCar_spec* pCar
             push ebp
             call BrPixelmapLine
             fld dword ptr [esp + 0x38]
-            fsub qword ptr [gDouble_0058a068+0x2e0]
+            fsub qword ptr [gMatchDouble_0058a348]
             add esp, 0x18
             call _ftol
             fld dword ptr [esp + 0x24]
-            fsub qword ptr [gDouble_0058a068+0x2e0]
+            fsub qword ptr [gMatchDouble_0058a348]
             lea ebx, [eax + esi]
             push edi
             call _ftol
             fld dword ptr [esp + 0x28]
-            fsub qword ptr [gDouble_0058a068+0x340]
+            fsub qword ptr [gMatchDouble_0058a3a8]
             add eax, esi
             push eax
             push ebx
@@ -6719,7 +6895,7 @@ void C2_NAKED C2_HOOK_FASTCALL DR16BitPixelmapRotatedAndFeatheredCopy(br_matrix2
             sar eax, 1
             mov ecx, eax
             mov dword ptr [esp + 0x20], eax
-            fmul qword ptr [gDouble_0058a068+0x180]
+            fmul qword ptr [gMatchDouble_0058a1e8]
             neg ecx
             cmp ecx, eax
             mov dword ptr [esp + 0x3c], ecx
@@ -6831,6 +7007,10 @@ void C2_NAKED C2_HOOK_FASTCALL DR16BitPixelmapRotatedAndFeatheredCopy(br_matrix2
             fstp st(0)
             fstp st(0)
             jmp L0047d232
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -7013,7 +7193,7 @@ void C2_NAKED C2_HOOK_FASTCALL DRPixelmapRotatedAndFeatheredCopy(br_matrix23* pM
             fild dword ptr [esp + 0x68]
             fstp dword ptr [esp + 0x44]
             fild dword ptr [esp + 0x2c]
-            fmul qword ptr [gDouble_0058a068+0x180]
+            fmul qword ptr [gMatchDouble_0058a1e8]
             fstp dword ptr [esp + 0x3c]
             fild dword ptr [esp + 0x64]
             _emit 0xd9
@@ -7255,6 +7435,16 @@ void C2_NAKED C2_HOOK_FASTCALL DRPixelmapRotatedAndFeatheredCopy(br_matrix23* pM
             fstp st(0)
             fstp st(0)
             jmp L0047d067
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }

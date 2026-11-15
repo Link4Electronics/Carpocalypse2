@@ -57,6 +57,12 @@ extern char gConst_kangeroo_force_factor[];
 extern br_actor* gNon_track_actor;
 extern int gPed_676914;
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gFloat_0058aeb0[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchFloat_0058aeb0[];
+#endif
 // FUNCTION: CARMA2_HW 0x004eaac0
 void C2_NAKED C2_HOOK_FASTCALL ResetExplosions(void) {
 #ifndef CARPOCALYPSE2_MATCHING
@@ -76,19 +82,19 @@ void C2_NAKED C2_HOOK_FASTCALL ResetExplosions(void) {
     }
 #else
     __asm {
-            mov eax, 0x6a55d2
+            mov eax, offset gExplosions+0xa
             xor ecx, ecx
     L004eaac7:
             mov dword ptr [eax - 0xa], ecx
             mov byte ptr [eax], cl
             add eax, 0x78
-            cmp eax, 0x6a6d42
+            cmp eax, offset gSmash_explosions+0x2
             jl L004eaac7
-            mov eax, 0x6a6d44
+            mov eax, offset gSmash_explosions+0x4
     L004eaadb:
             mov dword ptr [eax], ecx
             add eax, 0xc8
-            cmp eax, 0x6a7ce4
+            cmp eax, offset gPowerup_respawn_smashable+0x4
             jl L004eaadb
             ret
             nop
@@ -324,14 +330,14 @@ void C2_NAKED C2_HOOK_FASTCALL MungeExplosions(void) {
             mov dx, word ptr [ecx + 0x34]
             mov dword ptr [esp + 0x1c], edx
             fmul dword ptr [ebp + 4]
-            fmul dword ptr [gConst_kangeroo_force_factor+0x220]
+            fmul dword ptr [gMatchFloat_0058aeb0]
             _emit 0xd9
         _emit 0x1c
         _emit 0x24
             fild dword ptr [esp + 0x1c]
             push ecx
             fmul dword ptr [ebp + 4]
-            fmul dword ptr [gConst_kangeroo_force_factor+0x220]
+            fmul dword ptr [gMatchFloat_0058aeb0]
             _emit 0xd9
         _emit 0x1c
         _emit 0x24
@@ -623,7 +629,8 @@ void C2_NAKED C2_HOOK_FASTCALL Explode(tExplosion_animation* pExplosion_animatio
             test edi, edi
             fmul dword ptr [esp + 0x10]
             je L004eae75
-            fld dword ptr [edi]
+            _emit 0xd9
+        _emit 0x07
             fld dword ptr [edi + 4]
             fld dword ptr [edi + 8]
             fxch st(2)

@@ -49,6 +49,16 @@ extern br_image* C2_HOOK_CDECL BrImageReference();
 extern void* C2_HOOK_CDECL BrResAllocate();
 extern char* C2_HOOK_CDECL BrResStrDup();
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gFloat_0066cae8[];
+extern char gFloat_0066cb08[];
+extern char gFloat_0066cb34[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchFloat_0066cae8[];
+extern char gMatchFloat_0066cb08[];
+extern char gMatchFloat_0066cb34[];
+#endif
 // FUNCTION: CARMA2_HW 0x00530e70
 C2_NAKED br_image* C2_HOOK_STDCALL ImageLoad(const char* name) {
 #ifndef CARPOCALYPSE2_MATCHING
@@ -872,7 +882,7 @@ C2_NAKED br_image* C2_HOOK_STDCALL ImageLoad(const char* name) {
             mov eax, dword ptr [esi + 0xc]
             add eax, ebx
             push eax
-            push 0x66cae8
+            push offset gMatchFloat_0066cae8
             call BrFailure
             add esp, 8
             xor eax, eax
@@ -889,7 +899,7 @@ C2_NAKED br_image* C2_HOOK_STDCALL ImageLoad(const char* name) {
             mov eax, dword ptr [edx + 0xc]
             add eax, ebx
             push eax
-            push 0x66cb08
+            push offset gMatchFloat_0066cb08
             call BrFailure
             add esp, 0xc
             xor eax, eax
@@ -911,7 +921,7 @@ C2_NAKED br_image* C2_HOOK_STDCALL ImageLoad(const char* name) {
             mov ecx, dword ptr [eax + 0xc]
             add ecx, ebx
             push ecx
-            push 0x66cb34
+            push offset gMatchFloat_0066cb34
             call BrFailure
             add esp, 0x10
             xor eax, eax

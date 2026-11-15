@@ -54,6 +54,13 @@ extern float gOpponent_nastyness_frigger;
 extern const char* gPosition_type_names[2];
 extern char gSplit_triangle_vertex_orders[];
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gData_0065a784[];
+extern char gData_006600a0[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchData_006600a0[];
+#endif
 // FUNCTION: CARMA2_HW 0x004ef440
 intptr_t C2_HOOK_CDECL AddGhostActorToBuffer(br_actor* pActor, void* data) {
     br_actor** pActorBuffer = data;
@@ -388,7 +395,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReadShrapnelSideEffects(FILE* pF, tShrapnel_side_
             mov ecx, eax
             and ecx, 3
             rep movsb
-            mov edi, offset gOpponent_nastyness_frigger+0x3bc
+            mov edi, 0x65a788
             lea esi, [esp + 0x20]
     L004ef61e:
             mov cl, byte ptr [esi]
@@ -425,7 +432,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReadShrapnelSideEffects(FILE* pF, tShrapnel_side_
             lea edi, [esp + 0x20]
             or ecx, 0xffffffff
             xor eax, eax
-            mov edx, offset gMaterial_names+0x70
+            mov edx, 0x65fe80
             repne scasb
             not ecx
             lea eax, [esp + 0x20]
@@ -446,7 +453,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReadShrapnelSideEffects(FILE* pF, tShrapnel_side_
             or ecx, 0xffffffff
             xor eax, eax
             sub esi, 4
-            mov edx, offset gFrontend_QUIT+0xbb7c
+            mov edx, 0x65596c
             repne scasb
             not ecx
             dec ecx
@@ -457,7 +464,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReadShrapnelSideEffects(FILE* pF, tShrapnel_side_
             lea edi, [esp + 0x20]
             or ecx, 0xffffffff
             xor eax, eax
-            mov edx, offset gDefault_drone_direction+0x6dc
+            mov edx, 0x594e9c
             repne scasb
             not ecx
             dec ecx
@@ -470,7 +477,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReadShrapnelSideEffects(FILE* pF, tShrapnel_side_
             mov dword ptr [ebx + edx + 0x28], 2
             jmp L004ef7c4
     L004ef6f9:
-            mov edx, offset gSplit_triangle_vertex_orders+0x198
+            mov edx, offset gMatchData_006600a0
             lea ecx, [esp + 0x20]
             call DRStricmp
             test eax, eax
@@ -495,7 +502,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReadShrapnelSideEffects(FILE* pF, tShrapnel_side_
             or ecx, 0xffffffff
             xor eax, eax
             sub esi, 4
-            mov edx, offset gMaterial_names+0x70
+            mov edx, 0x65fe80
             repne scasb
             not ecx
             dec ecx
@@ -510,7 +517,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReadShrapnelSideEffects(FILE* pF, tShrapnel_side_
             lea edi, [esp + 0x20]
             or ecx, 0xffffffff
             xor eax, eax
-            mov edx, offset gFrontend_QUIT+0xbb7c
+            mov edx, 0x65596c
             repne scasb
             not ecx
             dec ecx
@@ -521,7 +528,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReadShrapnelSideEffects(FILE* pF, tShrapnel_side_
             lea edi, [esp + 0x20]
             or ecx, 0xffffffff
             xor eax, eax
-            mov edx, offset gDefault_drone_direction+0x6dc
+            mov edx, 0x594e9c
             repne scasb
             not ecx
             dec ecx
@@ -689,7 +696,12 @@ void C2_NAKED C2_HOOK_FASTCALL ReadNonCarCuboidActivation(FILE* pF, tNon_car_cub
             fstp dword ptr [edi + 0x14]
             mov ecx, esi
             call GetAScalar
-            fmul dword ptr [gDOUBLE_0058af40+0x8]
+            _emit 0xd8
+        _emit 0x0d
+        _emit 0x48
+        _emit 0xaf
+        _emit 0x58
+        _emit 0x00
             mov eax, dword ptr [esp + 0x10]
             add ebp, 0x40
             inc eax

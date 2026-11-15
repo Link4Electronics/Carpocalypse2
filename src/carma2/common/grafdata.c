@@ -690,6 +690,12 @@ extern void C2_NORETURN C2_HOOK_CDECL FatalError();
 extern int gGraf_spec_index;
 extern tGraf_spec gGraf_specs[2];
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gData_0065699c[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchData_0065699c[];
+#endif
 // FUNCTION: CARMA2_HW 0x0047b3e0
 void C2_NAKED C2_HOOK_FASTCALL CalcGrafDataIndex(void) {
 #ifndef CARPOCALYPSE2_MATCHING
@@ -726,7 +732,7 @@ void C2_NAKED C2_HOOK_FASTCALL CalcGrafDataIndex(void) {
     L0047b40f:
             add eax, 0x520
             inc ecx
-            cmp eax, offset gGraf_data+0xa44
+            cmp eax, offset gMatchData_0065699c
             jl L0047b3fe
             push 0x18
             call FatalError
@@ -747,6 +753,7 @@ void C2_NAKED C2_HOOK_FASTCALL CalcGrafDataIndex(void) {
             pop esi
             pop ebx
             ret
+            nop
     }
 #endif
 }

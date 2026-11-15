@@ -326,6 +326,60 @@ extern int gTotal_count_smash_peds;
 extern int gTotal_laps;
 extern tU32 gWait_for_it;
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gData_00658944[];
+extern char gData_0065896c[];
+extern char gData_00658980[];
+extern char gData_00658990[];
+extern char gData_0068c804[];
+extern char gData_006b75dc[];
+extern char gDouble_0058a2e8[];
+extern char gDouble_0058a2f0[];
+extern char gDouble_0058a2f8[];
+extern char gDouble_0058a300[];
+extern char gDouble_0058a310[];
+extern char gDouble_0058a318[];
+extern char gDouble_0058a320[];
+extern char gDouble_0058a328[];
+extern char gDouble_0058a338[];
+extern char gFloat_0058930c[];
+extern char gFloat_0058a308[];
+extern char gFloat_0058a330[];
+extern char gFloat_006588f0[];
+extern char gFloat_00658908[];
+extern char gFloat_0065892c[];
+extern char gFloat_00658978[];
+extern char gFloat_00658998[];
+extern char gString_0058fd6c[];
+extern char gString_00658960[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchData_00658944[];
+extern char gMatchData_0065896c[];
+extern char gMatchData_00658980[];
+extern char gMatchData_00658990[];
+extern char gMatchData_0068c804[];
+extern char gMatchData_006b75dc[];
+extern char gMatchDouble_0058a2e8[];
+extern char gMatchDouble_0058a2f0[];
+extern char gMatchDouble_0058a2f8[];
+extern char gMatchDouble_0058a300[];
+extern char gMatchDouble_0058a310[];
+extern char gMatchDouble_0058a318[];
+extern char gMatchDouble_0058a320[];
+extern char gMatchDouble_0058a328[];
+extern char gMatchDouble_0058a338[];
+extern char gMatchFloat_0058930c[];
+extern char gMatchFloat_0058a308[];
+extern char gMatchFloat_0058a330[];
+extern char gMatchFloat_006588f0[];
+extern char gMatchFloat_00658908[];
+extern char gMatchFloat_0065892c[];
+extern char gMatchFloat_00658978[];
+extern char gMatchFloat_00658998[];
+extern char gMatchString_0058fd6c[];
+extern char gMatchString_00658960[];
+#endif
 // FUNCTION: CARMA2_HW 0x00401170
 void C2_NAKED C2_HOOK_FASTCALL MungeAIWorld(tU32 pFrame_period) {
 #ifndef CARPOCALYPSE2_MATCHING
@@ -353,31 +407,31 @@ void C2_NAKED C2_HOOK_FASTCALL MungeAIWorld(tU32 pFrame_period) {
             mov ebx, ecx
             call GetTotalTime
             test eax, eax
-            mov dword ptr ds:[gTime_stamp_for_this_munging], eax
+            mov dword ptr [gTime_stamp_for_this_munging], eax
             jne L00401190
             call PDGetTotalTime
-            mov dword ptr ds:[gTime_stamp_for_this_munging], eax
+            mov dword ptr [gTime_stamp_for_this_munging], eax
     L00401190:
             mov dword ptr [esp + 0xc], ebx
             mov dword ptr [esp + 0x10], 0
             fild qword ptr [esp + 0xc]
-            mov eax, dword ptr ds:[gTimers_stack_size]
-            mov dword ptr ds:[gFrame_period_for_this_munging], ebx
+            mov eax, dword ptr [gTimers_stack_size]
+            mov dword ptr [gFrame_period_for_this_munging], ebx
             test eax, eax
-            fmul dword ptr ds:[0x58930c]
+            fmul dword ptr [gMatchFloat_0058930c]
             mov dword ptr [eax*4 + gTimers_stack], 6
-            fstp dword ptr ds:[gDrone_delta_time]
+            fstp dword ptr [gDrone_delta_time]
             je L004011ea
-            mov eax, dword ptr [eax*4 + 0x6b75dc]
+            mov eax, dword ptr [eax*4 + gMatchData_006b75dc]
             lea esi, [eax*8]
             lea edx, [eax*8]
             sub esi, eax
             shl esi, 2
             xor ecx, ecx
-            mov cl, byte ptr [esi + 0x6b7608]
+            mov cl, byte ptr [esi + gTimers+0x8]
             jmp L00401206
     L004011ea:
-            mov eax, dword ptr ds:[gTimers_max_index]
+            mov eax, dword ptr [gTimers_max_index]
             xor ecx, ecx
             mov esi, eax
             mov edx, eax
@@ -385,67 +439,67 @@ void C2_NAKED C2_HOOK_FASTCALL MungeAIWorld(tU32 pFrame_period) {
             sub esi, eax
             shl esi, 2
             shl edx, 3
-            mov cl, byte ptr [esi + 0x6b7608]
+            mov cl, byte ptr [esi + gTimers+0x8]
     L00401206:
             sub edx, eax
             add ecx, edx
-            lea edi, [ecx*4 + 0x6b7604]
+            lea edi, [ecx*4 + gTimers+0x4]
             call PDGetMicroseconds
-            mov edx, dword ptr [esi + 0x6b760c]
+            mov edx, dword ptr [esi + gTimers+0xc]
             mov ecx, dword ptr [edi]
             sub eax, edx
             add ecx, eax
             mov dword ptr [edi], ecx
             call PDGetMicroseconds
-            mov edi, dword ptr ds:[gTimers_stack_size]
-            mov dword ptr ds:[0x6b76b4], eax
+            mov edi, dword ptr [gTimers_stack_size]
+            mov dword ptr [gTimers+0xb4], eax
             inc edi
-            mov dword ptr ds:[gTimers_stack_size], edi
+            mov dword ptr [gTimers_stack_size], edi
             call DoDronePerGameFrameStuff
-            mov eax, dword ptr ds:[0x6b76b0]
+            mov eax, dword ptr [gTimers+0xb0]
             and eax, 0xff
-            lea esi, [eax*4 + 0x6b76ac]
+            lea esi, [eax*4 + gTimers+0xac]
             call PDGetMicroseconds
-            mov edx, dword ptr ds:[0x6b76b4]
+            mov edx, dword ptr [gTimers+0xb4]
             mov ecx, dword ptr [esi]
             sub eax, edx
             add ecx, eax
-            mov eax, dword ptr ds:[gTimers_stack_size]
+            mov eax, dword ptr [gTimers_stack_size]
             cmp eax, 1
             mov dword ptr [esi], ecx
             jle L00401296
             call PDGetMicroseconds
-            mov edx, dword ptr ds:[gTimers_stack_size]
-            mov ecx, dword ptr [edx*4 + 0x6b75dc]
+            mov edx, dword ptr [gTimers_stack_size]
+            mov ecx, dword ptr [edx*4 + gMatchData_006b75dc]
             mov esi, ecx
             shl esi, 3
             sub esi, ecx
-            mov ecx, dword ptr ds:[gTimers_max_index]
-            mov dword ptr [esi*4 + 0x6b760c], eax
+            mov ecx, dword ptr [gTimers_max_index]
+            mov dword ptr [esi*4 + gTimers+0xc], eax
             jmp L004012b5
     L00401296:
             call PDGetMicroseconds
-            mov ecx, dword ptr ds:[gTimers_max_index]
+            mov ecx, dword ptr [gTimers_max_index]
             mov edx, ecx
             shl edx, 3
             sub edx, ecx
-            mov dword ptr [edx*4 + 0x6b760c], eax
-            mov edx, dword ptr ds:[gTimers_stack_size]
+            mov dword ptr [edx*4 + gTimers+0xc], eax
+            mov edx, dword ptr [gTimers_stack_size]
     L004012b5:
             dec edx
-            mov dword ptr ds:[gTimers_stack_size], edx
+            mov dword ptr [gTimers_stack_size], edx
             mov dword ptr [edx*4 + gTimers_stack], 7
             je L004012f8
-            mov eax, dword ptr [edx*4 + 0x6b75dc]
+            mov eax, dword ptr [edx*4 + gMatchData_006b75dc]
             xor ecx, ecx
             lea esi, [eax*8]
             lea edx, [eax*8]
             sub esi, eax
             sub edx, eax
             shl esi, 2
-            mov cl, byte ptr [esi + 0x6b7608]
+            mov cl, byte ptr [esi + gTimers+0x8]
             add ecx, edx
-            lea edi, [ecx*4 + 0x6b7604]
+            lea edi, [ecx*4 + gTimers+0x4]
             jmp L0040131a
     L004012f8:
             mov esi, ecx
@@ -455,59 +509,62 @@ void C2_NAKED C2_HOOK_FASTCALL MungeAIWorld(tU32 pFrame_period) {
             xor eax, eax
             shl esi, 2
             shl edx, 3
-            mov al, byte ptr [esi + 0x6b7608]
+            mov al, byte ptr [esi + gTimers+0x8]
             sub edx, ecx
             add eax, edx
-            lea edi, [eax*4 + 0x6b7604]
+            lea edi, [eax*4 + gTimers+0x4]
     L0040131a:
             call PDGetMicroseconds
-            mov edx, dword ptr [esi + 0x6b760c]
+            mov edx, dword ptr [esi + gTimers+0xc]
             mov ecx, dword ptr [edi]
             sub eax, edx
             add ecx, eax
             mov dword ptr [edi], ecx
             call PDGetMicroseconds
-            mov edi, dword ptr ds:[gTimers_stack_size]
+            mov edi, dword ptr [gTimers_stack_size]
             mov ecx, ebx
             inc edi
-            mov dword ptr ds:[0x6b76d0], eax
-            mov dword ptr ds:[gTimers_stack_size], edi
+            mov dword ptr [gTimers+0xd0], eax
+            mov dword ptr [gTimers_stack_size], edi
             call MungeOpponents
-            mov eax, dword ptr ds:[0x6b76cc]
+            mov eax, dword ptr [gTimers+0xcc]
             and eax, 0xff
-            lea esi, [eax*4 + 0x6b76c8]
+            lea esi, [eax*4 + gTimers+0xc8]
             call PDGetMicroseconds
-            mov edx, dword ptr ds:[0x6b76d0]
+            mov edx, dword ptr [gTimers+0xd0]
             mov ecx, dword ptr [esi]
             sub eax, edx
             add ecx, eax
-            mov eax, dword ptr ds:[gTimers_stack_size]
+            mov eax, dword ptr [gTimers_stack_size]
             cmp eax, 1
             mov dword ptr [esi], ecx
             jle L0040138d
             call PDGetMicroseconds
-            mov ecx, dword ptr ds:[gTimers_stack_size]
-            mov ecx, dword ptr [ecx*4 + 0x6b75dc]
+            mov ecx, dword ptr [gTimers_stack_size]
+            mov ecx, dword ptr [ecx*4 + gMatchData_006b75dc]
             jmp L00401398
     L0040138d:
             call PDGetMicroseconds
-            mov ecx, dword ptr ds:[gTimers_max_index]
+            mov ecx, dword ptr [gTimers_max_index]
     L00401398:
             mov edx, ecx
-            mov dword ptr ds:[gFirst_drone_processing], 0
+            mov dword ptr [gFirst_drone_processing], 0
             shl edx, 3
             sub edx, ecx
-            mov ecx, dword ptr ds:[gTime_stamp_for_this_munging]
-            mov dword ptr [edx*4 + 0x6b760c], eax
-            mov eax, dword ptr ds:[gTimers_stack_size]
+            mov ecx, dword ptr [gTime_stamp_for_this_munging]
+            mov dword ptr [edx*4 + gTimers+0xc], eax
+            mov eax, dword ptr [gTimers_stack_size]
             dec eax
-            mov dword ptr ds:[gTimers_stack_size], eax
+            mov dword ptr [gTimers_stack_size], eax
             call ProcessShitMines
             pop edi
             pop esi
             pop ebx
             add esp, 8
             ret
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -598,7 +655,7 @@ void C2_NAKED C2_HOOK_FASTCALL CalculateCameraStuff(tU32 pCamera_period) {
             mov dword ptr [esp + 4], eax
             fmul dword ptr [esp + 4]
             fxch st(1)
-            fcomp qword ptr [gDouble_0058a068+0x2d0]
+            fcomp qword ptr [gMatchDouble_0058a338]
             fmul dword ptr [esp + 4]
             fnstsw ax
             test ah, 0x41
@@ -1270,7 +1327,7 @@ tRace_result C2_NAKED C2_HOOK_FASTCALL MainGameLoop(void) {
 #else
     __asm {
             sub esp, 0x128
-            mov eax, dword ptr ds:[gTimer]
+            mov eax, dword ptr [gTimer]
             push ebx
             push ebp
             push esi
@@ -1278,45 +1335,45 @@ tRace_result C2_NAKED C2_HOOK_FASTCALL MainGameLoop(void) {
             xor edi, edi
             or esi, 0xffffffff
             mov dword ptr [esp + 0x14], edi
-            mov dword ptr ds:[gCar_to_view], 0x75bc2c
-            mov dword ptr ds:[gCar_to_view_id], edi
-            mov dword ptr ds:[gOld_camera_time], edi
-            mov dword ptr ds:[gLast_net_auto_increase_credits], edi
-            mov dword ptr ds:[gLast_credit_headup__mainloop], edi
-            mov dword ptr ds:[gLast_time_headup], eax
-            mov dword ptr ds:[gRace_bonus_headup], esi
-            mov dword ptr ds:[gTime_bonus_headup], esi
-            mov dword ptr ds:[gTime_bonus_start], edi
-            mov dword ptr ds:[gTime_bonus_state], edi
+            mov dword ptr [gCar_to_view], 0x75bc2c
+            mov dword ptr [gCar_to_view_id], edi
+            mov dword ptr [gOld_camera_time], edi
+            mov dword ptr [gLast_net_auto_increase_credits], edi
+            mov dword ptr [gLast_credit_headup__mainloop], edi
+            mov dword ptr [gLast_time_headup], eax
+            mov dword ptr [gRace_bonus_headup], esi
+            mov dword ptr [gTime_bonus_headup], esi
+            mov dword ptr [gTime_bonus_start], edi
+            mov dword ptr [gTime_bonus_state], edi
             call ARMainLoopStart
             call PDGetTotalTime
-            mov dword ptr ds:[gLast_tick_count], eax
-            mov dword ptr ds:[gActual_last_tick_count], eax
-            mov dword ptr ds:[gFrame_period], 0x64
-            mov dword ptr ds:[gQueued_wasted_messages_count], edi
-            mov dword ptr ds:[gWasted_flash_state], edi
-            mov dword ptr ds:[gWasted_last_flash], edi
+            mov dword ptr [gLast_tick_count], eax
+            mov dword ptr [gActual_last_tick_count], eax
+            mov dword ptr [gFrame_period], 0x64
+            mov dword ptr [gQueued_wasted_messages_count], edi
+            mov dword ptr [gWasted_flash_state], edi
+            mov dword ptr [gWasted_last_flash], edi
             call RevertPalette
-            mov eax, dword ptr ds:[gNet_mode]
-            mov dword ptr ds:[gHost_abandon_game], edi
+            mov eax, dword ptr [gNet_mode]
+            mov dword ptr [gHost_abandon_game], edi
             cmp eax, edi
-            mov dword ptr ds:[gNo_races_yet], edi
-            mov dword ptr ds:[gRace_over_reason], esi
-            mov dword ptr ds:[gFLOAT_0068c778], edi
-            mov dword ptr ds:[gNo_credits_APO_restore], edi
-            mov dword ptr ds:[gReceived_game_scores], edi
+            mov dword ptr [gNo_races_yet], edi
+            mov dword ptr [gRace_over_reason], esi
+            mov dword ptr [gFLOAT_0068c778], edi
+            mov dword ptr [gNo_credits_APO_restore], edi
+            mov dword ptr [gReceived_game_scores], edi
             mov ebx, 1
             jne L00492a44
-            mov dword ptr ds:[0x75bbac], ebx
+            mov dword ptr [gProgram_state+0x2c], ebx
     L00492a44:
-            mov dword ptr ds:[gCredits_post_race], esi
+            mov dword ptr [gCredits_post_race], esi
             call ShowSpecialVolumesIfRequ
-            mov ecx, dword ptr ds:[gNet_mode]
+            mov ecx, dword ptr [gNet_mode]
             mov eax, 2
             cmp ecx, eax
-            mov dword ptr ds:[0x75bba8], ebx
+            mov dword ptr [gProgram_state+0x28], ebx
             jne L00492a6d
-            mov ecx, dword ptr ds:[gCurrent_net_game]
+            mov ecx, dword ptr [gCurrent_net_game]
             mov dword ptr [ecx + 0x40], eax
     L00492a6d:
             mov ecx, 6
@@ -1324,28 +1381,38 @@ tRace_result C2_NAKED C2_HOOK_FASTCALL MainGameLoop(void) {
             mov ecx, offset gCurrent_race
             call GetAverageGridPosition
             call ForceRebuildActiveCarList
-            mov edx, 0x658998
+            mov edx, offset gMatchFloat_00658998
             xor ecx, ecx
             call PrintMemoryDump
             mov ecx, offset gCamera_period
             call UpdateFramePeriod
-            mov ecx, dword ptr ds:[gCamera_period]
-            mov dword ptr ds:[gPrev_camera_position], 0x447a0000
-            mov dword ptr ds:[0x68c73c], 0x447a0000
-            mov dword ptr ds:[0x68c740], 0x447a0000
+            mov ecx, dword ptr [gCamera_period]
+            mov dword ptr [gPrev_camera_position], 0x447a0000
+            mov dword ptr [gPrev_camera_position+0x4], 0x447a0000
+            mov dword ptr [gPrev_camera_position+0x8], 0x447a0000
             call CalculateCameraStuff
-            call dword ptr ds:[0x5890a0]
+            _emit 0xff
+        _emit 0x15
+        _emit 0xa0
+        _emit 0x90
+        _emit 0x58
+        _emit 0x00
             mov ebx, eax
             push 0x74
             push ebx
-            call dword ptr ds:[0x589078]
+            _emit 0xff
+        _emit 0x15
+        _emit 0x78
+        _emit 0x90
+        _emit 0x58
+        _emit 0x00
             test eax, eax
             jne L00492b58
             cmp word ptr [ebx + 0x72], 0x4948
             jne L00492b58
             cmp ebx, edi
             je L00492b58
-            mov ecx, dword ptr ds:[gPage_size]
+            mov ecx, dword ptr [gPage_size]
     L00492aec:
             lea esi, [ebx + 0x74]
     L00492aef:
@@ -1359,9 +1426,14 @@ tRace_result C2_NAKED C2_HOOK_FASTCALL MainGameLoop(void) {
             lea edi, [ebp - 4]
             jne L00492b1d
             push offset gSystem_info
-            call dword ptr ds:[0x589150]
-            mov ecx, dword ptr ds:[gSystem_info]
-            mov dword ptr ds:[gPage_size], ecx
+            _emit 0xff
+        _emit 0x15
+        _emit 0x50
+        _emit 0x91
+        _emit 0x58
+        _emit 0x00
+            mov ecx, dword ptr [gSystem_info]
+            mov dword ptr [gPage_size], ecx
     L00492b1d:
             mov eax, ecx
             shl eax, 4
@@ -1376,7 +1448,7 @@ tRace_result C2_NAKED C2_HOOK_FASTCALL MainGameLoop(void) {
             mov byte ptr [ecx], dl
             mov cl, byte ptr [eax + esi + 0x10]
             mov byte ptr [eax + esi + 0x10], cl
-            mov ecx, dword ptr ds:[gPage_size]
+            mov ecx, dword ptr [gPage_size]
             add eax, ecx
             cmp eax, edi
             jb L00492b26
@@ -1390,21 +1462,26 @@ tRace_result C2_NAKED C2_HOOK_FASTCALL MainGameLoop(void) {
             jne L00492aec
     L00492b58:
             push 0x5dc
-            call dword ptr ds:[0x589094]
+            _emit 0xff
+        _emit 0x15
+        _emit 0x94
+        _emit 0x90
+        _emit 0x58
+        _emit 0x00
             call PDGetTotalTime
-            mov dword ptr ds:[gRace_start], eax
+            mov dword ptr [gRace_start], eax
             call Timers_Init
-            cmp dword ptr ds:[gWait_for_it], edi
+            cmp dword ptr [gWait_for_it], edi
             je L00492b85
             call GetTotalTime
-            add dword ptr ds:[gWait_for_it], eax
+            add dword ptr [gWait_for_it], eax
     L00492b85:
             call ClearEntireScreen
             call ResetPalette
     L00492b8f:
             call Timers_StartFrame
             call EdgeTriggerModeOff
-            mov eax, dword ptr ds:[gPed_676914]
+            mov eax, dword ptr [gPed_676914]
             test eax, eax
             jne L00492bac
             mov ecx, offset gCamera_period
@@ -1418,23 +1495,23 @@ tRace_result C2_NAKED C2_HOOK_FASTCALL MainGameLoop(void) {
             call CheckSystemKeys
             call InitialiseExtraRenders
             call NetReceiveAndProcessMessages
-            mov eax, dword ptr ds:[gHost_abandon_game]
+            mov eax, dword ptr [gHost_abandon_game]
             mov esi, 2
             test eax, eax
             jne L00493f04
-            cmp dword ptr ds:[0x75bc24], esi
+            cmp dword ptr [gProgram_state+0xa4], esi
             je L00493f04
-            mov eax, dword ptr ds:[gNet_mode]
+            mov eax, dword ptr [gNet_mode]
             test eax, eax
             je L00492c22
-            mov edx, dword ptr ds:[gCurrent_net_game]
+            mov edx, dword ptr [gCurrent_net_game]
             cmp dword ptr [edx + 0x74], 7
             jne L00492c22
-            mov eax, dword ptr ds:[gThis_net_player_index]
-            mov ecx, dword ptr ds:[gIt_or_fox]
+            mov eax, dword ptr [gThis_net_player_index]
+            mov ecx, dword ptr [gIt_or_fox]
             cmp eax, ecx
             jne L00492c22
-            cmp dword ptr ds:[gMap_view], esi
+            cmp dword ptr [gMap_view], esi
             jne L00492c22
             call ToggleMap
     L00492c22:
@@ -1449,13 +1526,13 @@ tRace_result C2_NAKED C2_HOOK_FASTCALL MainGameLoop(void) {
             test esi, esi
             je L00492c8a
             call PDGetTotalTime
-            mov ecx, dword ptr ds:[gPrev_task_switched_message]
+            mov ecx, dword ptr [gPrev_task_switched_message]
             add ecx, 0x3e8
             cmp eax, ecx
             jbe L00492ca2
             call GetTotalTime
             mov ecx, 0x8b
-            mov dword ptr ds:[gPrev_task_switched_message], eax
+            mov dword ptr [gPrev_task_switched_message], eax
             call GetMiscString
             xor edx, edx
             mov ecx, 4
@@ -1465,25 +1542,25 @@ tRace_result C2_NAKED C2_HOOK_FASTCALL MainGameLoop(void) {
             call NewTextHeadupSlot
             jmp L00492ca2
     L00492c8a:
-            mov eax, dword ptr ds:[gWindow_inactive]
+            mov eax, dword ptr [gWindow_inactive]
             test eax, eax
             je L00492ca2
             mov ecx, 4
             call ClearHeadupSlot
             call ClearQueuedHeadups
     L00492ca2:
-            mov eax, dword ptr ds:[gPed_676914]
-            mov dword ptr ds:[gWindow_inactive], esi
+            mov eax, dword ptr [gPed_676914]
+            mov dword ptr [gWindow_inactive], esi
             test eax, eax
             jne L0049305b
-            mov ecx, dword ptr ds:[gFrame_period]
+            mov ecx, dword ptr [gFrame_period]
             call MungeAIWorld
-            mov ecx, dword ptr ds:[gFrame_period]
+            mov ecx, dword ptr [gFrame_period]
             call PollCarControls
-            mov eax, dword ptr ds:[gPed_676914]
+            mov eax, dword ptr [gPed_676914]
             test eax, eax
             jne L0049305b
-            mov ebp, dword ptr ds:[gNum_active_cars]
+            mov ebp, dword ptr [gNum_active_cars]
             xor ecx, ecx
             xor esi, esi
             test ebp, ebp
@@ -1512,21 +1589,21 @@ tRace_result C2_NAKED C2_HOOK_FASTCALL MainGameLoop(void) {
     L00492d11:
             mov ebx, 5
     L00492d16:
-            mov eax, dword ptr ds:[gTimers_stack_size]
-            mov dword ptr ds:[gNum_active_cars], esi
+            mov eax, dword ptr [gTimers_stack_size]
+            mov dword ptr [gNum_active_cars], esi
             test eax, eax
             mov dword ptr [eax*4 + gTimers_stack], ebx
             je L00492d50
-            mov eax, dword ptr [eax*4 + 0x6b75dc]
+            mov eax, dword ptr [eax*4 + gMatchData_006b75dc]
             lea esi, [eax*8]
             lea ecx, [eax*8]
             sub esi, eax
             shl esi, 2
             xor edx, edx
-            mov dl, byte ptr [esi + 0x6b7608]
+            mov dl, byte ptr [esi + gTimers+0x8]
             jmp L00492d6c
     L00492d50:
-            mov eax, dword ptr ds:[gTimers_max_index]
+            mov eax, dword ptr [gTimers_max_index]
             xor edx, edx
             mov esi, eax
             mov ecx, eax
@@ -1534,68 +1611,68 @@ tRace_result C2_NAKED C2_HOOK_FASTCALL MainGameLoop(void) {
             sub esi, eax
             shl esi, 2
             shl ecx, 3
-            mov dl, byte ptr [esi + 0x6b7608]
+            mov dl, byte ptr [esi + gTimers+0x8]
     L00492d6c:
             sub ecx, eax
             add edx, ecx
-            lea edi, [edx*4 + 0x6b7604]
+            lea edi, [edx*4 + gTimers+0x4]
             call PDGetMicroseconds
-            mov edx, dword ptr [esi + 0x6b760c]
+            mov edx, dword ptr [esi + gTimers+0xc]
             mov ecx, dword ptr [edi]
             sub eax, edx
             add ecx, eax
             mov dword ptr [edi], ecx
             call PDGetMicroseconds
-            mov edi, dword ptr ds:[gTimers_stack_size]
-            mov ecx, dword ptr ds:[gFrame_period]
+            mov edi, dword ptr [gTimers_stack_size]
+            mov ecx, dword ptr [gFrame_period]
             inc edi
-            mov dword ptr ds:[0x6b7698], eax
-            mov dword ptr ds:[gTimers_stack_size], edi
+            mov dword ptr [gTimers+0x98], eax
+            mov dword ptr [gTimers_stack_size], edi
             call MungePedestrians
-            mov edx, dword ptr ds:[0x6b7694]
+            mov edx, dword ptr [gTimers+0x94]
             and edx, 0xff
-            lea esi, [edx*4 + 0x6b7690]
+            lea esi, [edx*4 + gTimers+0x90]
             call PDGetMicroseconds
-            mov edx, dword ptr ds:[0x6b7698]
+            mov edx, dword ptr [gTimers+0x98]
             mov ecx, dword ptr [esi]
             sub eax, edx
             add ecx, eax
-            mov eax, dword ptr ds:[gTimers_stack_size]
+            mov eax, dword ptr [gTimers_stack_size]
             cmp eax, 1
             mov dword ptr [esi], ecx
             jle L00492df0
             call PDGetMicroseconds
-            mov ecx, dword ptr ds:[gTimers_stack_size]
-            mov ecx, dword ptr [ecx*4 + 0x6b75dc]
+            mov ecx, dword ptr [gTimers_stack_size]
+            mov ecx, dword ptr [ecx*4 + gMatchData_006b75dc]
             jmp L00492dfb
     L00492df0:
             call PDGetMicroseconds
-            mov ecx, dword ptr ds:[gTimers_max_index]
+            mov ecx, dword ptr [gTimers_max_index]
     L00492dfb:
             mov edx, ecx
             shl edx, 3
             sub edx, ecx
-            mov ecx, dword ptr ds:[gFrame_period]
-            mov dword ptr [edx*4 + 0x6b760c], eax
-            mov edx, dword ptr ds:[gTimers_stack_size]
+            mov ecx, dword ptr [gFrame_period]
+            mov dword ptr [edx*4 + gTimers+0xc], eax
+            mov edx, dword ptr [gTimers_stack_size]
             dec edx
-            mov dword ptr ds:[gTimers_stack_size], edx
+            mov dword ptr [gTimers_stack_size], edx
             call ControlOurCar
-            mov eax, dword ptr ds:[gTimers_stack_size]
+            mov eax, dword ptr [gTimers_stack_size]
             xor ebx, ebx
             cmp eax, ebx
             mov dword ptr [eax*4 + gTimers_stack], 4
             je L00492e5b
-            mov eax, dword ptr [eax*4 + 0x6b75dc]
+            mov eax, dword ptr [eax*4 + gMatchData_006b75dc]
             lea esi, [eax*8]
             lea edx, [eax*8]
             sub esi, eax
             shl esi, 2
             xor ecx, ecx
-            mov cl, byte ptr [esi + 0x6b7608]
+            mov cl, byte ptr [esi + gTimers+0x8]
             jmp L00492e77
     L00492e5b:
-            mov eax, dword ptr ds:[gTimers_max_index]
+            mov eax, dword ptr [gTimers_max_index]
             xor ecx, ecx
             mov esi, eax
             mov edx, eax
@@ -1603,72 +1680,72 @@ tRace_result C2_NAKED C2_HOOK_FASTCALL MainGameLoop(void) {
             sub esi, eax
             shl esi, 2
             shl edx, 3
-            mov cl, byte ptr [esi + 0x6b7608]
+            mov cl, byte ptr [esi + gTimers+0x8]
     L00492e77:
             sub edx, eax
             add ecx, edx
-            lea edi, [ecx*4 + 0x6b7604]
+            lea edi, [ecx*4 + gTimers+0x4]
             call PDGetMicroseconds
-            mov edx, dword ptr [esi + 0x6b760c]
+            mov edx, dword ptr [esi + gTimers+0xc]
             mov ecx, dword ptr [edi]
             sub eax, edx
             add ecx, eax
             mov dword ptr [edi], ecx
             call PDGetMicroseconds
-            mov ebp, dword ptr ds:[gTimers_stack_size]
-            mov ecx, dword ptr ds:[gLast_tick_count]
-            mov edi, dword ptr ds:[gRace_start]
-            mov edx, dword ptr ds:[gFrame_period]
+            mov ebp, dword ptr [gTimers_stack_size]
+            mov ecx, dword ptr [gLast_tick_count]
+            mov edi, dword ptr [gRace_start]
+            mov edx, dword ptr [gFrame_period]
             inc ebp
             sub ecx, edi
-            mov dword ptr ds:[0x6b767c], eax
-            mov dword ptr ds:[gTimers_stack_size], ebp
+            mov dword ptr [gTimers+0x7c], eax
+            mov dword ptr [gTimers_stack_size], ebp
             call ApplyPhysicsToCars
-            mov eax, dword ptr ds:[0x6b7678]
+            mov eax, dword ptr [gTimers+0x78]
             and eax, 0xff
-            lea esi, [eax*4 + 0x6b7674]
+            lea esi, [eax*4 + gTimers+0x74]
             call PDGetMicroseconds
-            mov edx, dword ptr ds:[0x6b767c]
+            mov edx, dword ptr [gTimers+0x7c]
             mov ecx, dword ptr [esi]
             sub eax, edx
             mov ebp, 1
             add ecx, eax
-            mov eax, dword ptr ds:[gTimers_stack_size]
+            mov eax, dword ptr [gTimers_stack_size]
             cmp eax, ebp
             mov dword ptr [esi], ecx
             jle L00492f0b
             call PDGetMicroseconds
-            mov ecx, dword ptr ds:[gTimers_stack_size]
-            mov ecx, dword ptr [ecx*4 + 0x6b75dc]
+            mov ecx, dword ptr [gTimers_stack_size]
+            mov ecx, dword ptr [ecx*4 + gMatchData_006b75dc]
             jmp L00492f16
     L00492f0b:
             call PDGetMicroseconds
-            mov ecx, dword ptr ds:[gTimers_max_index]
+            mov ecx, dword ptr [gTimers_max_index]
     L00492f16:
             mov edx, ecx
             shl edx, 3
             sub edx, ecx
-            mov ecx, dword ptr ds:[gFrame_period]
-            mov dword ptr [edx*4 + 0x6b760c], eax
-            mov edx, dword ptr ds:[gTimers_stack_size]
+            mov ecx, dword ptr [gFrame_period]
+            mov dword ptr [edx*4 + gTimers+0xc], eax
+            mov edx, dword ptr [gTimers_stack_size]
             dec edx
-            mov dword ptr ds:[gTimers_stack_size], edx
+            mov dword ptr [gTimers_stack_size], edx
             call MungeSomeOtherCarGraphics
             call PipeCarPositions
-            mov eax, dword ptr ds:[gTimers_stack_size]
+            mov eax, dword ptr [gTimers_stack_size]
             cmp eax, ebx
             mov dword ptr [eax*4 + gTimers_stack], 8
             je L00492f79
-            mov eax, dword ptr [eax*4 + 0x6b75dc]
+            mov eax, dword ptr [eax*4 + gMatchData_006b75dc]
             lea esi, [eax*8]
             lea edx, [eax*8]
             sub esi, eax
             shl esi, 2
             xor ecx, ecx
-            mov cl, byte ptr [esi + 0x6b7608]
+            mov cl, byte ptr [esi + gTimers+0x8]
             jmp L00492f95
     L00492f79:
-            mov eax, dword ptr ds:[gTimers_max_index]
+            mov eax, dword ptr [gTimers_max_index]
             xor ecx, ecx
             mov esi, eax
             mov edx, eax
@@ -1676,90 +1753,94 @@ tRace_result C2_NAKED C2_HOOK_FASTCALL MainGameLoop(void) {
             sub esi, eax
             shl esi, 2
             shl edx, 3
-            mov cl, byte ptr [esi + 0x6b7608]
+            mov cl, byte ptr [esi + gTimers+0x8]
     L00492f95:
             sub edx, eax
             add ecx, edx
-            lea edi, [ecx*4 + 0x6b7604]
+            lea edi, [ecx*4 + gTimers+0x4]
             call PDGetMicroseconds
-            mov edx, dword ptr [esi + 0x6b760c]
+            mov edx, dword ptr [esi + gTimers+0xc]
             mov ecx, dword ptr [edi]
             sub eax, edx
             add ecx, eax
             mov dword ptr [edi], ecx
             call PDGetMicroseconds
-            mov edi, dword ptr ds:[gTimers_stack_size]
-            mov dword ptr ds:[0x6b76ec], eax
+            mov edi, dword ptr [gTimers_stack_size]
+            mov dword ptr [gTimers+0xec], eax
             inc edi
-            mov dword ptr ds:[gTimers_stack_size], edi
+            mov dword ptr [gTimers_stack_size], edi
             call CrushBendFlapRend
-            mov eax, dword ptr ds:[0x6b76e8]
+            mov eax, dword ptr [gTimers+0xe8]
             and eax, 0xff
-            lea esi, [eax*4 + 0x6b76e4]
+            lea esi, [eax*4 + gTimers+0xe4]
             call PDGetMicroseconds
-            mov edx, dword ptr ds:[0x6b76ec]
+            mov edx, dword ptr [gTimers+0xec]
             mov ecx, dword ptr [esi]
             sub eax, edx
             add ecx, eax
-            mov eax, dword ptr ds:[gTimers_stack_size]
+            mov eax, dword ptr [gTimers_stack_size]
             cmp eax, ebp
             mov dword ptr [esi], ecx
             jle L00493010
             call PDGetMicroseconds
-            mov ecx, dword ptr ds:[gTimers_stack_size]
-            mov ecx, dword ptr [ecx*4 + 0x6b75dc]
+            mov ecx, dword ptr [gTimers_stack_size]
+            mov ecx, dword ptr [ecx*4 + gMatchData_006b75dc]
             jmp L0049301b
     L00493010:
             call PDGetMicroseconds
-            mov ecx, dword ptr ds:[gTimers_max_index]
+            mov ecx, dword ptr [gTimers_max_index]
     L0049301b:
             mov edx, ecx
             shl edx, 3
             sub edx, ecx
-            mov ecx, dword ptr ds:[gTimers_stack_size]
+            mov ecx, dword ptr [gTimers_stack_size]
             dec ecx
-            mov dword ptr [edx*4 + 0x6b760c], eax
-            mov dword ptr ds:[gTimers_stack_size], ecx
+            mov dword ptr [edx*4 + gTimers+0xc], eax
+            mov dword ptr [gTimers_stack_size], ecx
             call DoNetGameManagement
-            mov eax, dword ptr ds:[gLast_tick_count]
-            mov ecx, dword ptr ds:[gFrame_period]
+            mov eax, dword ptr [gLast_tick_count]
+            mov ecx, dword ptr [gFrame_period]
             add ecx, eax
-            mov eax, dword ptr ds:[gRace_start]
+            mov eax, dword ptr [gRace_start]
             sub ecx, eax
             call CheckRecoveryOfCars
             call NetSendMessageStacks
             jmp L0049306d
     L0049305b:
-            mov ecx, dword ptr ds:[gFrame_period]
+            mov ecx, dword ptr [gFrame_period]
             call DoActionReplay
             xor ebx, ebx
             mov ebp, 1
     L0049306d:
-            mov ecx, dword ptr ds:[gCamera_period]
+            mov ecx, dword ptr [gCamera_period]
             call PollCameraControls
             call MungeEngineNoise
-            mov ecx, dword ptr ds:[gCamera_period]
+            mov ecx, dword ptr [gCamera_period]
             call CalculateCameraStuff
             call MungeNapalm
-            cmp dword ptr ds:[gPed_676914], ebx
+            cmp dword ptr [gPed_676914], ebx
             jne L004930b2
-            mov ecx, dword ptr ds:[gFrame_period]
+            mov ecx, dword ptr [gFrame_period]
             call DoPowerupPeriodics
-            cmp dword ptr ds:[gPed_676914], ebx
+            cmp dword ptr [gPed_676914], ebx
             jne L004930b2
             call CheckCheckpoints
             call MungeEnvironmentalSound
     L004930b2:
             call ChangingView
-            mov ecx, dword ptr ds:[gFrame_period]
+            mov ecx, dword ptr [gFrame_period]
             call MungeCarGraphics
             call FunkThoseTronics
             call GrooveThoseDelics
-            mov ecx, dword ptr ds:[gFrame_period]
+            mov ecx, dword ptr [gFrame_period]
             call DoWheelDamage
             call PDGetTotalTime
             mov edi, eax
-            mov eax, dword ptr ds:[0x68c734]
+            _emit 0xa1
+        _emit 0x34
+        _emit 0xc7
+        _emit 0x68
+        _emit 0x00
             cmp edi, eax
             je L00493144
             mov ecx, edi
@@ -1784,49 +1865,54 @@ tRace_result C2_NAKED C2_HOOK_FASTCALL MainGameLoop(void) {
             shr eax, 0x1f
             add edx, eax
             mov eax, 0x68c790
-            mov dword ptr ds:[gFrame_rate], edx
+            mov dword ptr [gFrame_rate], edx
     L00493129:
             mov ecx, dword ptr [eax + 4]
             mov dword ptr [eax], ecx
             add eax, 4
-            cmp eax, 0x68c804
+            cmp eax, offset gMatchData_0068c804
             jl L00493129
-            mov dword ptr ds:[0x68c804], esi
-            mov dword ptr ds:[0x68c734], edi
+            mov dword ptr [gMatchData_0068c804], esi
+            _emit 0x89
+        _emit 0x3d
+        _emit 0x34
+        _emit 0xc7
+        _emit 0x68
+        _emit 0x00
     L00493144:
-            mov edx, dword ptr ds:[gCamera_period]
-            mov ecx, 0x75bc2c
+            mov edx, dword ptr [gCamera_period]
+            mov ecx, offset gProgram_state+0xac
             call CameraBugFix
-            cmp dword ptr ds:[gPed_676914], ebx
+            cmp dword ptr [gPed_676914], ebx
             jne L00493a06
             mov ecx, 3
             call ClearHeadupSlot
             call MungeJoystickHeadups
-            mov edx, dword ptr ds:[gFrame_period]
-            mov ebp, dword ptr ds:[gProgram_state]
+            mov edx, dword ptr [gFrame_period]
+            mov ebp, dword ptr [gProgram_state]
             mov dword ptr [esp + 0x30], edx
             mov dword ptr [esp + 0x34], ebx
             fild qword ptr [esp + 0x30]
             mov dword ptr [esp + 0x10], ebp
             fild dword ptr [esp + 0x10]
-            fisub dword ptr ds:[gLast_credit_headup__mainloop]
+            fisub dword ptr [gLast_credit_headup__mainloop]
             fabs
             fdiv st(0), st(1)
-            fcomp qword ptr ds:[0x58a2e8]
+            fcomp qword ptr [gMatchDouble_0058a2e8]
             fnstsw ax
             test ah, 0x41
             jne L00493210
-            mov ecx, dword ptr ds:[gLast_credit_headup__mainloop]
+            mov ecx, dword ptr [gLast_credit_headup__mainloop]
             mov eax, ebp
             sub eax, ecx
             cmp eax, ebx
             mov dword ptr [esp + 0x10], eax
             jle L004931e1
-            fild dword ptr ds:[gLast_credit_headup__mainloop]
+            fild dword ptr [gLast_credit_headup__mainloop]
             fild dword ptr [esp + 0x10]
-            fsub qword ptr ds:[0x58a2f0]
+            fsub qword ptr [gMatchDouble_0058a2f0]
             fmul st(0), st(2)
-            fmul qword ptr ds:[0x58a2f8]
+            fmul qword ptr [gMatchDouble_0058a2f8]
             fsubp st(1), st(0)
             call _ftol
             mov ebp, eax
@@ -1834,13 +1920,13 @@ tRace_result C2_NAKED C2_HOOK_FASTCALL MainGameLoop(void) {
             mov dword ptr [esp + 0x10], ebp
             jmp L00493212
     L004931e1:
-            fild dword ptr ds:[gLast_credit_headup__mainloop]
+            fild dword ptr [gLast_credit_headup__mainloop]
             sub ecx, ebp
             mov dword ptr [esp + 0x10], ecx
             fild dword ptr [esp + 0x10]
-            fsub qword ptr ds:[0x58a2f0]
+            fsub qword ptr [gMatchDouble_0058a2f0]
             fmul st(0), st(2)
-            fmul qword ptr ds:[0x58a300]
+            fmul qword ptr [gMatchDouble_0058a300]
             fsubp st(1), st(0)
             call _ftol
             mov ebp, eax
@@ -1850,40 +1936,40 @@ tRace_result C2_NAKED C2_HOOK_FASTCALL MainGameLoop(void) {
     L00493210:
             fstp st(0)
     L00493212:
-            cmp dword ptr ds:[gNet_mode], ebx
+            cmp dword ptr [gNet_mode], ebx
             je L00493340
-            cmp dword ptr ds:[gCountdown], ebx
+            cmp dword ptr [gCountdown], ebx
             jne L00493340
-            mov eax, dword ptr ds:[gCurrent_net_game]
+            mov eax, dword ptr [gCurrent_net_game]
             mov eax, dword ptr [eax + 0x74]
             shl eax, 2
             cmp dword ptr [eax + gNet_auto_increase_credits_dt], ebx
             je L00493340
             fild dword ptr [esp + 0x10]
             fst dword ptr [esp + 0x1c]
-            fcomp dword ptr [eax + 0x7634cc]
+            fcomp dword ptr [eax + gRecovery_cost+0xc]
             fnstsw ax
             test ah, 1
             je L00493340
             call PDGetTotalTime
-            mov edx, dword ptr ds:[gLast_net_auto_increase_credits]
-            mov ecx, dword ptr ds:[gCurrent_net_game]
+            mov edx, dword ptr [gLast_net_auto_increase_credits]
+            mov ecx, dword ptr [gCurrent_net_game]
             sub eax, edx
             mov edx, dword ptr [ecx + 0x74]
             cmp eax, dword ptr [edx*4 + gNet_auto_increase_credits_dt]
             jb L00493340
             call PDGetTotalTime
-            mov ecx, dword ptr ds:[gProgram_state]
-            mov esi, dword ptr ds:[0x75bba0]
-            mov edi, dword ptr ds:[gCurrent_net_game]
-            mov dword ptr ds:[gLast_net_auto_increase_credits], eax
-            mov eax, dword ptr ds:[gNet_mode]
+            mov ecx, dword ptr [gProgram_state]
+            mov esi, dword ptr [gProgram_state+0x20]
+            mov edi, dword ptr [gCurrent_net_game]
+            mov dword ptr [gLast_net_auto_increase_credits], eax
+            mov eax, dword ptr [gNet_mode]
             add ecx, 0x32
             cmp eax, ebx
-            mov dword ptr ds:[gProgram_state], ecx
+            mov dword ptr [gProgram_state], ecx
             je L004932b7
             mov eax, dword ptr [edi + 0x74]
-            fld dword ptr [eax*4 + 0x7634cc]
+            fld dword ptr [eax*4 + gRecovery_cost+0xc]
             jmp L004932be
     L004932b7:
             fld dword ptr [esi*4 + gRecovery_cost]
@@ -1896,28 +1982,28 @@ tRace_result C2_NAKED C2_HOOK_FASTCALL MainGameLoop(void) {
             test ah, 0x41
             fstp st(0)
             jne L0049333e
-            cmp dword ptr ds:[gNet_mode], ebx
+            cmp dword ptr [gNet_mode], ebx
             je L004932e8
             mov ecx, dword ptr [edi + 0x74]
-            fld dword ptr [ecx*4 + 0x7634cc]
+            fld dword ptr [ecx*4 + gRecovery_cost+0xc]
             jmp L004932ef
     L004932e8:
             fld dword ptr [esi*4 + gRecovery_cost]
     L004932ef:
             fld dword ptr [esp + 0x1c]
             fsub st(0), st(1)
-            fild dword ptr ds:[gProgram_state]
+            fild dword ptr [gProgram_state]
             fxch st(1)
-            fsub dword ptr ds:[0x58a308]
+            fsub dword ptr [gMatchFloat_0058a308]
             fsubp st(1), st(0)
             call _ftol
-            mov ecx, dword ptr ds:[gNet_mode]
-            mov dword ptr ds:[gProgram_state], eax
+            mov ecx, dword ptr [gNet_mode]
+            mov dword ptr [gProgram_state], eax
             cmp ecx, ebx
             fstp st(0)
             je L0049332e
             mov edx, dword ptr [edi + 0x74]
-            fld dword ptr [edx*4 + 0x7634cc]
+            fld dword ptr [edx*4 + gRecovery_cost+0xc]
             call _ftol
             mov ebp, eax
             jmp L00493340
@@ -1929,23 +2015,23 @@ tRace_result C2_NAKED C2_HOOK_FASTCALL MainGameLoop(void) {
     L0049333e:
             mov ebp, ecx
     L00493340:
-            mov eax, dword ptr ds:[gCountdown]
-            mov dword ptr ds:[gLast_credit_headup__mainloop], ebp
+            mov eax, dword ptr [gCountdown]
+            mov dword ptr [gLast_credit_headup__mainloop], ebp
             cmp eax, ebx
             je L004933c1
             call GetRaceTime
             mov dword ptr [esp + 0x20], eax
             mov dword ptr [esp + 0x24], ebx
             fild qword ptr [esp + 0x20]
-            fmul qword ptr ds:[0x58a310]
-            fsubr qword ptr ds:[0x58a318]
+            fmul qword ptr [gMatchDouble_0058a310]
+            fsubr qword ptr [gMatchDouble_0058a318]
             call _ftol
             mov esi, eax
             cmp esi, ebx
             jge L00493379
             xor esi, esi
     L00493379:
-            cmp esi, dword ptr ds:[gCountdown]
+            cmp esi, dword ptr [gCountdown]
             je L004933c1
             cmp esi, 5
             jg L004933c1
@@ -1954,20 +2040,20 @@ tRace_result C2_NAKED C2_HOOK_FASTCALL MainGameLoop(void) {
             push eax
             push 0x320
             mov ecx, 5
-            mov dword ptr ds:[gCountdown], esi
+            mov dword ptr [gCountdown], esi
             call NewImageHeadupSlot
-            mov ecx, dword ptr ds:[gCountdown]
+            mov ecx, dword ptr [gCountdown]
             lea edx, [ecx + 0x1f40]
-            mov ecx, dword ptr ds:[gPedestrians_outlet]
+            mov ecx, dword ptr [gPedestrians_outlet]
             call DRS3StartSound
             cmp esi, ebx
             jne L004933c1
             call MakeFlagWavingBastardWaveHisFlagWhichIsTheProbablyTheLastThingHeWillEverDo
     L004933c1:
-            fild dword ptr ds:[gTimer]
-            mov edx, dword ptr ds:[gFrame_period]
+            fild dword ptr [gTimer]
+            mov edx, dword ptr [gFrame_period]
             mov dword ptr [esp + 0x2c], ebx
-            fild dword ptr ds:[gLast_time_headup]
+            fild dword ptr [gLast_time_headup]
             mov dword ptr [esp + 0x28], edx
             fild qword ptr [esp + 0x28]
             fxch st(1)
@@ -1975,18 +2061,18 @@ tRace_result C2_NAKED C2_HOOK_FASTCALL MainGameLoop(void) {
             fxch st(1)
             fabs
             fdiv st(0), st(1)
-            fcomp qword ptr ds:[0x58a320]
+            fcomp qword ptr [gMatchDouble_0058a320]
             fnstsw ax
             test ah, 0x41
             jne L00493428
-            mov eax, dword ptr ds:[gTimer]
-            mov esi, dword ptr ds:[gLast_time_headup]
+            mov eax, dword ptr [gTimer]
+            mov esi, dword ptr [gLast_time_headup]
             mov ecx, eax
             sub ecx, esi
             test ecx, ecx
             jle L00493422
-            fmul qword ptr ds:[0x58a328]
-            fild dword ptr ds:[gLast_time_headup]
+            fmul qword ptr [gMatchDouble_0058a328]
+            fild dword ptr [gLast_time_headup]
             fxch st(1)
             fsubp st(1), st(0)
             call _ftol
@@ -1997,11 +2083,11 @@ tRace_result C2_NAKED C2_HOOK_FASTCALL MainGameLoop(void) {
             mov edi, eax
             jmp L00493430
     L00493428:
-            mov edi, dword ptr ds:[gTimer]
+            mov edi, dword ptr [gTimer]
             fstp st(0)
     L00493430:
-            mov eax, dword ptr ds:[gNet_mode]
-            mov dword ptr ds:[gLast_time_headup], edi
+            mov eax, dword ptr [gNet_mode]
+            mov dword ptr [gLast_time_headup], edi
             cmp eax, ebx
             je L0049344b
             mov ecx, ebp
@@ -2020,7 +2106,7 @@ tRace_result C2_NAKED C2_HOOK_FASTCALL MainGameLoop(void) {
             lea edx, [esp + 0x38]
             push eax
             push ebp
-            push 0x658990
+            push offset gMatchData_00658990
             push edx
             jmp L0049348e
     L00493474:
@@ -2031,22 +2117,22 @@ tRace_result C2_NAKED C2_HOOK_FASTCALL MainGameLoop(void) {
             mov eax, ebp
             neg eax
             push eax
-            push 0x658990
+            push offset gMatchData_00658990
             push ecx
     L0049348e:
             call sprintf
-            mov ecx, dword ptr ds:[gCredits_won_headup]
+            mov ecx, dword ptr [gCredits_won_headup]
             add esp, 0x10
             lea edx, [esp + 0x38]
             call ChangeHeadupText
-            mov edx, dword ptr ds:[0x762438]
+            mov edx, dword ptr [gCurrent_race+0x98]
             mov eax, dword ptr [edx + 0x210]
             cmp eax, ebx
             jne L004934c7
             mov ecx, 0x12
             call GetMiscString
             push eax
-            mov eax, dword ptr ds:[gPed_count]
+            mov eax, dword ptr [gPed_count]
             jmp L004934dc
     L004934c7:
             cmp eax, 2
@@ -2054,38 +2140,38 @@ tRace_result C2_NAKED C2_HOOK_FASTCALL MainGameLoop(void) {
             mov ecx, 0x12
             call GetMiscString
             push eax
-            mov eax, dword ptr ds:[gTotal_count_smash_peds]
+            mov eax, dword ptr [gTotal_count_smash_peds]
     L004934dc:
-            mov ecx, dword ptr ds:[gCount_killed_peds]
+            mov ecx, dword ptr [gCount_killed_peds]
             push eax
             push ecx
             lea edx, [esp + 0x44]
-            push 0x658980
+            push offset gMatchData_00658980
             push edx
             call sprintf
-            mov ecx, dword ptr ds:[gPed_kill_count_headup]
+            mov ecx, dword ptr [gPed_kill_count_headup]
             add esp, 0x14
             lea edx, [esp + 0x38]
             call ChangeHeadupText
     L00493505:
-            mov eax, dword ptr ds:[0x762438]
+            mov eax, dword ptr [gCurrent_race+0x98]
             mov eax, dword ptr [eax + 0x210]
             cmp eax, ebx
             je L0049351d
             cmp eax, 1
             jne L00493630
     L0049351d:
-            cmp dword ptr ds:[gQueued_wasted_messages_count], ebx
+            cmp dword ptr [gQueued_wasted_messages_count], ebx
             je L004935d9
             call GetTotalTime
-            mov ecx, dword ptr ds:[gLast_wasted_message_start]
+            mov ecx, dword ptr [gLast_wasted_message_start]
             add ecx, 0x1388
             cmp eax, ecx
             jbe L0049356d
-            mov edx, dword ptr ds:[gQueued_wasted_messages_count]
+            mov edx, dword ptr [gQueued_wasted_messages_count]
             cmp edx, 1
             jle L0049355c
-            mov eax, 0x68c74c
+            mov eax, offset gQueued_wasted_messages+0x4
             lea ecx, [edx - 1]
     L00493551:
             mov esi, dword ptr [eax]
@@ -2095,11 +2181,11 @@ tRace_result C2_NAKED C2_HOOK_FASTCALL MainGameLoop(void) {
             jne L00493551
     L0049355c:
             dec edx
-            mov dword ptr ds:[gQueued_wasted_messages_count], edx
+            mov dword ptr [gQueued_wasted_messages_count], edx
             call GetTotalTime
-            mov dword ptr ds:[gLast_wasted_message_start], eax
+            mov dword ptr [gLast_wasted_message_start], eax
     L0049356d:
-            cmp dword ptr ds:[gQueued_wasted_messages_count], ebx
+            cmp dword ptr [gQueued_wasted_messages_count], ebx
             je L004935d9
             push offset gWasted_flash_state
             mov edx, offset gWasted_last_flash
@@ -2110,16 +2196,16 @@ tRace_result C2_NAKED C2_HOOK_FASTCALL MainGameLoop(void) {
             mov ecx, 0x2e
             call GetMiscString
             push eax
-            mov eax, dword ptr ds:[gQueued_wasted_messages]
+            mov eax, dword ptr [gQueued_wasted_messages]
             mov edx, eax
             shl edx, 3
             sub edx, eax
-            mov eax, dword ptr ds:[gOpponents]
+            mov eax, dword ptr [gOpponents]
             shl edx, 6
             lea ecx, [edx + eax + 0x18]
             lea edx, [esp + 0x3c]
             push ecx
-            push 0x658978
+            push offset gMatchFloat_00658978
             push edx
             call sprintf
             add esp, 0x10
@@ -2132,7 +2218,7 @@ tRace_result C2_NAKED C2_HOOK_FASTCALL MainGameLoop(void) {
             add esp, 8
             jmp L00493621
     L004935d9:
-            mov ecx, dword ptr ds:[0x762438]
+            mov ecx, dword ptr [gCurrent_race+0x98]
             cmp dword ptr [ecx + 0x210], ebx
             jne L004935f5
             mov ecx, 2
@@ -2140,7 +2226,7 @@ tRace_result C2_NAKED C2_HOOK_FASTCALL MainGameLoop(void) {
             mov esi, eax
             jmp L004935fb
     L004935f5:
-            mov esi, dword ptr ds:[gCount_opponents]
+            mov esi, dword ptr [gCount_opponents]
     L004935fb:
             push esi
             call NumberOfOpponentsLeft
@@ -2150,12 +2236,12 @@ tRace_result C2_NAKED C2_HOOK_FASTCALL MainGameLoop(void) {
             call GetMiscString
             lea edx, [esp + 0x40]
             push eax
-            push 0x65896c
+            push offset gMatchData_0065896c
             push edx
             call sprintf
             add esp, 0x14
     L00493621:
-            mov ecx, dword ptr ds:[gCar_kill_count_headup]
+            mov ecx, dword ptr [gCar_kill_count_headup]
             lea edx, [esp + 0x38]
             call ChangeHeadupText
     L00493630:
@@ -2166,16 +2252,16 @@ tRace_result C2_NAKED C2_HOOK_FASTCALL MainGameLoop(void) {
             lea edx, [esp + 0x44]
             mov ecx, edi
             call TimerString
-            mov ecx, dword ptr ds:[gTimer_headup]
+            mov ecx, dword ptr [gTimer_headup]
             lea edx, [esp + 0x38]
             call ChangeHeadupText
-            mov eax, dword ptr ds:[gHeadup_detail_level]
+            mov eax, dword ptr [gHeadup_detail_level]
             cmp eax, esi
             je L00493660
             cmp eax, 4
             jne L0049368d
     L00493660:
-            mov eax, dword ptr ds:[gCount_killed_peds]
+            mov eax, dword ptr [gCount_killed_peds]
             push eax
             push ebp
             call NumberOfOpponentsLeft
@@ -2184,41 +2270,41 @@ tRace_result C2_NAKED C2_HOOK_FASTCALL MainGameLoop(void) {
             call GetCarCount
             sub eax, edi
             push eax
-            push 0x658960
+            push offset gMatchString_00658960
             push offset gHeadup_oppo_ped_text
             call sprintf
             add esp, 0x14
     L0049368d:
-            mov eax, dword ptr ds:[0x762438]
+            mov eax, dword ptr [gCurrent_race+0x98]
             mov ecx, dword ptr [eax + 0x210]
             cmp ecx, ebx
             je L004936a1
             cmp ecx, 3
             jne L004936f8
     L004936a1:
-            mov ecx, dword ptr ds:[gTotal_laps]
-            mov edx, dword ptr ds:[gLap]
+            mov ecx, dword ptr [gTotal_laps]
+            mov edx, dword ptr [gLap]
             push ecx
             push edx
             mov ecx, 0x14
             call GetMiscString
-            mov ecx, dword ptr ds:[gCheckpoint]
+            mov ecx, dword ptr [gCheckpoint]
             push eax
-            mov eax, dword ptr ds:[gCheckpoint_count]
+            mov eax, dword ptr [gCheckpoint_count]
             push eax
             push ecx
             mov ecx, 0x15
             call GetMiscString
             lea edx, [esp + 0x4c]
             push eax
-            push 0x658944
+            push offset gMatchData_00658944
             push edx
             call sprintf
-            mov ecx, dword ptr ds:[gLaps_headup]
+            mov ecx, dword ptr [gLaps_headup]
             add esp, 0x20
             lea edx, [esp + 0x38]
             call ChangeHeadupText
-            mov eax, dword ptr ds:[0x762438]
+            mov eax, dword ptr [gCurrent_race+0x98]
     L004936f8:
             cmp dword ptr [eax + 0x210], 4
             jl L00493740
@@ -2231,56 +2317,61 @@ tRace_result C2_NAKED C2_HOOK_FASTCALL MainGameLoop(void) {
             call GetMiscString
             lea edx, [esp + 0x40]
             push eax
-            push 0x65896c
+            push offset gMatchData_0065896c
             push edx
             call sprintf
-            mov ecx, dword ptr ds:[gLaps_headup]
+            mov ecx, dword ptr [gLaps_headup]
             add esp, 0x14
             lea edx, [esp + 0x38]
             call ChangeHeadupText
     L00493740:
             call GetTotalTime
-            mov edi, dword ptr ds:[gTime_bonus_start]
-            mov ecx, dword ptr ds:[gTime_bonus_state]
+            mov edi, dword ptr [gTime_bonus_start]
+            mov ecx, dword ptr [gTime_bonus_state]
             sub eax, edi
             cmp ecx, 6
             ja L004939ea
             jmp dword ptr [ecx*4 + 0x4940bc]
             cmp eax, 0x1f4
             jb L004939c9
-            mov eax, dword ptr ds:[gCompletion_bonus_post_race]
+            mov eax, dword ptr [gCompletion_bonus_post_race]
             mov ecx, 0x16
             push eax
             call GetMiscString
             lea ecx, [esp + 0x3c]
             push eax
-            push 0x58fd6c
+            push offset gMatchString_0058fd6c
             push ecx
             call sprintf
-            mov ecx, dword ptr ds:[gPedestrians_outlet]
+            mov ecx, dword ptr [gPedestrians_outlet]
             add esp, 0x10
             mov edx, 0x1f4f
             call DRS3StartSound
-            mov ecx, dword ptr ds:[gRace_bonus_headup]
+            mov ecx, dword ptr [gRace_bonus_headup]
             lea edx, [esp + 0x38]
             call ChangeHeadupText
-            mov edx, dword ptr ds:[gCompletion_bonus_post_race]
-            mov eax, dword ptr ds:[gProgram_state]
+            mov edx, dword ptr [gCompletion_bonus_post_race]
+            mov eax, dword ptr [gProgram_state]
             add eax, edx
-            mov dword ptr ds:[gTime_bonus_state], 2
-            mov dword ptr ds:[gProgram_state], eax
+            mov dword ptr [gTime_bonus_state], 2
+            mov dword ptr [gProgram_state], eax
             call GetTotalTime
-            mov dword ptr ds:[gTime_bonus_start], eax
-            mov dword ptr ds:[gRace_finished], 0x2710
+            mov dword ptr [gTime_bonus_start], eax
+            mov dword ptr [gRace_finished], 0x2710
             jmp L004939ea
             cmp eax, 0x7d0
             jb L004939c9
-            mov dword ptr ds:[gTime_bonus_state], 3
+            mov dword ptr [gTime_bonus_state], 3
             jmp L004938ea
-            mov esi, dword ptr ds:[gTimer]
+            mov esi, dword ptr [gTimer]
             cmp esi, ebx
             je L004938c9
-            mov edi, dword ptr ds:[0x68c818]
+            _emit 0x8b
+        _emit 0x3d
+        _emit 0x18
+        _emit 0xc8
+        _emit 0x68
+        _emit 0x00
             mov ecx, eax
             sub ecx, edi
             cmp ecx, 0xf
@@ -2297,65 +2388,80 @@ tRace_result C2_NAKED C2_HOOK_FASTCALL MainGameLoop(void) {
             lea eax, [eax + eax*4]
             lea eax, [esi + eax*8]
             cmp eax, ebx
-            mov dword ptr ds:[gTimer], eax
+            mov dword ptr [gTimer], eax
             jge L0049384a
             xor eax, eax
-            mov dword ptr ds:[gTimer], eax
+            mov dword ptr [gTimer], eax
     L0049384a:
             sub esi, eax
             mov eax, 0x10624dd3
             imul esi
             sar edx, 6
             mov eax, edx
-            mov esi, dword ptr ds:[gTime_bonus]
+            mov esi, dword ptr [gTime_bonus]
             shr eax, 0x1f
             add edx, eax
-            mov eax, dword ptr ds:[0x75bba0]
+            mov eax, dword ptr [gProgram_state+0x20]
             imul edx, dword ptr [eax*4 + gCredits_per_second_time_bonus]
             lea eax, [ecx + ecx*2]
             add esi, edx
             mov ecx, eax
-            mov dword ptr ds:[gTime_bonus], esi
+            mov dword ptr [gTime_bonus], esi
             add ecx, edi
             lea edx, [ecx + eax*4]
-            mov dword ptr ds:[0x68c818], edx
+            _emit 0x89
+        _emit 0x15
+        _emit 0x18
+        _emit 0xc8
+        _emit 0x68
+        _emit 0x00
     L00493888:
-            mov eax, dword ptr ds:[gTime_bonus]
+            mov eax, dword ptr [gTime_bonus]
             mov ecx, 0x17
             push eax
             call GetMiscString
             lea ecx, [esp + 0x3c]
             push eax
-            push 0x58fd6c
+            push offset gMatchString_0058fd6c
             push ecx
             call sprintf
-            mov ecx, dword ptr ds:[gTime_bonus_headup]
+            mov ecx, dword ptr [gTime_bonus_headup]
             add esp, 0x10
             lea edx, [esp + 0x38]
             call ChangeHeadupText
-            mov dword ptr ds:[gRace_finished], 0x2710
+            mov dword ptr [gRace_finished], 0x2710
             jmp L004939ea
     L004938c9:
-            mov dword ptr ds:[gTime_bonus_state], 4
+            mov dword ptr [gTime_bonus_state], 4
             jmp L004938ea
             cmp eax, 0x3e8
             jb L004939c9
-            mov dword ptr ds:[gTime_bonus_state], 5
+            mov dword ptr [gTime_bonus_state], 5
     L004938ea:
             call GetTotalTime
-            mov dword ptr ds:[gTime_bonus_start], eax
-            mov dword ptr ds:[0x68c818], ebx
-            mov dword ptr ds:[gRace_finished], 0x2710
+            mov dword ptr [gTime_bonus_start], eax
+            _emit 0x89
+        _emit 0x1d
+        _emit 0x18
+        _emit 0xc8
+        _emit 0x68
+        _emit 0x00
+            mov dword ptr [gRace_finished], 0x2710
             jmp L004939ea
-            mov edi, dword ptr ds:[gTime_bonus]
+            mov edi, dword ptr [gTime_bonus]
             cmp edi, ebx
             je L004939b5
-            mov ebp, dword ptr ds:[0x68c818]
+            _emit 0x8b
+        _emit 0x2d
+        _emit 0x18
+        _emit 0xc8
+        _emit 0x68
+        _emit 0x00
             mov esi, eax
             sub esi, ebp
             cmp esi, 0xf
             jbe L0049397c
-            mov edx, dword ptr ds:[0x75bba0]
+            mov edx, dword ptr [gProgram_state+0x20]
             mov eax, 0x88888889
             mov ecx, edi
             mov edx, dword ptr [edx*4 + gCredits_per_second_time_bonus]
@@ -2363,15 +2469,15 @@ tRace_result C2_NAKED C2_HOOK_FASTCALL MainGameLoop(void) {
             mul edx
             shr edx, 3
             sub edi, edx
-            mov dword ptr ds:[gTime_bonus], edi
+            mov dword ptr [gTime_bonus], edi
             jns L00493954
             xor edi, edi
-            mov dword ptr ds:[gTime_bonus], edi
+            mov dword ptr [gTime_bonus], edi
     L00493954:
-            mov eax, dword ptr ds:[gProgram_state]
+            mov eax, dword ptr [gProgram_state]
             sub ecx, edi
             add eax, ecx
-            mov dword ptr ds:[gProgram_state], eax
+            mov dword ptr [gProgram_state], eax
             mov eax, 0x88888889
             mul esi
             shr edx, 3
@@ -2379,36 +2485,41 @@ tRace_result C2_NAKED C2_HOOK_FASTCALL MainGameLoop(void) {
             mov ecx, eax
             add ecx, ebp
             lea edx, [ecx + eax*4]
-            mov dword ptr ds:[0x68c818], edx
+            _emit 0x89
+        _emit 0x15
+        _emit 0x18
+        _emit 0xc8
+        _emit 0x68
+        _emit 0x00
     L0049397c:
             push edi
             mov ecx, 0x17
             call GetMiscString
             push eax
             lea eax, [esp + 0x40]
-            push 0x58fd6c
+            push offset gMatchString_0058fd6c
             push eax
             call sprintf
-            mov ecx, dword ptr ds:[gTime_bonus_headup]
+            mov ecx, dword ptr [gTime_bonus_headup]
             add esp, 0x10
             lea edx, [esp + 0x38]
             call ChangeHeadupText
-            mov dword ptr ds:[gRace_finished], 0x2710
+            mov dword ptr [gRace_finished], 0x2710
             jmp L004939ea
     L004939b5:
-            mov dword ptr ds:[gTime_bonus_state], 6
+            mov dword ptr [gTime_bonus_state], 6
             call GetTotalTime
-            mov dword ptr ds:[gTime_bonus_start], eax
+            mov dword ptr [gTime_bonus_start], eax
     L004939c9:
-            mov dword ptr ds:[gRace_finished], 0x2710
+            mov dword ptr [gRace_finished], 0x2710
             jmp L004939ea
             cmp eax, 0x7d0
             jb L004939ea
-            cmp dword ptr ds:[gRace_finished], esi
+            cmp dword ptr [gRace_finished], esi
             jbe L004939ea
-            mov dword ptr ds:[gRace_finished], esi
+            mov dword ptr [gRace_finished], esi
     L004939ea:
-            mov ecx, dword ptr ds:[gFrame_period]
+            mov ecx, dword ptr [gFrame_period]
             call ProcessOilSpills
             call GetTotalTime
             mov ecx, eax
@@ -2416,11 +2527,11 @@ tRace_result C2_NAKED C2_HOOK_FASTCALL MainGameLoop(void) {
             mov ebp, 1
     L00493a06:
             call MungeDelayedSideEffects
-            mov ecx, dword ptr ds:[gFrame_period]
+            mov ecx, dword ptr [gFrame_period]
             call MungeShrapnel
-            cmp dword ptr ds:[gPed_676914], ebx
+            cmp dword ptr [gPed_676914], ebx
             jne L00493a29
-            mov ecx, dword ptr ds:[gFrame_period]
+            mov ecx, dword ptr [gFrame_period]
             call MungePowerupStuff
     L00493a29:
             call ChangeDepthEffect
@@ -2435,20 +2546,20 @@ tRace_result C2_NAKED C2_HOOK_FASTCALL MainGameLoop(void) {
             call LastChanceForPedEffects
             call DoLODCarModels
             call MungeLightingEffects
-            mov ecx, dword ptr ds:[gWait_for_it]
+            mov ecx, dword ptr [gWait_for_it]
             cmp ecx, ebx
             je L00493a8b
             call GetTotalTime
-            mov ecx, dword ptr ds:[gWait_for_it]
+            mov ecx, dword ptr [gWait_for_it]
             cmp eax, ecx
             jb L00493a83
             xor ecx, ecx
-            mov dword ptr ds:[gWait_for_it], ecx
+            mov dword ptr [gWait_for_it], ecx
     L00493a83:
             cmp ecx, ebx
             jne L00493b4c
     L00493a8b:
-            mov eax, dword ptr ds:[gTimers_max_index]
+            mov eax, dword ptr [gTimers_max_index]
             xor ecx, ecx
             mov esi, eax
             mov edx, eax
@@ -2456,26 +2567,26 @@ tRace_result C2_NAKED C2_HOOK_FASTCALL MainGameLoop(void) {
             sub esi, eax
             shl esi, 2
             shl edx, 3
-            mov cl, byte ptr [esi + 0x6b7608]
+            mov cl, byte ptr [esi + gTimers+0x8]
             sub edx, eax
             add ecx, edx
-            lea edi, [ecx*4 + 0x6b7604]
+            lea edi, [ecx*4 + gTimers+0x4]
             call PDGetMicroseconds
-            mov edx, dword ptr [esi + 0x6b760c]
+            mov edx, dword ptr [esi + gTimers+0xc]
             mov ecx, dword ptr [edi]
             sub eax, edx
-            mov dword ptr ds:[gTimers_max_index], 3
+            mov dword ptr [gTimers_max_index], 3
             add ecx, eax
             mov dword ptr [edi], ecx
             call PDGetMicroseconds
-            mov ecx, dword ptr ds:[gTimers_max_index]
+            mov ecx, dword ptr [gTimers_max_index]
             mov edx, ecx
             shl edx, 3
             sub edx, ecx
             mov ecx, ebp
-            mov dword ptr [edx*4 + 0x6b760c], eax
+            mov dword ptr [edx*4 + gTimers+0xc], eax
             call RenderAFrame
-            mov eax, dword ptr ds:[gTimers_max_index]
+            mov eax, dword ptr [gTimers_max_index]
             xor ecx, ecx
             mov esi, eax
             mov edx, eax
@@ -2483,39 +2594,39 @@ tRace_result C2_NAKED C2_HOOK_FASTCALL MainGameLoop(void) {
             sub esi, eax
             shl esi, 2
             shl edx, 3
-            mov cl, byte ptr [esi + 0x6b7608]
+            mov cl, byte ptr [esi + gTimers+0x8]
             sub edx, eax
             add ecx, edx
-            lea edi, [ecx*4 + 0x6b7604]
+            lea edi, [ecx*4 + gTimers+0x4]
             call PDGetMicroseconds
-            mov edx, dword ptr [esi + 0x6b760c]
+            mov edx, dword ptr [esi + gTimers+0xc]
             mov ecx, dword ptr [edi]
             sub eax, edx
-            mov dword ptr ds:[gTimers_max_index], 0x12
+            mov dword ptr [gTimers_max_index], 0x12
             add ecx, eax
             mov dword ptr [edi], ecx
             call PDGetMicroseconds
-            mov ecx, dword ptr ds:[gTimers_max_index]
+            mov ecx, dword ptr [gTimers_max_index]
             mov edx, ecx
             shl edx, 3
             sub edx, ecx
-            mov dword ptr [edx*4 + 0x6b760c], eax
+            mov dword ptr [edx*4 + gTimers+0xc], eax
     L00493b4c:
             call DoComplexCarModels
             call CheckReplayTurnOn
-            cmp dword ptr ds:[gRecover_car], ebx
+            cmp dword ptr [gRecover_car], ebx
             jne L00493b9e
-            cmp dword ptr ds:[0x75bc24], 5
+            cmp dword ptr [gProgram_state+0xa4], 5
             jne L00493b9e
-            cmp dword ptr ds:[gPalette_fade_time], ebx
+            cmp dword ptr [gPalette_fade_time], ebx
             jne L00493b9e
-            cmp dword ptr ds:[gNet_mode], ebx
+            cmp dword ptr [gNet_mode], ebx
             je L00493b94
-            cmp dword ptr ds:[gPed_676914], ebx
+            cmp dword ptr [gPed_676914], ebx
             je L00493b94
-            mov eax, dword ptr ds:[0x75bc3c]
+            mov eax, dword ptr [gProgram_state+0xbc]
             fld dword ptr [eax + 0x50]
-            fcomp dword ptr ds:[0x58a330]
+            fcomp dword ptr [gMatchFloat_0058a330]
             fnstsw ax
             test ah, 1
             je L00493b9e
@@ -2527,17 +2638,17 @@ tRace_result C2_NAKED C2_HOOK_FASTCALL MainGameLoop(void) {
             call KeyIsDown
             test eax, eax
             je L00493c05
-            cmp dword ptr ds:[gEntering_message], ebx
+            cmp dword ptr [gEntering_message], ebx
             jne L00493c05
             call WaitForNoKeys
-            cmp dword ptr ds:[gPed_676914], ebx
+            cmp dword ptr [gPed_676914], ebx
             je L00493bc9
             xor edx, edx
             xor ecx, ecx
             call ToggleReplay
             jmp L00493c05
     L00493bc9:
-            cmp dword ptr ds:[gMap_view], 2
+            cmp dword ptr [gMap_view], 2
             jne L00493bd7
             call ToggleMap
     L00493bd7:
@@ -2553,33 +2664,37 @@ tRace_result C2_NAKED C2_HOOK_FASTCALL MainGameLoop(void) {
             sub ecx, esi
             call AddLostTime
     L00493c05:
-            cmp dword ptr ds:[gPed_676914], ebx
+            cmp dword ptr [gPed_676914], ebx
             jne L00493ca0
-            cmp dword ptr ds:[gFreeze_timer], ebx
+            cmp dword ptr [gFreeze_timer], ebx
             jne L00493caf
-            cmp dword ptr ds:[gCountdown], ebx
+            cmp dword ptr [gCountdown], ebx
             jne L00493caf
-            cmp dword ptr ds:[gRace_finished], ebx
+            cmp dword ptr [gRace_finished], ebx
             jne L00493caf
-            mov eax, dword ptr ds:[gTimer]
-            mov ecx, dword ptr ds:[gFrame_period]
+            mov eax, dword ptr [gTimer]
+            mov ecx, dword ptr [gFrame_period]
             cmp eax, ecx
             ja L00493c52
             mov ecx, 5
-            mov dword ptr ds:[gTimer], ebx
+            mov dword ptr [gTimer], ebx
             call RaceCompleted
             jmp L00493caf
     L00493c52:
-            cmp dword ptr ds:[gNet_mode], ebx
+            cmp dword ptr [gNet_mode], ebx
             jne L00493c61
             sub eax, ecx
-            mov dword ptr ds:[gTimer], eax
+            mov dword ptr [gTimer], eax
     L00493c61:
             lea ecx, [eax + 0x1f4]
             mov eax, 0x10624dd3
             imul ecx
             sar edx, 6
-            mov eax, dword ptr ds:[0x68c828]
+            _emit 0xa1
+        _emit 0x28
+        _emit 0xc8
+        _emit 0x68
+        _emit 0x00
             mov ecx, edx
             shr ecx, 0x1f
             add edx, ecx
@@ -2588,61 +2703,66 @@ tRace_result C2_NAKED C2_HOOK_FASTCALL MainGameLoop(void) {
             je L00493c98
             cmp esi, 0xa
             jg L00493c98
-            mov ecx, dword ptr ds:[gPedestrians_outlet]
+            mov ecx, dword ptr [gPedestrians_outlet]
             mov edx, 0x3e9
             call DRS3StartSound
     L00493c98:
-            mov dword ptr ds:[0x68c828], esi
+            _emit 0x89
+        _emit 0x35
+        _emit 0x28
+        _emit 0xc8
+        _emit 0x68
+        _emit 0x00
             jmp L00493caf
     L00493ca0:
             mov edx, offset gAverage_frame_period
             mov ecx, offset gFrame_period
             call PollActionReplayControls
     L00493caf:
-            cmp dword ptr ds:[gPed_676914], ebx
+            cmp dword ptr [gPed_676914], ebx
             jne L00493ce5
-            cmp dword ptr ds:[gKnobbled_frame_period], ebx
+            cmp dword ptr [gKnobbled_frame_period], ebx
             je L00493ce5
             call GetTotalTime
             mov esi, dword ptr [esp + 0x18]
-            mov ecx, dword ptr ds:[gKnobbled_frame_period]
+            mov ecx, dword ptr [gKnobbled_frame_period]
             sub eax, esi
             cmp eax, ecx
             jae L00493ce5
     L00493cd4:
             call GetTotalTime
-            mov ecx, dword ptr ds:[gKnobbled_frame_period]
+            mov ecx, dword ptr [gKnobbled_frame_period]
             sub eax, esi
             cmp eax, ecx
             jb L00493cd4
     L00493ce5:
             cmp dword ptr [esp + 0x14], ebx
             jne L00493d0c
-            mov edx, 0x65892c
+            mov edx, offset gMatchFloat_0065892c
             xor ecx, ecx
             mov dword ptr [esp + 0x14], ebp
             call PrintMemoryDump
             call InitialiseActionReplay
-            mov edx, 0x658908
+            mov edx, offset gMatchFloat_00658908
             xor ecx, ecx
             call PrintMemoryDump
     L00493d0c:
-            cmp dword ptr ds:[gNet_mode], 3
+            cmp dword ptr [gNet_mode], 3
             jne L00493d2d
-            cmp dword ptr ds:[gAbandon_game], ebx
+            cmp dword ptr [gAbandon_game], ebx
             je L00493d2d
-            mov dword ptr ds:[0x75bc24], 2
-            mov dword ptr ds:[gAbandon_game], ebx
+            mov dword ptr [gProgram_state+0xa4], 2
+            mov dword ptr [gAbandon_game], ebx
     L00493d2d:
             call Timers_EndFrame
-            cmp dword ptr ds:[0x75bc24], 5
+            cmp dword ptr [gProgram_state+0xa4], 5
             jne L00493eff
-            cmp dword ptr ds:[gRace_finished], ebx
+            cmp dword ptr [gRace_finished], ebx
             je L00493ee5
-            cmp dword ptr ds:[gPed_676914], ebx
+            cmp dword ptr [gPed_676914], ebx
             jne L00493ee5
-            mov eax, dword ptr ds:[gNet_mode]
-            mov ecx, dword ptr ds:[gRace_over_reason]
+            mov eax, dword ptr [gNet_mode]
+            mov ecx, dword ptr [gRace_over_reason]
             cmp eax, ebx
             je L00493d6f
             cmp ecx, -1
@@ -2652,32 +2772,32 @@ tRace_result C2_NAKED C2_HOOK_FASTCALL MainGameLoop(void) {
             jne L00493e1e
             cmp ecx, 3
             jg L00493e1e
-            cmp dword ptr ds:[gCredits_post_race], ebx
+            cmp dword ptr [gCredits_post_race], ebx
             jge L00493e1e
-            mov edx, dword ptr ds:[gProgram_state]
-            mov eax, dword ptr ds:[0x762438]
-            mov dword ptr ds:[gCredits_post_race], edx
+            mov edx, dword ptr [gProgram_state]
+            mov eax, dword ptr [gCurrent_race+0x98]
+            mov dword ptr [gCredits_post_race], edx
             mov eax, dword ptr [eax + 0x210]
             neg eax
             sbb eax, eax
             not eax
             and eax, ecx
-            mov ecx, dword ptr ds:[0x75bba0]
+            mov ecx, dword ptr [gProgram_state+0x20]
             lea edx, [ecx + eax*2]
             mov ecx, dword ptr [ecx*4 + gCredits_per_second_time_bonus]
             add eax, edx
-            mov edx, dword ptr ds:[gTimer]
-            mov esi, dword ptr [eax*4 + 0x7623b8]
+            mov edx, dword ptr [gTimer]
+            mov esi, dword ptr [eax*4 + gCurrent_race+0x18]
             mov eax, 0x10624dd3
             imul edx
             sar edx, 6
             mov eax, edx
-            mov dword ptr ds:[gCompletion_bonus_post_race], esi
+            mov dword ptr [gCompletion_bonus_post_race], esi
             shr eax, 0x1f
             add edx, eax
             imul ecx, edx
             add ecx, esi
-            mov dword ptr ds:[gTotal_bonus_post_race], ecx
+            mov dword ptr [gTotal_bonus_post_race], ecx
             mov ecx, 0x63
             call GetRuntimeVariable
             test eax, eax
@@ -2691,15 +2811,15 @@ tRace_result C2_NAKED C2_HOOK_FASTCALL MainGameLoop(void) {
             push 0xbb8
             call NewTextHeadupSlot
     L00493e18:
-            mov ecx, dword ptr ds:[gRace_over_reason]
+            mov ecx, dword ptr [gRace_over_reason]
     L00493e1e:
-            mov eax, dword ptr ds:[gFrame_period]
-            mov edx, dword ptr ds:[gRace_finished]
+            mov eax, dword ptr [gFrame_period]
+            mov edx, dword ptr [gRace_finished]
             cmp edx, eax
             ja L00493ebf
-            cmp dword ptr ds:[gTimer], ebx
+            cmp dword ptr [gTimer], ebx
             je L00493eb5
-            cmp dword ptr ds:[gNet_mode], ebx
+            cmp dword ptr [gNet_mode], ebx
             jne L00493eb5
             cmp ecx, 6
             je L00493eb5
@@ -2707,7 +2827,7 @@ tRace_result C2_NAKED C2_HOOK_FASTCALL MainGameLoop(void) {
             call GetRuntimeVariable
             test eax, eax
             jne L00493eb5
-            mov edx, dword ptr ds:[gTimer]
+            mov edx, dword ptr [gTimer]
             push 0x676920
             push -4
             push ebx
@@ -2716,27 +2836,27 @@ tRace_result C2_NAKED C2_HOOK_FASTCALL MainGameLoop(void) {
             mov ecx, 9
             lea eax, [eax + eax*2]
             lea eax, [eax + eax*4]
-            mov dword ptr ds:[gRace_finished], eax
+            mov dword ptr [gRace_finished], eax
             call NewTextHeadupSlot
             xor edx, edx
             mov ecx, 0xa
             push 0x676920
             push -4
             push ebx
-            mov dword ptr ds:[gRace_bonus_headup], eax
+            mov dword ptr [gRace_bonus_headup], eax
             call NewTextHeadupSlot
-            mov dword ptr ds:[gTime_bonus_headup], eax
-            mov dword ptr ds:[gTime_bonus], ebx
+            mov dword ptr [gTime_bonus_headup], eax
+            mov dword ptr [gTime_bonus], ebx
             call GetTotalTime
-            mov dword ptr ds:[gTime_bonus_start], eax
-            mov dword ptr ds:[gTime_bonus_state], ebp
+            mov dword ptr [gTime_bonus_start], eax
+            mov dword ptr [gTime_bonus_state], ebp
             jmp L00493ec5
     L00493eb5:
-            mov dword ptr ds:[gRace_finished], ebx
+            mov dword ptr [gRace_finished], ebx
             mov eax, ebp
             jmp L00493ee7
     L00493ebf:
-            sub dword ptr ds:[gRace_finished], eax
+            sub dword ptr [gRace_finished], eax
     L00493ec5:
             mov ecx, 0x33
             call PDKeyDown
@@ -2754,30 +2874,30 @@ tRace_result C2_NAKED C2_HOOK_FASTCALL MainGameLoop(void) {
     L00493ee7:
             cmp eax, ebx
             jne L00493eff
-            cmp dword ptr ds:[gAbandon_game], ebx
+            cmp dword ptr [gAbandon_game], ebx
             jne L00493eff
-            cmp dword ptr ds:[gHost_abandon_game], ebx
+            cmp dword ptr [gHost_abandon_game], ebx
             je L00492b8f
     L00493eff:
             mov esi, 2
     L00493f04:
-            mov eax, dword ptr ds:[gCredits_post_race]
+            mov eax, dword ptr [gCredits_post_race]
             xor edi, edi
             cmp eax, edi
             jl L00493f1d
-            mov ecx, dword ptr ds:[gTotal_bonus_post_race]
+            mov ecx, dword ptr [gTotal_bonus_post_race]
             add ecx, eax
-            mov dword ptr ds:[gProgram_state], ecx
+            mov dword ptr [gProgram_state], ecx
     L00493f1d:
             call PHILDisable
-            mov edx, 0x6588f0
+            mov edx, offset gMatchFloat_006588f0
             xor ecx, ecx
             call PrintMemoryDump
             call FadePaletteDown
             call ClearEntireScreen
             call SuspendPendingFlic
             call RevertPalette
-            cmp dword ptr ds:[gMap_view], esi
+            cmp dword ptr [gMap_view], esi
             jne L00493f4f
             call ToggleMap
     L00493f4f:
@@ -2785,44 +2905,44 @@ tRace_result C2_NAKED C2_HOOK_FASTCALL MainGameLoop(void) {
             call FadePaletteDown
             mov ecx, esi
             call NetPlayerStatusChanged
-            mov eax, dword ptr ds:[gAdditional_actors]
+            mov eax, dword ptr [gAdditional_actors]
             cmp eax, edi
             je L00493f73
             cmp dword ptr [eax + 8], edi
             je L00493f73
             call AutoSaveAdditionalStuff
     L00493f73:
-            mov eax, dword ptr ds:[0x75bc24]
+            mov eax, dword ptr [gProgram_state+0xa4]
             mov ebx, 5
             cmp eax, ebx
             jne L00493f86
             call ResetCarScreens
     L00493f86:
-            cmp dword ptr ds:[gAbandon_game], edi
+            cmp dword ptr [gAbandon_game], edi
             je L00493faf
-            cmp dword ptr ds:[gNet_mode], esi
+            cmp dword ptr [gNet_mode], esi
             jne L00493faf
-            cmp dword ptr ds:[gRace_over_reason], 8
+            cmp dword ptr [gRace_over_reason], 8
             jge L00493faf
-            mov ecx, dword ptr ds:[gCurrent_net_game]
+            mov ecx, dword ptr [gCurrent_net_game]
             mov edx, 4
             call NetFinishRace
     L00493faf:
-            cmp dword ptr ds:[gPed_676914], edi
+            cmp dword ptr [gPed_676914], edi
             je L00493fc0
             xor edx, edx
             xor ecx, ecx
             call ToggleReplay
     L00493fc0:
-            cmp dword ptr ds:[gHost_abandon_game], edi
+            cmp dword ptr [gHost_abandon_game], edi
             jne L00493ffc
-            cmp dword ptr ds:[0x75bc24], ebx
+            cmp dword ptr [gProgram_state+0xa4], ebx
             jne L00493ffc
-            mov eax, dword ptr ds:[gAbandon_game]
+            mov eax, dword ptr [gAbandon_game]
             mov ebp, 1
             cmp eax, ebp
             je L00493ffe
-            mov eax, dword ptr ds:[gRace_over_reason]
+            mov eax, dword ptr [gRace_over_reason]
             cmp eax, ebx
             je L00493ff8
             cmp eax, 6
@@ -2839,49 +2959,49 @@ tRace_result C2_NAKED C2_HOOK_FASTCALL MainGameLoop(void) {
     L00493ffe:
             cmp ebp, 3
             jge L00494011
-            mov edx, dword ptr ds:[0x75bbf8]
-            mov dword ptr ds:[0x75bbfc], edx
+            mov edx, dword ptr [gProgram_state+0x78]
+            mov dword ptr [gProgram_state+0x7c], edx
             jmp L0049401b
     L00494011:
-            mov dword ptr ds:[0x75bbfc], 0xffffffff
+            mov dword ptr [gProgram_state+0x7c], 0xffffffff
     L0049401b:
-            cmp dword ptr ds:[gNet_mode], edi
+            cmp dword ptr [gNet_mode], edi
             je L00494041
             cmp ebp, edi
             jne L00494041
-            cmp dword ptr ds:[gAbandon_game], edi
+            cmp dword ptr [gAbandon_game], edi
             jne L00494041
-            cmp dword ptr ds:[0x75bc24], esi
+            cmp dword ptr [gProgram_state+0xa4], esi
             je L00494041
-            mov dword ptr ds:[0x75bc24], 4
+            mov dword ptr [gProgram_state+0xa4], 4
     L00494041:
-            mov dword ptr ds:[gAbandon_game], edi
-            mov dword ptr ds:[gStart_race_sent], edi
-            mov dword ptr ds:[gInitialised_grid], edi
-            mov dword ptr ds:[gHost_abandon_game], edi
+            mov dword ptr [gAbandon_game], edi
+            mov dword ptr [gStart_race_sent], edi
+            mov dword ptr [gInitialised_grid], edi
+            mov dword ptr [gHost_abandon_game], edi
             call DRS3StopAllOutletSoundsExceptCDA
-            cmp dword ptr ds:[gNet_mode], edi
+            cmp dword ptr [gNet_mode], edi
             je L0049408d
-            mov eax, dword ptr ds:[gNumber_of_net_players]
+            mov eax, dword ptr [gNumber_of_net_players]
             xor esi, esi
             test eax, eax
             jle L0049408d
-            mov edi, 0x74bd88
+            mov edi, offset gNet_players+0xc8
     L00494076:
             mov ecx, dword ptr [edi]
             call StopCarBeingIt
-            mov eax, dword ptr ds:[gNumber_of_net_players]
+            mov eax, dword ptr [gNumber_of_net_players]
             inc esi
             add edi, 0xd4
             cmp esi, eax
             jl L00494076
     L0049408d:
-            mov ecx, dword ptr ds:[gNet_mode]
+            mov ecx, dword ptr [gNet_mode]
             xor eax, eax
             cmp ecx, 2
-            mov dword ptr ds:[0x75bba8], eax
+            mov dword ptr [gProgram_state+0x28], eax
             jne L004940a8
-            mov ecx, dword ptr ds:[gCurrent_net_game]
+            mov ecx, dword ptr [gCurrent_net_game]
             mov dword ptr [ecx + 0x40], eax
     L004940a8:
             call WaitForNoKeys

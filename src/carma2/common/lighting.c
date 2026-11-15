@@ -43,6 +43,12 @@ extern tLighting_data gLighting_data;
 extern tRendererShadingType gMaterial_shading_for_callback;
 extern tBrender_storage* gStorage_for_callbacks;
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gDouble_0058afd0[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchDouble_0058afd0[];
+#endif
 // FUNCTION: CARMA2_HW 0x004f6b50
 void C2_HOOK_FASTCALL SmoothificateCarMaterial(br_material* pMaterial) {
 
@@ -95,7 +101,7 @@ void C2_NAKED C2_HOOK_FASTCALL SmoothificatePowerupMaterial(br_material* pMateri
 #else
     __asm {
             fld dword ptr [ecx + 0x10]
-            fcomp qword ptr [gFloat_0058afb4+0x1c]
+            fcomp qword ptr [gMatchDouble_0058afd0]
             xor edx, edx
             mov dword ptr [ecx + 0x94], 0x5ba0
             fnstsw ax
@@ -133,6 +139,13 @@ void C2_NAKED C2_HOOK_FASTCALL SmoothificatePowerupMaterial(br_material* pMateri
             add esp, 8
     L004f6a88:
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -176,7 +189,7 @@ void C2_NAKED C2_HOOK_FASTCALL SmoothificatePowerups(br_actor* pActor) {
             test ecx, ecx
             je L004f698c
             fld dword ptr [ecx + 0x10]
-            fcomp qword ptr [gFloat_0058afb4+0x1c]
+            fcomp qword ptr [gMatchDouble_0058afd0]
             xor edx, edx
             mov dword ptr [ecx + 0x94], 0x5ba0
             fnstsw ax
@@ -222,7 +235,7 @@ void C2_NAKED C2_HOOK_FASTCALL SmoothificatePowerups(br_actor* pActor) {
             test ecx, ecx
             je L004f6a04
             fld dword ptr [ecx + 0x10]
-            fcomp qword ptr [gFloat_0058afb4+0x1c]
+            fcomp qword ptr [gMatchDouble_0058afd0]
             xor edx, edx
             mov dword ptr [ecx + 0x94], 0x5ba0
             fnstsw ax
@@ -270,6 +283,15 @@ void C2_NAKED C2_HOOK_FASTCALL SmoothificatePowerups(br_actor* pActor) {
             pop ebp
             pop ebx
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -301,7 +323,7 @@ void C2_NAKED C2_HOOK_FASTCALL SmoothificateWorldMaterial(br_material* pMaterial
             cmp edx, eax
             jne L004f6b11
             fld dword ptr [ecx + 0x10]
-            fcomp qword ptr [gFloat_0058afb4+0x1c]
+            fcomp qword ptr [gMatchDouble_0058afd0]
             mov dword ptr [ecx + 0x94], eax
             xor edx, edx
             fnstsw ax
@@ -355,6 +377,13 @@ void C2_NAKED C2_HOOK_FASTCALL SmoothificateWorldMaterial(br_material* pMaterial
             add esp, 8
     L004f6b48:
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -392,7 +421,7 @@ void C2_NAKED C2_HOOK_FASTCALL SmoothlySetWorldMaterialFlags(tBrender_storage* p
             cmp edx, eax
             jne L004f68b3
             fld dword ptr [ecx + 0x10]
-            fcomp qword ptr [gFloat_0058afb4+0x1c]
+            fcomp qword ptr [gMatchDouble_0058afd0]
             mov dword ptr [ecx + 0x94], eax
             xor edx, edx
             fnstsw ax
@@ -451,6 +480,17 @@ void C2_NAKED C2_HOOK_FASTCALL SmoothlySetWorldMaterialFlags(tBrender_storage* p
             pop esi
             pop ebx
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -495,7 +535,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadTrackMaterials(tBrender_storage* pStorage, co
             cmp edx, eax
             jne L004f66fb
             fld dword ptr [ecx + 0x10]
-            fcomp qword ptr [gFloat_0058afb4+0x1c]
+            fcomp qword ptr [gMatchDouble_0058afd0]
             mov dword ptr [ecx + 0x94], eax
             xor edx, edx
             fnstsw ax
@@ -554,6 +594,9 @@ void C2_NAKED C2_HOOK_FASTCALL LoadTrackMaterials(tBrender_storage* pStorage, co
             pop esi
             pop ebx
             ret
+            nop
+            nop
+            nop
     }
 #endif
 }

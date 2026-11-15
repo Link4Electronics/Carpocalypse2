@@ -23,6 +23,32 @@ extern char gZlib_filesystem[];
 extern void C2_HOOK_CDECL BrMatrix34ApplyP();
 extern void __cdecl _ftol();
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gData_0066334c[];
+extern char gData_00663350[];
+extern char gDouble_0058b7b0[];
+extern char gDouble_0058b7b8[];
+extern char gDouble_0058b7d0[];
+extern char gFloat_0058b7a8[];
+extern char gFloat_0058b7ac[];
+extern char gFloat_0058b7c0[];
+extern char gFloat_0058b7c4[];
+extern char gFloat_0058b7c8[];
+extern char gFloat_00663348[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchData_0066334c[];
+extern char gMatchData_00663350[];
+extern char gMatchDouble_0058b7b0[];
+extern char gMatchDouble_0058b7b8[];
+extern char gMatchDouble_0058b7d0[];
+extern char gMatchFloat_0058b7a8[];
+extern char gMatchFloat_0058b7ac[];
+extern char gMatchFloat_0058b7c0[];
+extern char gMatchFloat_0058b7c4[];
+extern char gMatchFloat_0058b7c8[];
+extern char gMatchFloat_00663348[];
+#endif
 // FUNCTION: CARMA2_HW 0x00521490
 void C2_NAKED C2_HOOK_CDECL BrModelApplyMap(br_model* model, int map_type, br_matrix34* xform) {
 #ifndef CARPOCALYPSE2_MATCHING
@@ -102,21 +128,21 @@ void C2_NAKED C2_HOOK_CDECL BrModelApplyMap(br_model* model, int map_type, br_ma
             mov dword ptr [esi + 0x10], eax
             jmp L00521627
             fld dword ptr [esp + 0x10]
-            fsub dword ptr ds:[0x58b7a8]
-            fmul dword ptr ds:[0x58b7ac]
+            fsub dword ptr [gMatchFloat_0058b7a8]
+            fmul dword ptr [gMatchFloat_0058b7ac]
             jmp L005215c4
             fld dword ptr [esp + 0x10]
             fld dword ptr [esp + 0x18]
             fchs
             fxch st(1)
             fpatan
-            fmul qword ptr ds:[0x58b7b0]
+            fmul qword ptr [gMatchDouble_0058b7b0]
             call _ftol
             and eax, 0xffff
             mov dword ptr [esp + 0x50], eax
             fild dword ptr [esp + 0x50]
-            fmul qword ptr ds:[0x58b7b8]
-            fmul dword ptr ds:[0x58b7c0]
+            fmul qword ptr [gMatchDouble_0058b7b8]
+            fmul dword ptr [gMatchFloat_0058b7c0]
             fstp dword ptr [esi + 0xc]
             fld dword ptr [esp + 0x18]
             fld dword ptr [esp + 0x10]
@@ -128,45 +154,45 @@ void C2_NAKED C2_HOOK_CDECL BrModelApplyMap(br_model* model, int map_type, br_ma
             fsqrt
             fxch st(1)
             fpatan
-            fmul qword ptr ds:[0x58b7b0]
+            fmul qword ptr [gMatchDouble_0058b7b0]
             call _ftol
             and eax, 0xffff
             mov dword ptr [esp + 0x50], eax
             fild dword ptr [esp + 0x50]
-            fmul qword ptr ds:[0x58b7b8]
-            fmul dword ptr ds:[0x58b7c4]
-            fsubr dword ptr ds:[0x58b7c8]
+            fmul qword ptr [gMatchDouble_0058b7b8]
+            fmul dword ptr [gMatchFloat_0058b7c4]
+            fsubr dword ptr [gMatchFloat_0058b7c8]
             jmp L00521624
             fld dword ptr [esp + 0x10]
             fld dword ptr [esp + 0x18]
             fchs
             fxch st(1)
             fpatan
-            fmul qword ptr ds:[0x58b7b0]
+            fmul qword ptr [gMatchDouble_0058b7b0]
             call _ftol
             and eax, 0xffff
             mov dword ptr [esp + 0x50], eax
             fild dword ptr [esp + 0x50]
-            fmul qword ptr ds:[0x58b7b8]
-            fmul dword ptr ds:[0x58b7c0]
+            fmul qword ptr [gMatchDouble_0058b7b8]
+            fmul dword ptr [gMatchFloat_0058b7c0]
     L005215c4:
             fstp dword ptr [esi + 0xc]
             fld dword ptr [esp + 0x14]
-            fsub dword ptr ds:[0x58b7a8]
-            fmul dword ptr ds:[0x58b7ac]
+            fsub dword ptr [gMatchFloat_0058b7a8]
+            fmul dword ptr [gMatchFloat_0058b7ac]
             jmp L00521624
             fld dword ptr [esp + 0x10]
             fld dword ptr [esp + 0x14]
             fchs
             fxch st(1)
             fpatan
-            fmul qword ptr ds:[0x58b7b0]
+            fmul qword ptr [gMatchDouble_0058b7b0]
             call _ftol
             and eax, 0xffff
             mov dword ptr [esp + 0x50], eax
             fild dword ptr [esp + 0x50]
-            fmul qword ptr ds:[0x58b7b8]
-            fmul dword ptr ds:[0x58b7c0]
+            fmul qword ptr [gMatchDouble_0058b7b8]
+            fmul dword ptr [gMatchFloat_0058b7c0]
             fstp dword ptr [esi + 0xc]
             fld dword ptr [esp + 0x14]
             fld dword ptr [esp + 0x10]
@@ -281,19 +307,19 @@ C2_NAKED br_matrix34* C2_HOOK_CDECL BrModelFitMap(br_model* model, int axis_0, i
             lea edx, [edx + edx*2]
             shl ecx, 2
             shl edx, 2
-            lea edi, [ecx + 0x663348]
+            lea edi, [ecx + gMatchFloat_00663348]
             lea eax, [ebp + 8]
-            fld dword ptr [edx + 0x66334c]
-            fld dword ptr [ecx + 0x663350]
-            fld dword ptr [ecx + 0x663350]
-            fld dword ptr [edx + 0x66334c]
-            fld dword ptr [ecx + 0x66334c]
+            fld dword ptr [edx + gMatchData_0066334c]
+            fld dword ptr [ecx + gMatchData_00663350]
+            fld dword ptr [ecx + gMatchData_00663350]
+            fld dword ptr [edx + gMatchData_0066334c]
+            fld dword ptr [ecx + gMatchData_0066334c]
             fxch st(3)
             fmulp st(4), st(0)
-            fld dword ptr [edx + 0x663350]
+            fld dword ptr [edx + gMatchData_00663350]
             fxch st(3)
-            fmul dword ptr [edx + 0x663350]
-            lea ebx, [edx + 0x663348]
+            fmul dword ptr [edx + gMatchData_00663350]
+            lea ebx, [edx + gMatchFloat_00663348]
             mov edx, edi
             fsubp st(4), st(0)
             _emit 0xd9
@@ -302,7 +328,7 @@ C2_NAKED br_matrix34* C2_HOOK_CDECL BrModelFitMap(br_model* model, int axis_0, i
             fstp dword ptr [esp + 0x10]
             _emit 0xd9
         _emit 0x03
-            fld dword ptr [ecx + 0x66334c]
+            fld dword ptr [ecx + gMatchData_0066334c]
             fxch st(4)
             fmulp st(5), st(0)
             _emit 0xd9
@@ -345,9 +371,9 @@ C2_NAKED br_matrix34* C2_HOOK_CDECL BrModelFitMap(br_model* model, int axis_0, i
             _emit 0xd9
         _emit 0x00
             fld dword ptr [eax + 0xc]
-            fmul dword ptr ds:[0x58b7ac]
+            fmul dword ptr [gMatchFloat_0058b7ac]
             fxch st(1)
-            fmul dword ptr ds:[0x58b7ac]
+            fmul dword ptr [gMatchFloat_0058b7ac]
             add eax, 4
             add edx, 4
             faddp st(1), st(0)
@@ -367,11 +393,11 @@ C2_NAKED br_matrix34* C2_HOOK_CDECL BrModelFitMap(br_model* model, int axis_0, i
             _emit 0xd9
         _emit 0x01
             fld dword ptr [ecx + 0xc]
-            fmul dword ptr ds:[0x58b7ac]
+            fmul dword ptr [gMatchFloat_0058b7ac]
             fxch st(1)
-            fmul dword ptr ds:[0x58b7ac]
+            fmul dword ptr [gMatchFloat_0058b7ac]
             fsubp st(1), st(0)
-            fdivr qword ptr ds:[0x58b7d0]
+            fdivr qword ptr [gMatchDouble_0058b7d0]
             _emit 0xd9
         _emit 0x1a
             jmp L00521796
@@ -407,6 +433,13 @@ C2_NAKED br_matrix34* C2_HOOK_CDECL BrModelFitMap(br_model* model, int axis_0, i
             pop ebx
             add esp, 0x18
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }

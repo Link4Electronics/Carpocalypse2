@@ -475,6 +475,24 @@ extern br_v1db_state v1db;
 extern br_uint_32 C2_HOOK_CDECL BrMaterialCount();
 extern br_uint_32 C2_HOOK_CDECL BrMaterialEnum();
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gData_0058b7dc[];
+extern char gData_0066394c[];
+extern char gData_00664aa8[];
+extern char gFloat_0066412c[];
+extern char gFloat_00664a70[];
+extern char gFloat_00664ae0[];
+extern char gFloat_00664b1c[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchData_0058b7dc[];
+extern char gMatchData_0066394c[];
+extern char gMatchData_00664aa8[];
+extern char gMatchFloat_0066412c[];
+extern char gMatchFloat_00664a70[];
+extern char gMatchFloat_00664ae0[];
+extern char gMatchFloat_00664b1c[];
+#endif
 // FUNCTION: CARMA2_HW 0x005232a0
 int C2_HOOK_STDCALL FopRead_VERTICES(br_datafile* df, br_uint_32 id, br_uint_32 length, br_uint_32 count) {
     br_model* mp;
@@ -676,7 +694,7 @@ int C2_NAKED C2_HOOK_STDCALL FopRead_OLD_MATERIAL_INDEX(br_datafile* df, br_uint
             add esp, 0x10
             cmp eax, esi
             je L005234cb
-            push offset MaterialLoadTable+0xb4
+            push offset gMatchFloat_0066412c
             call BrFailure
             add esp, 4
     L005234cb:
@@ -741,6 +759,15 @@ int C2_NAKED C2_HOOK_STDCALL FopRead_OLD_MATERIAL_INDEX(br_datafile* df, br_uint
             xor eax, eax
             pop ebx
             ret 0x10
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -1207,7 +1234,7 @@ int C2_NAKED C2_HOOK_STDCALL FopRead_PIXELMAP_REF(br_datafile* df, br_uint_32 id
             je L00523a12
             add eax, 0xc
             inc esi
-            cmp eax, offset MaterialMaps+0x3c
+            cmp eax, offset gMatchData_0066394c
             jb L00523a03
     L00523a12:
             push 0
@@ -1701,16 +1728,16 @@ br_uint_32 C2_NAKED C2_HOOK_CDECL WriteModel(br_model* mp, br_datafile* df) {
             call BrWarning
             add esp, 4
     L00523f12:
-            push offset MaterialLoadTable+0x9f8
+            push offset gMatchFloat_00664a70
             call BrWarning
             add esp, 4
-            push offset MaterialLoadTable+0xa30
+            push offset gMatchData_00664aa8
             call BrWarning
             add esp, 4
-            push offset MaterialLoadTable+0xa68
+            push offset gMatchFloat_00664ae0
             call BrWarning
             add esp, 4
-            push offset MaterialLoadTable+0xaa4
+            push offset gMatchFloat_00664b1c
             call BrFailure
             add esp, 4
             xor eax, eax
@@ -1801,13 +1828,13 @@ br_uint_32 C2_NAKED C2_HOOK_CDECL WriteModel(br_model* mp, br_datafile* df) {
             lea esi, [eax + 0x10]
     L00524018:
             fld dword ptr [esi - 4]
-            fcomp dword ptr [IID_IDirectInputDevice2A+0x444]
+            fcomp dword ptr [gMatchData_0058b7dc]
             fnstsw ax
             test ah, 0x40
             je L00524041
             _emit 0xd9
         _emit 0x06
-            fcomp dword ptr [IID_IDirectInputDevice2A+0x444]
+            fcomp dword ptr [gMatchData_0058b7dc]
             fnstsw ax
             test ah, 0x40
             je L00524041
@@ -2082,6 +2109,12 @@ br_uint_32 C2_NAKED C2_HOOK_CDECL WriteModel(br_model* mp, br_datafile* df) {
             pop ebx
             add esp, 0x68
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -2282,7 +2315,7 @@ int C2_NAKED C2_HOOK_STDCALL WriteActor(br_actor* a, br_datafile* df) {
             je L0052448c
             xor ecx, ecx
             mov cx, word ptr [edi]
-            mov eax, dword ptr [ecx*8 + 0x663c5c]
+            mov eax, dword ptr [ecx*8 + TransformTypes+0x4]
             lea ebx, [ecx*8 + TransformTypes]
             test eax, eax
             je L00524475

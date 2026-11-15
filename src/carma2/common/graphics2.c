@@ -139,6 +139,12 @@ extern int C2_HOOK_FASTCALL EitherMouseButtonDown(void);
 extern void C2_HOOK_FASTCALL GetMousePosition(int *pX, int *pY);
 extern int C2_HOOK_FASTCALL PossibleUnlock(int pValue);
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gData_0068b920[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchData_0068b920[];
+#endif
 // FUNCTION: CARMA2_HW 0x0043e010
 void C2_HOOK_FASTCALL RemoveTransientBitmaps(int pGraphically_remove_them) {
     int i;
@@ -671,7 +677,11 @@ int C2_NAKED C2_HOOK_FASTCALL DoMouseCursor(void) {
     L0043e0a6:
             call PDGetTotalTime
             mov edi, eax
-            mov eax, dword ptr ds:[0x67c398]
+            _emit 0xa1
+        _emit 0x98
+        _emit 0xc3
+        _emit 0x67
+        _emit 0x00
             test eax, eax
             je L0043e0bc
             mov esi, edi
@@ -686,11 +696,11 @@ int C2_NAKED C2_HOOK_FASTCALL DoMouseCursor(void) {
             lea ecx, [esp + 0xc]
             call GetMousePosition
             mov eax, dword ptr [esp + 0xc]
-            mov ecx, dword ptr ds:[gMouse_last_pos]
+            mov ecx, dword ptr [gMouse_last_pos]
             cmp eax, ecx
             jne L0043e0f2
             mov ecx, dword ptr [esp + 0x10]
-            mov eax, dword ptr ds:[0x79ecb4]
+            mov eax, dword ptr [gMouse_last_pos+0x4]
             cmp ecx, eax
             jne L0043e0f2
             xor ebp, ebp
@@ -700,39 +710,68 @@ int C2_NAKED C2_HOOK_FASTCALL DoMouseCursor(void) {
     L0043e0f7:
             call EitherMouseButtonDown
             mov dword ptr [esp + 0x14], eax
-            mov eax, dword ptr ds:[gMouse_in_use]
+            mov eax, dword ptr [gMouse_in_use]
             test eax, eax
             jne L0043e111
             test ebp, ebp
             je L0043e3bd
     L0043e111:
-            mov ecx, dword ptr ds:[gMouse_last_pos]
+            mov ecx, dword ptr [gMouse_last_pos]
             mov eax, dword ptr [esp + 0xc]
             cmp eax, ecx
-            mov dword ptr ds:[gMouse_in_use], 1
+            mov dword ptr [gMouse_in_use], 1
             jne L0043e144
-            mov eax, dword ptr ds:[0x67c3a8]
+            _emit 0xa1
+        _emit 0xa8
+        _emit 0xc3
+        _emit 0x67
+        _emit 0x00
             mov edx, eax
             inc eax
             cmp edx, 5
-            mov dword ptr ds:[0x67c3a8], eax
+            _emit 0xa3
+        _emit 0xa8
+        _emit 0xc3
+        _emit 0x67
+        _emit 0x00
             jl L0043e166
             xor eax, eax
-            mov dword ptr ds:[0x67c3a0], eax
+            _emit 0xa3
+        _emit 0xa0
+        _emit 0xc3
+        _emit 0x67
+        _emit 0x00
             jmp L0043e16b
     L0043e144:
             sub eax, ecx
-            mov dword ptr ds:[0x67c3a8], 0
+            _emit 0xc7
+        _emit 0x05
+        _emit 0xa8
+        _emit 0xc3
+        _emit 0x67
+        _emit 0x00
+        _emit 0x00
+        _emit 0x00
+        _emit 0x00
+        _emit 0x00
             lea eax, [eax + eax*4]
             lea eax, [eax + eax*4]
             lea eax, [eax + eax*4]
             shl eax, 3
             cdq
             idiv esi
-            mov dword ptr ds:[0x67c3a0], eax
+            _emit 0xa3
+        _emit 0xa0
+        _emit 0xc3
+        _emit 0x67
+        _emit 0x00
             jmp L0043e16b
     L0043e166:
-            mov eax, dword ptr ds:[0x67c3a0]
+            _emit 0xa1
+        _emit 0xa0
+        _emit 0xc3
+        _emit 0x67
+        _emit 0x00
     L0043e16b:
             cmp eax, -0xa
             jge L0043e174
@@ -745,35 +784,54 @@ int C2_NAKED C2_HOOK_FASTCALL DoMouseCursor(void) {
             add ecx, 2
             mov eax, ecx
     L0043e181:
-            cmp eax, dword ptr ds:[0x67c3a4]
+            _emit 0x3b
+        _emit 0x05
+        _emit 0xa4
+        _emit 0xc3
+        _emit 0x67
+        _emit 0x00
             je L0043e1a6
-            mov esi, dword ptr ds:[0x67c39c]
+            _emit 0x8b
+        _emit 0x35
+        _emit 0x9c
+        _emit 0xc3
+        _emit 0x67
+        _emit 0x00
             mov edx, edi
             sub edx, esi
             cmp edx, 0xc8
             jb L0043e1a6
-            mov dword ptr ds:[0x67c39c], edi
-            mov dword ptr ds:[0x67c3a4], eax
+            _emit 0x89
+        _emit 0x3d
+        _emit 0x9c
+        _emit 0xc3
+        _emit 0x67
+        _emit 0x00
+            _emit 0xa3
+        _emit 0xa4
+        _emit 0xc3
+        _emit 0x67
+        _emit 0x00
     L0043e1a6:
             mov eax, dword ptr [esp + 0x10]
             mov ecx, dword ptr [esp + 0xc]
             add ecx, -7
-            mov dword ptr ds:[gCurrent_cursor_index], 2
+            mov dword ptr [gCurrent_cursor_index], 2
             lea edx, [eax - 7]
-            mov eax, dword ptr ds:[gNoTransients]
+            mov eax, dword ptr [gNoTransients]
             test eax, eax
             jne L0043e234
-            mov eax, dword ptr ds:[gTransient_bitmap_index]
+            mov eax, dword ptr [gTransient_bitmap_index]
             and ecx, 0xfffffffc
             lea eax, [eax + eax*2]
             shl eax, 3
-            mov dword ptr [eax + 0x67bea0], ecx
-            mov ecx, dword ptr ds:[gNext_transient]
-            mov dword ptr [eax + 0x67bea4], edx
-            mov dword ptr [eax + 0x67be9c], 1
-            mov dword ptr [eax + 0x67bea8], ecx
+            mov dword ptr [eax + gTransient_bitmaps+0x8], ecx
+            mov ecx, dword ptr [gNext_transient]
+            mov dword ptr [eax + gTransient_bitmaps+0xc], edx
+            mov dword ptr [eax + gTransient_bitmaps+0x4], 1
+            mov dword ptr [eax + gTransient_bitmaps+0x10], ecx
             inc ecx
-            mov dword ptr ds:[gNext_transient], ecx
+            mov dword ptr [gNext_transient], ecx
             mov ecx, dword ptr [eax + gTransient_bitmaps]
             xor edx, edx
             mov dx, word ptr [ecx + 0x36]
@@ -781,10 +839,10 @@ int C2_NAKED C2_HOOK_FASTCALL DoMouseCursor(void) {
             xor edx, edx
             mov dx, word ptr [ecx + 0x34]
             push edx
-            mov edx, dword ptr [eax + 0x67bea4]
-            mov eax, dword ptr [eax + 0x67bea0]
+            mov edx, dword ptr [eax + gTransient_bitmaps+0xc]
+            mov eax, dword ptr [eax + gTransient_bitmaps+0x8]
             push edx
-            mov edx, dword ptr ds:[gBack_screen]
+            mov edx, dword ptr [gBack_screen]
             push eax
             push edx
             push 0
@@ -793,7 +851,11 @@ int C2_NAKED C2_HOOK_FASTCALL DoMouseCursor(void) {
             call BrPixelmapRectangleCopy
             add esp, 0x20
     L0043e234:
-            mov eax, dword ptr ds:[0x58fddc]
+            _emit 0xa1
+        _emit 0xdc
+        _emit 0xfd
+        _emit 0x58
+        _emit 0x00
             sub eax, 0
             je L0043e3bd
             dec eax
@@ -801,30 +863,43 @@ int C2_NAKED C2_HOOK_FASTCALL DoMouseCursor(void) {
             mov ecx, 1
             call PossibleUnlock
             mov eax, dword ptr [esp + 0x10]
-            mov ecx, dword ptr ds:[0x58fde0]
+            _emit 0x8b
+        _emit 0x0d
+        _emit 0xe0
+        _emit 0xfd
+        _emit 0x58
+        _emit 0x00
             mov edx, dword ptr [esp + 0xc]
             add eax, -9
             push eax
             push ecx
-            mov ecx, dword ptr ds:[gCursor_tinted_top]
+            mov ecx, dword ptr [gCursor_tinted_top]
             push 0
             dec edx
             call SetTintedPolySize
-            mov eax, dword ptr ds:[0x58fde0]
+            _emit 0xa1
+        _emit 0xe0
+        _emit 0xfd
+        _emit 0x58
+        _emit 0x00
             mov ecx, dword ptr [esp + 0xc]
             mov edx, dword ptr [esp + 0x10]
             add ecx, -9
             push eax
             dec edx
             push ecx
-            mov ecx, dword ptr ds:[gCursor_tinted_left]
+            mov ecx, dword ptr [gCursor_tinted_left]
             push edx
             xor edx, edx
             call SetTintedPolySize
-            mov eax, dword ptr ds:[gCurrent_graf_data]
+            mov eax, dword ptr [gCurrent_graf_data]
             mov ecx, dword ptr [esp + 0x10]
             mov edx, dword ptr [eax + 4]
-            mov eax, dword ptr ds:[0x58fde0]
+            _emit 0xa1
+        _emit 0xe0
+        _emit 0xfd
+        _emit 0x58
+        _emit 0x00
             sub edx, eax
             sub edx, ecx
             add edx, 9
@@ -834,10 +909,14 @@ int C2_NAKED C2_HOOK_FASTCALL DoMouseCursor(void) {
             mov ecx, dword ptr [esp + 0x14]
             push eax
             lea edx, [ecx - 1]
-            mov ecx, dword ptr ds:[gCursor_tinted_bottom]
+            mov ecx, dword ptr [gCursor_tinted_bottom]
             call SetTintedPolySize
-            mov edx, dword ptr ds:[gCurrent_graf_data]
-            mov eax, dword ptr ds:[0x58fde0]
+            mov edx, dword ptr [gCurrent_graf_data]
+            _emit 0xa1
+        _emit 0xe0
+        _emit 0xfd
+        _emit 0x58
+        _emit 0x00
             mov ecx, dword ptr [esp + 0xc]
             push eax
             mov edx, dword ptr [edx]
@@ -849,7 +928,7 @@ int C2_NAKED C2_HOOK_FASTCALL DoMouseCursor(void) {
             dec edx
             push edx
             lea edx, [ecx + eax + 5]
-            mov ecx, dword ptr ds:[gCursor_tinted_right]
+            mov ecx, dword ptr [gCursor_tinted_right]
             call SetTintedPolySize
             mov eax, dword ptr [esp + 0x10]
             mov ecx, dword ptr [esp + 0xc]
@@ -857,51 +936,61 @@ int C2_NAKED C2_HOOK_FASTCALL DoMouseCursor(void) {
             add eax, -7
             push 0x10
             lea edx, [ecx - 7]
-            mov ecx, dword ptr ds:[gCursor_tinted_center]
+            mov ecx, dword ptr [gCursor_tinted_center]
             push eax
             call SetTintedPolySize
-            mov ecx, dword ptr ds:[gCursor_tinted_top]
+            mov ecx, dword ptr [gCursor_tinted_top]
             call TurnTintedPolyOn
-            mov ecx, dword ptr ds:[gCursor_tinted_left]
+            mov ecx, dword ptr [gCursor_tinted_left]
             call TurnTintedPolyOn
-            mov ecx, dword ptr ds:[gCursor_tinted_bottom]
+            mov ecx, dword ptr [gCursor_tinted_bottom]
             call TurnTintedPolyOn
-            mov ecx, dword ptr ds:[gCursor_tinted_right]
+            mov ecx, dword ptr [gCursor_tinted_right]
             call TurnTintedPolyOn
-            mov ecx, dword ptr ds:[gCursor_tinted_center]
+            mov ecx, dword ptr [gCursor_tinted_center]
             call TurnTintedPolyOn
-            mov ecx, dword ptr ds:[gCursor_tinted_top]
+            mov ecx, dword ptr [gCursor_tinted_top]
             call ProcessTintedPoly
-            mov ecx, dword ptr ds:[gCursor_tinted_left]
+            mov ecx, dword ptr [gCursor_tinted_left]
             call ProcessTintedPoly
-            mov ecx, dword ptr ds:[gCursor_tinted_bottom]
+            mov ecx, dword ptr [gCursor_tinted_bottom]
             call ProcessTintedPoly
-            mov ecx, dword ptr ds:[gCursor_tinted_right]
+            mov ecx, dword ptr [gCursor_tinted_right]
             call ProcessTintedPoly
-            mov ecx, dword ptr ds:[gCursor_tinted_center]
+            mov ecx, dword ptr [gCursor_tinted_center]
             call ProcessTintedPoly
             call RenderTintedPolys
-            mov ecx, dword ptr ds:[gCursor_tinted_top]
+            mov ecx, dword ptr [gCursor_tinted_top]
             call TurnTintedPolyOff
-            mov ecx, dword ptr ds:[gCursor_tinted_left]
+            mov ecx, dword ptr [gCursor_tinted_left]
             call TurnTintedPolyOff
-            mov ecx, dword ptr ds:[gCursor_tinted_bottom]
+            mov ecx, dword ptr [gCursor_tinted_bottom]
             call TurnTintedPolyOff
-            mov ecx, dword ptr ds:[gCursor_tinted_right]
+            mov ecx, dword ptr [gCursor_tinted_right]
             call TurnTintedPolyOff
-            mov ecx, dword ptr ds:[gCursor_tinted_center]
+            mov ecx, dword ptr [gCursor_tinted_center]
             call TurnTintedPolyOff
     L0043e3bd:
             mov eax, dword ptr [esp + 0x10]
             mov edx, dword ptr [esp + 0xc]
             mov ecx, dword ptr [esp + 0x14]
-            mov dword ptr ds:[0x67c398], edi
-            mov dword ptr ds:[0x79ecb4], eax
+            _emit 0x89
+        _emit 0x3d
+        _emit 0x98
+        _emit 0xc3
+        _emit 0x67
+        _emit 0x00
+            mov dword ptr [gMouse_last_pos+0x4], eax
             pop edi
             mov eax, ebp
             pop esi
-            mov dword ptr ds:[gMouse_last_pos], edx
-            mov dword ptr ds:[0x67c3ac], ecx
+            mov dword ptr [gMouse_last_pos], edx
+            _emit 0x89
+        _emit 0x0d
+        _emit 0xac
+        _emit 0xc3
+        _emit 0x67
+        _emit 0x00
             pop ebp
             add esp, 0xc
             ret
@@ -2520,7 +2609,7 @@ void C2_NAKED C2_HOOK_FASTCALL FUN_0047d700(br_pixelmap* pDest, const br_pixelma
             add edi, dword ptr [ecx + 8]
             test ebx, ebx
             jle L0047d780
-            mov ecx, offset gNet_mode+0x8
+            mov ecx, offset gMatchData_0068b920
             mov esi, ebx
             sub eax, ecx
     L0047d76f:
@@ -2532,7 +2621,7 @@ void C2_NAKED C2_HOOK_FASTCALL FUN_0047d700(br_pixelmap* pDest, const br_pixelma
             mov edx, dword ptr [esp + 0x2c]
     L0047d780:
             lea ecx, [ebx + ebx]
-            mov esi, offset gNet_mode+0x8
+            mov esi, offset gMatchData_0068b920
             mov eax, ecx
             shr ecx, 2
             rep movsd

@@ -166,6 +166,12 @@ extern tU32 gFrontend_net_current_roll;
 extern tU32 gFrontend_net_last_roll;
 extern int gFrontend_selected_item_index;
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gData_006ddd00[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern tU8 gTemporary_physics_render_buffer[300000];
+#endif
 // FUNCTION: CARMA2_HW 0x00472ed0
 int C2_HOOK_FASTCALL NetOptions_Infunc(tFrontend_spec* pFrontend) {
 
@@ -291,14 +297,14 @@ int C2_NAKED C2_HOOK_FASTCALL NetOptions_TargetRoller(tFrontend_spec* pFrontend)
             push edi
             mov ebx, ecx
             call PDGetTotalTime
-            mov esi, dword ptr ds:[gFrontend_net_last_roll]
+            mov esi, dword ptr [gFrontend_net_last_roll]
             mov ecx, eax
             sub ecx, esi
-            mov dword ptr ds:[gFrontend_net_current_roll], eax
+            mov dword ptr [gFrontend_net_current_roll], eax
             cmp ecx, 0x12c
             jl L00473444
-            mov edi, dword ptr ds:[gFrontend_game_type]
-            mov dword ptr ds:[gFrontend_net_last_roll], eax
+            mov edi, dword ptr [gFrontend_game_type]
+            mov dword ptr [gFrontend_net_last_roll], eax
             mov eax, edi
             dec eax
             je L0047330f
@@ -307,7 +313,7 @@ int C2_NAKED C2_HOOK_FASTCALL NetOptions_TargetRoller(tFrontend_spec* pFrontend)
             sub eax, 2
             jne L00473444
             mov eax, 0x7530
-            mov esi, 0x6ddd00
+            mov esi, offset gTemporary_physics_render_buffer+0x232c0
             mov edx, eax
             jmp L0047331b
     L00473301:
@@ -320,19 +326,19 @@ int C2_NAKED C2_HOOK_FASTCALL NetOptions_TargetRoller(tFrontend_spec* pFrontend)
             mov esi, 0x40
             mov edx, eax
     L0047331b:
-            mov ecx, dword ptr ds:[gFrontend_selected_item_index]
+            mov ecx, dword ptr [gFrontend_selected_item_index]
             cmp ecx, 0x1e
             jne L00473330
-            mov ecx, dword ptr ds:[0x763b3c]
+            mov ecx, dword ptr [gFrontend_net_options+0x1c]
             add ecx, eax
             jmp L0047333d
     L00473330:
             cmp ecx, 0x1d
-            mov ecx, dword ptr ds:[0x763b3c]
+            mov ecx, dword ptr [gFrontend_net_options+0x1c]
             jne L00473343
             sub ecx, eax
     L0047333d:
-            mov dword ptr ds:[0x763b3c], ecx
+            mov dword ptr [gFrontend_net_options+0x1c], ecx
     L00473343:
             cmp ecx, edx
             jge L0047334b
@@ -343,7 +349,7 @@ int C2_NAKED C2_HOOK_FASTCALL NetOptions_TargetRoller(tFrontend_spec* pFrontend)
             jle L00473357
             mov ecx, esi
     L00473351:
-            mov dword ptr ds:[0x763b3c], ecx
+            mov dword ptr [gFrontend_net_options+0x1c], ecx
     L00473357:
             cmp edi, 7
             ja L0047343d
@@ -422,10 +428,19 @@ int C2_NAKED C2_HOOK_FASTCALL NetOptions_TargetRoller(tFrontend_spec* pFrontend)
             pop esi
             pop ebx
             ret
-            mov edx, dword ptr ds:[0x655af8]
+            _emit 0x8b
+        _emit 0x15
+        _emit 0xf8
+        _emit 0x5a
+        _emit 0x65
+        _emit 0x00
             lea ecx, [ebx + 0x2479]
             mov dword ptr [ebx + 0x2479], edx
-            mov al, byte ptr ds:[0x655afc]
+            _emit 0xa0
+        _emit 0xfc
+        _emit 0x5a
+        _emit 0x65
+        _emit 0x00
             mov byte ptr [ecx + 4], al
     L0047343d:
             mov ecx, ebx

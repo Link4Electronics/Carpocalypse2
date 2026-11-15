@@ -262,6 +262,14 @@ extern tCar_spec* gCar_to_view;
 extern int gCount_net_crush_full_detach_bit_list;
 extern br_scalar gMax_detach_time_ms;
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gData_0058facc[];
+extern char gFloat_0058fb14[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchData_0058facc[];
+extern char gMatchFloat_0058fb14[];
+#endif
 // FUNCTION: CARMA2_HW 0x00433350
 C2_NAKED tPhysics_object* C2_HOOK_FASTCALL DetachBit(tCar_spec* pCar, br_actor* pActor, br_bounds3* pBounds) {
 #ifndef CARPOCALYPSE2_MATCHING
@@ -917,7 +925,9 @@ void C2_NAKED C2_HOOK_FASTCALL InitDetachedBitPhysicsObject(tPhysics_object* pOb
             lea ecx, [esi + 0x3c]
             add edx, 4
             call DRBoundsCopy
-            fld dword ptr [ebp]
+            _emit 0xd9
+        _emit 0x45
+        _emit 0x00
             mov ecx, dword ptr [ebx + 0x60]
             lea ebx, [esi + 0x14]
             fmul dword ptr [gFLOAT_00589a2c]
@@ -953,7 +963,8 @@ void C2_NAKED C2_HOOK_FASTCALL InitDetachedBitPhysicsObject(tPhysics_object* pOb
             fstp dword ptr [esp + 0x3c]
             fld dword ptr [esp + 0x34]
             fadd dword ptr [esp + 0x28]
-            fstp dword ptr [ebx]
+            _emit 0xd9
+        _emit 0x1b
             fld dword ptr [esp + 0x38]
             fadd dword ptr [esp + 0x2c]
             fstp dword ptr [esi + 0x18]
@@ -1014,7 +1025,9 @@ void C2_NAKED C2_HOOK_FASTCALL InitDetachedBitPhysicsObject(tPhysics_object* pOb
             fld dword ptr [esi + 0x38]
             fld dword ptr [esi + 0x2c]
             fld dword ptr [esi + 0x30]
-            fsub dword ptr [ebp]
+            _emit 0xd8
+        _emit 0x65
+        _emit 0x00
             fxch st(3)
             fsubp st(4), st(0)
             fxch st(2)
@@ -1094,7 +1107,8 @@ void C2_NAKED C2_HOOK_FASTCALL InitDetachedBitPhysicsObject(tPhysics_object* pOb
             push eax
             lea ecx, [esp + 0x2c]
             call DrMatrix34ApplyLPInverse
-            fld dword ptr [ebx]
+            _emit 0xd9
+        _emit 0x03
             fld dword ptr [esi + 0x18]
             fld dword ptr [esi + 0x1c]
             fxch st(2)
@@ -1103,8 +1117,12 @@ void C2_NAKED C2_HOOK_FASTCALL InitDetachedBitPhysicsObject(tPhysics_object* pOb
             fsub dword ptr [esp + 0x2c]
             fxch st(2)
             fsub dword ptr [esp + 0x30]
-            fld dword ptr [ebp]
-            fld dword ptr [ebp]
+            _emit 0xd9
+        _emit 0x45
+        _emit 0x00
+            _emit 0xd9
+        _emit 0x45
+        _emit 0x00
             fld dword ptr [esi + 0x78]
             fxch st(4)
             fstp dword ptr [esp + 0x1c]
@@ -1125,7 +1143,9 @@ void C2_NAKED C2_HOOK_FASTCALL InitDetachedBitPhysicsObject(tPhysics_object* pOb
             fxch st(2)
             fmul dword ptr [esp + 0x1c]
             fxch st(4)
-            fstp dword ptr [ebp]
+            _emit 0xd9
+        _emit 0x5d
+        _emit 0x00
             fmul dword ptr [esp + 0x24]
             add ecx, 0x2c
             lea edx, [esp + 0x1c]
@@ -1148,7 +1168,9 @@ void C2_NAKED C2_HOOK_FASTCALL InitDetachedBitPhysicsObject(tPhysics_object* pOb
             lea eax, [esi + 0x54]
             push 0
             push 0xbd6d7304
-            fstp dword ptr [ebp]
+            _emit 0xd9
+        _emit 0x5d
+        _emit 0x00
             fld dword ptr [edi + 0x6c]
             fadd dword ptr [esp + 0x28]
             push 0
@@ -2458,6 +2480,16 @@ void C2_NAKED C2_HOOK_FASTCALL DoDetaching(void) {
             pop ebx
             add esp, 0x50
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -2915,6 +2947,12 @@ intptr_t C2_NAKED C2_HOOK_FASTCALL FlapBit(br_actor* pActor, br_matrix34* pMat, 
             pop ebx
             add esp, 0x28
             ret 4
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -3694,7 +3732,7 @@ void C2_NAKED C2_HOOK_FASTCALL FUN_0042f5d0(br_model* pSource_model, br_model** 
             mov dword ptr [esp + 0x18], ebp
             cmp word ptr [ebp + 0x10], 0x400
             jbe L0042f5fa
-            mov ecx, 0x58facc
+            mov ecx, offset gMatchData_0058facc
             call PDFatalError
     L0042f5fa:
             mov cx, word ptr [ebp + 0x12]
@@ -3703,7 +3741,7 @@ void C2_NAKED C2_HOOK_FASTCALL FUN_0042f5d0(br_model* pSource_model, br_model** 
             mov word ptr [esp + 0x3c], cx
             xor ecx, ecx
             xor esi, esi
-            mov dword ptr ds:[gSplit_polyhedron_source_vertices], edx
+            mov dword ptr [gSplit_polyhedron_source_vertices], edx
             mov edx, dword ptr [ebp + 8]
             test ax, ax
             mov dword ptr [esp + 0x2c], eax
@@ -3730,7 +3768,7 @@ void C2_NAKED C2_HOOK_FASTCALL FUN_0042f5d0(br_model* pSource_model, br_model** 
             faddp st(1), st(0)
             fsub dword ptr [eax + 0xc]
             fld st(0)
-            fcomp dword ptr ds:[gCrushZero]
+            fcomp dword ptr [gCrushZero]
             _emit 0xd9
         _emit 0x1b
             fnstsw ax
@@ -3750,7 +3788,7 @@ void C2_NAKED C2_HOOK_FASTCALL FUN_0042f5d0(br_model* pSource_model, br_model** 
             jne L0042f633
             mov ebp, dword ptr [esp + 0x18]
     L0042f682:
-            mov eax, 0x67a3b4
+            mov eax, offset gSplit_polyhedron_edge_map+0x4
             mov edx, 0x200
     L0042f68c:
             mov word ptr [eax], 0
@@ -3764,7 +3802,7 @@ void C2_NAKED C2_HOOK_FASTCALL FUN_0042f5d0(br_model* pSource_model, br_model** 
             mov dword ptr [esp + 0x10], edx
             mov dword ptr [esp + 0x14], ebx
             mov dword ptr [esp + 0x1c], ebx
-            mov dword ptr ds:[gSplit_polyhedron_source_faces], eax
+            mov dword ptr [gSplit_polyhedron_source_faces], eax
             jbe L0042f90d
     L0042f6ba:
             mov bx, word ptr [eax + 4]
@@ -3790,7 +3828,7 @@ void C2_NAKED C2_HOOK_FASTCALL FUN_0042f5d0(br_model* pSource_model, br_model** 
             jmp dword ptr [eax*4 + 0x430104]
             inc dword ptr [esp + 0x10]
             jmp L0042f8e0
-            cmp word ptr ds:[0x67a3b4], 0
+            cmp word ptr [gSplit_polyhedron_edge_map+0x4], 0
             mov eax, offset gSplit_polyhedron_edge_map
             je L0042f73d
     L0042f728:
@@ -3811,7 +3849,7 @@ void C2_NAKED C2_HOOK_FASTCALL FUN_0042f5d0(br_model* pSource_model, br_model** 
             mov byte ptr [eax + 8], 1
             inc esi
     L0042f752:
-            cmp word ptr ds:[0x67a3b4], 0
+            cmp word ptr [gSplit_polyhedron_edge_map+0x4], 0
             mov eax, offset gSplit_polyhedron_edge_map
             je L0042f77a
     L0042f761:
@@ -3827,7 +3865,7 @@ void C2_NAKED C2_HOOK_FASTCALL FUN_0042f5d0(br_model* pSource_model, br_model** 
             mov word ptr [eax], bx
             mov word ptr [eax + 2], dx
             jmp L0042f8c4
-            cmp word ptr ds:[0x67a3b4], 0
+            cmp word ptr [gSplit_polyhedron_edge_map+0x4], 0
             mov eax, offset gSplit_polyhedron_edge_map
             je L0042f7aa
     L0042f795:
@@ -3848,7 +3886,7 @@ void C2_NAKED C2_HOOK_FASTCALL FUN_0042f5d0(br_model* pSource_model, br_model** 
             mov byte ptr [eax + 8], 1
             inc esi
     L0042f7bf:
-            cmp word ptr ds:[0x67a3b4], 0
+            cmp word ptr [gSplit_polyhedron_edge_map+0x4], 0
             mov eax, offset gSplit_polyhedron_edge_map
             je L0042f7e7
     L0042f7ce:
@@ -3864,7 +3902,7 @@ void C2_NAKED C2_HOOK_FASTCALL FUN_0042f5d0(br_model* pSource_model, br_model** 
             mov word ptr [eax], bx
             mov word ptr [eax + 2], di
             jmp L0042f8c4
-            cmp word ptr ds:[0x67a3b4], 0
+            cmp word ptr [gSplit_polyhedron_edge_map+0x4], 0
             mov eax, offset gSplit_polyhedron_edge_map
             je L0042f817
     L0042f802:
@@ -3885,7 +3923,7 @@ void C2_NAKED C2_HOOK_FASTCALL FUN_0042f5d0(br_model* pSource_model, br_model** 
             mov byte ptr [eax + 8], 1
             inc esi
     L0042f82c:
-            cmp word ptr ds:[0x67a3b4], 0
+            cmp word ptr [gSplit_polyhedron_edge_map+0x4], 0
             mov eax, offset gSplit_polyhedron_edge_map
             je L0042f854
     L0042f83b:
@@ -3901,7 +3939,7 @@ void C2_NAKED C2_HOOK_FASTCALL FUN_0042f5d0(br_model* pSource_model, br_model** 
             mov word ptr [eax], bx
             mov word ptr [eax + 2], di
             jmp L004300e0
-            cmp word ptr ds:[0x67a3b4], 0
+            cmp word ptr [gSplit_polyhedron_edge_map+0x4], 0
             mov eax, offset gSplit_polyhedron_edge_map
             je L0042f884
     L0042f86f:
@@ -3922,7 +3960,7 @@ void C2_NAKED C2_HOOK_FASTCALL FUN_0042f5d0(br_model* pSource_model, br_model** 
             mov byte ptr [eax + 8], 1
             inc esi
     L0042f899:
-            cmp word ptr ds:[0x67a3b4], 0
+            cmp word ptr [gSplit_polyhedron_edge_map+0x4], 0
             mov eax, offset gSplit_polyhedron_edge_map
             je L0042f8bd
     L0042f8a8:
@@ -3951,12 +3989,12 @@ void C2_NAKED C2_HOOK_FASTCALL FUN_0042f5d0(br_model* pSource_model, br_model** 
             mov dword ptr [esp + 0x14], eax
     L0042f8e0:
             mov edx, dword ptr [esp + 0x1c]
-            mov eax, dword ptr ds:[gSplit_polyhedron_source_faces]
+            mov eax, dword ptr [gSplit_polyhedron_source_faces]
             inc edx
             add eax, 0x28
             cmp dx, word ptr [esp + 0x3c]
             mov dword ptr [esp + 0x1c], edx
-            mov dword ptr ds:[gSplit_polyhedron_source_faces], eax
+            mov dword ptr [gSplit_polyhedron_source_faces], eax
             jb L0042f6ba
             mov ebp, dword ptr [esp + 0x18]
             mov ebx, dword ptr [esp + 0x14]
@@ -3992,10 +4030,10 @@ void C2_NAKED C2_HOOK_FASTCALL FUN_0042f5d0(br_model* pSource_model, br_model** 
             xor edi, edi
             cmp word ptr [esp + 0x2c], bx
             mov edx, dword ptr [eax + 8]
-            mov dword ptr ds:[gSplit_polyhedron_positive_vertices], edx
+            mov dword ptr [gSplit_polyhedron_positive_vertices], edx
             mov eax, dword ptr [ecx]
             mov esi, dword ptr [eax + 8]
-            mov dword ptr ds:[gSplit_polyhedron_negative_vertices], esi
+            mov dword ptr [gSplit_polyhedron_negative_vertices], esi
             mov eax, dword ptr [ebp + 8]
             jbe L0042fa21
             mov ebp, dword ptr [esp + 0x2c]
@@ -4058,7 +4096,7 @@ void C2_NAKED C2_HOOK_FASTCALL FUN_0042f5d0(br_model* pSource_model, br_model** 
             mov edi, dword ptr [eax + 0xc]
             mov eax, dword ptr [esp + 0x3c]
             test ax, ax
-            mov dword ptr ds:[gSplit_polyhedron_source_faces], edx
+            mov dword ptr [gSplit_polyhedron_source_faces], edx
             jbe L0042ffa6
             lea ecx, [esp + 0x1c44]
             and eax, 0xffff
@@ -4066,7 +4104,7 @@ void C2_NAKED C2_HOOK_FASTCALL FUN_0042f5d0(br_model* pSource_model, br_model** 
             mov dword ptr [esp + 0x2c], eax
             jmp L0042fa61
     L0042fa5b:
-            mov edx, dword ptr ds:[gSplit_polyhedron_source_faces]
+            mov edx, dword ptr [gSplit_polyhedron_source_faces]
     L0042fa61:
             mov ax, word ptr [edx]
             mov cx, word ptr [edx + 2]
@@ -4114,10 +4152,10 @@ void C2_NAKED C2_HOOK_FASTCALL FUN_0042f5d0(br_model* pSource_model, br_model** 
             mov word ptr [eax], bp
             mov word ptr [eax + 2], dx
             mov word ptr [eax + 4], cx
-            mov ecx, dword ptr ds:[gSplit_polyhedron_source_faces]
+            mov ecx, dword ptr [gSplit_polyhedron_source_faces]
             mov edx, dword ptr [ecx + 8]
             mov dword ptr [eax + 8], edx
-            mov ecx, dword ptr ds:[gSplit_polyhedron_source_faces]
+            mov ecx, dword ptr [gSplit_polyhedron_source_faces]
             mov dx, word ptr [ecx + 6]
             mov word ptr [eax + 6], dx
             mov ecx, dword ptr [esp + 0x24]
@@ -4127,10 +4165,10 @@ void C2_NAKED C2_HOOK_FASTCALL FUN_0042f5d0(br_model* pSource_model, br_model** 
             mov word ptr [eax], dx
             mov word ptr [eax + 2], bx
             mov word ptr [eax + 4], cx
-            mov ecx, dword ptr ds:[gSplit_polyhedron_source_faces]
+            mov ecx, dword ptr [gSplit_polyhedron_source_faces]
             mov edx, dword ptr [ecx + 8]
             mov dword ptr [eax + 8], edx
-            mov ecx, dword ptr ds:[gSplit_polyhedron_source_faces]
+            mov ecx, dword ptr [gSplit_polyhedron_source_faces]
             mov dx, word ptr [ecx + 6]
             mov word ptr [eax + 6], dx
             mov ecx, dword ptr [esp + 0x24]
@@ -4166,10 +4204,10 @@ void C2_NAKED C2_HOOK_FASTCALL FUN_0042f5d0(br_model* pSource_model, br_model** 
             mov word ptr [eax], bp
             mov word ptr [eax + 2], dx
             mov word ptr [eax + 4], cx
-            mov ecx, dword ptr ds:[gSplit_polyhedron_source_faces]
+            mov ecx, dword ptr [gSplit_polyhedron_source_faces]
             mov edx, dword ptr [ecx + 8]
             mov dword ptr [eax + 8], edx
-            mov ecx, dword ptr ds:[gSplit_polyhedron_source_faces]
+            mov ecx, dword ptr [gSplit_polyhedron_source_faces]
             mov dx, word ptr [ecx + 6]
             mov word ptr [eax + 6], dx
             mov eax, dword ptr [esp + 0x28]
@@ -4182,10 +4220,10 @@ void C2_NAKED C2_HOOK_FASTCALL FUN_0042f5d0(br_model* pSource_model, br_model** 
             mov dx, word ptr [esp + 0x18]
             mov word ptr [eax + 2], dx
             mov word ptr [eax + 4], cx
-            mov ecx, dword ptr ds:[gSplit_polyhedron_source_faces]
+            mov ecx, dword ptr [gSplit_polyhedron_source_faces]
             mov edx, dword ptr [ecx + 8]
             mov dword ptr [eax + 8], edx
-            mov ecx, dword ptr ds:[gSplit_polyhedron_source_faces]
+            mov ecx, dword ptr [gSplit_polyhedron_source_faces]
             mov dx, word ptr [ecx + 6]
             mov word ptr [eax + 6], dx
             mov ecx, dword ptr [esp + 0x20]
@@ -4220,10 +4258,10 @@ void C2_NAKED C2_HOOK_FASTCALL FUN_0042f5d0(br_model* pSource_model, br_model** 
             mov word ptr [eax], bp
             mov word ptr [eax + 2], dx
             mov word ptr [eax + 4], cx
-            mov ecx, dword ptr ds:[gSplit_polyhedron_source_faces]
+            mov ecx, dword ptr [gSplit_polyhedron_source_faces]
             mov edx, dword ptr [ecx + 8]
             mov dword ptr [eax + 8], edx
-            mov ecx, dword ptr ds:[gSplit_polyhedron_source_faces]
+            mov ecx, dword ptr [gSplit_polyhedron_source_faces]
             mov dx, word ptr [ecx + 6]
             mov word ptr [eax + 6], dx
             mov ecx, dword ptr [esp + 0x28]
@@ -4233,10 +4271,10 @@ void C2_NAKED C2_HOOK_FASTCALL FUN_0042f5d0(br_model* pSource_model, br_model** 
             mov word ptr [eax], dx
             mov word ptr [eax + 2], cx
             mov word ptr [eax + 4], bp
-            mov ecx, dword ptr ds:[gSplit_polyhedron_source_faces]
+            mov ecx, dword ptr [gSplit_polyhedron_source_faces]
             mov edx, dword ptr [ecx + 8]
             mov dword ptr [eax + 8], edx
-            mov ecx, dword ptr ds:[gSplit_polyhedron_source_faces]
+            mov ecx, dword ptr [gSplit_polyhedron_source_faces]
             mov dx, word ptr [ecx + 6]
             mov word ptr [eax + 6], dx
             mov ecx, dword ptr [esp + 0x20]
@@ -4272,10 +4310,10 @@ void C2_NAKED C2_HOOK_FASTCALL FUN_0042f5d0(br_model* pSource_model, br_model** 
             mov word ptr [eax], bp
             mov word ptr [eax + 2], dx
             mov word ptr [eax + 4], cx
-            mov ecx, dword ptr ds:[gSplit_polyhedron_source_faces]
+            mov ecx, dword ptr [gSplit_polyhedron_source_faces]
             mov edx, dword ptr [ecx + 8]
             mov dword ptr [eax + 8], edx
-            mov ecx, dword ptr ds:[gSplit_polyhedron_source_faces]
+            mov ecx, dword ptr [gSplit_polyhedron_source_faces]
             mov dx, word ptr [ecx + 6]
             mov word ptr [eax + 6], dx
             mov ecx, dword ptr [esp + 0x28]
@@ -4285,10 +4323,10 @@ void C2_NAKED C2_HOOK_FASTCALL FUN_0042f5d0(br_model* pSource_model, br_model** 
             mov word ptr [eax], dx
             mov word ptr [eax + 2], cx
             mov word ptr [eax + 4], bp
-            mov ecx, dword ptr ds:[gSplit_polyhedron_source_faces]
+            mov ecx, dword ptr [gSplit_polyhedron_source_faces]
             mov edx, dword ptr [ecx + 8]
             mov dword ptr [eax + 8], edx
-            mov ecx, dword ptr ds:[gSplit_polyhedron_source_faces]
+            mov ecx, dword ptr [gSplit_polyhedron_source_faces]
             mov dx, word ptr [ecx + 6]
             mov word ptr [eax + 6], dx
             mov ecx, dword ptr [esp + 0x20]
@@ -4324,10 +4362,10 @@ void C2_NAKED C2_HOOK_FASTCALL FUN_0042f5d0(br_model* pSource_model, br_model** 
             mov word ptr [eax], bp
             mov word ptr [eax + 2], dx
             mov word ptr [eax + 4], cx
-            mov ecx, dword ptr ds:[gSplit_polyhedron_source_faces]
+            mov ecx, dword ptr [gSplit_polyhedron_source_faces]
             mov edx, dword ptr [ecx + 8]
             mov dword ptr [eax + 8], edx
-            mov ecx, dword ptr ds:[gSplit_polyhedron_source_faces]
+            mov ecx, dword ptr [gSplit_polyhedron_source_faces]
             mov dx, word ptr [ecx + 6]
             mov word ptr [eax + 6], dx
             mov eax, dword ptr [esp + 0x28]
@@ -4340,10 +4378,10 @@ void C2_NAKED C2_HOOK_FASTCALL FUN_0042f5d0(br_model* pSource_model, br_model** 
             mov dx, word ptr [esp + 0x18]
             mov word ptr [eax + 2], dx
             mov word ptr [eax + 4], cx
-            mov ecx, dword ptr ds:[gSplit_polyhedron_source_faces]
+            mov ecx, dword ptr [gSplit_polyhedron_source_faces]
             mov edx, dword ptr [ecx + 8]
             mov dword ptr [eax + 8], edx
-            mov ecx, dword ptr ds:[gSplit_polyhedron_source_faces]
+            mov ecx, dword ptr [gSplit_polyhedron_source_faces]
             mov dx, word ptr [ecx + 6]
             mov word ptr [eax + 6], dx
             mov ecx, dword ptr [esp + 0x20]
@@ -4378,10 +4416,10 @@ void C2_NAKED C2_HOOK_FASTCALL FUN_0042f5d0(br_model* pSource_model, br_model** 
             mov word ptr [eax], bp
             mov word ptr [eax + 2], dx
             mov word ptr [eax + 4], cx
-            mov ecx, dword ptr ds:[gSplit_polyhedron_source_faces]
+            mov ecx, dword ptr [gSplit_polyhedron_source_faces]
             mov edx, dword ptr [ecx + 8]
             mov dword ptr [eax + 8], edx
-            mov ecx, dword ptr ds:[gSplit_polyhedron_source_faces]
+            mov ecx, dword ptr [gSplit_polyhedron_source_faces]
             mov dx, word ptr [ecx + 6]
             mov word ptr [eax + 6], dx
             mov ecx, dword ptr [esp + 0x24]
@@ -4391,10 +4429,10 @@ void C2_NAKED C2_HOOK_FASTCALL FUN_0042f5d0(br_model* pSource_model, br_model** 
             mov word ptr [eax], dx
             mov word ptr [eax + 2], bx
             mov word ptr [eax + 4], cx
-            mov ecx, dword ptr ds:[gSplit_polyhedron_source_faces]
+            mov ecx, dword ptr [gSplit_polyhedron_source_faces]
             mov edx, dword ptr [ecx + 8]
             mov dword ptr [eax + 8], edx
-            mov ecx, dword ptr ds:[gSplit_polyhedron_source_faces]
+            mov ecx, dword ptr [gSplit_polyhedron_source_faces]
             mov dx, word ptr [ecx + 6]
             mov word ptr [eax + 6], dx
             mov ecx, dword ptr [esp + 0x24]
@@ -4412,21 +4450,21 @@ void C2_NAKED C2_HOOK_FASTCALL FUN_0042f5d0(br_model* pSource_model, br_model** 
             mov word ptr [eax + 2], cx
             mov word ptr [eax + 4], bx
     L0042ff65:
-            mov ecx, dword ptr ds:[gSplit_polyhedron_source_faces]
+            mov ecx, dword ptr [gSplit_polyhedron_source_faces]
             mov edx, dword ptr [ecx + 8]
             mov dword ptr [eax + 8], edx
-            mov ecx, dword ptr ds:[gSplit_polyhedron_source_faces]
+            mov ecx, dword ptr [gSplit_polyhedron_source_faces]
             mov dx, word ptr [ecx + 6]
             mov word ptr [eax + 6], dx
     L0042ff7f:
             mov edx, dword ptr [esp + 0x3c]
-            mov ecx, dword ptr ds:[gSplit_polyhedron_source_faces]
+            mov ecx, dword ptr [gSplit_polyhedron_source_faces]
             mov eax, dword ptr [esp + 0x2c]
             inc edx
             add ecx, 0x28
             dec eax
             mov dword ptr [esp + 0x3c], edx
-            mov dword ptr ds:[gSplit_polyhedron_source_faces], ecx
+            mov dword ptr [gSplit_polyhedron_source_faces], ecx
             mov dword ptr [esp + 0x2c], eax
             jne L0042fa5b
     L0042ffa6:
@@ -4467,7 +4505,7 @@ void C2_NAKED C2_HOOK_FASTCALL FUN_0042f5d0(br_model* pSource_model, br_model** 
             pop ebx
             add esp, 0x2034
             ret 0xc
-            cmp word ptr ds:[0x67a3b4], 0
+            cmp word ptr [gSplit_polyhedron_edge_map+0x4], 0
             mov eax, offset gSplit_polyhedron_edge_map
             je L0043003a
     L00430025:
@@ -4488,7 +4526,7 @@ void C2_NAKED C2_HOOK_FASTCALL FUN_0042f5d0(br_model* pSource_model, br_model** 
             mov byte ptr [eax + 8], 1
             inc esi
     L0043004f:
-            cmp word ptr ds:[0x67a3b4], 0
+            cmp word ptr [gSplit_polyhedron_edge_map+0x4], 0
             mov eax, offset gSplit_polyhedron_edge_map
             je L00430077
     L0043005e:
@@ -4503,7 +4541,7 @@ void C2_NAKED C2_HOOK_FASTCALL FUN_0042f5d0(br_model* pSource_model, br_model** 
     L00430077:
             mov word ptr [eax], di
             jmp L004300dc
-            cmp word ptr ds:[0x67a3b4], 0
+            cmp word ptr [gSplit_polyhedron_edge_map+0x4], 0
             mov eax, offset gSplit_polyhedron_edge_map
             je L004300a0
     L0043008b:
@@ -4524,7 +4562,7 @@ void C2_NAKED C2_HOOK_FASTCALL FUN_0042f5d0(br_model* pSource_model, br_model** 
             mov byte ptr [eax + 8], 1
             inc esi
     L004300b5:
-            cmp word ptr ds:[0x67a3b4], 0
+            cmp word ptr [gSplit_polyhedron_edge_map+0x4], 0
             mov eax, offset gSplit_polyhedron_edge_map
             je L004300d9
     L004300c4:
@@ -5973,7 +6011,7 @@ void C2_NAKED C2_HOOK_FASTCALL DoFullyDetaching(void) {
     }
 #else
     __asm {
-            mov eax, dword ptr ds:[gNet_mode]
+            mov eax, dword ptr [gNet_mode]
             sub esp, 0xc
             test eax, eax
             push ebx
@@ -5984,7 +6022,7 @@ void C2_NAKED C2_HOOK_FASTCALL DoFullyDetaching(void) {
             cmp eax, 2
             jne L00438a6c
     L00438919:
-            mov eax, dword ptr ds:[gNum_active_cars]
+            mov eax, dword ptr [gNum_active_cars]
             mov dword ptr [esp + 0x14], 0
             test eax, eax
             jle L00438a6c
@@ -6020,7 +6058,7 @@ void C2_NAKED C2_HOOK_FASTCALL DoFullyDetaching(void) {
             sub ecx, eax
             mov dword ptr [esp + 0x18], ecx
             fild dword ptr [esp + 0x18]
-            fcomp dword ptr ds:[gMax_detach_time_ms]
+            fcomp dword ptr [gMax_detach_time_ms]
             fnstsw ax
             test ah, 1
             je L004389de
@@ -6029,7 +6067,7 @@ void C2_NAKED C2_HOOK_FASTCALL DoFullyDetaching(void) {
             shl ecx, 2
             mov dword ptr [esp + 0x18], ecx
             fild dword ptr [esp + 0x18]
-            fdiv dword ptr ds:[gMax_detach_time_ms]
+            fdiv dword ptr [gMax_detach_time_ms]
             call _ftol
             mov ecx, eax
             call PercentageChance
@@ -6040,22 +6078,22 @@ void C2_NAKED C2_HOOK_FASTCALL DoFullyDetaching(void) {
     L004389de:
             test esi, esi
             je L00438a31
-            mov eax, dword ptr ds:[gNet_mode]
+            mov eax, dword ptr [gNet_mode]
             test eax, eax
             je L00438a27
-            mov ecx, dword ptr ds:[gCount_net_crush_full_detach_bit_list]
+            mov ecx, dword ptr [gCount_net_crush_full_detach_bit_list]
             xor esi, esi
             xor eax, eax
             test ecx, ecx
             jle L00438a17
             mov edx, dword ptr [edi]
-            mov ecx, 0x67b7dc
+            mov ecx, offset gNet_crush_full_detach_bit_list+0x4
     L00438a00:
             cmp dword ptr [ecx], edx
             je L00438a12
             inc eax
             add ecx, 0xc
-            cmp eax, dword ptr ds:[gCount_net_crush_full_detach_bit_list]
+            cmp eax, dword ptr [gCount_net_crush_full_detach_bit_list]
             jl L00438a00
             jmp L00438a17
     L00438a12:
@@ -6084,7 +6122,7 @@ void C2_NAKED C2_HOOK_FASTCALL DoFullyDetaching(void) {
             call MungeDetachLists
     L00438a52:
             mov eax, dword ptr [esp + 0x14]
-            mov ecx, dword ptr ds:[gNum_active_cars]
+            mov ecx, dword ptr [gNum_active_cars]
             inc eax
             add ebp, 4
             cmp eax, ecx
@@ -6357,15 +6395,21 @@ void C2_NAKED C2_HOOK_FASTCALL BendCar(tCar_spec* pCar, br_angle pAngle_x, br_an
             mov dword ptr [esp + 0x5c], edi
             fld dword ptr [edi + 0x20]
             fchs
-            fstp dword ptr [esp]
+            _emit 0xd9
+        _emit 0x1c
+        _emit 0x24
             fld dword ptr [edi + 0x1c]
             fchs
             push ecx
-            fstp dword ptr [esp]
+            _emit 0xd9
+        _emit 0x1c
+        _emit 0x24
             fld dword ptr [edi + 0x18]
             fchs
             push ecx
-            fstp dword ptr [esp]
+            _emit 0xd9
+        _emit 0x1c
+        _emit 0x24
             push edx
             call BrMatrix34Translate
             mov ax, word ptr [edi + 0x3e]
@@ -6484,7 +6528,8 @@ void C2_NAKED C2_HOOK_FASTCALL BendCar(tCar_spec* pCar, br_angle pAngle_x, br_an
             xor edx, edx
             mov ecx, esi
             fld dword ptr [eax + 0xc]
-            fsub dword ptr [eax]
+            _emit 0xd8
+        _emit 0x20
             fld dword ptr [eax + 0x10]
             fxch st(1)
             fmul dword ptr [gFloat_00589ae8]
@@ -6492,7 +6537,8 @@ void C2_NAKED C2_HOOK_FASTCALL BendCar(tCar_spec* pCar, br_angle pAngle_x, br_an
             fsub dword ptr [eax + 4]
             fld dword ptr [eax + 0x14]
             fld st(2)
-            fadd dword ptr [eax]
+            _emit 0xd8
+        _emit 0x00
             fxch st(2)
             fmul dword ptr [gFloat_00589ae8]
             fxch st(1)
@@ -7063,7 +7109,7 @@ increment_counter:
     gINT_0067be8c++;
 #else
     __asm {
-            mov eax, dword ptr ds:[gINT_0067be8c]
+            mov eax, dword ptr [gINT_0067be8c]
             mov ecx, 5
             cdq
             idiv ecx
@@ -7072,7 +7118,7 @@ increment_counter:
             cmp edx, 4
             ja L00438fd5
             jmp dword ptr [edx*4 + 0x438fe8]
-            mov ecx, dword ptr ds:[gCar_to_view]
+            mov ecx, dword ptr [gCar_to_view]
             mov dword ptr [esp + 4], 0
             push 0
             mov edx, dword ptr [ecx + 8]
@@ -7090,7 +7136,7 @@ increment_counter:
             push 0
             mov edx, 0xe002
             jmp L00438fd0
-            mov ecx, dword ptr ds:[gCar_to_view]
+            mov ecx, dword ptr [gCar_to_view]
             mov dword ptr [esp + 4], 0
             push 0
             mov eax, dword ptr [ecx + 8]
@@ -7108,7 +7154,7 @@ increment_counter:
             push 0
             mov edx, 0x1ffe
             jmp L00438fd0
-            mov ecx, dword ptr ds:[gCar_to_view]
+            mov ecx, dword ptr [gCar_to_view]
             push 0
             mov edx, dword ptr [ecx + 8]
             fld dword ptr [edx + 0x24]
@@ -7126,7 +7172,7 @@ increment_counter:
             push 0xe002
             xor edx, edx
             jmp L00438fd0
-            mov ecx, dword ptr ds:[gCar_to_view]
+            mov ecx, dword ptr [gCar_to_view]
             push 0
             mov eax, dword ptr [ecx + 8]
             fld dword ptr [eax + 0x30]
@@ -7144,19 +7190,19 @@ increment_counter:
             push 0x1ffe
             xor edx, edx
             jmp L00438fd0
-            mov ecx, dword ptr ds:[gCar_to_view]
+            mov ecx, dword ptr [gCar_to_view]
             push 0
             lea esi, [esp + 8]
             xor edx, edx
             mov eax, dword ptr [ecx + 8]
             fld dword ptr [eax + 0x30]
             fadd dword ptr [eax + 0x24]
-            fmul dword ptr ds:[gFLOAT_00589a2c]
+            fmul dword ptr [gFLOAT_00589a2c]
             fstp dword ptr [esp + 8]
             mov eax, dword ptr [ecx + 8]
             fld dword ptr [eax + 0x34]
             fadd dword ptr [eax + 0x28]
-            fmul dword ptr ds:[gFLOAT_00589a2c]
+            fmul dword ptr [gFLOAT_00589a2c]
             fstp dword ptr [esp + 0xc]
             mov eax, dword ptr [ecx + 0x18d4]
             fld dword ptr [eax + 0x150]
@@ -7170,10 +7216,10 @@ increment_counter:
     L00438fd0:
             call BendCar
     L00438fd5:
-            mov eax, dword ptr ds:[gINT_0067be8c]
+            mov eax, dword ptr [gINT_0067be8c]
             pop esi
             inc eax
-            mov dword ptr ds:[gINT_0067be8c], eax
+            mov dword ptr [gINT_0067be8c], eax
             add esp, 0xc
             ret
             lea ecx, [ecx]
@@ -7661,6 +7707,10 @@ increment_counter:
             _emit 0x5e
             _emit 0x5b
             _emit 0x83
+            _emit 0xc4
+            _emit 0x20
+            _emit 0xc3
+            _emit 0x90
     }
 #endif
 }
@@ -8216,7 +8266,7 @@ void C2_NAKED C2_HOOK_FASTCALL SplitPolyhedronByPlane(int* pSource, int pPositiv
             mov dword ptr [esp + 0x1c], edi
             cmp eax, 1
             je L004303e3
-            mov ecx, offset gNext_crush_actor_id+0x2b4
+            mov ecx, offset gMatchFloat_0058fb14
             call PDFatalError
     L004303e3:
             mov eax, dword ptr [esp + 0xa4]
@@ -8556,6 +8606,9 @@ void C2_NAKED C2_HOOK_FASTCALL FUN_00433b90(br_model* pModel, const br_vector3* 
             pop esi
             add esp, 0x18
             ret
+            nop
+            nop
+            nop
     }
 #endif
 }

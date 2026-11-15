@@ -257,6 +257,302 @@ extern float gTrack_drone_min_y;
 #ifdef CARPOCALYPSE2_MATCHING
 extern void C2_HOOK_FASTCALL PipeSingleDroneCornerPos(tDrone_spec* pDrone, tU16 pField_0x48, tU16 pField_0x74, tU16 pField_0x70, tCompressed_matrix34* pMatrix);
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gData_00589e84[];
+extern char gData_00594f68[];
+extern char gData_00595010[];
+extern char gData_005950b0[];
+extern char gData_005950f4[];
+extern char gData_00595114[];
+extern char gData_00595354[];
+extern char gData_005953fc[];
+extern char gData_00595418[];
+extern char gData_00595458[];
+extern char gData_00595474[];
+extern char gData_0059547c[];
+extern char gData_005954cc[];
+extern char gData_005954d4[];
+extern char gData_00595530[];
+extern char gData_0059561c[];
+extern char gData_005956fc[];
+extern char gDouble_00589de8[];
+extern char gDouble_00589df0[];
+extern char gDouble_00589df8[];
+extern char gDouble_00589e00[];
+extern char gDouble_00589e08[];
+extern char gDouble_00589e10[];
+extern char gDouble_00589e30[];
+extern char gDouble_00589e38[];
+extern char gDouble_00589e40[];
+extern char gDouble_00589e50[];
+extern char gDouble_00589e68[];
+extern char gDouble_00589e78[];
+extern char gFloat_00589dc0[];
+extern char gFloat_00589dc8[];
+extern char gFloat_00589dcc[];
+extern char gFloat_00589dd0[];
+extern char gFloat_00589de4[];
+extern char gFloat_00589e18[];
+extern char gFloat_00589e1c[];
+extern char gFloat_00589e20[];
+extern char gFloat_00589e24[];
+extern char gFloat_00589e28[];
+extern char gFloat_00589e2c[];
+extern char gFloat_00589e48[];
+extern char gFloat_00589e4c[];
+extern char gFloat_00589e60[];
+extern char gFloat_00589e64[];
+extern char gFloat_00589e70[];
+extern char gFloat_00589e74[];
+extern char gFloat_00589e80[];
+extern char gFloat_00589e88[];
+extern char gFloat_00594840[];
+extern char gFloat_005948dc[];
+extern char gFloat_00594934[];
+extern char gFloat_00594950[];
+extern char gFloat_0059496c[];
+extern char gFloat_005949a0[];
+extern char gFloat_005949c8[];
+extern char gFloat_005949f4[];
+extern char gFloat_00594a08[];
+extern char gFloat_00594a30[];
+extern char gFloat_00594a58[];
+extern char gFloat_00594a80[];
+extern char gFloat_00594aa8[];
+extern char gFloat_00594ad0[];
+extern char gFloat_00594b14[];
+extern char gFloat_00594b3c[];
+extern char gFloat_00594b6c[];
+extern char gFloat_00594b94[];
+extern char gFloat_00594bbc[];
+extern char gFloat_00594bec[];
+extern char gFloat_00594c14[];
+extern char gFloat_00594c40[];
+extern char gFloat_00594c58[];
+extern char gFloat_00594cac[];
+extern char gFloat_00594ce4[];
+extern char gFloat_00594dc8[];
+extern char gFloat_00594fb4[];
+extern char gFloat_00594fd8[];
+extern char gFloat_00594fec[];
+extern char gFloat_00595030[];
+extern char gFloat_0059505c[];
+extern char gFloat_00595090[];
+extern char gFloat_005950dc[];
+extern char gFloat_00595140[];
+extern char gFloat_0059517c[];
+extern char gFloat_005951c4[];
+extern char gFloat_005952ac[];
+extern char gFloat_005952c4[];
+extern char gFloat_005952d8[];
+extern char gFloat_005952f4[];
+extern char gFloat_00595324[];
+extern char gFloat_00595380[];
+extern char gFloat_00595394[];
+extern char gFloat_00595430[];
+extern char gFloat_00595460[];
+extern char gFloat_00595484[];
+extern char gFloat_00595498[];
+extern char gFloat_005954a4[];
+extern char gFloat_005954b8[];
+extern char gFloat_005954e8[];
+extern char gFloat_00595500[];
+extern char gFloat_00595514[];
+extern char gFloat_00595544[];
+extern char gFloat_00595574[];
+extern char gFloat_00595590[];
+extern char gFloat_005955a4[];
+extern char gFloat_005955c4[];
+extern char gFloat_005955e0[];
+extern char gFloat_00595604[];
+extern char gFloat_0059563c[];
+extern char gFloat_00595654[];
+extern char gFloat_0059566c[];
+extern char gFloat_00595688[];
+extern char gFloat_005956a8[];
+extern char gFloat_0059571c[];
+extern char gFloat_00595740[];
+extern char gFloat_00595774[];
+extern char gFloat_005957c8[];
+extern char gFloat_00595834[];
+extern char gFloat_00595874[];
+extern char gFloat_005958bc[];
+extern char gFloat_00595904[];
+extern char gFloat_0059592c[];
+extern char gFloat_00595950[];
+extern char gFloat_0059599c[];
+extern char gFloat_005959e4[];
+extern char gFloat_00595a04[];
+extern char gFloat_00595a60[];
+extern char gFloat_00595af4[];
+extern char gFloat_00595b40[];
+extern char gFloat_00595b90[];
+extern char gFloat_00595bbc[];
+extern char gFloat_00595bd4[];
+extern char gFloat_00595bec[];
+extern char gString_00594998[];
+extern char gString_00594dc0[];
+extern char gString_00594fa8[];
+extern char gString_005953c0[];
+extern char gString_005954d8[];
+extern char gString_005956bc[];
+extern char gString_005956cc[];
+extern char gString_005956d8[];
+extern char gString_005956e8[];
+extern char gString_005956f4[];
+extern char gString_00595700[];
+extern char gString_0059570c[];
+extern char gString_00595730[];
+extern char gString_00595bb4[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchData_00589e84[];
+extern char gMatchData_00594f68[];
+extern char gMatchData_00595010[];
+extern char gMatchData_005950b0[];
+extern char gMatchData_005950f4[];
+extern char gMatchData_00595114[];
+extern char gMatchData_00595354[];
+extern char gMatchData_005953fc[];
+extern char gMatchData_00595418[];
+extern char gMatchData_00595458[];
+extern char gMatchData_00595474[];
+extern char gMatchData_0059547c[];
+extern char gMatchData_005954cc[];
+extern char gMatchData_005954d4[];
+extern char gMatchData_00595530[];
+extern char gMatchData_0059561c[];
+extern char gMatchData_005956fc[];
+extern char gMatchDouble_00589de8[];
+extern char gMatchDouble_00589df0[];
+extern char gMatchDouble_00589df8[];
+extern char gMatchDouble_00589e00[];
+extern char gMatchDouble_00589e08[];
+extern char gMatchDouble_00589e10[];
+extern char gMatchDouble_00589e30[];
+extern char gMatchDouble_00589e38[];
+extern char gMatchDouble_00589e40[];
+extern char gMatchDouble_00589e50[];
+extern char gMatchDouble_00589e68[];
+extern char gMatchDouble_00589e78[];
+extern char gMatchFloat_00589dc0[];
+extern char gMatchFloat_00589dc8[];
+extern char gMatchFloat_00589dcc[];
+extern char gMatchFloat_00589dd0[];
+extern char gMatchFloat_00589de4[];
+extern char gMatchFloat_00589e18[];
+extern char gMatchFloat_00589e1c[];
+extern char gMatchFloat_00589e20[];
+extern char gMatchFloat_00589e24[];
+extern char gMatchFloat_00589e28[];
+extern char gMatchFloat_00589e2c[];
+extern char gMatchFloat_00589e48[];
+extern char gMatchFloat_00589e4c[];
+extern char gMatchFloat_00589e60[];
+extern char gMatchFloat_00589e64[];
+extern char gMatchFloat_00589e70[];
+extern char gMatchFloat_00589e74[];
+extern char gMatchFloat_00589e80[];
+extern char gMatchFloat_00589e88[];
+extern char gMatchFloat_00594840[];
+extern char gMatchFloat_005948dc[];
+extern char gMatchFloat_00594934[];
+extern char gMatchFloat_00594950[];
+extern char gMatchFloat_0059496c[];
+extern char gMatchFloat_005949a0[];
+extern char gMatchFloat_005949c8[];
+extern char gMatchFloat_005949f4[];
+extern char gMatchFloat_00594a08[];
+extern char gMatchFloat_00594a30[];
+extern char gMatchFloat_00594a58[];
+extern char gMatchFloat_00594a80[];
+extern char gMatchFloat_00594aa8[];
+extern char gMatchFloat_00594ad0[];
+extern char gMatchFloat_00594b14[];
+extern char gMatchFloat_00594b3c[];
+extern char gMatchFloat_00594b6c[];
+extern char gMatchFloat_00594b94[];
+extern char gMatchFloat_00594bbc[];
+extern char gMatchFloat_00594bec[];
+extern char gMatchFloat_00594c14[];
+extern char gMatchFloat_00594c40[];
+extern char gMatchFloat_00594c58[];
+extern char gMatchFloat_00594cac[];
+extern char gMatchFloat_00594ce4[];
+extern char gMatchFloat_00594dc8[];
+extern char gMatchFloat_00594fb4[];
+extern char gMatchFloat_00594fd8[];
+extern char gMatchFloat_00594fec[];
+extern char gMatchFloat_00595030[];
+extern char gMatchFloat_0059505c[];
+extern char gMatchFloat_00595090[];
+extern char gMatchFloat_005950dc[];
+extern char gMatchFloat_00595140[];
+extern char gMatchFloat_0059517c[];
+extern char gMatchFloat_005951c4[];
+extern char gMatchFloat_005952ac[];
+extern char gMatchFloat_005952c4[];
+extern char gMatchFloat_005952d8[];
+extern char gMatchFloat_005952f4[];
+extern char gMatchFloat_00595324[];
+extern char gMatchFloat_00595380[];
+extern char gMatchFloat_00595394[];
+extern char gMatchFloat_00595430[];
+extern char gMatchFloat_00595460[];
+extern char gMatchFloat_00595484[];
+extern char gMatchFloat_00595498[];
+extern char gMatchFloat_005954a4[];
+extern char gMatchFloat_005954b8[];
+extern char gMatchFloat_005954e8[];
+extern char gMatchFloat_00595500[];
+extern char gMatchFloat_00595514[];
+extern char gMatchFloat_00595544[];
+extern char gMatchFloat_00595574[];
+extern char gMatchFloat_00595590[];
+extern char gMatchFloat_005955a4[];
+extern char gMatchFloat_005955c4[];
+extern char gMatchFloat_005955e0[];
+extern char gMatchFloat_00595604[];
+extern char gMatchFloat_0059563c[];
+extern char gMatchFloat_00595654[];
+extern char gMatchFloat_0059566c[];
+extern char gMatchFloat_00595688[];
+extern char gMatchFloat_005956a8[];
+extern char gMatchFloat_0059571c[];
+extern char gMatchFloat_00595740[];
+extern char gMatchFloat_00595774[];
+extern char gMatchFloat_005957c8[];
+extern char gMatchFloat_00595834[];
+extern char gMatchFloat_00595874[];
+extern char gMatchFloat_005958bc[];
+extern char gMatchFloat_00595904[];
+extern char gMatchFloat_0059592c[];
+extern char gMatchFloat_00595950[];
+extern char gMatchFloat_0059599c[];
+extern char gMatchFloat_005959e4[];
+extern char gMatchFloat_00595a04[];
+extern char gMatchFloat_00595a60[];
+extern char gMatchFloat_00595af4[];
+extern char gMatchFloat_00595b40[];
+extern char gMatchFloat_00595b90[];
+extern char gMatchFloat_00595bbc[];
+extern char gMatchFloat_00595bd4[];
+extern char gMatchFloat_00595bec[];
+extern char gMatchString_00594998[];
+extern char gMatchString_00594dc0[];
+extern char gMatchString_00594fa8[];
+extern char gMatchString_005953c0[];
+extern char gMatchString_005954d8[];
+extern char gMatchString_005956bc[];
+extern char gMatchString_005956cc[];
+extern char gMatchString_005956d8[];
+extern char gMatchString_005956e8[];
+extern char gMatchString_005956f4[];
+extern char gMatchString_00595700[];
+extern char gMatchString_0059570c[];
+extern char gMatchString_00595730[];
+extern char gMatchString_00595bb4[];
+#endif
 // FUNCTION: CARMA2_HW 0x00452810
 void C2_HOOK_FASTCALL SetDroneRender(int pIndex, int pRender) {
     if (gPed_676914 && ARGetReplayRate() < gDrone_render_zero) {
@@ -309,7 +605,7 @@ void C2_NAKED C2_HOOK_FASTCALL InitDroneSpec(tDrone_spec* pDrone_spec, int pNode
             push edi
             mov ebx, edx
             mov esi, ecx
-            push offset gDefault_drone_direction+0x954
+            push offset gMatchData_00595114
             call DoNotDprintf
             mov ecx, 0x176
             xor eax, eax
@@ -356,6 +652,17 @@ void C2_NAKED C2_HOOK_FASTCALL InitDroneSpec(tDrone_spec* pDrone_spec, int pNode
             pop esi
             pop ebx
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -462,11 +769,11 @@ void C2_NAKED C2_HOOK_FASTCALL PreprocessDronePaths(void) {
             faddp st(1), st(0)
             fsqrt
             fstp st(1)
-            fcom dword ptr [gDrone_select_max_distance_squared+0x10]
+            fcom dword ptr [gMatchFloat_00589de4]
             fnstsw ax
             test ah, 0x41
             jne L004511b2
-            fdivr qword ptr [gDrone_select_max_distance_squared+0x14]
+            fdivr qword ptr [gMatchDouble_00589de8]
             fld dword ptr [edx + ecx + 0x10]
             fmul st(0), st(1)
             fstp dword ptr [edx + ecx + 0x1c]
@@ -659,7 +966,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadInDronePaths(FILE* pF) {
             push esi
             push edi
             mov ebp, ecx
-            push offset gDefault_drone_direction+0x934
+            push offset gMatchData_005950f4
             mov dword ptr [esp + 0x14], ebp
             call DoNotDprintf
             add esp, 4
@@ -671,7 +978,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadInDronePaths(FILE* pF) {
             test edi, edi
             je L00450c5c
             lea esi, [esp + 0x4c]
-            mov ecx, offset gDefault_drone_direction+0x91c
+            mov ecx, offset gMatchFloat_005950dc
     L00450c27:
             mov al, byte ptr [ecx]
             mov bl, byte ptr [esi]
@@ -701,7 +1008,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadInDronePaths(FILE* pF) {
             test edi, edi
             jne L00450c66
     L00450c5c:
-            mov ecx, offset gDefault_drone_direction+0x8f0
+            mov ecx, offset gMatchData_005950b0
             call PDFatalError
     L00450c66:
             mov eax, dword ptr [gNet_mode]
@@ -718,7 +1025,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadInDronePaths(FILE* pF) {
             jle L00450f57
             cmp eax, 2
             je L00450cb2
-            mov ecx, offset gDefault_drone_direction+0x8d0
+            mov ecx, offset gMatchFloat_00595090
             call PDFatalError
     L00450cb2:
             mov ecx, ebp
@@ -773,7 +1080,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadInDronePaths(FILE* pF) {
             not ecx
             dec ecx
             je L0045104b
-            mov esi, offset gPed_flags_0058f2e4+0xd8
+            mov esi, 0x58f3bc
             lea eax, [esp + 0x4c]
     L00450d70:
             mov dl, byte ptr [eax]
@@ -846,7 +1153,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadInDronePaths(FILE* pF) {
             push ebx
             push eax
             lea ecx, [esp + 0x154]
-            push offset gDefault_drone_direction+0x89c
+            push offset gMatchFloat_0059505c
             push ecx
             call sprintf
             add esp, 0x10
@@ -870,7 +1177,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadInDronePaths(FILE* pF) {
             jbe L00450e84
             push ebx
             lea ecx, [esp + 0x50]
-            push offset gDefault_drone_direction+0x870
+            push offset gMatchFloat_00595030
             push ecx
             call sprintf
             add esp, 0xc
@@ -901,7 +1208,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadInDronePaths(FILE* pF) {
             cmp al, 7
             mov byte ptr [esi + 0x1e], al
             jbe L00450ee4
-            mov ecx, offset gDefault_drone_direction+0x850
+            mov ecx, offset gMatchData_00595010
             call PDEnterDebugger
     L00450ee4:
             xor eax, eax
@@ -922,7 +1229,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadInDronePaths(FILE* pF) {
     L00450f13:
             push 0xc8
             lea ecx, [esp + 0x50]
-            push offset gDefault_drone_direction+0x82c
+            push offset gMatchFloat_00594fec
             push ecx
             call sprintf
             add esp, 0xc
@@ -945,7 +1252,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadInDronePaths(FILE* pF) {
             test eax, eax
             je L00450fa0
             lea esi, [esp + 0x4c]
-            mov eax, offset gDefault_drone_direction+0x818
+            mov eax, offset gMatchFloat_00594fd8
     L00450f6f:
             mov dl, byte ptr [eax]
             mov bl, byte ptr [esi]
@@ -1012,12 +1319,12 @@ void C2_NAKED C2_HOOK_FASTCALL LoadInDronePaths(FILE* pF) {
             cmp edi, eax
             jl L00450fdf
     L0045101f:
-            push offset gDefault_drone_direction+0x7f4
+            push offset gMatchFloat_00594fb4
             call DoNotDprintf
             mov edx, dword ptr [gCount_drone_path_nodes]
             add esp, 4
             push edx
-            push offset gDefault_drone_direction+0x7e8
+            push offset gMatchString_00594fa8
             call DoNotDprintf
             add esp, 8
             pop edi
@@ -1029,13 +1336,17 @@ void C2_NAKED C2_HOOK_FASTCALL LoadInDronePaths(FILE* pF) {
     L0045104b:
             push ebx
             lea edx, [esp + 0x50]
-            push offset gDefault_drone_direction+0x7a8
+            push offset gMatchData_00594f68
             push edx
             call sprintf
             add esp, 0xc
             lea ecx, [esp + 0x4c]
             call PDFatalError
             jmp L00450e34
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -1171,7 +1482,7 @@ void C2_NAKED C2_HOOK_FASTCALL InitDroneCollisionObject(tDrone_spec *pDrone_spec
             lea ebp, [ebx + 0xf8]
             call BrActorToBounds
             fld dword ptr [esp + 0x28]
-            fsub dword ptr [gDrone_select_max_distance_squared+0x74]
+            fsub dword ptr [gMatchFloat_00589e48]
             mov al, byte ptr [ebx + 0x46]
             add esp, 8
             test al, al
@@ -1277,15 +1588,15 @@ void C2_NAKED C2_HOOK_FASTCALL InitDroneCollisionObject(tDrone_spec *pDrone_spec
             fxch st(2)
             fmulp st(3), st(0)
             fxch st(2)
-            fmul dword ptr [gDrone_select_max_distance_squared+0x78]
+            fmul dword ptr [gMatchFloat_00589e4c]
             fxch st(1)
             fmul dword ptr [ebp + 4]
             fxch st(1)
             fstp dword ptr [ebp + 0x10]
-            fmul dword ptr [gDrone_select_max_distance_squared+0x78]
+            fmul dword ptr [gMatchFloat_00589e4c]
             fstp dword ptr [ebp + 0xc]
             fmul dword ptr [ebp + 4]
-            fmul dword ptr [gDrone_select_max_distance_squared+0x78]
+            fmul dword ptr [gMatchFloat_00589e4c]
             fstp dword ptr [ebp + 8]
             mov eax, dword ptr [ebx + 4]
             fld dword ptr [esp + 0x1c]
@@ -1294,21 +1605,21 @@ void C2_NAKED C2_HOOK_FASTCALL InitDroneCollisionObject(tDrone_spec *pDrone_spec
             fld dword ptr [esp + 0x20]
             fld dword ptr [esp + 0x24]
             fxch st(2)
-            fmul qword ptr [gDrone_select_max_distance_squared+0x7c]
+            fmul qword ptr [gMatchDouble_00589e50]
             fsubp st(3), st(0)
             fxch st(2)
             fstp dword ptr [ebp + 0x14]
             mov ecx, dword ptr [ebx + 4]
             fld dword ptr [ecx + 0x38]
             fmul st(0), st(3)
-            fmul qword ptr [gDrone_select_max_distance_squared+0x7c]
+            fmul qword ptr [gMatchDouble_00589e50]
             fsubp st(2), st(0)
             fxch st(1)
             fstp dword ptr [ebp + 0x18]
             mov edx, dword ptr [ebx + 4]
             fld dword ptr [edx + 0x30]
             fmul st(0), st(3)
-            fmul qword ptr [gDrone_select_max_distance_squared+0x7c]
+            fmul qword ptr [gMatchDouble_00589e50]
             fsubp st(1), st(0)
             fstp dword ptr [ebp + 0x1c]
             mov eax, dword ptr [ebx + 4]
@@ -1418,7 +1729,7 @@ int C2_NAKED C2_HOOK_FASTCALL CheckDroneInSensiblePlaceBeforeStartingToProcessTh
             lea ebp, [ebx + 0xf8]
             call BrActorToBounds
             fld dword ptr [esp + 0x28]
-            fsub dword ptr [gDrone_select_max_distance_squared+0x74]
+            fsub dword ptr [gMatchFloat_00589e48]
             mov al, byte ptr [ebx + 0x46]
             add esp, 8
             test al, al
@@ -1524,15 +1835,15 @@ int C2_NAKED C2_HOOK_FASTCALL CheckDroneInSensiblePlaceBeforeStartingToProcessTh
             fxch st(2)
             fmulp st(3), st(0)
             fxch st(2)
-            fmul dword ptr [gDrone_select_max_distance_squared+0x78]
+            fmul dword ptr [gMatchFloat_00589e4c]
             fxch st(1)
             fmul dword ptr [ebp + 4]
             fxch st(1)
             fstp dword ptr [ebp + 0x10]
-            fmul dword ptr [gDrone_select_max_distance_squared+0x78]
+            fmul dword ptr [gMatchFloat_00589e4c]
             fstp dword ptr [ebp + 0xc]
             fmul dword ptr [ebp + 4]
-            fmul dword ptr [gDrone_select_max_distance_squared+0x78]
+            fmul dword ptr [gMatchFloat_00589e4c]
             fstp dword ptr [ebp + 8]
             mov ecx, dword ptr [ebx + 4]
             fld dword ptr [esp + 0x1c]
@@ -1541,21 +1852,21 @@ int C2_NAKED C2_HOOK_FASTCALL CheckDroneInSensiblePlaceBeforeStartingToProcessTh
             fld dword ptr [esp + 0x20]
             fld dword ptr [esp + 0x24]
             fxch st(2)
-            fmul qword ptr [gDrone_select_max_distance_squared+0x7c]
+            fmul qword ptr [gMatchDouble_00589e50]
             fsubp st(3), st(0)
             fxch st(2)
             fstp dword ptr [ebp + 0x14]
             mov edx, dword ptr [ebx + 4]
             fld dword ptr [edx + 0x38]
             fmul st(0), st(3)
-            fmul qword ptr [gDrone_select_max_distance_squared+0x7c]
+            fmul qword ptr [gMatchDouble_00589e50]
             fsubp st(2), st(0)
             fxch st(1)
             fstp dword ptr [ebp + 0x18]
             mov eax, dword ptr [ebx + 4]
             fld dword ptr [eax + 0x30]
             fmul st(0), st(3)
-            fmul qword ptr [gDrone_select_max_distance_squared+0x7c]
+            fmul qword ptr [gMatchDouble_00589e50]
             fsubp st(1), st(0)
             fstp dword ptr [ebp + 0x1c]
             mov ecx, dword ptr [ebx + 4]
@@ -1647,6 +1958,20 @@ int C2_NAKED C2_HOOK_FASTCALL CheckDroneInSensiblePlaceBeforeStartingToProcessTh
             pop ebx
             add esp, 0x24
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -1753,7 +2078,7 @@ void C2_NAKED C2_HOOK_FASTCALL InitDrones(tRace_info* pRace_info) {
             lea esi, [eax + ebp]
             push ecx
             push edx
-            push offset gDefault_drone_direction+0x138
+            push 0x5948f8
             call DoNotDprintf
             mov eax, dword ptr [esi + 0x38]
             add esp, 0x10
@@ -1888,7 +2213,7 @@ void C2_NAKED C2_HOOK_FASTCALL InitDrones(tRace_info* pRace_info) {
             push eax
             push ecx
             push edx
-            push offset gDefault_drone_direction+0x608
+            push offset gMatchFloat_00594dc8
             call DoNotDprintf
             mov esi, dword ptr [esi + 0xec]
             add esp, 0x10
@@ -1908,9 +2233,9 @@ void C2_NAKED C2_HOOK_FASTCALL InitDrones(tRace_info* pRace_info) {
             _emit 0xdd
         _emit 0x1c
         _emit 0x24
-            push offset gDefault_drone_direction+0x600
+            push offset gMatchString_00594dc0
             push eax
-            push offset gDefault_drone_direction+0xb0
+            push 0x594870
             call DoNotDprintf
             add esp, 0x24
     L0044f94a:
@@ -2319,7 +2644,7 @@ void C2_NAKED C2_HOOK_FASTCALL DoDroneFunkyGroovyThings(tDrone_spec *pDrone) {
             mov dword ptr [esp + 0x2c], edi
             mov dword ptr [esp + 0x28], eax
             fild qword ptr [esp + 0x28]
-            fmul qword ptr [gDrone_select_max_distance_squared+0x94]
+            fmul qword ptr [gMatchDouble_00589e68]
             jmp L00451eaa
     L00451ea4:
             fld dword ptr [gDrone_delta_time]
@@ -2401,15 +2726,15 @@ void C2_NAKED C2_HOOK_FASTCALL DoDroneFunkyGroovyThings(tDrone_spec *pDrone) {
     L00451f8f:
             fld dword ptr [ebx + 0xe8]
     L00451f95:
-            fld dword ptr [gDrone_select_max_distance_squared+0x9c]
+            fld dword ptr [gMatchFloat_00589e70]
             fcomp st(1)
             fnstsw ax
             test ah, 1
             fstp st(0)
             je L00451fbd
-            fld dword ptr [gDrone_select_max_distance_squared+0x9c]
-            fsubr dword ptr [gDrone_select_max_distance_squared+0x9c]
-            fmul dword ptr [gDrone_select_max_distance_squared+0xa0]
+            fld dword ptr [gMatchFloat_00589e70]
+            fsubr dword ptr [gMatchFloat_00589e70]
+            fmul dword ptr [gMatchFloat_00589e74]
             jmp L00452088
     L00451fbd:
             fld dword ptr [ebx + 0xe8]
@@ -2419,13 +2744,13 @@ void C2_NAKED C2_HOOK_FASTCALL DoDroneFunkyGroovyThings(tDrone_spec *pDrone) {
             test ah, 0x41
             jne L00451fe9
             fld dword ptr [gDrone_render_zero]
-            fsubr dword ptr [gDrone_select_max_distance_squared+0x9c]
-            fmul dword ptr [gDrone_select_max_distance_squared+0xa0]
+            fsubr dword ptr [gMatchFloat_00589e70]
+            fmul dword ptr [gMatchFloat_00589e74]
             jmp L00452088
     L00451fe9:
             fld dword ptr [ebx + 0xe8]
-            fsubr dword ptr [gDrone_select_max_distance_squared+0x9c]
-            fmul dword ptr [gDrone_select_max_distance_squared+0xa0]
+            fsubr dword ptr [gMatchFloat_00589e70]
+            fmul dword ptr [gMatchFloat_00589e74]
             jmp L00452088
     L00452000:
             cmp dword ptr [ebx + 0xdc], 2
@@ -2441,15 +2766,15 @@ void C2_NAKED C2_HOOK_FASTCALL DoDroneFunkyGroovyThings(tDrone_spec *pDrone) {
     L00452023:
             fld dword ptr [ebx + 0x70]
     L00452026:
-            fld dword ptr [gDrone_select_max_distance_squared+0x9c]
+            fld dword ptr [gMatchFloat_00589e70]
             fcomp st(1)
             fnstsw ax
             test ah, 1
             fstp st(0)
             je L0045204b
-            fld dword ptr [gDrone_select_max_distance_squared+0x9c]
-            fsubr dword ptr [gDrone_select_max_distance_squared+0x9c]
-            fmul dword ptr [gDrone_select_max_distance_squared+0xa0]
+            fld dword ptr [gMatchFloat_00589e70]
+            fsubr dword ptr [gMatchFloat_00589e70]
+            fmul dword ptr [gMatchFloat_00589e74]
             jmp L00452088
     L0045204b:
             fld dword ptr [ebx + 0x70]
@@ -2459,26 +2784,26 @@ void C2_NAKED C2_HOOK_FASTCALL DoDroneFunkyGroovyThings(tDrone_spec *pDrone) {
             test ah, 0x41
             jne L00452071
             fld dword ptr [gDrone_render_zero]
-            fsubr dword ptr [gDrone_select_max_distance_squared+0x9c]
-            fmul dword ptr [gDrone_select_max_distance_squared+0xa0]
+            fsubr dword ptr [gMatchFloat_00589e70]
+            fmul dword ptr [gMatchFloat_00589e74]
             jmp L00452088
     L00452071:
             fld dword ptr [ebx + 0x70]
-            fsubr dword ptr [gDrone_select_max_distance_squared+0x9c]
-            fmul dword ptr [gDrone_select_max_distance_squared+0xa0]
+            fsubr dword ptr [gMatchFloat_00589e70]
+            fmul dword ptr [gMatchFloat_00589e74]
             jmp L00452088
     L00452082:
             fld dword ptr [gDrone_render_zero]
     L00452088:
             fld dword ptr [esp + 0x1c]
-            fcomp qword ptr [gDrone_select_max_distance_squared+0xa4]
+            fcomp qword ptr [gMatchDouble_00589e78]
             fnstsw ax
             test ah, 1
             je L0045209f
             fld dword ptr [esp + 0x1c]
             jmp L004520a9
     L0045209f:
-            fld dword ptr [gDrone_render_zero+0x4]
+            fld dword ptr [gMatchFloat_00589dc8]
             fsub dword ptr [esp + 0x1c]
     L004520a9:
             fmul st(0), st(1)
@@ -2509,7 +2834,7 @@ void C2_NAKED C2_HOOK_FASTCALL DoDroneFunkyGroovyThings(tDrone_spec *pDrone) {
             fld dword ptr [esp + 0x14]
             mov dword ptr [edx + 0x30], eax
             mov edx, dword ptr [esi]
-            fmul dword ptr [gDrone_select_max_distance_squared+0xac]
+            fmul dword ptr [gMatchFloat_00589e80]
             mov dword ptr [edx + 0x34], eax
             mov edx, dword ptr [esi]
             mov dword ptr [edx + 0x38], eax
@@ -2549,7 +2874,7 @@ void C2_NAKED C2_HOOK_FASTCALL DoDroneFunkyGroovyThings(tDrone_spec *pDrone) {
             _emit 0xdd
         _emit 0x1c
         _emit 0x24
-            push offset gDefault_drone_direction+0xa04
+            push offset gMatchFloat_005951c4
             call DoNotDprintf
             add esp, 0x1c
             jmp L00452203
@@ -2575,7 +2900,7 @@ void C2_NAKED C2_HOOK_FASTCALL DoDroneFunkyGroovyThings(tDrone_spec *pDrone) {
             je L004521c5
             dec eax
             jne L00452201
-            fmul dword ptr [gDrone_select_max_distance_squared+0xac]
+            fmul dword ptr [gMatchFloat_00589e80]
             call _ftol
             mov ecx, dword ptr [edi + esi + 8]
             push eax
@@ -2585,7 +2910,7 @@ void C2_NAKED C2_HOOK_FASTCALL DoDroneFunkyGroovyThings(tDrone_spec *pDrone) {
             add esp, 8
             jmp L00452203
     L004521c5:
-            fmul dword ptr [gDrone_select_max_distance_squared+0xac]
+            fmul dword ptr [gMatchFloat_00589e80]
             call _ftol
             mov edx, dword ptr [edi + esi + 8]
             push eax
@@ -2595,7 +2920,7 @@ void C2_NAKED C2_HOOK_FASTCALL DoDroneFunkyGroovyThings(tDrone_spec *pDrone) {
             add esp, 8
             jmp L00452203
     L004521e3:
-            fmul dword ptr [gDrone_select_max_distance_squared+0xac]
+            fmul dword ptr [gMatchFloat_00589e80]
             call _ftol
             push eax
             mov eax, dword ptr [edi + esi + 8]
@@ -2623,6 +2948,15 @@ void C2_NAKED C2_HOOK_FASTCALL DoDroneFunkyGroovyThings(tDrone_spec *pDrone) {
             mov esp, ebp
             pop ebp
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -2729,7 +3063,7 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessThisDrone(int pIndex) {
             fxch st(1)
             faddp st(2), st(0)
             faddp st(1), st(0)
-            fcomp dword ptr [gDrone_select_max_distance_squared+0x90]
+            fcomp dword ptr [gMatchFloat_00589e64]
             fnstsw ax
             test ah, 1
             jne L00451e0b
@@ -2744,7 +3078,7 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessThisDrone(int pIndex) {
             faddp st(2), st(0)
             fmul dword ptr [ecx + 0x40]
             faddp st(1), st(0)
-            fcomp dword ptr [gDrone_select_max_distance_squared+0x90]
+            fcomp dword ptr [gMatchFloat_00589e64]
             fnstsw ax
             test ah, 1
             jne L00451e0b
@@ -2759,7 +3093,7 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessThisDrone(int pIndex) {
             faddp st(2), st(0)
             fmul dword ptr [ecx + 0x4c]
             faddp st(1), st(0)
-            fcomp dword ptr [gDrone_select_max_distance_squared+0x90]
+            fcomp dword ptr [gMatchFloat_00589e64]
             fnstsw ax
             test ah, 1
             jne L00451e0b
@@ -2785,7 +3119,7 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessThisDrone(int pIndex) {
             fsqrt
             fstp st(1)
             fst dword ptr [esp + 4]
-            fcomp qword ptr [gDrone_select_max_distance_squared+0x14]
+            fcomp qword ptr [gMatchDouble_00589de8]
             fnstsw ax
             test ah, 0x41
             jne L00451e42
@@ -2807,7 +3141,7 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessThisDrone(int pIndex) {
             _emit 0xdd
         _emit 0x1c
         _emit 0x24
-            push offset gDefault_drone_direction+0x9bc
+            push offset gMatchFloat_0059517c
             call DoNotDprintf
             add esp, 0x18
     L00451e42:
@@ -2823,6 +3157,13 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessThisDrone(int pIndex) {
             pop esi
             pop ecx
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -3020,7 +3361,7 @@ int C2_NAKED C2_HOOK_FASTCALL InitialiseEditModelsEtc(void) {
             jne L00452c31
             push 1
             push 3
-            push offset gDefault_drone_direction+0xc58
+            push offset gMatchData_00595418
             call BrModelAllocate
             mov dword ptr [gStatic_drone_path_model], eax
             or word ptr [eax + 0x20], si
@@ -3035,7 +3376,7 @@ int C2_NAKED C2_HOOK_FASTCALL InitialiseEditModelsEtc(void) {
             jne L00452c62
             push 1
             push 3
-            push offset gDefault_drone_direction+0xc3c
+            push offset gMatchData_005953fc
             call BrModelAllocate
             mov dword ptr [gElasticatey_drone_path_model], eax
             or word ptr [eax + 0x20], si
@@ -3279,6 +3620,13 @@ int C2_NAKED C2_HOOK_FASTCALL InitialiseEditModelsEtc(void) {
             pop ebx
             add esp, 0xc
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -3441,7 +3789,12 @@ void C2_NAKED C2_HOOK_FASTCALL DoDronePerGameFrameStuff(void) {
     L00451415:
             mov eax, dword ptr [gDrone_specs]
             fld dword ptr [gTrack_drone_min_y]
-            fsub dword ptr [gDOUBLE_00589d80+0x28]
+            _emit 0xd8
+        _emit 0x25
+        _emit 0xa8
+        _emit 0x9d
+        _emit 0x58
+        _emit 0x00
             mov ecx, dword ptr [eax + edi + 0xec]
             lea esi, [eax + edi]
             fcomp dword ptr [ecx + 0x54]
@@ -3453,7 +3806,7 @@ void C2_NAKED C2_HOOK_FASTCALL DoDronePerGameFrameStuff(void) {
             push 5
             push edx
             push eax
-            push offset gDefault_drone_direction+0x138
+            push 0x5948f8
             call DoNotDprintf
             mov eax, dword ptr [esi + 0x38]
             add esp, 0x10
@@ -3552,12 +3905,12 @@ void C2_NAKED C2_HOOK_FASTCALL DoDronePerGameFrameStuff(void) {
             push edx
             push eax
             push ecx
-            push offset gDefault_drone_direction+0x608
+            push offset gMatchFloat_00594dc8
             call DoNotDprintf
             mov edx, dword ptr [esi + 0xec]
             add esp, 0x10
             add edx, 0x50
-            mov ecx, offset gDefault_drone_direction+0x600
+            mov ecx, offset gMatchString_00594dc0
             call CrappyLittleVector3DPrintf
             jmp L004515b7
     L004515ae:
@@ -3585,7 +3938,7 @@ void C2_NAKED C2_HOOK_FASTCALL DoDronePerGameFrameStuff(void) {
             mov eax, dword ptr [eax + edi]
             push edx
             push eax
-            push offset gDefault_drone_direction+0x980
+            push offset gMatchFloat_00595140
             call DoNotDprintf
             mov eax, dword ptr [gCount_drones]
             add esp, 0xc
@@ -3598,6 +3951,20 @@ void C2_NAKED C2_HOOK_FASTCALL DoDronePerGameFrameStuff(void) {
             pop esi
             pop ebp
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -3713,7 +4080,7 @@ void C2_NAKED C2_HOOK_FASTCALL DroneStateFuncReset(tDrone_spec* pDrone, tDroneSt
             je L0044cca0
             sub eax, 3
             jne L0044cfbb
-            push offset gDefault_drone_direction+0x190
+            push offset gMatchFloat_00594950
             call DoNotDprintf
             add esp, 4
             pop edi
@@ -3722,7 +4089,7 @@ void C2_NAKED C2_HOOK_FASTCALL DroneStateFuncReset(tDrone_spec* pDrone, tDroneSt
             pop ebx
             ret
     L0044cca0:
-            push offset gDefault_drone_direction+0x174
+            push offset gMatchFloat_00594934
             call DoNotDprintf
             mov eax, dword ptr [gShow_drone_paths]
             add esp, 4
@@ -3733,7 +4100,7 @@ void C2_NAKED C2_HOOK_FASTCALL DroneStateFuncReset(tDrone_spec* pDrone, tDroneSt
             push 2
             push eax
             push ecx
-            push offset gDefault_drone_direction+0x138
+            push 0x5948f8
             call DoNotDprintf
             mov eax, dword ptr [ebp + 0x38]
             add esp, 0x10
@@ -3765,7 +4132,7 @@ void C2_NAKED C2_HOOK_FASTCALL DroneStateFuncReset(tDrone_spec* pDrone, tDroneSt
             pop ebx
             ret
     L0044cd25:
-            push offset gDefault_drone_direction+0x11c
+            push offset gMatchFloat_005948dc
             call DoNotDprintf
             mov edx, dword ptr [ebp + 0xec]
             add esp, 4
@@ -3773,7 +4140,7 @@ void C2_NAKED C2_HOOK_FASTCALL DroneStateFuncReset(tDrone_spec* pDrone, tDroneSt
             jne L0044cd6d
             mov eax, dword ptr [ebp]
             push eax
-            push offset gDefault_drone_direction+0x108
+            push 0x5948c8
             call DoNotDprintf
             mov eax, dword ptr [gCount_rendered_drones]
             add esp, 8
@@ -3796,7 +4163,7 @@ void C2_NAKED C2_HOOK_FASTCALL DroneStateFuncReset(tDrone_spec* pDrone, tDroneSt
             jne L0044cdc1
             mov eax, dword ptr [ebp]
             push eax
-            push offset gDefault_drone_direction+0x108
+            push 0x5948c8
             call DoNotDprintf
             mov eax, dword ptr [gCount_rendered_drones]
             add esp, 8
@@ -3824,7 +4191,7 @@ void C2_NAKED C2_HOOK_FASTCALL DroneStateFuncReset(tDrone_spec* pDrone, tDroneSt
             push eax
             push ecx
             push edx
-            push offset gDefault_drone_direction+0xd8
+            push 0x594898
             call DoNotDprintf
             mov eax, dword ptr [ebp + 0xec]
             add esp, 0x10
@@ -3844,13 +4211,13 @@ void C2_NAKED C2_HOOK_FASTCALL DroneStateFuncReset(tDrone_spec* pDrone, tDroneSt
             _emit 0xdd
         _emit 0x1c
         _emit 0x24
-            push offset gDefault_drone_direction+0xcc
+            push 0x59488c
             push eax
-            push offset gDefault_drone_direction+0xb0
+            push 0x594870
             call DoNotDprintf
             add esp, 0x24
     L0044ce3b:
-            push offset gDefault_drone_direction+0x80
+            push offset gMatchFloat_00594840
             call DoNotDprintf
             mov ax, word ptr [ebp + 8]
             or ecx, 0xffffffff
@@ -4265,11 +4632,11 @@ static void C2_NAKED C2_HOOK_FASTCALL CalculateDrivingInfo(tDrone_spec* pDrone) 
             fxch st(1)
             faddp st(1), st(0)
             fsqrt
-            fcom dword ptr [gDrone_select_max_distance_squared+0x10]
+            fcom dword ptr [gMatchFloat_00589de4]
             fnstsw ax
             test ah, 0x41
             jne L0044dc3a
-            fdivr qword ptr [gDrone_select_max_distance_squared+0x14]
+            fdivr qword ptr [gMatchDouble_00589de8]
             fld st(0)
             fld st(1)
             fxch st(1)
@@ -4287,7 +4654,7 @@ static void C2_NAKED C2_HOOK_FASTCALL CalculateDrivingInfo(tDrone_spec* pDrone) 
             fstp st(0)
             fstp st(0)
             fstp st(0)
-            fld dword ptr [gDrone_render_zero+0x4]
+            fld dword ptr [gMatchFloat_00589dc8]
             fld dword ptr [gDrone_render_zero]
             mov dword ptr [esp + 0x6c], 0
     L0044dc56:
@@ -4313,11 +4680,11 @@ static void C2_NAKED C2_HOOK_FASTCALL CalculateDrivingInfo(tDrone_spec* pDrone) 
             faddp st(2), st(0)
             faddp st(1), st(0)
             fsqrt
-            fcom dword ptr [gDrone_select_max_distance_squared+0x10]
+            fcom dword ptr [gMatchFloat_00589de4]
             fnstsw ax
             test ah, 0x41
             jne L0044dcc9
-            fdivr qword ptr [gDrone_select_max_distance_squared+0x14]
+            fdivr qword ptr [gMatchDouble_00589de8]
             fld st(0)
             fld st(1)
             fxch st(1)
@@ -4344,15 +4711,15 @@ static void C2_NAKED C2_HOOK_FASTCALL CalculateDrivingInfo(tDrone_spec* pDrone) 
     L0044dce7:
             fld dword ptr [esp + 0x6c]
             call _CIacos
-            fmul qword ptr [gDrone_select_max_distance_squared+0x1c]
+            fmul qword ptr [gMatchDouble_00589df0]
             call _ftol
             mov ecx, eax
             mov edx, ecx
             and edx, 0xffff
             mov dword ptr [esp + 0x28], edx
             fild dword ptr [esp + 0x28]
-            fmul qword ptr [gDrone_select_max_distance_squared+0x24]
-            fcom qword ptr [gDrone_select_max_distance_squared+0x2c]
+            fmul qword ptr [gMatchDouble_00589df8]
+            fcom qword ptr [gMatchDouble_00589e00]
             fst dword ptr [esp + 0x2c]
             fnstsw ax
             test ah, 0x41
@@ -4360,11 +4727,11 @@ static void C2_NAKED C2_HOOK_FASTCALL CalculateDrivingInfo(tDrone_spec* pDrone) 
             fstp st(0)
             fld dword ptr [gDrone_render_zero]
     L0044dd2c:
-            fcom qword ptr [gDrone_select_max_distance_squared+0x34]
+            fcom qword ptr [gMatchDouble_00589e08]
             fnstsw ax
             test ah, 0x41
             jne L0044dd3f
-            fsubr qword ptr [gDrone_select_max_distance_squared+0x2c]
+            fsubr qword ptr [gMatchDouble_00589e00]
     L0044dd3f:
             mov eax, dword ptr [esp + 0x1c]
             mov eax, dword ptr [eax + 0x10]
@@ -4372,11 +4739,11 @@ static void C2_NAKED C2_HOOK_FASTCALL CalculateDrivingInfo(tDrone_spec* pDrone) 
             je L0044dd74
             cmp eax, 3
             je L0044dd74
-            fmul qword ptr [gDrone_select_max_distance_squared+0x3c]
+            fmul qword ptr [gMatchDouble_00589e10]
             fld dword ptr [esp + 0xc]
             fsub dword ptr [esp + 0x14]
             fxch st(1)
-            fsubr qword ptr [gDrone_select_max_distance_squared+0x14]
+            fsubr qword ptr [gMatchDouble_00589de8]
             fxch st(1)
             fmulp st(1), st(0)
             fadd dword ptr [esp + 0x14]
@@ -4470,11 +4837,11 @@ static void C2_NAKED C2_HOOK_FASTCALL CalculateDrivingInfo(tDrone_spec* pDrone) 
             fmul st(0), st(2)
             faddp st(1), st(0)
             fsqrt
-            fcom dword ptr [gDrone_select_max_distance_squared+0x10]
+            fcom dword ptr [gMatchFloat_00589de4]
             fnstsw ax
             test ah, 0x41
             jne L0044dea1
-            fdivr qword ptr [gDrone_select_max_distance_squared+0x14]
+            fdivr qword ptr [gMatchDouble_00589de8]
             fld st(0)
             fmulp st(3), st(0)
             fmulp st(1), st(0)
@@ -4483,7 +4850,7 @@ static void C2_NAKED C2_HOOK_FASTCALL CalculateDrivingInfo(tDrone_spec* pDrone) 
             fstp st(0)
             fstp st(0)
             fstp st(0)
-            fld dword ptr [gDrone_render_zero+0x4]
+            fld dword ptr [gMatchFloat_00589dc8]
             fld dword ptr [gDrone_render_zero]
     L0044deb3:
             fcom dword ptr [gDrone_render_zero]
@@ -4501,13 +4868,13 @@ static void C2_NAKED C2_HOOK_FASTCALL CalculateDrivingInfo(tDrone_spec* pDrone) 
             fxch st(1)
             fmul dword ptr [esp + 0xc]
             fxch st(1)
-            fcomp dword ptr [gDrone_select_max_distance_squared+0x44]
+            fcomp dword ptr [gMatchFloat_00589e18]
             fnstsw ax
             fadd dword ptr [esp + 0xc]
             test ah, 1
             jne L0044e357
             fxch st(2)
-            fsub dword ptr [gDrone_select_max_distance_squared+0x48]
+            fsub dword ptr [gMatchFloat_00589e1c]
             fld st(2)
             fdiv st(0), st(2)
             fxch st(1)
@@ -4522,7 +4889,7 @@ static void C2_NAKED C2_HOOK_FASTCALL CalculateDrivingInfo(tDrone_spec* pDrone) 
             fxch st(1)
             fmul dword ptr [esp + 0xc]
             fxch st(1)
-            fmul dword ptr [gDrone_select_max_distance_squared+0x4c]
+            fmul dword ptr [gMatchFloat_00589e20]
             fld st(4)
             fxch st(1)
             fsubp st(2), st(0)
@@ -4539,7 +4906,7 @@ static void C2_NAKED C2_HOOK_FASTCALL CalculateDrivingInfo(tDrone_spec* pDrone) 
             fstp st(0)
             fld st(0)
             fmul st(0), st(1)
-            fmul dword ptr [gDrone_select_max_distance_squared+0x50]
+            fmul dword ptr [gMatchFloat_00589e24]
             fxch st(1)
             fstp dword ptr [esi + 0x6c]
             fcomp dword ptr [esp + 0x1c]
@@ -4548,13 +4915,13 @@ static void C2_NAKED C2_HOOK_FASTCALL CalculateDrivingInfo(tDrone_spec* pDrone) 
             jne L0044df69
             fld dword ptr [esp + 0x1c]
             fsqrt
-            fmul dword ptr [gDrone_select_max_distance_squared+0x54]
+            fmul dword ptr [gMatchFloat_00589e28]
             fstp dword ptr [esi + 0x6c]
     L0044df69:
             fld dword ptr [esi + 0x6c]
             fld st(0)
             fmul st(0), st(1)
-            fmul dword ptr [gDrone_select_max_distance_squared+0x50]
+            fmul dword ptr [gMatchFloat_00589e24]
             fcomp dword ptr [esp + 0x14]
             fnstsw ax
             test ah, 0x41
@@ -4562,7 +4929,7 @@ static void C2_NAKED C2_HOOK_FASTCALL CalculateDrivingInfo(tDrone_spec* pDrone) 
             jne L0044df92
             fld dword ptr [esp + 0x14]
             fsqrt
-            fmul dword ptr [gDrone_select_max_distance_squared+0x54]
+            fmul dword ptr [gMatchFloat_00589e28]
             fstp dword ptr [esi + 0x6c]
     L0044df92:
             fmul dword ptr [esi + 0x6c]
@@ -4670,16 +5037,16 @@ static void C2_NAKED C2_HOOK_FASTCALL CalculateDrivingInfo(tDrone_spec* pDrone) 
             fxch st(2)
             fsqrt
             fld dword ptr [esp + 0x2c]
-            fmul dword ptr [gDrone_select_max_distance_squared+0x58]
+            fmul dword ptr [gMatchFloat_00589e2c]
             fxch st(3)
             fst dword ptr [esp + 0x2c]
             fxch st(3)
-            fsubr dword ptr [gDrone_render_zero+0x4]
+            fsubr dword ptr [gMatchFloat_00589dc8]
             fxch st(1)
             fst dword ptr [esp + 0x2c]
             fxch st(3)
             fst dword ptr [esp + 0x20]
-            fcomp dword ptr [gDrone_select_max_distance_squared+0x10]
+            fcomp dword ptr [gMatchFloat_00589de4]
             fld dword ptr [esp + 0x68]
             fld dword ptr [esp + 0x70]
             fxch st(2)
@@ -4703,7 +5070,7 @@ static void C2_NAKED C2_HOOK_FASTCALL CalculateDrivingInfo(tDrone_spec* pDrone) 
             fstp dword ptr [esp + 0x18]
             jne L0044e125
             fld dword ptr [esp + 0x20]
-            fdivr qword ptr [gDrone_select_max_distance_squared+0x14]
+            fdivr qword ptr [gMatchDouble_00589de8]
             fld st(0)
             fmulp st(3), st(0)
             fmul st(0), st(1)
@@ -4713,7 +5080,7 @@ static void C2_NAKED C2_HOOK_FASTCALL CalculateDrivingInfo(tDrone_spec* pDrone) 
     L0044e125:
             fstp st(0)
             fstp st(0)
-            fld dword ptr [gDrone_render_zero+0x4]
+            fld dword ptr [gMatchFloat_00589dc8]
             mov dword ptr [esp + 0x24], 0
     L0044e137:
             fld dword ptr [esi + 0x68]
@@ -4730,7 +5097,7 @@ static void C2_NAKED C2_HOOK_FASTCALL CalculateDrivingInfo(tDrone_spec* pDrone) 
             fstp dword ptr [esp + 0x28]
             mov ecx, dword ptr [esp + 0x28]
             fmul dword ptr [esp + 0xc]
-            fld qword ptr [gDrone_select_max_distance_squared+0x5c]
+            fld qword ptr [gMatchDouble_00589e30]
             fxch st(1)
             fst dword ptr [esp + 0x2c]
             mov dword ptr [esp + 0x1c], ecx
@@ -4747,28 +5114,28 @@ static void C2_NAKED C2_HOOK_FASTCALL CalculateDrivingInfo(tDrone_spec* pDrone) 
             test ah, 0x41
             fstp dword ptr [esp + 0x24]
             jne L0044e199
-            fld qword ptr [gDrone_select_max_distance_squared+0x5c]
+            fld qword ptr [gMatchDouble_00589e30]
             jmp L0044e19b
     L0044e199:
             fld st(0)
     L0044e19b:
-            fld qword ptr [gDrone_select_max_distance_squared+0x14]
+            fld qword ptr [gMatchDouble_00589de8]
             fcomp st(1)
             fnstsw ax
             test ah, 1
             fstp st(0)
             je L0044e1b6
             fstp st(0)
-            fld qword ptr [gDrone_select_max_distance_squared+0x14]
+            fld qword ptr [gMatchDouble_00589de8]
             jmp L0044e1cd
     L0044e1b6:
             fld st(0)
-            fcomp qword ptr [gDrone_select_max_distance_squared+0x5c]
+            fcomp qword ptr [gMatchDouble_00589e30]
             fnstsw ax
             test ah, 1
             je L0044e1cd
             fstp st(0)
-            fld qword ptr [gDrone_select_max_distance_squared+0x5c]
+            fld qword ptr [gMatchDouble_00589e30]
     L0044e1cd:
             fst dword ptr [esp + 0x2c]
             call _CIacos
@@ -4779,7 +5146,7 @@ static void C2_NAKED C2_HOOK_FASTCALL CalculateDrivingInfo(tDrone_spec* pDrone) 
             test ah, 1
             fstp dword ptr [esi + 0x5c]
             je L0044e1f7
-            fsubr qword ptr [gDrone_select_max_distance_squared+0x64]
+            fsubr qword ptr [gMatchDouble_00589e38]
             fstp dword ptr [esi + 0x5c]
             jmp L0044e1f9
     L0044e1f7:
@@ -4798,11 +5165,11 @@ static void C2_NAKED C2_HOOK_FASTCALL CalculateDrivingInfo(tDrone_spec* pDrone) 
             fmul st(0), st(2)
             faddp st(1), st(0)
             fsqrt
-            fcom dword ptr [gDrone_select_max_distance_squared+0x10]
+            fcom dword ptr [gMatchFloat_00589de4]
             fnstsw ax
             test ah, 0x41
             jne L0044e23c
-            fdivr qword ptr [gDrone_select_max_distance_squared+0x14]
+            fdivr qword ptr [gMatchDouble_00589de8]
             fld st(0)
             fmulp st(3), st(0)
             fmul st(0), st(1)
@@ -4813,14 +5180,14 @@ static void C2_NAKED C2_HOOK_FASTCALL CalculateDrivingInfo(tDrone_spec* pDrone) 
             fstp st(0)
             fstp st(0)
             fstp st(0)
-            fld dword ptr [gDrone_render_zero+0x4]
+            fld dword ptr [gMatchFloat_00589dc8]
             mov dword ptr [esp + 0x24], 0
     L0044e250:
             fmul dword ptr [esi + 0x6c]
             fld dword ptr [esi + 0x6c]
             fxch st(1)
             fadd dword ptr [esp + 0x30]
-            fld qword ptr [gDrone_select_max_distance_squared+0x5c]
+            fld qword ptr [gMatchDouble_00589e30]
             fxch st(1)
             fmul dword ptr [esp + 0xc]
             fxch st(2)
@@ -4841,28 +5208,28 @@ static void C2_NAKED C2_HOOK_FASTCALL CalculateDrivingInfo(tDrone_spec* pDrone) 
             test ah, 0x41
             fstp dword ptr [esp + 0x24]
             jne L0044e2a1
-            fld qword ptr [gDrone_select_max_distance_squared+0x5c]
+            fld qword ptr [gMatchDouble_00589e30]
             jmp L0044e2a3
     L0044e2a1:
             fld st(0)
     L0044e2a3:
-            fld qword ptr [gDrone_select_max_distance_squared+0x14]
+            fld qword ptr [gMatchDouble_00589de8]
             fcomp st(1)
             fnstsw ax
             test ah, 1
             fstp st(0)
             je L0044e2be
             fstp st(0)
-            fld qword ptr [gDrone_select_max_distance_squared+0x14]
+            fld qword ptr [gMatchDouble_00589de8]
             jmp L0044e2d5
     L0044e2be:
             fld st(0)
-            fcomp qword ptr [gDrone_select_max_distance_squared+0x5c]
+            fcomp qword ptr [gMatchDouble_00589e30]
             fnstsw ax
             test ah, 1
             je L0044e2d5
             fstp st(0)
-            fld qword ptr [gDrone_select_max_distance_squared+0x5c]
+            fld qword ptr [gMatchDouble_00589e30]
     L0044e2d5:
             fst dword ptr [esp + 0x2c]
             call _CIacos
@@ -4873,7 +5240,7 @@ static void C2_NAKED C2_HOOK_FASTCALL CalculateDrivingInfo(tDrone_spec* pDrone) 
             test ah, 1
             fstp dword ptr [esi + 0x64]
             je L0044e2ff
-            fsubr qword ptr [gDrone_select_max_distance_squared+0x64]
+            fsubr qword ptr [gMatchDouble_00589e38]
             fstp dword ptr [esi + 0x64]
             jmp L0044e301
     L0044e2ff:
@@ -4888,7 +5255,7 @@ static void C2_NAKED C2_HOOK_FASTCALL CalculateDrivingInfo(tDrone_spec* pDrone) 
             je L0044e345
             fld dword ptr [esi + 0x64]
     L0044e315:
-            fsub qword ptr [gDrone_select_max_distance_squared+0x6c]
+            fsub qword ptr [gMatchDouble_00589e40]
             fcom dword ptr [esi + 0x5c]
             fnstsw ax
             test ah, 1
@@ -4900,7 +5267,7 @@ static void C2_NAKED C2_HOOK_FASTCALL CalculateDrivingInfo(tDrone_spec* pDrone) 
             jne L0044e345
     L0044e32f:
             fld dword ptr [esi + 0x5c]
-            fsub qword ptr [gDrone_select_max_distance_squared+0x6c]
+            fsub qword ptr [gMatchDouble_00589e40]
             fcom dword ptr [esi + 0x64]
             fstp dword ptr [esi + 0x5c]
             fnstsw ax
@@ -4930,7 +5297,7 @@ static void C2_NAKED C2_HOOK_FASTCALL CalculateDrivingInfo(tDrone_spec* pDrone) 
             test ah, 1
             je L0044e3d7
             fld dword ptr [esi + 0x68]
-            fmul dword ptr [gDrone_render_zero+0xc]
+            fmul dword ptr [gMatchFloat_00589dd0]
             fst dword ptr [esi + 0x50]
             fld dword ptr [ecx + 0x1c]
             fcomp st(1)
@@ -4976,7 +5343,7 @@ static void C2_NAKED C2_HOOK_FASTCALL CalculateDrivingInfo(tDrone_spec* pDrone) 
         _emit 0x1c
         _emit 0x24
             push eax
-            push offset gDefault_drone_direction+0x498
+            push offset gMatchFloat_00594c58
             call DoNotDprintf
             add esp, 0x14
             pop edi
@@ -4984,6 +5351,19 @@ static void C2_NAKED C2_HOOK_FASTCALL CalculateDrivingInfo(tDrone_spec* pDrone) 
             pop ebx
             add esp, 0x68
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -5031,7 +5411,7 @@ void C2_NAKED C2_HOOK_FASTCALL MoveThisDronePlane(tDrone_spec* pDrone) {
             push esi
             push edi
             mov esi, ecx
-            push offset gDefault_drone_direction+0x480
+            push offset gMatchFloat_00594c40
             call DoNotDprintf
             mov eax, dword ptr [gDrone_delta_time]
             add esp, 4
@@ -5167,7 +5547,7 @@ void C2_NAKED C2_HOOK_FASTCALL MoveThisDronePlane(tDrone_spec* pDrone) {
             fld dword ptr [ecx + 0x10]
             fld dword ptr [ecx + 0x14]
             fld dword ptr [ecx + 0x18]
-            fld dword ptr [gDrone_render_zero+0x4]
+            fld dword ptr [gMatchFloat_00589dc8]
             fsub dword ptr [esp + 0x18]
             fxch st(4)
             fstp dword ptr [esp + 0x34]
@@ -5250,13 +5630,13 @@ void C2_NAKED C2_HOOK_FASTCALL MoveThisDronePlane(tDrone_spec* pDrone) {
         _emit 0x24
             push edi
             push ebp
-            push offset gDefault_drone_direction+0x454
+            push offset gMatchFloat_00594c14
             jmp L0044d5ce
     L0044d57a:
             mov ecx, dword ptr [esi + 4]
             sub esp, 8
             fld dword ptr [ecx + 0x20]
-            fmul dword ptr [gDrone_render_zero+0x8]
+            fmul dword ptr [gMatchFloat_00589dcc]
             fst dword ptr [esp + 0x20]
             fstp qword ptr [esp + 0x30]
             fld dword ptr [esi + 0x48]
@@ -5267,7 +5647,7 @@ void C2_NAKED C2_HOOK_FASTCALL MoveThisDronePlane(tDrone_spec* pDrone) {
         _emit 0x24
             push edi
             push ebp
-            push offset gDefault_drone_direction+0x42c
+            push offset gMatchFloat_00594bec
             jmp L0044d5ce
     L0044d5a8:
             mov edx, dword ptr [esi + 4]
@@ -5283,7 +5663,7 @@ void C2_NAKED C2_HOOK_FASTCALL MoveThisDronePlane(tDrone_spec* pDrone) {
         _emit 0x24
             push edi
             push ebp
-            push offset gDefault_drone_direction+0x3fc
+            push offset gMatchFloat_00594bbc
     L0044d5ce:
             call DoNotDprintf
             mov eax, dword ptr [esi + 0x10]
@@ -5317,7 +5697,7 @@ void C2_NAKED C2_HOOK_FASTCALL MoveThisDronePlane(tDrone_spec* pDrone) {
         _emit 0x24
             push edi
             push ebp
-            push offset gDefault_drone_direction+0x3d4
+            push offset gMatchFloat_00594b94
             call DoNotDprintf
             fld dword ptr [esi + 0x48]
             mov ecx, dword ptr [esi + 4]
@@ -5334,7 +5714,7 @@ void C2_NAKED C2_HOOK_FASTCALL MoveThisDronePlane(tDrone_spec* pDrone) {
         _emit 0x24
             push edi
             push ebp
-            push offset gDefault_drone_direction+0x3ac
+            push offset gMatchFloat_00594b6c
             call DoNotDprintf
             fld dword ptr [esp + 0x28]
             add esp, 0x14
@@ -5349,7 +5729,7 @@ void C2_NAKED C2_HOOK_FASTCALL MoveThisDronePlane(tDrone_spec* pDrone) {
             fld dword ptr [esi + 0x48]
             fxch st(1)
             fsub dword ptr [esp + 0x30]
-            fmul dword ptr [gDrone_render_zero+0xc]
+            fmul dword ptr [gMatchFloat_00589dd0]
             fxch st(1)
             _emit 0xdd
         _emit 0x1c
@@ -5362,7 +5742,7 @@ void C2_NAKED C2_HOOK_FASTCALL MoveThisDronePlane(tDrone_spec* pDrone) {
             _emit 0xdd
         _emit 0x1c
         _emit 0x24
-            push offset gDefault_drone_direction+0x37c
+            push offset gMatchFloat_00594b3c
             call DoNotDprintf
             mov edx, dword ptr [esi + 0x10]
             add esp, 0x1c
@@ -5388,7 +5768,7 @@ void C2_NAKED C2_HOOK_FASTCALL MoveThisDronePlane(tDrone_spec* pDrone) {
         _emit 0x24
             push edi
             push ebp
-            push offset gDefault_drone_direction+0x354
+            push offset gMatchFloat_00594b14
             call DoNotDprintf
             mov eax, dword ptr [esi + 0x10]
             add esp, 0x14
@@ -5434,7 +5814,7 @@ void C2_NAKED C2_HOOK_FASTCALL MoveThisDronePlane(tDrone_spec* pDrone) {
             _emit 0xdd
         _emit 0x1c
         _emit 0x24
-            push offset gDefault_drone_direction+0x310
+            push offset gMatchFloat_00594ad0
             call DoNotDprintf
             fld dword ptr [esp + 0x44]
             fcomp dword ptr [esp + 0x38]
@@ -5449,7 +5829,7 @@ void C2_NAKED C2_HOOK_FASTCALL MoveThisDronePlane(tDrone_spec* pDrone) {
         _emit 0x24
             push edi
             push ebp
-            push offset gDefault_drone_direction+0x2e8
+            push offset gMatchFloat_00594aa8
             call DoNotDprintf
             mov ecx, dword ptr [esp + 0x2c]
             add esp, 0x14
@@ -5463,7 +5843,7 @@ void C2_NAKED C2_HOOK_FASTCALL MoveThisDronePlane(tDrone_spec* pDrone) {
         _emit 0x24
             push edi
             push ebp
-            push offset gDefault_drone_direction+0x2c0
+            push offset gMatchFloat_00594a80
             call DoNotDprintf
             fld dword ptr [esp + 0x38]
             fmul dword ptr [esp + 0x28]
@@ -5495,7 +5875,7 @@ void C2_NAKED C2_HOOK_FASTCALL MoveThisDronePlane(tDrone_spec* pDrone) {
         _emit 0x24
             push edi
             push ebp
-            push offset gDefault_drone_direction+0x298
+            push offset gMatchFloat_00594a58
             call DoNotDprintf
             fld dword ptr [esp + 0x28]
             add esp, 0x14
@@ -5518,7 +5898,7 @@ void C2_NAKED C2_HOOK_FASTCALL MoveThisDronePlane(tDrone_spec* pDrone) {
             fmulp st(2), st(0)
             fmul dword ptr [esp + 0x14]
             fxch st(1)
-            fmul dword ptr [gDrone_render_zero+0xc]
+            fmul dword ptr [gMatchFloat_00589dd0]
             fxch st(1)
             faddp st(1), st(0)
             fadd dword ptr [esi + 0x4c]
@@ -5533,7 +5913,7 @@ void C2_NAKED C2_HOOK_FASTCALL MoveThisDronePlane(tDrone_spec* pDrone) {
         _emit 0x24
             push edi
             push ebp
-            push offset gDefault_drone_direction+0x270
+            push offset gMatchFloat_00594a30
             call DoNotDprintf
             fld dword ptr [esp + 0x28]
             add esp, 0x14
@@ -5546,7 +5926,7 @@ void C2_NAKED C2_HOOK_FASTCALL MoveThisDronePlane(tDrone_spec* pDrone) {
         _emit 0x24
             push edi
             push ebp
-            push offset gDefault_drone_direction+0x248
+            push offset gMatchFloat_00594a08
             call DoNotDprintf
             fld dword ptr [esi + 0x48]
             fcomp dword ptr [esp + 0x2c]
@@ -5657,7 +6037,7 @@ void C2_NAKED C2_HOOK_FASTCALL MoveThisDronePlane(tDrone_spec* pDrone) {
             fstp st(0)
             jmp L0044da3a
     L0044da00:
-            push offset gDefault_drone_direction+0x234
+            push offset gMatchFloat_005949f4
             call DoNotDprintf
             add esp, 4
             mov ecx, esi
@@ -5690,7 +6070,7 @@ void C2_NAKED C2_HOOK_FASTCALL MoveThisDronePlane(tDrone_spec* pDrone) {
             push 4
             push ecx
             push edx
-            push offset gDefault_drone_direction+0x138
+            push 0x5948f8
             call DoNotDprintf
             mov eax, dword ptr [esi + 0x38]
             add esp, 0x10
@@ -5724,6 +6104,11 @@ void C2_NAKED C2_HOOK_FASTCALL MoveThisDronePlane(tDrone_spec* pDrone) {
             mov esp, ebp
             pop ebp
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -5768,7 +6153,7 @@ void C2_NAKED C2_HOOK_FASTCALL MoveThisDroneCar(tDrone_spec* pDrone) {
             push esi
             push edi
             mov esi, ecx
-            push offset gDefault_drone_direction+0x4ec
+            push offset gMatchFloat_00594cac
             call DoNotDprintf
             mov eax, dword ptr [gDrone_delta_time]
             add esp, 4
@@ -5905,7 +6290,7 @@ void C2_NAKED C2_HOOK_FASTCALL MoveThisDroneCar(tDrone_spec* pDrone) {
             fld dword ptr [ecx + 0x10]
             fld dword ptr [ecx + 0x14]
             fld dword ptr [ecx + 0x18]
-            fld dword ptr [gDrone_render_zero+0x4]
+            fld dword ptr [gMatchFloat_00589dc8]
             fsub dword ptr [esp + 0x14]
             fxch st(4)
             fstp dword ptr [esp + 0x28]
@@ -6042,7 +6427,7 @@ void C2_NAKED C2_HOOK_FASTCALL MoveThisDroneCar(tDrone_spec* pDrone) {
             test ah, 0x41
             fstp st(0)
             fld dword ptr [esp + 0x20]
-            fmul dword ptr [gDrone_render_zero+0xc]
+            fmul dword ptr [gMatchFloat_00589dd0]
             fsubr dword ptr [esp + 0x14]
             fstp dword ptr [esp + 0x1c]
             jne L0044e935
@@ -6103,7 +6488,7 @@ void C2_NAKED C2_HOOK_FASTCALL MoveThisDroneCar(tDrone_spec* pDrone) {
             fmulp st(2), st(0)
             fmul dword ptr [esp + 0x10]
             fxch st(1)
-            fmul dword ptr [gDrone_render_zero+0xc]
+            fmul dword ptr [gMatchFloat_00589dd0]
             fxch st(1)
             faddp st(1), st(0)
             fadd dword ptr [esi + 0x4c]
@@ -6189,7 +6574,7 @@ void C2_NAKED C2_HOOK_FASTCALL MoveThisDroneCar(tDrone_spec* pDrone) {
             fstp st(0)
             jmp L0044eae8
     L0044ea86:
-            push offset gDefault_drone_direction+0x234
+            push offset gMatchFloat_005949f4
             call DoNotDprintf
             add esp, 4
             mov ecx, esi
@@ -6233,7 +6618,7 @@ void C2_NAKED C2_HOOK_FASTCALL MoveThisDroneCar(tDrone_spec* pDrone) {
             push 4
             push edx
             push eax
-            push offset gDefault_drone_direction+0x138
+            push 0x5948f8
             call DoNotDprintf
             mov eax, dword ptr [esi + 0x38]
             add esp, 0x10
@@ -6266,6 +6651,12 @@ void C2_NAKED C2_HOOK_FASTCALL MoveThisDroneCar(tDrone_spec* pDrone) {
             pop ebx
             add esp, 0x3c
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -6332,14 +6723,14 @@ void C2_NAKED C2_HOOK_FASTCALL DroneStateFuncControlledMovement(tDrone_spec* pDr
             je L0044d27a
             dec eax
             je L0044d1f3
-            push offset gDefault_drone_direction+0x208
+            push offset gMatchFloat_005949c8
             call DoNotDprintf
             add esp, 4
             pop esi
             pop ebx
             ret
     L0044d1f3:
-            push offset gDefault_drone_direction+0x1e0
+            push offset gMatchFloat_005949a0
             call DoNotDprintf
             mov al, byte ptr [esi + 0x44]
             add esp, 4
@@ -6385,13 +6776,13 @@ void C2_NAKED C2_HOOK_FASTCALL DroneStateFuncControlledMovement(tDrone_spec* pDr
             pop ebx
             ret
     L0044d26d:
-            mov ecx, offset gDefault_drone_direction+0x1d8
+            mov ecx, offset gMatchString_00594998
             call PDEnterDebugger
             pop esi
             pop ebx
             ret
     L0044d27a:
-            push offset gDefault_drone_direction+0x1ac
+            push offset gMatchFloat_0059496c
             call DoNotDprintf
             add esp, 4
             mov dword ptr [esi + 0xdc], ebx
@@ -6474,7 +6865,7 @@ void C2_NAKED C2_HOOK_FASTCALL DroneStateFuncStationaryPassive(tDrone_spec* pDro
             dec eax
             mov esi, ecx
             jne L0044ece6
-            push offset gDefault_drone_direction+0x524
+            push offset gMatchFloat_00594ce4
             call DoNotDprintf
             mov al, byte ptr [esi + 0x44]
             add esp, 4
@@ -6495,7 +6886,7 @@ void C2_NAKED C2_HOOK_FASTCALL DroneStateFuncStationaryPassive(tDrone_spec* pDro
             push 1
             push edx
             push eax
-            push offset gDefault_drone_direction+0x138
+            push 0x5948f8
             call DoNotDprintf
             mov eax, dword ptr [esi + 0x38]
             add esp, 0x10
@@ -6524,6 +6915,14 @@ void C2_NAKED C2_HOOK_FASTCALL DroneStateFuncStationaryPassive(tDrone_spec* pDro
     L0044ece6:
             pop esi
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -6609,7 +7008,7 @@ void C2_NAKED C2_HOOK_FASTCALL CalcRenderBoundsCentre(void) {
             fxch st(4)
             faddp st(1), st(0)
             fsqrt
-            fcom dword ptr [gDrone_select_max_distance_squared+0x10]
+            fcom dword ptr [gMatchFloat_00589de4]
             fxch st(2)
             fxch st(3)
             fxch st(1)
@@ -6617,7 +7016,7 @@ void C2_NAKED C2_HOOK_FASTCALL CalcRenderBoundsCentre(void) {
             fnstsw ax
             test ah, 0x41
             jne L00451c2d
-            fdivr qword ptr [gDrone_select_max_distance_squared+0x14]
+            fdivr qword ptr [gMatchDouble_00589de8]
             fld st(0)
             fld st(1)
             fxch st(1)
@@ -6630,17 +7029,17 @@ void C2_NAKED C2_HOOK_FASTCALL CalcRenderBoundsCentre(void) {
             fstp st(0)
             fstp st(0)
             fstp st(0)
-            fld dword ptr [gDrone_render_zero+0x4]
+            fld dword ptr [gMatchFloat_00589dc8]
             fld dword ptr [gDrone_render_zero]
             fld dword ptr [gDrone_render_zero]
     L00451c47:
             fld st(0)
             fxch st(3)
-            fmul dword ptr [gDrone_select_max_distance_squared+0x8c]
+            fmul dword ptr [gMatchFloat_00589e60]
             fxch st(2)
-            fmul dword ptr [gDrone_select_max_distance_squared+0x8c]
+            fmul dword ptr [gMatchFloat_00589e60]
             fxch st(3)
-            fmul dword ptr [gDrone_select_max_distance_squared+0x8c]
+            fmul dword ptr [gMatchFloat_00589e60]
             fxch st(2)
             fadd dword ptr [gCamera_to_world+0x24]
             fxch st(3)
@@ -6787,7 +7186,7 @@ void C2_NAKED C2_HOOK_FASTCALL PipeDroneMatrix(tDrone_spec* pDrone) {
             push edx
             call DRScalarToU16
             fld dword ptr [esi + 0x70]
-            fcomp dword ptr [gDOUBLE_00589d80+0x40]
+            fcomp dword ptr [gMatchFloat_00589dc0]
             mov word ptr [esp + 0x22], ax
             fnstsw ax
             test ah, 1
@@ -6834,6 +7233,17 @@ void C2_NAKED C2_HOOK_FASTCALL PipeDroneMatrix(tDrone_spec* pDrone) {
             pop esi
             add esp, 0x20
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -7257,7 +7667,7 @@ void C2_NAKED C2_HOOK_FASTCALL SelectNearestDrone(void) {
         _emit 0x1c
         _emit 0x24
             push ebx
-            push offset gDefault_drone_direction+0xd40
+            push offset gMatchFloat_00595500
             push offset gDrone_selection_buffer
             call sprintf
             add esp, 0x14
@@ -7302,7 +7712,7 @@ void C2_NAKED C2_HOOK_FASTCALL SelectNearestDrone(void) {
             add esp, 0x10
             ret
     L00453437:
-            push offset gDefault_drone_direction+0xd28
+            push offset gMatchFloat_005954e8
             push -1
             push 0xbb8
             xor edx, edx
@@ -7315,6 +7725,15 @@ void C2_NAKED C2_HOOK_FASTCALL SelectNearestDrone(void) {
             pop ebx
             add esp, 0x10
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -7396,7 +7815,7 @@ void C2_NAKED C2_HOOK_FASTCALL ShowDronePaths(void) {
             call InitialiseEditModelsEtc
             test eax, eax
             jne L004534c9
-            push offset gDefault_drone_direction+0xd84
+            push offset gMatchFloat_00595544
             push -1
             push 0x1388
             xor edx, edx
@@ -7431,7 +7850,7 @@ void C2_NAKED C2_HOOK_FASTCALL ShowDronePaths(void) {
             jne L00453549
             mov eax, dword ptr [esi]
             push eax
-            push offset gDefault_drone_direction+0x108
+            push 0x5948c8
             call DoNotDprintf
             mov eax, dword ptr [gCount_rendered_drones]
             add esp, 8
@@ -7459,7 +7878,7 @@ void C2_NAKED C2_HOOK_FASTCALL ShowDronePaths(void) {
             push eax
             push ecx
             push edx
-            push offset gDefault_drone_direction+0xd8
+            push 0x594898
             call DoNotDprintf
             mov esi, dword ptr [esi + 0xec]
             add esp, 0x10
@@ -7479,9 +7898,9 @@ void C2_NAKED C2_HOOK_FASTCALL ShowDronePaths(void) {
             _emit 0xdd
         _emit 0x1c
         _emit 0x24
-            push offset gDefault_drone_direction+0xcc
+            push 0x59488c
             push eax
-            push offset gDefault_drone_direction+0xb0
+            push 0x594870
             call DoNotDprintf
             add esp, 0x24
     L004535c2:
@@ -7492,7 +7911,7 @@ void C2_NAKED C2_HOOK_FASTCALL ShowDronePaths(void) {
             lea esi, [ecx + edi]
             push edx
             push eax
-            push offset gDefault_drone_direction+0x138
+            push 0x5948f8
             call DoNotDprintf
             mov eax, dword ptr [esi + 0x38]
             add esp, 0x10
@@ -7525,7 +7944,7 @@ void C2_NAKED C2_HOOK_FASTCALL ShowDronePaths(void) {
             cmp ebp, eax
             jl L004534ea
     L00453638:
-            push offset gDefault_drone_direction+0xd70
+            push offset gMatchData_00595530
             push -1
             push 0xbb8
             xor edx, edx
@@ -7538,7 +7957,7 @@ void C2_NAKED C2_HOOK_FASTCALL ShowDronePaths(void) {
             pop ebx
             ret
     L0045365a:
-            push offset gDefault_drone_direction+0xd54
+            push offset gMatchFloat_00595514
             push -1
             push 0xbb8
             xor edx, edx
@@ -7588,14 +8007,14 @@ void C2_NAKED C2_HOOK_FASTCALL ShowDronePaths(void) {
             call WriteOutDronePaths
             xor edx, edx
             mov ecx, 4
-            push offset gDefault_drone_direction+0xdd0
+            push offset gMatchFloat_00595590
             push -1
             push 0xbb8
             mov dword ptr [gShow_drone_paths], 0
             call NewTextHeadupSlot
             ret
     L004536fd:
-            push offset gDefault_drone_direction+0xdb4
+            push offset gMatchFloat_00595574
             push -1
             push 0xbb8
             xor edx, edx
@@ -7616,7 +8035,7 @@ void C2_NAKED C2_HOOK_FASTCALL ShowDronePaths(void) {
             push esi
             test eax, eax
             jne L00453744
-            push offset gDefault_drone_direction+0xde4
+            push offset gMatchFloat_005955a4
             push -1
             push 0xbb8
             xor edx, edx
@@ -7666,7 +8085,7 @@ void C2_NAKED C2_HOOK_FASTCALL ShowDronePaths(void) {
             nop
     L004537d0:
             sub esp, 0x10
-            fld dword ptr [gDrone_select_max_distance_squared+0xb0]
+            fld dword ptr [gMatchData_00589e84]
             fld dword ptr [esp + 0x14]
             fmul dword ptr [esp + 0x14]
             push ebx
@@ -7727,7 +8146,7 @@ void C2_NAKED C2_HOOK_FASTCALL ShowDronePaths(void) {
             test ebx, ebx
             fstp st(0)
             jge L00453886
-            push offset gDefault_drone_direction+0xe04
+            push offset gMatchFloat_005955c4
             push -1
             push 0xbb8
             xor edx, edx
@@ -7792,11 +8211,11 @@ void C2_NAKED C2_HOOK_FASTCALL ShowDronePaths(void) {
             fxch st(2)
             fstp st(0)
             fstp st(0)
-            fcomp dword ptr [gDrone_select_max_distance_squared+0xb4]
+            fcomp dword ptr [gMatchFloat_00589e88]
             fnstsw ax
             test ah, 0x41
             jne L00453917
-            push offset gDefault_drone_direction+0xe44
+            push offset gMatchFloat_00595604
             jmp L00453926
     L00453911:
             fstp st(0)
@@ -7808,7 +8227,7 @@ void C2_NAKED C2_HOOK_FASTCALL ShowDronePaths(void) {
     L0045391d:
             test ecx, ecx
             je L00453939
-            push offset gDefault_drone_direction+0xe20
+            push offset gMatchFloat_005955e0
     L00453926:
             push -1
             push 0xbb8
@@ -7826,7 +8245,7 @@ void C2_NAKED C2_HOOK_FASTCALL ShowDronePaths(void) {
             push esi
             test eax, eax
             jne L00453964
-            push offset gDefault_drone_direction+0xde4
+            push offset gMatchFloat_005955a4
             push -1
             push 0xbb8
             xor edx, edx
@@ -7838,7 +8257,7 @@ void C2_NAKED C2_HOOK_FASTCALL ShowDronePaths(void) {
             mov eax, dword ptr [gDrone_paths_elasticating]
             test eax, eax
             je L00453987
-            push offset gDefault_drone_direction+0xe7c
+            push offset gMatchFloat_0059563c
             push -1
             push 0xbb8
             xor edx, edx
@@ -7912,7 +8331,7 @@ void C2_NAKED C2_HOOK_FASTCALL ShowDronePaths(void) {
             add esp, 8
     L00453a77:
             push esi
-            push offset gDefault_drone_direction+0xe5c
+            push offset gMatchData_0059561c
             push offset gDrone_selection_buffer
             call sprintf
             add esp, 0xc
@@ -7943,7 +8362,7 @@ void C2_NAKED C2_HOOK_FASTCALL ShowDronePaths(void) {
             mov esi, dword ptr [gCount_drone_path_nodes]
             cmp esi, 0xc8
             jl L00453acc
-            push offset gDefault_drone_direction+0xeac
+            push offset gMatchFloat_0059566c
             jmp L00453b5a
     L00453acc:
             mov eax, dword ptr [gProgram_state+0xbc]
@@ -7980,7 +8399,7 @@ void C2_NAKED C2_HOOK_FASTCALL ShowDronePaths(void) {
             fxch st(1)
             faddp st(2), st(0)
             faddp st(1), st(0)
-            fcomp dword ptr [gDrone_render_zero+0xc]
+            fcomp dword ptr [gMatchFloat_00589dd0]
             fnstsw ax
             test ah, 1
             fstp st(0)
@@ -7994,7 +8413,7 @@ void C2_NAKED C2_HOOK_FASTCALL ShowDronePaths(void) {
             add esp, 0x18
             ret
     L00453b55:
-            push offset gDefault_drone_direction+0xe94
+            push offset gMatchFloat_00595654
     L00453b5a:
             push -1
             push 0xbb8
@@ -8016,7 +8435,7 @@ void C2_NAKED C2_HOOK_FASTCALL ShowDronePaths(void) {
             push esi
             test eax, eax
             jne L00453ba4
-            push offset gDefault_drone_direction+0xde4
+            push offset gMatchFloat_005955a4
             push -1
             push 0xbb8
             xor edx, edx
@@ -8074,7 +8493,7 @@ void C2_NAKED C2_HOOK_FASTCALL ShowDronePaths(void) {
             inc word ptr [ecx + eax + 0x12c]
     L00453c67:
             push esi
-            push offset gDefault_drone_direction+0xe5c
+            push offset gMatchData_0059561c
             push offset gDrone_selection_buffer
             call sprintf
             add esp, 0xc
@@ -8099,7 +8518,7 @@ void C2_NAKED C2_HOOK_FASTCALL ShowDronePaths(void) {
             lea eax, [esi + edx*4]
             cmp word ptr [ecx + eax*4 + 0x12c], 8
             jb L00453ce1
-            push offset gDefault_drone_direction+0xec8
+            push offset gMatchFloat_00595688
             push -1
             push 0xbb8
             xor edx, edx
@@ -8163,7 +8582,7 @@ void C2_NAKED C2_HOOK_FASTCALL ShowDronePaths(void) {
             push esi
             test eax, eax
             jne L00453da4
-            push offset gDefault_drone_direction+0xde4
+            push offset gMatchFloat_005955a4
             push -1
             push 0xbb8
             xor edx, edx
@@ -8232,7 +8651,7 @@ void C2_NAKED C2_HOOK_FASTCALL ShowDronePaths(void) {
     L00453e93:
             mov eax, dword ptr [gCount_drone_path_nodes]
             push eax
-            push offset gDefault_drone_direction+0xe5c
+            push offset gMatchData_0059561c
             push offset gDrone_selection_buffer
             call sprintf
             add esp, 0xc
@@ -8376,7 +8795,7 @@ void C2_NAKED C2_HOOK_FASTCALL ShowDronePaths(void) {
             push esi
             push edi
             jne L00453f70
-            push offset gDefault_drone_direction+0xde4
+            push offset gMatchFloat_005955a4
             push -1
             push 0xbb8
             xor edx, edx
@@ -8392,7 +8811,7 @@ void C2_NAKED C2_HOOK_FASTCALL ShowDronePaths(void) {
             mov eax, dword ptr [gDrone_paths_elasticating]
             test eax, eax
             je L00453f99
-            push offset gDefault_drone_direction+0xe7c
+            push offset gMatchFloat_0059563c
             push -1
             push 0xbb8
             xor edx, edx
@@ -8597,7 +9016,7 @@ void C2_NAKED C2_HOOK_FASTCALL ShowDronePaths(void) {
             cmp edx, ebp
             jne L004541d5
             call InitialiseEditModelsEtc
-            push offset gDefault_drone_direction+0xefc
+            push offset gMatchString_005956bc
             jmp L00454340
     L0045422b:
             lea ecx, [eax + eax*8]
@@ -8657,10 +9076,10 @@ void C2_NAKED C2_HOOK_FASTCALL ShowDronePaths(void) {
             mov word ptr [edx + ecx + 0x30], ax
     L0045432f:
             call InitialiseEditModelsEtc
-            push offset gDefault_drone_direction+0xefc
+            push offset gMatchString_005956bc
             jmp L00454340
     L0045433b:
-            push offset gDefault_drone_direction+0xee8
+            push offset gMatchFloat_005956a8
     L00454340:
             push -1
             push 0x7d0
@@ -8747,13 +9166,13 @@ void C2_NAKED C2_HOOK_FASTCALL ShowDronePaths(void) {
             push esi
             test eax, eax
             jne L004543e1
-            push offset gDefault_drone_direction+0xde4
+            push offset gMatchFloat_005955a4
             jmp L004543ef
     L004543e1:
             mov eax, dword ptr [gDrone_paths_elasticating]
             test eax, eax
             je L00454404
-            push offset gDefault_drone_direction+0xe7c
+            push offset gMatchFloat_0059563c
     L004543ef:
             push -1
             push 0xbb8
@@ -8813,13 +9232,13 @@ void C2_NAKED C2_HOOK_FASTCALL ShowDronePaths(void) {
             mov esi, ecx
             push edi
             push esi
-            push offset gDefault_drone_direction+0xf5c
+            push offset gMatchFloat_0059571c
             push eax
             call sprintf
             lea ecx, [esi + esi*8]
             add esp, 0xc
             lea ebx, [esp + 0x10]
-            mov edi, offset gDefault_drone_direction+0xf4c
+            mov edi, offset gMatchString_0059570c
             lea edx, [esi + ecx*2]
             mov ecx, dword ptr [gDrone_path_nodes]
             lea eax, [esi + edx*4]
@@ -8827,7 +9246,7 @@ void C2_NAKED C2_HOOK_FASTCALL ShowDronePaths(void) {
             mov al, byte ptr [ecx + eax*4 + 0x12e]
             test al, 0x10
             jne L004544be
-            mov edi, offset gDefault_drone_direction+0xf40
+            mov edi, offset gMatchString_00595700
     L004544be:
             or ecx, 0xffffffff
             xor eax, eax
@@ -8847,7 +9266,7 @@ void C2_NAKED C2_HOOK_FASTCALL ShowDronePaths(void) {
             lea ebx, [esp + 0x10]
             and ecx, 3
             rep movsb
-            mov edi, offset gDefault_drone_direction+0xf3c
+            mov edi, offset gMatchData_005956fc
             or ecx, 0xffffffff
             repne scasb
             not ecx
@@ -8866,10 +9285,10 @@ void C2_NAKED C2_HOOK_FASTCALL ShowDronePaths(void) {
             and ecx, 3
             rep movsb
             mov al, byte ptr [edx]
-            mov edi, offset gDefault_drone_direction+0xf34
+            mov edi, offset gMatchString_005956f4
             test al, 2
             jne L00454523
-            mov edi, offset gDefault_drone_direction+0xf28
+            mov edi, offset gMatchString_005956e8
     L00454523:
             or ecx, 0xffffffff
             xor eax, eax
@@ -8889,7 +9308,7 @@ void C2_NAKED C2_HOOK_FASTCALL ShowDronePaths(void) {
             lea ebx, [esp + 0x10]
             and ecx, 3
             rep movsb
-            mov edi, offset gDefault_drone_direction+0xf3c
+            mov edi, offset gMatchData_005956fc
             or ecx, 0xffffffff
             repne scasb
             not ecx
@@ -8908,10 +9327,10 @@ void C2_NAKED C2_HOOK_FASTCALL ShowDronePaths(void) {
             and ecx, 3
             rep movsb
             mov al, byte ptr [edx]
-            mov edi, offset gDefault_drone_direction+0xf18
+            mov edi, offset gMatchString_005956d8
             test al, 4
             jne L00454588
-            mov edi, offset gDefault_drone_direction+0xf14
+            mov edi, 0x5956d4
     L00454588:
             or ecx, 0xffffffff
             xor eax, eax
@@ -8931,7 +9350,7 @@ void C2_NAKED C2_HOOK_FASTCALL ShowDronePaths(void) {
             lea ebx, [esp + 0x10]
             and ecx, 3
             rep movsb
-            mov edi, offset gDefault_drone_direction+0xf3c
+            mov edi, offset gMatchData_005956fc
             or ecx, 0xffffffff
             repne scasb
             not ecx
@@ -8951,9 +9370,9 @@ void C2_NAKED C2_HOOK_FASTCALL ShowDronePaths(void) {
             mov al, byte ptr [edx]
             lea edx, [esp + 0x10]
             test al, 8
-            mov edi, offset gDefault_drone_direction+0xf0c
+            mov edi, offset gMatchString_005956cc
             jne L004545ed
-            mov edi, offset gDefault_drone_direction+0xf14
+            mov edi, 0x5956d4
     L004545ed:
             or ecx, 0xffffffff
             xor eax, eax
@@ -9060,7 +9479,7 @@ void C2_NAKED C2_HOOK_FASTCALL ShowDronePaths(void) {
             sub esp, 0x100
             test eax, eax
             jne L004546be
-            push offset gDefault_drone_direction+0xde4
+            push offset gMatchFloat_005955a4
             push -1
             push 0xbb8
             xor edx, edx
@@ -9077,7 +9496,7 @@ void C2_NAKED C2_HOOK_FASTCALL ShowDronePaths(void) {
             jl L004546ff
             push eax
             lea ecx, [esp + 4]
-            push offset gDefault_drone_direction+0xf70
+            push offset gMatchString_00595730
             push ecx
             call sprintf
             add esp, 0xc
@@ -9104,13 +9523,13 @@ void C2_NAKED C2_HOOK_FASTCALL ShowDronePaths(void) {
             mov eax, dword ptr [gShow_drone_paths]
             test eax, eax
             jne L00454720
-            push offset gDefault_drone_direction+0xde4
+            push offset gMatchFloat_005955a4
             jmp L0045472e
     L00454720:
             mov eax, dword ptr [gDrone_paths_elasticating]
             test eax, eax
             je L00454742
-            push offset gDefault_drone_direction+0xe7c
+            push offset gMatchFloat_0059563c
     L0045472e:
             push -1
             push 0xbb8
@@ -9137,7 +9556,7 @@ void C2_NAKED C2_HOOK_FASTCALL ShowDronePaths(void) {
             push esi
             push edi
             jne L00454790
-            push offset gDefault_drone_direction+0xde4
+            push offset gMatchFloat_005955a4
             push -1
             push 0xbb8
             xor edx, edx
@@ -9153,7 +9572,7 @@ void C2_NAKED C2_HOOK_FASTCALL ShowDronePaths(void) {
             mov eax, dword ptr [gDrone_paths_elasticating]
             test eax, eax
             je L004547b9
-            push offset gDefault_drone_direction+0xe7c
+            push offset gMatchFloat_0059563c
             push -1
             push 0xbb8
             xor edx, edx
@@ -9177,7 +9596,7 @@ void C2_NAKED C2_HOOK_FASTCALL ShowDronePaths(void) {
             mov ecx, dword ptr [gCount_drone_path_nodes]
             push ecx
             push ebx
-            push offset gDefault_drone_direction+0x11dc
+            push offset gMatchFloat_0059599c
             call DoNotDprintf
             mov eax, dword ptr [gCount_drones]
             add esp, 0xc
@@ -9192,11 +9611,11 @@ void C2_NAKED C2_HOOK_FASTCALL ShowDronePaths(void) {
             jne L00454876
             push ebx
             push edi
-            push offset gDefault_drone_direction+0x1190
+            push offset gMatchFloat_00595950
             call DoNotDprintf
             add esp, 0xc
             push edi
-            push offset gDefault_drone_direction+0x116c
+            push offset gMatchFloat_0059592c
             call dr_dprintf
             mov ecx, dword ptr [gCount_drones]
             lea edx, [esi + 0x5d8]
@@ -9219,7 +9638,7 @@ void C2_NAKED C2_HOOK_FASTCALL ShowDronePaths(void) {
             add esp, 0xc
             dec eax
             push eax
-            push offset gDefault_drone_direction+0x1144
+            push offset gMatchFloat_00595904
             mov dword ptr [gCount_drones], eax
             call dr_dprintf
             add esp, 8
@@ -9238,14 +9657,14 @@ void C2_NAKED C2_HOOK_FASTCALL ShowDronePaths(void) {
             jl L004548cc
     L0045489e:
             push edi
-            push offset gDefault_drone_direction+0x10fc
+            push offset gMatchFloat_005958bc
             call DoNotDprintf
             add esp, 8
             mov ecx, edi
             call L004549f0
             mov eax, dword ptr [gCount_drone_path_nodes]
             push eax
-            push offset gDefault_drone_direction+0x10b4
+            push offset gMatchFloat_00595874
             call DoNotDprintf
             mov edx, dword ptr [gCount_drone_path_nodes]
             add esp, 8
@@ -9293,7 +9712,7 @@ void C2_NAKED C2_HOOK_FASTCALL ShowDronePaths(void) {
             push ecx
             push edi
             push esi
-            push offset gDefault_drone_direction+0x1074
+            push offset gMatchFloat_00595834
             call DoNotDprintf
             mov edx, dword ptr [gCount_drone_path_nodes]
             mov edi, dword ptr [esp + 0x24]
@@ -9308,7 +9727,7 @@ void C2_NAKED C2_HOOK_FASTCALL ShowDronePaths(void) {
             jmp L004548e1
     L0045496b:
             push esi
-            push offset gDefault_drone_direction+0x1008
+            push offset gMatchFloat_005957c8
             call DoNotDprintf
             mov edx, dword ptr [gCount_drone_path_nodes]
             add esp, 8
@@ -9319,14 +9738,14 @@ void C2_NAKED C2_HOOK_FASTCALL ShowDronePaths(void) {
             mov eax, dword ptr [gCount_drones]
             push eax
             push edx
-            push offset gDefault_drone_direction+0xfb4
+            push offset gMatchFloat_00595774
             call DoNotDprintf
             add esp, 0xc
             mov dword ptr [gDrones_unmodified], 0
             call InitialiseEditModelsEtc
             mov ecx, dword ptr [esp + 0x18]
             push ecx
-            push offset gDefault_drone_direction+0xf80
+            push offset gMatchFloat_00595740
             push offset gDrone_selection_buffer
             call sprintf
             add esp, 0xc
@@ -9362,7 +9781,7 @@ void C2_NAKED C2_HOOK_FASTCALL ShowDronePaths(void) {
             mov ebp, ecx
             push esi
             push ebp
-            push offset gDefault_drone_direction+0x13d0
+            push offset gMatchFloat_00595b90
             mov dword ptr [esp + 0x14], ebp
             call DoNotDprintf
             mov eax, dword ptr [gCount_drone_path_nodes]
@@ -9391,7 +9810,7 @@ void C2_NAKED C2_HOOK_FASTCALL ShowDronePaths(void) {
             push eax
             push edi
             push ecx
-            push offset gDefault_drone_direction+0x1380
+            push offset gMatchFloat_00595b40
             call DoNotDprintf
             mov eax, dword ptr [gDrone_path_nodes]
             add esp, 0x10
@@ -9402,7 +9821,7 @@ void C2_NAKED C2_HOOK_FASTCALL ShowDronePaths(void) {
             push eax
             push edi
             push ecx
-            push offset gDefault_drone_direction+0x1334
+            push offset gMatchFloat_00595af4
             call DoNotDprintf
             mov ecx, dword ptr [gDrone_path_nodes]
             xor eax, eax
@@ -9461,14 +9880,14 @@ void C2_NAKED C2_HOOK_FASTCALL ShowDronePaths(void) {
             push eax
             push 0x134
             push ebp
-            push offset gDefault_drone_direction+0x12a0
+            push offset gMatchFloat_00595a60
             call DoNotDprintf
             add esp, 0x14
             push 0x134
             push 0x5d8
             push 0x134
             push 0x24
-            push offset gDefault_drone_direction+0x1244
+            push offset gMatchFloat_00595a04
             call DoNotDprintf
             mov eax, dword ptr [gCount_drone_path_nodes]
             add esp, 0x14
@@ -9490,7 +9909,7 @@ void C2_NAKED C2_HOOK_FASTCALL ShowDronePaths(void) {
             mov edx, dword ptr [gCount_drone_path_nodes]
             add esp, 0xc
             dec edx
-            push offset gDefault_drone_direction+0x1224
+            push offset gMatchFloat_005959e4
             mov dword ptr [gCount_drone_path_nodes], edx
             call DoNotDprintf
             add esp, 4
@@ -9514,7 +9933,7 @@ void C2_NAKED C2_HOOK_FASTCALL ShowDronePaths(void) {
             mov eax, dword ptr [gShow_drone_paths]
             test eax, eax
             jne L00454bd2
-            push offset gDefault_drone_direction+0xde4
+            push offset gMatchFloat_005955a4
             push -1
             push 0xbb8
             xor edx, edx
@@ -9525,7 +9944,7 @@ void C2_NAKED C2_HOOK_FASTCALL ShowDronePaths(void) {
             mov eax, dword ptr [gDrone_paths_elasticating]
             test eax, eax
             je L00454bf4
-            push offset gDefault_drone_direction+0xe7c
+            push offset gMatchFloat_0059563c
             push -1
             push 0xbb8
             xor edx, edx
@@ -9560,7 +9979,7 @@ void C2_NAKED C2_HOOK_FASTCALL ShowDronePaths(void) {
             call InitialiseEditModelsEtc
             xor edx, edx
             mov ecx, 4
-            push offset gDefault_drone_direction+0x13f4
+            push offset gMatchString_00595bb4
             push -1
             push 0x7d0
             call NewTextHeadupSlot
@@ -9574,7 +9993,7 @@ void C2_NAKED C2_HOOK_FASTCALL ShowDronePaths(void) {
             mov ecx, dword ptr [gSelected_drone_path_index]
             test ecx, ecx
             jge L00454ca3
-            push offset gDefault_drone_direction+0x13fc
+            push offset gMatchFloat_00595bbc
             push -4
             push 0xbb8
             xor edx, edx
@@ -9623,7 +10042,7 @@ void C2_NAKED C2_HOOK_FASTCALL ShowDronePaths(void) {
             mov ecx, dword ptr [gSelected_drone_path_index]
             test ecx, ecx
             jge L00454d23
-            push offset gDefault_drone_direction+0x13fc
+            push offset gMatchFloat_00595bbc
             push -4
             push 0xbb8
             xor edx, edx
@@ -9657,13 +10076,13 @@ void C2_NAKED C2_HOOK_FASTCALL ShowDronePaths(void) {
             push esi
             test eax, eax
             jne L00454d81
-            push offset gDefault_drone_direction+0xde4
+            push offset gMatchFloat_005955a4
             jmp L00454d8f
     L00454d81:
             mov eax, dword ptr [gDrone_paths_elasticating]
             test eax, eax
             je L00454da4
-            push offset gDefault_drone_direction+0xe7c
+            push offset gMatchFloat_0059563c
     L00454d8f:
             push -1
             push 0xbb8
@@ -9687,7 +10106,7 @@ void C2_NAKED C2_HOOK_FASTCALL ShowDronePaths(void) {
             lea ecx, [edx + ecx*4 + 0x130]
             jl L00454df9
             push eax
-            push offset gDefault_drone_direction+0x142c
+            push offset gMatchFloat_00595bec
             push offset gDrone_selection_buffer
             call sprintf
             add esp, 0xc
@@ -9696,7 +10115,7 @@ void C2_NAKED C2_HOOK_FASTCALL ShowDronePaths(void) {
     L00454df9:
             cmp dword ptr [gCount_drones], 0xc8
             jl L00454e1f
-            push offset gDefault_drone_direction+0x1414
+            push offset gMatchFloat_00595bd4
     L00454e0a:
             push -1
             push 0xdac
@@ -9760,7 +10179,7 @@ void C2_NAKED C2_HOOK_FASTCALL ShowDronePaths(void) {
             push edx
             mov eax, dword ptr [esi]
             push eax
-            push offset gDefault_drone_direction+0x138
+            push 0x5948f8
             call DoNotDprintf
             mov eax, dword ptr [esi + 0x38]
             add esp, 0x10
@@ -9842,7 +10261,7 @@ void C2_NAKED C2_HOOK_FASTCALL DronePhysicsWarning(tPhysics_object* pObject) {
             push esi
             push edi
             mov edi, ecx
-            push 0x5953c0
+            push offset gMatchString_005953c0
             mov eax, dword ptr [edi]
             mov esi, dword ptr [edi + 0x23c]
             fld dword ptr [eax + 0x50]
@@ -9856,11 +10275,11 @@ void C2_NAKED C2_HOOK_FASTCALL DronePhysicsWarning(tPhysics_object* pObject) {
             fstp dword ptr [esp + 0x14]
             call DoNotDprintf
             mov eax, dword ptr [esi]
-            mov ecx, dword ptr ds:[gFrame]
+            mov ecx, dword ptr [gFrame]
             add esp, 4
             push eax
             push ecx
-            push 0x595394
+            push offset gMatchFloat_00595394
             call DoNotDprintf
             fld dword ptr [esp + 0x14]
             fmul dword ptr [esp + 0x14]
@@ -9876,7 +10295,7 @@ void C2_NAKED C2_HOOK_FASTCALL DronePhysicsWarning(tPhysics_object* pObject) {
             _emit 0xdd
         _emit 0x1c
         _emit 0x24
-            push 0x595380
+            push offset gMatchFloat_00595380
             call DoNotDprintf
             mov edx, dword ptr [esi + 0x40]
             mov eax, dword ptr [esi + 0x3c]
@@ -9885,23 +10304,23 @@ void C2_NAKED C2_HOOK_FASTCALL DronePhysicsWarning(tPhysics_object* pObject) {
             push edx
             push eax
             push ecx
-            push 0x595354
+            push offset gMatchData_00595354
             call DoNotDprintf
             mov edx, dword ptr [edi]
             mov eax, dword ptr [esi + 0xec]
             add esp, 0x10
             cmp edx, eax
             jne L004524e7
-            push 0x595324
+            push offset gMatchFloat_00595324
             jmp L004524ec
     L004524e7:
-            push 0x5952f4
+            push offset gMatchFloat_005952f4
     L004524ec:
             call DoNotDprintf
             mov edi, dword ptr [edi]
             add esp, 4
             sub esp, 8
-            mov eax, dword ptr ds:[gFrame]
+            mov eax, dword ptr [gFrame]
             fld dword ptr [edi + 0x50]
             fsub dword ptr [esi + 0x24]
             sub esp, 8
@@ -9921,13 +10340,13 @@ void C2_NAKED C2_HOOK_FASTCALL DronePhysicsWarning(tPhysics_object* pObject) {
             _emit 0xdd
         _emit 0x1c
         _emit 0x24
-            push 0x5952d8
+            push offset gMatchFloat_005952d8
             push eax
             push 0x594870
             call DoNotDprintf
             fld dword ptr [esp + 0x40]
             add esp, 0x24
-            mov ecx, dword ptr ds:[gFrame]
+            mov ecx, dword ptr [gFrame]
             sub esp, 8
             _emit 0xdd
         _emit 0x1c
@@ -9942,13 +10361,13 @@ void C2_NAKED C2_HOOK_FASTCALL DronePhysicsWarning(tPhysics_object* pObject) {
             _emit 0xdd
         _emit 0x1c
         _emit 0x24
-            push 0x5952c4
+            push offset gMatchFloat_005952c4
             push ecx
             push 0x594870
             call DoNotDprintf
             fld dword ptr [esi + 0x20]
             add esp, 0x24
-            mov edx, dword ptr ds:[gFrame]
+            mov edx, dword ptr [gFrame]
             sub esp, 8
             _emit 0xdd
         _emit 0x1c
@@ -9963,7 +10382,7 @@ void C2_NAKED C2_HOOK_FASTCALL DronePhysicsWarning(tPhysics_object* pObject) {
             _emit 0xdd
         _emit 0x1c
         _emit 0x24
-            push 0x5952ac
+            push offset gMatchFloat_005952ac
             push edx
             push 0x594870
             call DoNotDprintf
@@ -10054,7 +10473,7 @@ void C2_NAKED C2_HOOK_FASTCALL WriteOutDronePaths(void) {
             xor esi, esi
             lea eax, [esp + 0x18]
             push esi
-            push offset gDefault_drone_direction+0xd18
+            push offset gMatchString_005954d8
             push eax
             call sprintf
             add esp, 0xc
@@ -10063,7 +10482,7 @@ void C2_NAKED C2_HOOK_FASTCALL WriteOutDronePaths(void) {
             push ecx
             lea ecx, [esp + 0x2c]
             call PathCat
-            mov edx, offset gDefault_drone_direction+0xd14
+            mov edx, offset gMatchData_005954d4
             lea ecx, [esp + 0x28]
             call DRfopen
             test eax, eax
@@ -10074,7 +10493,7 @@ void C2_NAKED C2_HOOK_FASTCALL WriteOutDronePaths(void) {
             inc esi
             lea edx, [esp + 0x18]
             push esi
-            push offset gDefault_drone_direction+0xd18
+            push offset gMatchString_005954d8
             push edx
             call sprintf
             add esp, 0xc
@@ -10083,7 +10502,7 @@ void C2_NAKED C2_HOOK_FASTCALL WriteOutDronePaths(void) {
             lea ecx, [esp + 0x28]
             push eax
             call PathCat
-            mov edx, offset gDefault_drone_direction+0xd14
+            mov edx, offset gMatchData_005954d4
             lea ecx, [esp + 0x28]
             call DRfopen
             test eax, eax
@@ -10105,25 +10524,25 @@ void C2_NAKED C2_HOOK_FASTCALL WriteOutDronePaths(void) {
             and ecx, 3
             rep movsb
     L00453115:
-            mov edx, offset gDefault_drone_direction+0xd10
+            mov edx, 0x5954d0
             mov ecx, offset gDrone_path_output_name
             call DRfopen
             mov ebx, eax
             test ebx, ebx
             je L004532c2
-            push offset gDefault_drone_direction+0x91c
-            push offset gDefault_drone_direction+0xd0c
+            push offset gMatchFloat_005950dc
+            push offset gMatchData_005954cc
             push ebx
             call fprintf
             add esp, 0xc
             push 2
-            push offset gDefault_drone_direction+0xcf8
+            push offset gMatchFloat_005954b8
             push ebx
             call fprintf
             mov eax, dword ptr [gCount_drone_path_nodes]
             add esp, 0xc
             push eax
-            push offset gDefault_drone_direction+0xce4
+            push offset gMatchFloat_005954a4
             push ebx
             call fprintf
             mov eax, dword ptr [gCount_drone_path_nodes]
@@ -10135,7 +10554,7 @@ void C2_NAKED C2_HOOK_FASTCALL WriteOutDronePaths(void) {
             xor edi, edi
     L0045317a:
             push esi
-            push offset gDefault_drone_direction+0xcd8
+            push offset gMatchFloat_00595498
             push ebx
             call fprintf
             mov eax, dword ptr [gDrone_path_nodes]
@@ -10155,7 +10574,7 @@ void C2_NAKED C2_HOOK_FASTCALL WriteOutDronePaths(void) {
             _emit 0xdd
         _emit 0x1c
         _emit 0x24
-            push offset gDefault_drone_direction+0xcc4
+            push offset gMatchFloat_00595484
             push ebx
             call fprintf
             mov ecx, dword ptr [gDrone_path_nodes]
@@ -10171,9 +10590,9 @@ void C2_NAKED C2_HOOK_FASTCALL WriteOutDronePaths(void) {
             push eax
             jmp L004531e5
     L004531e0:
-            push offset gPed_flags_0058f2e4+0xd8
+            push 0x58f3bc
     L004531e5:
-            push offset gDefault_drone_direction+0xcbc
+            push offset gMatchData_0059547c
             push ebx
             call fprintf
             mov edx, dword ptr [gDrone_path_nodes]
@@ -10181,7 +10600,7 @@ void C2_NAKED C2_HOOK_FASTCALL WriteOutDronePaths(void) {
             add esp, 0xc
             mov cl, byte ptr [edx + edi + 0x12e]
             push ecx
-            push offset gDefault_drone_direction+0xcb4
+            push offset gMatchData_00595474
             push ebx
             call fprintf
             mov ecx, dword ptr [gDrone_path_nodes]
@@ -10189,7 +10608,7 @@ void C2_NAKED C2_HOOK_FASTCALL WriteOutDronePaths(void) {
             add esp, 0xc
             mov ax, word ptr [ecx + edi + 0x12c]
             push eax
-            push offset gDefault_drone_direction+0xcb4
+            push offset gMatchData_00595474
             push ebx
             call fprintf
             mov eax, dword ptr [gDrone_path_nodes]
@@ -10210,7 +10629,7 @@ void C2_NAKED C2_HOOK_FASTCALL WriteOutDronePaths(void) {
             movsx eax, word ptr [eax + esi + 0xc]
             push edx
             push eax
-            push offset gDefault_drone_direction+0xca0
+            push offset gMatchFloat_00595460
             push ebx
             call fprintf
             mov eax, dword ptr [gDrone_path_nodes]
@@ -10230,8 +10649,8 @@ void C2_NAKED C2_HOOK_FASTCALL WriteOutDronePaths(void) {
             mov dword ptr [esp + 0x14], esi
             jl L0045317a
     L004532a0:
-            push offset gDefault_drone_direction+0x818
-            push offset gDefault_drone_direction+0xc98
+            push offset gMatchFloat_00594fd8
+            push offset gMatchData_00595458
             push ebx
             call fprintf
             add esp, 0xc
@@ -10245,7 +10664,7 @@ void C2_NAKED C2_HOOK_FASTCALL WriteOutDronePaths(void) {
             pop ebp
             ret
     L004532c2:
-            mov ecx, offset gDefault_drone_direction+0xc70
+            mov ecx, offset gMatchFloat_00595430
             call PDFatalError
             pop edi
             pop esi
@@ -10254,6 +10673,18 @@ void C2_NAKED C2_HOOK_FASTCALL WriteOutDronePaths(void) {
             mov esp, ebp
             pop ebp
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }

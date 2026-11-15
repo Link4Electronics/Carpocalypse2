@@ -59,6 +59,16 @@ extern void __cdecl _ftol();
 extern rend_block_soft rend;
 extern char rendererStateStoredDispatch[];
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gData_0058c928[];
+extern char gFloat_0058c924[];
+extern char gFloat_0058c92c[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchData_0058c928[];
+extern char gMatchFloat_0058c924[];
+extern char gMatchFloat_0058c92c[];
+#endif
 // FUNCTION: CARMA2_HW 0x00546860
 void C2_NAKED C2_HOOK_CDECL OpHeapAddTriangle(brp_block* block, brp_vertex* v0, brp_vertex* v1, brp_vertex* v2) {
 #ifndef CARPOCALYPSE2_MATCHING
@@ -170,10 +180,10 @@ void C2_NAKED C2_HOOK_CDECL OpHeapAddTriangle(brp_block* block, brp_vertex* v0, 
             fld dword ptr [eax + 0x10]
             fadd dword ptr [edx + 0x10]
             faddp st(1), st(0)
-            fmul dword ptr [rendererStateStoredDispatch+0x8c]
+            fmul dword ptr [gMatchFloat_0058c924]
             jmp L0054692b
     L00546925:
-            fld dword ptr [rendererStateStoredDispatch+0x90]
+            fld dword ptr [gMatchData_0058c928]
     L0054692b:
             mov ebx, dword ptr [ecx + 8]
             lea eax, [ebx + 0x18]
@@ -368,7 +378,7 @@ void C2_NAKED C2_HOOK_CDECL OpHeapAddTriangle(brp_block* block, brp_vertex* v0, 
             ret
     L00546b87:
             fsub dword ptr [esi + 0xc]
-            fcom dword ptr [rendererStateStoredDispatch+0x90]
+            fcom dword ptr [gMatchData_0058c928]
             fnstsw ax
             test ah, 1
             je L00546b9d
@@ -499,10 +509,10 @@ void C2_NAKED C2_HOOK_CDECL OpHeapAddLine(brp_block* block, brp_vertex* v0, brp_
     L00546c5e:
             mov eax, dword ptr [esp + 0x20]
             fadd dword ptr [eax + 0x10]
-            fmul dword ptr [rendererStateStoredDispatch+0x94]
+            fmul dword ptr [gMatchFloat_0058c92c]
             jmp L00546c73
     L00546c6d:
-            fld dword ptr [rendererStateStoredDispatch+0x90]
+            fld dword ptr [gMatchData_0058c928]
     L00546c73:
             mov ebx, dword ptr [ecx + 8]
             lea edx, [ebx + 0x18]
@@ -646,7 +656,7 @@ void C2_NAKED C2_HOOK_CDECL OpHeapAddLine(brp_block* block, brp_vertex* v0, brp_
             ret
     L00546e30:
             fsub dword ptr [esi + 0xc]
-            fcom dword ptr [rendererStateStoredDispatch+0x90]
+            fcom dword ptr [gMatchData_0058c928]
             fnstsw ax
             test ah, 1
             je L00546e46
@@ -752,7 +762,7 @@ void C2_NAKED C2_HOOK_CDECL OpHeapAddPoint(brp_block* block, brp_vertex* v0) {
             fld dword ptr [ebp + 0x10]
             jmp L00546ecb
     L00546ec5:
-            fld dword ptr [rendererStateStoredDispatch+0x90]
+            fld dword ptr [gMatchData_0058c928]
     L00546ecb:
             mov ebx, dword ptr [eax + 8]
             lea ecx, [ebx + 0x18]
@@ -843,7 +853,7 @@ void C2_NAKED C2_HOOK_CDECL OpHeapAddPoint(brp_block* block, brp_vertex* v0) {
             ret
     L00546fd6:
             fsub dword ptr [esi + 0xc]
-            fcom dword ptr [rendererStateStoredDispatch+0x90]
+            fcom dword ptr [gMatchData_0058c928]
             fnstsw ax
             test ah, 1
             je L00546fec
@@ -1006,7 +1016,7 @@ void C2_NAKED C2_HOOK_CDECL OpHeapAddTriangleConvert(brp_block* block, brp_verte
             fld dword ptr [ecx + 0x10]
             fadd dword ptr [edx + 0x10]
             fadd dword ptr [esp + 0xc]
-            fmul dword ptr [rendererStateStoredDispatch+0x8c]
+            fmul dword ptr [gMatchFloat_0058c924]
             fstp dword ptr [esp + 0xc]
             jmp L00547134
     L0054712c:
@@ -1119,7 +1129,7 @@ void C2_NAKED C2_HOOK_CDECL OpHeapAddTriangleConvert(brp_block* block, brp_verte
     L005472ab:
             fld dword ptr [esi + 0xc]
             fsubr dword ptr [esp + 0xc]
-            fcom dword ptr [rendererStateStoredDispatch+0x90]
+            fcom dword ptr [gMatchData_0058c928]
             fnstsw ax
             test ah, 1
             je L005472c5
@@ -1259,7 +1269,7 @@ void C2_NAKED C2_HOOK_CDECL OpHeapAddLineConvert(brp_block* block, brp_vertex* v
     L0054739c:
             fld dword ptr [ebp + 0x10]
             fadd dword ptr [esp + 0x10]
-            fmul dword ptr [rendererStateStoredDispatch+0x94]
+            fmul dword ptr [gMatchFloat_0058c92c]
             fstp dword ptr [esp + 0x10]
             jmp L005473b7
     L005473af:
@@ -1353,7 +1363,7 @@ void C2_NAKED C2_HOOK_CDECL OpHeapAddLineConvert(brp_block* block, brp_vertex* v
     L005474d6:
             fld dword ptr [esi + 0xc]
             fsubr dword ptr [esp + 0x10]
-            fcom dword ptr [rendererStateStoredDispatch+0x90]
+            fcom dword ptr [gMatchData_0058c928]
             fnstsw ax
             test ah, 1
             je L005474f0
@@ -1522,7 +1532,7 @@ void C2_NAKED C2_HOOK_CDECL OpHeapAddPointConvert(brp_block* block, brp_vertex* 
     L00547645:
             fld dword ptr [esi + 0xc]
             fsubr dword ptr [esp + 0x58]
-            fcom dword ptr [rendererStateStoredDispatch+0x90]
+            fcom dword ptr [gMatchData_0058c928]
             fnstsw ax
             test ah, 1
             je L0054765f
@@ -1555,6 +1565,11 @@ void C2_NAKED C2_HOOK_CDECL OpHeapAddPointConvert(brp_block* block, brp_vertex* 
             pop ebx
             add esp, 0x40
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }

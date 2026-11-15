@@ -267,6 +267,76 @@ extern br_actor* gUniverse_actor;
 extern tWall_texturing_level gWall_texturing_level;
 extern br_scalar gYon_multiplier;
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gData_00657a3c[];
+extern char gData_0065a780[];
+extern char gData_0065a784[];
+extern char gData_00661060[];
+extern char gDouble_0058b198[];
+extern char gDouble_0058b1a0[];
+extern char gDouble_0058b1b0[];
+extern char gFloat_0058b190[];
+extern char gFloat_0058b1a8[];
+extern char gFloat_0058b1b8[];
+extern char gFloat_0058b1bc[];
+extern char gFloat_0058b1c0[];
+extern char gFloat_0058b1c4[];
+extern char gFloat_00660ec0[];
+extern char gFloat_00660ee0[];
+extern char gFloat_00660ef8[];
+extern char gFloat_00660f10[];
+extern char gFloat_00660f40[];
+extern char gFloat_00660f64[];
+extern char gFloat_00660f8c[];
+extern char gFloat_00660fb8[];
+extern char gFloat_00660fdc[];
+extern char gFloat_00660ff8[];
+extern char gFloat_00661064[];
+extern char gString_00657d10[];
+extern char gString_00660ed8[];
+extern char gString_00660f30[];
+extern char gString_00661028[];
+extern char gString_00661038[];
+extern char gString_00661040[];
+extern char gString_0066104c[];
+extern char gString_00661050[];
+extern char gString_0066105c[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchData_00657a3c[];
+extern char gMatchData_0065a780[];
+extern char gMatchData_0065a784[];
+extern char gMatchData_00661060[];
+extern char gMatchDouble_0058b198[];
+extern char gMatchDouble_0058b1a0[];
+extern char gMatchDouble_0058b1b0[];
+extern char gMatchFloat_0058b190[];
+extern char gMatchFloat_0058b1a8[];
+extern char gMatchFloat_0058b1b8[];
+extern char gMatchFloat_0058b1bc[];
+extern char gMatchFloat_0058b1c0[];
+extern char gMatchFloat_0058b1c4[];
+extern char gMatchFloat_00660ec0[];
+extern char gMatchFloat_00660ee0[];
+extern char gMatchFloat_00660ef8[];
+extern char gMatchFloat_00660f10[];
+extern char gMatchFloat_00660f40[];
+extern char gMatchFloat_00660f64[];
+extern char gMatchFloat_00660f8c[];
+extern char gMatchFloat_00660fb8[];
+extern char gMatchFloat_00660fdc[];
+extern char gMatchFloat_00660ff8[];
+extern char gMatchFloat_00661064[];
+extern char gMatchString_00657d10[];
+extern char gMatchString_00660ed8[];
+extern char gMatchString_00660f30[];
+extern char gMatchString_00661028[];
+extern char gMatchString_00661038[];
+extern char gMatchString_00661040[];
+extern char gMatchString_0066104c[];
+extern char gMatchString_00661050[];
+extern char gMatchString_0066105c[];
+#endif
 // FUNCTION: CARMA2_HW 0x00504b30
 void C2_HOOK_FASTCALL InitTreeSurgery(void) {
     tPath_name the_path;
@@ -960,13 +1030,13 @@ void C2_NAKED C2_HOOK_FASTCALL LoadTrack(const char* pFile_name, tTrack_spec* pT
             mov ebx, ecx
             push esi
             push edi
-            mov edx, offset gDepth_effect_names+0x1d4
+            mov edx, offset gMatchFloat_00661064
             xor ecx, ecx
             mov dword ptr [esp + 0x5c], ebx
             mov dword ptr [esp + 0x1c], 0
             call PrintMemoryDump
-            mov eax, dword ptr [gDepth_effect_names+0x1cc]
-            mov cx, word ptr [gDepth_effect_names+0x1d0]
+            mov eax, dword ptr [gMatchString_0066105c]
+            mov cx, word ptr [gMatchData_00661060]
             mov word ptr [gCurrent_load_directory+0x4], cx
             mov dword ptr [gCurrent_load_directory], eax
             or ecx, 0xffffffff
@@ -1050,12 +1120,12 @@ void C2_NAKED C2_HOOK_FASTCALL LoadTrack(const char* pFile_name, tTrack_spec* pT
             push eax
             push ecx
             lea edx, [esp + 0x3c8]
-            push offset gDepth_effect_names+0x1c0
+            push offset gMatchString_00661050
             push edx
             call sprintf
-            mov eax, dword ptr [gNet_avail_names+0x4e4]
+            mov eax, dword ptr [gMatchData_00657a3c]
             add esp, 0x18
-            mov edx, offset gNext_crush_actor_id+0x180
+            mov edx, 0x58f9e0
             lea ecx, [esp + 0x3b8]
             mov dword ptr [esp + 0x14], eax
             call DRfopen
@@ -1071,13 +1141,13 @@ void C2_NAKED C2_HOOK_FASTCALL LoadTrack(const char* pFile_name, tTrack_spec* pT
             push edx
             call strtok
             add esp, 8
-            mov edx, offset gDefault_drone_direction+0x5dc
+            mov edx, 0x594d9c
             mov ecx, eax
             call DRStricmp
             test eax, eax
             je L00504d9f
             lea eax, [esp + 0x3b8]
-            push offset gDefault_drone_direction+0x5dc
+            push 0x594d9c
             push eax
             push 0xb0
             call FatalError
@@ -1091,7 +1161,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadTrack(const char* pFile_name, tTrack_spec* pT
             lea edx, [esp + 0x10]
             mov esi, eax
             push edx
-            push offset gPed_flags_0058f2e4+0x134
+            push 0x58f418
             push esi
             call sscanf
             add esp, 0xc
@@ -1117,7 +1187,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadTrack(const char* pFile_name, tTrack_spec* pT
             call strtok
             mov esi, eax
             add esp, 8
-            mov edx, offset gDepth_effect_names+0x1bc
+            mov edx, offset gMatchString_0066104c
             mov ecx, esi
             call DRStricmp
             test eax, eax
@@ -1164,7 +1234,12 @@ void C2_NAKED C2_HOOK_FASTCALL LoadTrack(const char* pFile_name, tTrack_spec* pT
             je L00504f1f
             mov edi, 1
     L00504e90:
-            cmp dword ptr [gQuickTime_call_component_with_storage+0x5a0], edi
+            _emit 0x39
+        _emit 0x3d
+        _emit 0x5c
+        _emit 0x3c
+        _emit 0x67
+        _emit 0x00
             jle L00504eab
             movsx edx, byte ptr [esi]
             push 0x107
@@ -1174,13 +1249,18 @@ void C2_NAKED C2_HOOK_FASTCALL LoadTrack(const char* pFile_name, tTrack_spec* pT
             jmp L00504ebd
     L00504eab:
             movsx eax, byte ptr [esi]
-            mov ecx, dword ptr [gQuickTime_call_component_with_storage+0x394]
+            _emit 0x8b
+        _emit 0x0d
+        _emit 0x50
+        _emit 0x3a
+        _emit 0x67
+        _emit 0x00
             mov ax, word ptr [ecx + eax*2]
             and eax, 0x107
     L00504ebd:
             test eax, eax
             je L00504f1f
-            mov edx, offset gDepth_effect_names+0x1b0
+            mov edx, offset gMatchString_00661040
             mov ecx, esi
             call DRStricmp
             test eax, eax
@@ -1188,7 +1268,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadTrack(const char* pFile_name, tTrack_spec* pT
             or dword ptr [ebx + 8], edi
             jmp L00504f06
     L00504ed6:
-            mov edx, offset gDepth_effect_names+0x1a8
+            mov edx, offset gMatchString_00661038
             mov ecx, esi
             call DRStricmp
             test eax, eax
@@ -1227,7 +1307,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadTrack(const char* pFile_name, tTrack_spec* pT
             call strtok
             mov esi, eax
             add esp, 8
-            mov edx, offset gDepth_effect_names+0x1bc
+            mov edx, offset gMatchString_0066104c
             mov ecx, esi
             call DRStricmp
             test eax, eax
@@ -1246,14 +1326,14 @@ void C2_NAKED C2_HOOK_FASTCALL LoadTrack(const char* pFile_name, tTrack_spec* pT
             call OpenPackFileAndSetTiffLoading
             mov edx, offset gRace_path
             lea ecx, [esp + 0x8b8]
-            push offset gDepth_effect_names+0x198
+            push offset gMatchString_00661028
             mov dword ptr [esp + 0x74], eax
             call PathCat
             mov edx, offset gRace_path
             lea ecx, [esp + 0x1b8]
             push ebx
             call PathCat
-            mov edx, offset gNext_crush_actor_id+0x180
+            mov edx, 0x58f9e0
             lea ecx, [esp + 0x1b8]
             call DRfopen
             mov edi, eax
@@ -1268,11 +1348,11 @@ void C2_NAKED C2_HOOK_FASTCALL LoadTrack(const char* pFile_name, tTrack_spec* pT
             mov ecx, edi
             call GetALineAndDontArgue
             lea edx, [esp + 0x98]
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push edx
             call strtok
             add esp, 8
-            mov esi, offset gDefault_drone_direction+0x5dc
+            mov esi, 0x594d9c
             lea eax, [esp + 0x98]
     L0050500f:
             mov dl, byte ptr [eax]
@@ -1300,12 +1380,12 @@ void C2_NAKED C2_HOOK_FASTCALL LoadTrack(const char* pFile_name, tTrack_spec* pT
     L0050503c:
             test eax, eax
             jne L0050506b
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push eax
             call strtok
             add esp, 8
             push offset gTrack_version
-            push offset gPed_flags_0058f2e4+0x134
+            push 0x58f418
             push eax
             call sscanf
             mov eax, dword ptr [gTrack_version]
@@ -1325,38 +1405,38 @@ void C2_NAKED C2_HOOK_FASTCALL LoadTrack(const char* pFile_name, tTrack_spec* pT
             mov ecx, edi
             call GetALineAndDontArgue
             lea eax, [esp + 0x98]
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push eax
             call strtok
             add esp, 8
             lea ecx, [esp + 0x38]
             push ecx
-            push offset gMini_map_glowing_line_animation_indices+0x7dc
+            push 0x65718c
             push eax
             call sscanf
             fld dword ptr [esp + 0x44]
             mov esi, dword ptr [esp + 0xac8]
             add esp, 0xc
             fstp dword ptr [esi + 0xec4]
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push 0
             call strtok
             add esp, 8
             lea edx, [esp + 0x38]
             push edx
-            push offset gMini_map_glowing_line_animation_indices+0x7dc
+            push 0x65718c
             push eax
             call sscanf
             mov eax, dword ptr [esp + 0x44]
             add esp, 0xc
             mov dword ptr [esi + 0xec8], eax
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push 0
             call strtok
             add esp, 8
             lea ecx, [esp + 0x38]
             push ecx
-            push offset gMini_map_glowing_line_animation_indices+0x7dc
+            push 0x65718c
             push eax
             call sscanf
             mov edx, dword ptr [esp + 0x44]
@@ -1367,13 +1447,13 @@ void C2_NAKED C2_HOOK_FASTCALL LoadTrack(const char* pFile_name, tTrack_spec* pT
             mov ecx, edi
             call GetALineAndDontArgue
             lea eax, [esp + 0x98]
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push eax
             call strtok
             add esp, 8
             lea ecx, [esp + 0x38]
             push ecx
-            push offset gMini_map_glowing_line_animation_indices+0x7dc
+            push 0x65718c
             push eax
             call sscanf
             mov edx, dword ptr [esp + 0x44]
@@ -1572,7 +1652,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadTrack(const char* pFile_name, tTrack_spec* pT
             repne scasb
             not ecx
             sub edi, ecx
-            push offset gDepth_effect_names+0x1cc
+            push offset gMatchString_0066105c
             mov eax, ecx
             mov esi, edi
             mov edi, edx
@@ -1687,7 +1767,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadTrack(const char* pFile_name, tTrack_spec* pT
             fxch st(1)
             faddp st(2), st(0)
             faddp st(1), st(0)
-            fcomp dword ptr [gFLOAT_0058b130+0x60]
+            fcomp dword ptr [gMatchFloat_0058b190]
             fnstsw ax
             test ah, 1
             fstp st(0)
@@ -1933,7 +2013,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadTrack(const char* pFile_name, tTrack_spec* pT
             fstp dword ptr [esp + 0x58]
             fstp st(0)
             fld dword ptr [esp + 0x58]
-            fcomp qword ptr [gFLOAT_0058b130+0x68]
+            fcomp qword ptr [gMatchDouble_0058b198]
             fnstsw ax
             test ah, 1
             je L005058bf
@@ -1950,7 +2030,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadTrack(const char* pFile_name, tTrack_spec* pT
             je L0050585f
     L0050584e:
             fld dword ptr [esp + 0x58]
-            fcomp qword ptr [gFLOAT_0058b130+0x70]
+            fcomp qword ptr [gMatchDouble_0058b1a0]
             fnstsw ax
             test ah, 1
             jne L005058bf
@@ -2050,7 +2130,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadTrack(const char* pFile_name, tTrack_spec* pT
             mov dword ptr [esp + 0x14], eax
             jl L00505482
     L00505980:
-            mov edx, offset gDepth_effect_names+0x168
+            mov edx, offset gMatchFloat_00660ff8
             xor ecx, ecx
             call PrintMemoryDump
             lea ecx, [esp + 0x4b8]
@@ -2058,7 +2138,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadTrack(const char* pFile_name, tTrack_spec* pT
             push ecx
             lea ecx, [esp + 0x5bc]
             call PathCat
-            mov edi, offset gDefault_drone_direction+0x6dc
+            mov edi, 0x594e9c
             or ecx, 0xffffffff
             xor eax, eax
             lea edx, [esp + 0x5b8]
@@ -2082,7 +2162,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadTrack(const char* pFile_name, tTrack_spec* pT
             call BrActorLoad
             mov esi, dword ptr [esp + 0x28]
             add esp, 4
-            mov edx, offset gDepth_effect_names+0x14c
+            mov edx, offset gMatchFloat_00660fdc
             xor ecx, ecx
             mov dword ptr [esi + 0x14], eax
             call PrintMemoryDump
@@ -2091,7 +2171,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadTrack(const char* pFile_name, tTrack_spec* pT
             mov edx, offset gRace_path
             mov ecx, ebp
             call ReadSmashableEnvironment
-            mov edx, offset gDepth_effect_names+0x128
+            mov edx, offset gMatchFloat_00660fb8
             xor ecx, ecx
             call PrintMemoryDump
             mov ecx, ebp
@@ -2102,7 +2182,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadTrack(const char* pFile_name, tTrack_spec* pT
             call ExtractColumns
             call PackFileRerevertTiffLoading
             call FinishUpLoadingPeds
-            mov edx, offset gDepth_effect_names+0xfc
+            mov edx, offset gMatchFloat_00660f8c
             xor ecx, ecx
             call PrintMemoryDump
             mov eax, dword ptr [gRendering_accessories]
@@ -2132,22 +2212,22 @@ void C2_NAKED C2_HOOK_FASTCALL LoadTrack(const char* pFile_name, tTrack_spec* pT
             mov ecx, ebp
             call GetALineAndDontArgue
             lea eax, [esp + 0x98]
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push eax
             call strtok
             add esp, 8
-            push offset gPed_flags_0058f2e4+0x178
+            push 0x58f45c
             push eax
             call strtok
             mov ebx, eax
-            mov edi, offset gFrontend_QUIT+0xbb7c
+            mov edi, 0x65596c
             or ecx, 0xffffffff
             xor eax, eax
             add esp, 8
             repne scasb
             not ecx
             sub edi, ecx
-            push offset gNet_avail_names+0x4ac
+            push 0x657a04
             mov esi, edi
             mov edx, ecx
             mov edi, ebx
@@ -2194,22 +2274,22 @@ void C2_NAKED C2_HOOK_FASTCALL LoadTrack(const char* pFile_name, tTrack_spec* pT
             add esp, 8
             call PossibleService
             lea ecx, [esp + 0x98]
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push ecx
             call strtok
             add esp, 8
-            push offset gPed_flags_0058f2e4+0x178
+            push 0x58f45c
             push eax
             call strtok
             mov ebx, eax
-            mov edi, offset gDefault_drone_direction+0x6dc
+            mov edi, 0x594e9c
             or ecx, 0xffffffff
             xor eax, eax
             add esp, 8
             repne scasb
             not ecx
             sub edi, ecx
-            push offset gNet_avail_names+0x4a4
+            push 0x6579fc
             mov esi, edi
             mov edx, ecx
             mov edi, ebx
@@ -2264,7 +2344,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadTrack(const char* pFile_name, tTrack_spec* pT
             not ecx
             dec ecx
             sub edx, 4
-            mov esi, offset gFlic_bunch+0x10fc
+            mov esi, 0x59ad0c
             add ecx, edx
     L00505c63:
             mov dl, byte ptr [ecx]
@@ -2405,13 +2485,13 @@ void C2_NAKED C2_HOOK_FASTCALL LoadTrack(const char* pFile_name, tTrack_spec* pT
             call GetAnInt
             mov dword ptr [esp + 0x1c], eax
             fild dword ptr [esp + 0x1c]
-            fdivr dword ptr [gFLOAT_0058b130+0x78]
-            fmul qword ptr [gFLOAT_0058b130+0x80]
+            fdivr dword ptr [gMatchFloat_0058b1a8]
+            fmul qword ptr [gMatchDouble_0058b1b0]
             call _ftol
             mov ecx, ebp
             mov word ptr [gSky_image_width], ax
             call GetAFloat
-            fmul qword ptr [gFLOAT_0058b130+0x80]
+            fmul qword ptr [gMatchDouble_0058b1b0]
             call _ftol
             mov ecx, ebp
             mov word ptr [gSky_image_height], ax
@@ -2554,7 +2634,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadTrack(const char* pFile_name, tTrack_spec* pT
             mov dword ptr [ebx + 0xf04], eax
             jne L005060ac
             lea eax, [esp + 0x98]
-            push offset gPed_flags_0058f2e4+0x178
+            push 0x58f45c
             push eax
             call strtok
             add esp, 8
@@ -2579,7 +2659,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadTrack(const char* pFile_name, tTrack_spec* pT
             xor edx, edx
             mov dl, byte ptr [eax + 0x2c]
             call BRPM_convert
-            mov edx, offset gDepth_effect_names+0xd4
+            mov edx, offset gMatchFloat_00660f64
             xor ecx, ecx
             call PrintMemoryDump
             lea esi, [ebx + 0xed8]
@@ -2604,13 +2684,13 @@ void C2_NAKED C2_HOOK_FASTCALL LoadTrack(const char* pFile_name, tTrack_spec* pT
             je L005061ef
     L00506117:
             fld dword ptr [ebx + 0xef8]
-            fsub dword ptr [gFLOAT_0058b130+0x88]
+            fsub dword ptr [gMatchFloat_0058b1b8]
             lea esi, [ebx + 0xed4]
             push 0x3ffc
             push esi
             fstp dword ptr [ebx + 0xef8]
             fld dword ptr [ebx + 0xefc]
-            fsub dword ptr [gFLOAT_0058b130+0x8c]
+            fsub dword ptr [gMatchFloat_0058b1bc]
             fstp dword ptr [ebx + 0xefc]
             call BrMatrix34PostRotateX
             mov eax, dword ptr [gGraf_spec_index]
@@ -2621,14 +2701,14 @@ void C2_NAKED C2_HOOK_FASTCALL LoadTrack(const char* pFile_name, tTrack_spec* pT
             lea eax, [eax + ecx*4]
             shl eax, 2
             fild dword ptr [eax + gGraf_specs+0x10]
-            fmul dword ptr [gFLOAT_0058b130+0x90]
+            fmul dword ptr [gMatchFloat_0058b1c0]
             _emit 0xd9
         _emit 0x1c
         _emit 0x24
             fild dword ptr [eax + gGraf_specs+0xc]
             push ebp
             push ecx
-            fmul dword ptr [gFLOAT_0058b130+0x94]
+            fmul dword ptr [gMatchFloat_0058b1c4]
             _emit 0xd9
         _emit 0x1c
         _emit 0x24
@@ -2684,7 +2764,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadTrack(const char* pFile_name, tTrack_spec* pT
             mov ecx, edi
             call AddGroovidelics
             call PossibleService
-            mov edx, offset gDepth_effect_names+0xb0
+            mov edx, offset gMatchFloat_00660f40
             xor ecx, ecx
             call PrintMemoryDump
             mov eax, dword ptr [gTrack_storage_space+0x4]
@@ -2900,7 +2980,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadTrack(const char* pFile_name, tTrack_spec* pT
             mov eax, dword ptr [esi + 0x48]
             test eax, eax
             jne L005064c6
-            push offset gDepth_effect_names+0xa0
+            push offset gMatchString_00660f30
             call BrTableFind
             add esp, 4
             mov dword ptr [esi + 0x48], eax
@@ -2941,12 +3021,12 @@ void C2_NAKED C2_HOOK_FASTCALL LoadTrack(const char* pFile_name, tTrack_spec* pT
             xor ebp, ebp
     L00506522:
             call PossibleService
-            mov edx, offset gDepth_effect_names+0x80
+            mov edx, offset gMatchFloat_00660f10
             xor ecx, ecx
             call PrintMemoryDump
             mov ecx, edi
             call LoadAIWorldTrackInfo
-            mov edx, offset gDepth_effect_names+0x68
+            mov edx, offset gMatchFloat_00660ef8
             xor ecx, ecx
             call PrintMemoryDump
             call MungeSmashMaterialNames
@@ -2996,12 +3076,12 @@ void C2_NAKED C2_HOOK_FASTCALL LoadTrack(const char* pFile_name, tTrack_spec* pT
             mov dword ptr [ebx + 0x1c], eax
             call GetAString
             lea eax, [esp + 0x98]
-            push offset gPed_flags_0058f2e4+0x178
+            push 0x58f45c
             push eax
             call strtok
             mov dword ptr [esp + 0x2c], eax
             add esp, 8
-            mov esi, offset gNet_avail_names+0x7b8
+            mov esi, offset gMatchString_00657d10
             lea eax, [esp + 0x98]
     L00506604:
             mov dl, byte ptr [eax]
@@ -3027,7 +3107,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadTrack(const char* pFile_name, tTrack_spec* pT
     L0050662d:
             cmp eax, ebp
             je L0050677b
-            mov esi, offset gPed_flags_0058f2e4+0xd8
+            mov esi, 0x58f3bc
             lea eax, [esp + 0x98]
     L00506641:
             mov dl, byte ptr [eax]
@@ -3053,7 +3133,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadTrack(const char* pFile_name, tTrack_spec* pT
     L0050666a:
             cmp eax, ebp
             je L0050677b
-            mov esi, offset gOpponent_nastyness_frigger+0x3b8
+            mov esi, offset gMatchData_0065a784
             lea eax, [esp + 0x98]
     L0050667e:
             mov dl, byte ptr [eax]
@@ -3079,7 +3159,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadTrack(const char* pFile_name, tTrack_spec* pT
     L005066a7:
             cmp eax, ebp
             je L0050677b
-            mov esi, offset gOpponent_nastyness_frigger+0x3b4
+            mov esi, offset gMatchData_0065a780
             lea eax, [esp + 0x98]
     L005066bb:
             mov dl, byte ptr [eax]
@@ -3112,7 +3192,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadTrack(const char* pFile_name, tTrack_spec* pT
             repne scasb
             not ecx
             dec ecx
-            mov edi, offset gDRFont_to_polyfont_mapping+0x314
+            mov edi, 0x59b0b4
             mov ebp, ecx
             or ecx, 0xffffffff
             repne scasb
@@ -3136,7 +3216,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadTrack(const char* pFile_name, tTrack_spec* pT
             mov ecx, offset gTrack_storage_space
             call LoadSinglePixelmap
             mov edx, dword ptr [esp + 0x24]
-            mov edi, offset gMaterial_names+0x70
+            mov edi, 0x65fe80
             or ecx, 0xffffffff
             xor eax, eax
             mov byte ptr [edx + ebp], 0
@@ -3217,7 +3297,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadTrack(const char* pFile_name, tTrack_spec* pT
             cmp esi, 0x28
             mov dword ptr [esp + 0x10], esi
             jle L0050685b
-            mov ecx, offset gDepth_effect_names+0x50
+            mov ecx, offset gMatchFloat_00660ee0
             call PDFatalError
     L0050685b:
             mov ecx, dword ptr [gCount_smashable_noncars]
@@ -3314,7 +3394,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadTrack(const char* pFile_name, tTrack_spec* pT
             rep movsb
             mov edi, dword ptr [esp + 0x10]
     L005069b3:
-            push offset gDepth_effect_names+0x48
+            push offset gMatchString_00660ed8
             mov edx, offset gApplication_path
             lea ecx, [esp + 0x1bc]
             call PathCat
@@ -3323,7 +3403,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadTrack(const char* pFile_name, tTrack_spec* pT
             push ecx
             lea ecx, [esp + 0x1bc]
             call PathCat
-            mov edx, offset gNext_crush_actor_id+0x180
+            mov edx, 0x58f9e0
             lea ecx, [esp + 0x1b8]
             call DRfopen
             mov esi, eax
@@ -3497,7 +3577,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadTrack(const char* pFile_name, tTrack_spec* pT
             test edi, edi
             jne L00506bbd
     L00506bda:
-            mov edx, offset gDepth_effect_names+0x30
+            mov edx, offset gMatchFloat_00660ec0
             xor ecx, ecx
             mov dword ptr [gMaterial_exceptions], 0
             call PrintMemoryDump
@@ -3511,6 +3591,20 @@ void C2_NAKED C2_HOOK_FASTCALL LoadTrack(const char* pFile_name, tTrack_spec* pT
             pop ebx
             add esp, 0xaa8
             ret 4
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -4068,7 +4162,7 @@ process_pixelmap_result:
             lea edx, [esp + 0x28]
             call GetALineAndDontArgue
             lea eax, [esp + 0x28]
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push eax
             call strtok
             add esp, 8
@@ -4343,14 +4437,14 @@ process_shade_table_result:
             lea edx, [esp + 0x1f4]
             call GetALineAndDontArgue
             lea eax, [esp + 0x1f4]
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push eax
             call strtok
             add esp, 8
             mov edx, offset gApplication_path
             lea ecx, [esp + 0x2c]
             mov esi, eax
-            push offset gSwap_depth_effect_type+0xdc
+            push 0x59126c
             call PathCat
             lea edx, [esp + 0x2c]
             lea ecx, [esp + 0x2c]
@@ -4528,14 +4622,14 @@ process_shade_table_result:
             lea edx, [esp + 0x12c]
             call GetALineAndDontArgue
             lea eax, [esp + 0x12c]
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push eax
             call strtok
             add esp, 8
             mov edx, offset gApplication_path
             lea ecx, [esp + 0x2c]
             mov edi, eax
-            push offset gNet_avail_names+0x4b4
+            push 0x657a0c
             call PathCat
             lea edx, [esp + 0x2c]
             lea ecx, [esp + 0x2c]
@@ -4817,14 +4911,14 @@ process_model_result:
             lea edx, [esp + 0x128]
             call GetALineAndDontArgue
             lea eax, [esp + 0x128]
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push eax
             call strtok
             add esp, 8
             mov edx, offset gApplication_path
             lea ecx, [esp + 0x28]
             mov edi, eax
-            push offset gNet_avail_names+0x4ac
+            push 0x657a04
             call PathCat
             lea edx, [esp + 0x28]
             lea ecx, [esp + 0x28]
@@ -5002,6 +5096,13 @@ process_model_result:
             mov eax, 1
             mov dword ptr [gDuplicate_model], ecx
             jmp L00502391
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }

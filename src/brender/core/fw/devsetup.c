@@ -33,6 +33,70 @@ extern br_error C2_HOOK_CDECL BrStringToTokenValue();
 extern br_error C2_HOOK_CDECL BrSystemConfigQueryString();
 extern char Image_BRCORE1[];
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gData_00666d94[];
+extern char gData_00666e00[];
+extern char gData_00666e68[];
+extern char gFloat_00666cf0[];
+extern char gFloat_00666d0c[];
+extern char gFloat_00666d28[];
+extern char gFloat_00666d74[];
+extern char gFloat_00666da8[];
+extern char gFloat_00666dc8[];
+extern char gFloat_00666ddc[];
+extern char gFloat_00666e14[];
+extern char gFloat_00666e34[];
+extern char gFloat_00666e48[];
+extern char gString_00666d8c[];
+extern char gString_00666d90[];
+extern char gString_00666d98[];
+extern char gString_00666da0[];
+extern char gString_00666dbc[];
+extern char gString_00666df8[];
+extern char gString_00666dfc[];
+extern char gString_00666e04[];
+extern char gString_00666e0c[];
+extern char gString_00666e28[];
+extern char gString_00666e60[];
+extern char gString_00666e64[];
+extern char gString_00666e6c[];
+extern char gString_00666e74[];
+extern char gString_00666e7c[];
+extern char gString_00666e8c[];
+extern char gString_00666e98[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchData_00666d94[];
+extern char gMatchData_00666e00[];
+extern char gMatchData_00666e68[];
+extern char gMatchFloat_00666cf0[];
+extern char gMatchFloat_00666d0c[];
+extern char gMatchFloat_00666d28[];
+extern char gMatchFloat_00666d74[];
+extern char gMatchFloat_00666da8[];
+extern char gMatchFloat_00666dc8[];
+extern char gMatchFloat_00666ddc[];
+extern char gMatchFloat_00666e14[];
+extern char gMatchFloat_00666e34[];
+extern char gMatchFloat_00666e48[];
+extern char gMatchString_00666d8c[];
+extern char gMatchString_00666d90[];
+extern char gMatchString_00666d98[];
+extern char gMatchString_00666da0[];
+extern char gMatchString_00666dbc[];
+extern char gMatchString_00666df8[];
+extern char gMatchString_00666dfc[];
+extern char gMatchString_00666e04[];
+extern char gMatchString_00666e0c[];
+extern char gMatchString_00666e28[];
+extern char gMatchString_00666e60[];
+extern char gMatchString_00666e64[];
+extern char gMatchString_00666e6c[];
+extern char gMatchString_00666e74[];
+extern char gMatchString_00666e7c[];
+extern char gMatchString_00666e8c[];
+extern char gMatchString_00666e98[];
+#endif
 // FUNCTION: CARMA2_HW 0x00528d50
 br_pixelmap* C2_HOOK_CDECL BrDevLastBeginQuery(void) {
 
@@ -77,7 +141,7 @@ br_error C2_NAKED C2_HOOK_CDECL BrDevBeginVar(br_pixelmap** ppm, const char* set
     L00528d81:
             cmp edi, 0x40
             jne L00528d93
-            push offset Image_BRCORE1+0xe98
+            push offset gMatchFloat_00666cf0
             call BrFailure
             add esp, 4
     L00528d93:
@@ -107,6 +171,12 @@ br_error C2_NAKED C2_HOOK_CDECL BrDevBeginVar(br_pixelmap** ppm, const char* set
             pop esi
             add esp, 0x200
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -549,7 +619,7 @@ br_error C2_NAKED C2_HOOK_CDECL BrDevBeginTV(br_pixelmap** ppm, const char* setu
             inc edx
             cmp edx, 0x40
             jne L0052910d
-            push offset Image_BRCORE1+0xed0
+            push offset gMatchFloat_00666d28
             call BrFailure
             add esp, 4
     L0052910d:
@@ -636,7 +706,7 @@ br_error C2_NAKED C2_HOOK_CDECL BrDevBeginTV(br_pixelmap** ppm, const char* setu
             inc edx
             cmp edx, 0x40
             jne L005291e1
-            push offset Image_BRCORE1+0xeb4
+            push offset gMatchFloat_00666d0c
             call BrFailure
             add esp, 4
     L005291e1:
@@ -695,6 +765,21 @@ br_error C2_NAKED C2_HOOK_CDECL BrDevBeginTV(br_pixelmap** ppm, const char* setu
             pop ebx
             add esp, 0x620
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -798,12 +883,12 @@ br_error C2_NAKED C2_HOOK_CDECL BrRendererFacilityFind(br_renderer_facility** pr
             push esi
             push edi
             mov ecx, 5
-            mov esi, offset Image_BRCORE1+0xf1c
+            mov esi, offset gMatchFloat_00666d74
             lea edi, [esp + 0x18]
-            mov eax, dword ptr [Image_BRCORE1+0xf34]
+            mov eax, dword ptr [gMatchString_00666d8c]
             rep movsd
-            mov ecx, dword ptr [Image_BRCORE1+0xf38]
-            mov dl, byte ptr [Image_BRCORE1+0xf3c]
+            mov ecx, dword ptr [gMatchString_00666d90]
+            mov dl, byte ptr [gMatchData_00666d94]
             movsw
             movsb
             mov dword ptr [esp + 0xc], eax
@@ -817,7 +902,7 @@ br_error C2_NAKED C2_HOOK_CDECL BrRendererFacilityFind(br_renderer_facility** pr
             dec eax
             jne L005293a0
             lea eax, [esp + 0x29]
-            push offset Image_BRCORE1+0xf40
+            push offset gMatchString_00666d98
             push eax
             call BrStrCpy
             add esp, 8
@@ -825,7 +910,7 @@ br_error C2_NAKED C2_HOOK_CDECL BrRendererFacilityFind(br_renderer_facility** pr
             jmp L0052939b
     L00529384:
             lea ecx, [esp + 0x29]
-            push offset Image_BRCORE1+0xf48
+            push offset gMatchString_00666da0
             push ecx
             call BrStrCpy
             add esp, 8
@@ -891,7 +976,7 @@ br_error C2_NAKED C2_HOOK_CDECL BrRendererFacilityFind(br_renderer_facility** pr
             test eax, eax
             jne L00529440
             push 0
-            push offset Image_BRCORE1+0xf50
+            push offset gMatchFloat_00666da8
             lea edx, [esp + 0x10]
             push 0x2a
             push edx
@@ -922,13 +1007,13 @@ br_error C2_NAKED C2_HOOK_CDECL BrRendererFacilityFind(br_renderer_facility** pr
             test eax, eax
             jne L005294a2
             push 0
-            push offset Image_BRCORE1+0xf64
+            push offset gMatchString_00666dbc
             push 0
             call BrDevCheckAdd
             add esp, 0xc
             lea eax, [esp + 8]
             push 0
-            push offset Image_BRCORE1+0xf70
+            push offset gMatchFloat_00666dc8
             push 0x2a
             push eax
             call BrDevContainedFind
@@ -950,6 +1035,19 @@ br_error C2_NAKED C2_HOOK_CDECL BrRendererFacilityFind(br_renderer_facility** pr
             xor eax, eax
             add esp, 0x28
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -1015,12 +1113,12 @@ br_error C2_NAKED C2_HOOK_CDECL BrPrimitiveLibraryFind(br_primitive_library** pp
             push esi
             push edi
             mov ecx, 6
-            mov esi, offset Image_BRCORE1+0xf84
+            mov esi, offset gMatchFloat_00666ddc
             lea edi, [esp + 0x18]
-            mov eax, dword ptr [Image_BRCORE1+0xfa0]
+            mov eax, dword ptr [gMatchString_00666df8]
             rep movsd
-            mov ecx, dword ptr [Image_BRCORE1+0xfa4]
-            mov dl, byte ptr [Image_BRCORE1+0xfa8]
+            mov ecx, dword ptr [gMatchString_00666dfc]
+            mov dl, byte ptr [gMatchData_00666e00]
             movsb
             mov dword ptr [esp + 0xc], eax
             mov eax, dword ptr [esp + 0x40]
@@ -1033,7 +1131,7 @@ br_error C2_NAKED C2_HOOK_CDECL BrPrimitiveLibraryFind(br_primitive_library** pp
             dec eax
             jne L0052954e
             lea eax, [esp + 0x2b]
-            push offset Image_BRCORE1+0xfac
+            push offset gMatchString_00666e04
             push eax
             call BrStrCpy
             add esp, 8
@@ -1041,7 +1139,7 @@ br_error C2_NAKED C2_HOOK_CDECL BrPrimitiveLibraryFind(br_primitive_library** pp
             jmp L00529549
     L00529532:
             lea ecx, [esp + 0x2b]
-            push offset Image_BRCORE1+0xfb4
+            push offset gMatchString_00666e0c
             push ecx
             call BrStrCpy
             add esp, 8
@@ -1107,7 +1205,7 @@ br_error C2_NAKED C2_HOOK_CDECL BrPrimitiveLibraryFind(br_primitive_library** pp
             test eax, eax
             jne L005295ee
             push 0
-            push offset Image_BRCORE1+0xfbc
+            push offset gMatchFloat_00666e14
             lea edx, [esp + 0x10]
             push 0x34
             push edx
@@ -1138,13 +1236,13 @@ br_error C2_NAKED C2_HOOK_CDECL BrPrimitiveLibraryFind(br_primitive_library** pp
             test eax, eax
             jne L00529650
             push 0
-            push offset Image_BRCORE1+0xfd0
+            push offset gMatchString_00666e28
             push 0
             call BrDevCheckAdd
             add esp, 0xc
             lea eax, [esp + 8]
             push 0
-            push offset Image_BRCORE1+0xfdc
+            push offset gMatchFloat_00666e34
             push 0x34
             push eax
             call BrDevContainedFind
@@ -1166,6 +1264,21 @@ br_error C2_NAKED C2_HOOK_CDECL BrPrimitiveLibraryFind(br_primitive_library** pp
             xor eax, eax
             add esp, 0x2c
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -1247,12 +1360,12 @@ br_error C2_NAKED C2_HOOK_CDECL BrGeometryFormatFind(br_geometry** pgf, br_rende
             push esi
             push edi
             mov ecx, 5
-            mov esi, offset Image_BRCORE1+0xff0
+            mov esi, offset gMatchFloat_00666e48
             lea edi, [esp + 0x18]
             rep movsd
-            mov eax, dword ptr [Image_BRCORE1+0x1008]
-            mov ecx, dword ptr [Image_BRCORE1+0x100c]
-            mov dl, byte ptr [Image_BRCORE1+0x1010]
+            mov eax, dword ptr [gMatchString_00666e60]
+            mov ecx, dword ptr [gMatchString_00666e64]
+            mov dl, byte ptr [gMatchData_00666e68]
             mov dword ptr [esp + 0xc], eax
             mov eax, dword ptr [esp + 0x40]
             xor ebx, ebx
@@ -1264,7 +1377,7 @@ br_error C2_NAKED C2_HOOK_CDECL BrGeometryFormatFind(br_geometry** pgf, br_rende
             dec eax
             jne L005296f7
             lea eax, [esp + 0x27]
-            push offset Image_BRCORE1+0x1014
+            push offset gMatchString_00666e6c
             push eax
             call BrStrCpy
             add esp, 8
@@ -1272,7 +1385,7 @@ br_error C2_NAKED C2_HOOK_CDECL BrGeometryFormatFind(br_geometry** pgf, br_rende
             jmp L005296f2
     L005296db:
             lea ecx, [esp + 0x27]
-            push offset Image_BRCORE1+0x101c
+            push offset gMatchString_00666e74
             push ecx
             call BrStrCpy
             add esp, 8
@@ -1360,7 +1473,7 @@ br_error C2_NAKED C2_HOOK_CDECL BrGeometryFormatFind(br_geometry** pgf, br_rende
             ret
     L005297a1:
             push 0
-            push offset Image_BRCORE1+0x1024
+            push offset gMatchString_00666e7c
             lea edx, [esp + 0x48]
             push esi
             push edx
@@ -1407,13 +1520,13 @@ br_error C2_NAKED C2_HOOK_CDECL BrGeometryFormatFind(br_geometry** pgf, br_rende
             ret
     L0052980e:
             push 0
-            push offset Image_BRCORE1+0x1034
+            push offset gMatchString_00666e8c
             push 0
             call BrDevCheckAdd
             add esp, 0xc
             lea ecx, [esp + 0x40]
             push 0
-            push offset Image_BRCORE1+0x1040
+            push offset gMatchString_00666e98
             push esi
             push ecx
             call BrDevContainedFind

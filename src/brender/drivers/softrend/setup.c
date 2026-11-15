@@ -78,6 +78,18 @@ extern void C2_HOOK_CDECL BrMatrix4Mul34();
 extern void C2_HOOK_CDECL BrMatrix34ApplyP();
 extern void C2_HOOK_CDECL BrMatrix34TApplyV();
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gDouble_0058c8f8[];
+extern char gFloat_0058c8e8[];
+extern char gFloat_0058c8f0[];
+extern char gFloat_0058c900[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchDouble_0058c8f8[];
+extern char gMatchFloat_0058c8e8[];
+extern char gMatchFloat_0058c8f0[];
+extern char gMatchFloat_0058c900[];
+#endif
 // FUNCTION: CARMA2_HW 0x00543ec0
 void C2_HOOK_STDCALL ViewToModelUpdate(br_soft_renderer* self) {
 
@@ -179,7 +191,7 @@ void C2_NAKED C2_HOOK_STDCALL StaticCacheUpdate_PerModel(br_soft_renderer* self)
             fxch st(1)
             faddp st(2), st(0)
             fmul dword ptr [esi + 0x4d8]
-            fld dword ptr [rendererStateStoredDispatch+0x50]
+            fld dword ptr [gMatchFloat_0058c8e8]
             fxch st(1)
             faddp st(2), st(0)
             fxch st(1)
@@ -283,11 +295,11 @@ void C2_NAKED C2_HOOK_STDCALL StaticCacheUpdate_PerModel(br_soft_renderer* self)
             fxch st(1)
             faddp st(1), st(0)
             fsqrt
-            fcom dword ptr [rendererStateStoredDispatch+0x58]
+            fcom dword ptr [gMatchFloat_0058c8f0]
             fnstsw ax
             test ah, 0x41
             jne L00543d23
-            fdivr qword ptr [rendererStateStoredDispatch+0x60]
+            fdivr qword ptr [gMatchDouble_0058c8f8]
             fld st(0)
             fld st(1)
             fxch st(1)
@@ -323,6 +335,15 @@ void C2_NAKED C2_HOOK_STDCALL StaticCacheUpdate_PerModel(br_soft_renderer* self)
             pop esi
             add esp, 0x40
             ret 4
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -382,7 +403,7 @@ br_error C2_NAKED C2_HOOK_STDCALL CacheUpdate(br_soft_renderer* self) {
             shr ecx, 4
             or eax, ecx
             je L00543dd6
-            mov ecx, offset rendererStateStoredTemplateEntries+0x90
+            mov ecx, 0x670720
     L00543dc9:
             test al, 1
             je L00543dcf
@@ -452,6 +473,21 @@ br_error C2_NAKED C2_HOOK_STDCALL CacheUpdate(br_soft_renderer* self) {
             xor eax, eax
             pop esi
             ret 4
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -536,7 +572,7 @@ void C2_NAKED C2_HOOK_STDCALL ActiveLightsFind(br_soft_renderer* self) {
             mov dword ptr [esi + 0x34], ebx
             push esi
             fld dword ptr [ebx + 0x30]
-            fdivr qword ptr [rendererStateStoredDispatch+0x60]
+            fdivr qword ptr [gMatchDouble_0058c8f8]
             fstp dword ptr [esi + 0x28]
             mov ecx, dword ptr [ebx]
             mov dword ptr [esi], ecx
@@ -561,7 +597,7 @@ void C2_NAKED C2_HOOK_STDCALL ActiveLightsFind(br_soft_renderer* self) {
             lea ecx, [edi + 8]
             mov dword ptr [eax + 0x30], edi
             fld dword ptr [edi + 0x30]
-            fdivr qword ptr [rendererStateStoredDispatch+0x60]
+            fdivr qword ptr [gMatchDouble_0058c8f8]
             fstp dword ptr [esi + 0x28]
             mov edx, dword ptr [edi]
             mov dword ptr [esi], edx
@@ -626,6 +662,15 @@ void C2_NAKED C2_HOOK_STDCALL ActiveLightsFind(br_soft_renderer* self) {
             pop ebp
             pop ebx
             ret 4
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -675,14 +720,14 @@ void C2_NAKED C2_HOOK_STDCALL ActiveLightsUpdate(br_soft_renderer* self) {
 #else
     __asm {
             push ecx
-            mov eax, dword ptr ds:[0x79fe98]
+            mov eax, dword ptr [scache+0x498]
             push ebx
             xor ebx, ebx
             push ebp
             push esi
             cmp eax, ebx
             push edi
-            mov esi, 0x79fb18
+            mov esi, offset scache+0x118
             mov dword ptr [esp + 0x10], ebx
             jle L005442ca
             mov ebp, dword ptr [esp + 0x18]
@@ -724,11 +769,11 @@ void C2_NAKED C2_HOOK_STDCALL ActiveLightsUpdate(br_soft_renderer* self) {
             add esp, 0xc
             fsqrt
             fstp st(1)
-            fcom dword ptr ds:[0x58c8f0]
+            fcom dword ptr [gMatchFloat_0058c8f0]
             fnstsw ax
             test ah, 0x41
             jne L00544129
-            fdivr qword ptr ds:[0x58c8f8]
+            fdivr qword ptr [gMatchDouble_0058c8f8]
             _emit 0xd9
         _emit 0x07
             fld dword ptr [esi + 0x14]
@@ -755,14 +800,14 @@ void C2_NAKED C2_HOOK_STDCALL ActiveLightsUpdate(br_soft_renderer* self) {
             mov dword ptr [esi + 0x14], ebx
             mov dword ptr [esi + 0x18], ebx
     L00544137:
-            fld dword ptr ds:[0x79fb04]
+            fld dword ptr [scache+0x104]
             _emit 0xd8
         _emit 0x07
             fstp dword ptr [esi + 0x1c]
-            fld dword ptr ds:[0x79fb08]
+            fld dword ptr [scache+0x108]
             fadd dword ptr [esi + 0x14]
             fstp dword ptr [esi + 0x20]
-            fld dword ptr ds:[0x79fb0c]
+            fld dword ptr [scache+0x10c]
             fadd dword ptr [esi + 0x18]
             fstp dword ptr [esi + 0x24]
             fld dword ptr [esi + 0x1c]
@@ -785,11 +830,11 @@ void C2_NAKED C2_HOOK_STDCALL ActiveLightsUpdate(br_soft_renderer* self) {
             fxch st(1)
             fsqrt
             fstp st(1)
-            fcom dword ptr ds:[0x58c8f0]
+            fcom dword ptr [gMatchFloat_0058c8f0]
             fnstsw ax
             test ah, 0x41
             jne L005441ca
-            fdivr qword ptr ds:[0x58c8f8]
+            fdivr qword ptr [gMatchDouble_0058c8f8]
             fld dword ptr [esi + 0x1c]
             fld dword ptr [esi + 0x20]
             fld dword ptr [esi + 0x24]
@@ -862,11 +907,11 @@ void C2_NAKED C2_HOOK_STDCALL ActiveLightsUpdate(br_soft_renderer* self) {
             add esp, 0xc
             fsqrt
             fstp st(1)
-            fcom dword ptr ds:[0x58c8f0]
+            fcom dword ptr [gMatchFloat_0058c8f0]
             fnstsw ax
             test ah, 0x41
             jne L0054428a
-            fdivr qword ptr ds:[0x58c8f8]
+            fdivr qword ptr [gMatchDouble_0058c8f8]
             _emit 0xd9
         _emit 0x07
             fld dword ptr [esi + 0x14]
@@ -894,7 +939,7 @@ void C2_NAKED C2_HOOK_STDCALL ActiveLightsUpdate(br_soft_renderer* self) {
             mov dword ptr [esi + 0x18], ebx
     L00544298:
             mov eax, dword ptr [esi + 0x34]
-            push 0x79fa40
+            push offset scache+0x40
             add eax, 8
             lea ecx, [esi + 4]
             push eax
@@ -903,14 +948,14 @@ void C2_NAKED C2_HOOK_STDCALL ActiveLightsUpdate(br_soft_renderer* self) {
             add esp, 0xc
     L005442b0:
             mov eax, dword ptr [esp + 0x10]
-            mov ecx, dword ptr ds:[0x79fe98]
+            mov ecx, dword ptr [scache+0x498]
             inc eax
             add esi, 0x38
             cmp eax, ecx
             mov dword ptr [esp + 0x10], eax
             jl L00544081
     L005442ca:
-            mov eax, dword ptr ds:[0x79fe9c]
+            mov eax, dword ptr [scache+0x49c]
             xor edx, edx
             cmp eax, ebx
             jle L0054439b
@@ -928,7 +973,7 @@ void C2_NAKED C2_HOOK_STDCALL ActiveLightsUpdate(br_soft_renderer* self) {
             mov eax, dword ptr [eax + 8]
             mov dword ptr [edi + 8], eax
             fld dword ptr [ecx + 8]
-            fsub dword ptr ds:[0x58c900]
+            fsub dword ptr [gMatchFloat_0058c900]
             fstp dword ptr [ecx + 8]
             _emit 0xd9
         _emit 0x01
@@ -951,11 +996,11 @@ void C2_NAKED C2_HOOK_STDCALL ActiveLightsUpdate(br_soft_renderer* self) {
             fxch st(1)
             fsqrt
             fstp st(1)
-            fcom dword ptr ds:[0x58c8f0]
+            fcom dword ptr [gMatchFloat_0058c8f0]
             fnstsw ax
             test ah, 0x41
             jne L00544379
-            fdivr qword ptr ds:[0x58c8f8]
+            fdivr qword ptr [gMatchDouble_0058c8f8]
             _emit 0xd9
         _emit 0x01
             fld dword ptr [ecx + 4]
@@ -982,7 +1027,7 @@ void C2_NAKED C2_HOOK_STDCALL ActiveLightsUpdate(br_soft_renderer* self) {
             mov dword ptr [ecx + 4], ebx
             mov dword ptr [ecx + 8], ebx
     L00544387:
-            mov eax, dword ptr ds:[0x79fe9c]
+            mov eax, dword ptr [scache+0x49c]
             inc edx
             add esi, 0x38
             add ecx, 0x38

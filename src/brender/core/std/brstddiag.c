@@ -48,6 +48,10 @@ void C2_NAKED C2_HOOK_CDECL BrStdioWarning(char* message) {
             call fflush
             add esp, 4
             ret
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -87,6 +91,11 @@ void C2_NAKED C2_HOOK_CDECL BrStdioFailure(char* message) {
             call exit
             add esp, 4
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }

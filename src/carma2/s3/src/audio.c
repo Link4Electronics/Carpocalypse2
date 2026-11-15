@@ -176,6 +176,50 @@ extern void C2_HOOK_FASTCALL S3SoundBankReaderSkipToNewline(tS3_soundbank_read_c
 #ifdef CARPOCALYPSE2_MATCHING
 extern void* C2_HOOK_CDECL LoadQuickTimeModule();
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gData_0058d518[];
+extern char gData_00673574[];
+extern char gData_006735cc[];
+extern char gFloat_0058d4d0[];
+extern char gFloat_006735b8[];
+extern char gString_006734fc[];
+extern char gString_00673514[];
+extern char gString_0067351c[];
+extern char gString_00673524[];
+extern char gString_0067352c[];
+extern char gString_00673534[];
+extern char gString_0067353c[];
+extern char gString_00673544[];
+extern char gString_00673550[];
+extern char gString_0067355c[];
+extern char gString_00673564[];
+extern char gString_0067356c[];
+extern char gString_006735d0[];
+extern char gString_0067370c[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchData_0058d518[];
+extern char gMatchData_00673574[];
+extern char gMatchData_006735cc[];
+extern char gMatchFloat_0058d4d0[];
+extern char gMatchFloat_006735b8[];
+extern char gMatchString_006734fc[];
+extern char gMatchString_00673514[];
+extern char gMatchString_0067351c[];
+extern char gMatchString_00673524[];
+extern char gMatchString_0067352c[];
+extern char gMatchString_00673534[];
+extern char gMatchString_0067353c[];
+extern char gMatchString_00673544[];
+extern char gMatchString_00673550[];
+extern char gMatchString_0067355c[];
+extern char gMatchString_00673564[];
+extern char gMatchString_0067356c[];
+extern char gMatchString_006735d0[];
+extern char gMatchString_0067370c[];
+#endif
 // FUNCTION: CARMA2_HW 0x005651d0
 int C2_NAKED C2_HOOK_FASTCALL S3Init(const char* pPath, int pLow_memory_mode, const char* pSound_dirname) {
 #ifndef CARPOCALYPSE2_MATCHING
@@ -286,7 +330,7 @@ int C2_NAKED C2_HOOK_FASTCALL S3Init(const char* pPath, int pLow_memory_mode, co
             push ecx
             lea edx, [ebp - 0x100]
             push edx
-            push offset hitherYonTable+0x2c6c
+            push offset gMatchString_006734fc
             push offset gS3_sound_dirname
             call sprintf
             add esp, 0x10
@@ -1961,12 +2005,12 @@ C2_NAKED void* C2_HOOK_FASTCALL S3LoadSoundBankFile(const char* pPath) {
             push eax
             push offset gS3_path_separator
             push offset gS3_path_separator
-            push offset gS3_CDA_enabled+0xb4
+            push offset gMatchFloat_006735b8
             lea ecx, [ebp - 0x400]
             push ecx
             call sprintf
             add esp, 0x14
-            mov edx, offset gS3_CDA_enabled+0xc8
+            mov edx, offset gMatchData_006735cc
             lea ecx, [ebp - 0x400]
             call S3_low_memory_fopen
             mov dword ptr [ebp - 0x634], eax
@@ -2031,7 +2075,7 @@ C2_NAKED void* C2_HOOK_FASTCALL S3LoadSoundBankFile(const char* pPath) {
             push edx
             push offset gS3_path_separator
             push offset gS3_sound_dirname
-            push offset gS3_CDA_enabled+0xcc
+            push offset gMatchString_006735d0
             lea eax, [ebp - 0x600]
             push eax
             call sprintf
@@ -2207,7 +2251,7 @@ int C2_NAKED C2_HOOK_FASTCALL S3LoadSoundbank(const char* pPath, int pLow_memory
             push ecx
             call strcat
             add esp, 8
-            push offset gS3_CDA_enabled+0x10
+            push offset gMatchString_00673514
             lea edx, [ebp - 0x200]
             push edx
             call strcat
@@ -2291,7 +2335,13 @@ void C2_NAKED C2_HOOK_FASTCALL S3SoundBankReaderSkipWhitespace(tS3_soundbank_rea
             mov eax, dword ptr [ebp - 4]
             cmp dword ptr [eax], 0
             je L00568201
-            cmp dword ptr [gQuickTime_call_component_with_storage+0x5a0], 1
+            _emit 0x83
+        _emit 0x3d
+        _emit 0x5c
+        _emit 0x3c
+        _emit 0x67
+        _emit 0x00
+        _emit 0x01
             jle L005681c5
             push 0x107
             mov ecx, dword ptr [ebp - 4]
@@ -2306,7 +2356,12 @@ void C2_NAKED C2_HOOK_FASTCALL S3SoundBankReaderSkipWhitespace(tS3_soundbank_rea
             mov ecx, dword ptr [ebp - 4]
             mov edx, dword ptr [ecx + 0xc]
             movsx eax, byte ptr [edx]
-            mov ecx, dword ptr [gQuickTime_call_component_with_storage+0x394]
+            _emit 0x8b
+        _emit 0x0d
+        _emit 0x50
+        _emit 0x3a
+        _emit 0x67
+        _emit 0x00
             xor edx, edx
             mov dx, word ptr [ecx + eax*2]
             and edx, 0x107
@@ -2481,7 +2536,7 @@ int C2_NAKED C2_HOOK_FASTCALL S3SoundBankReadEntry(tS3_soundbank_read_ctx *pCont
             push eax
             mov ecx, dword ptr [ebp - 0x18]
             push ecx
-            push offset gS3_CDA_enabled+0x18
+            push offset gMatchString_0067351c
             mov edx, dword ptr [ebp - 0x28]
             mov eax, dword ptr [edx + 0xc]
             push eax
@@ -2505,7 +2560,7 @@ int C2_NAKED C2_HOOK_FASTCALL S3SoundBankReadEntry(tS3_soundbank_read_ctx *pCont
             mov eax, dword ptr [ebp - 0x18]
             add eax, 4
             push eax
-            push offset gS3_CDA_enabled+0x20
+            push offset gMatchString_00673524
             mov ecx, dword ptr [ebp - 0x28]
             mov edx, dword ptr [ecx + 0xc]
             push edx
@@ -2546,7 +2601,7 @@ int C2_NAKED C2_HOOK_FASTCALL S3SoundBankReadEntry(tS3_soundbank_read_ctx *pCont
             mov ecx, dword ptr [ebp - 0x18]
             add ecx, 8
             push ecx
-            push offset gS3_CDA_enabled+0x28
+            push offset gMatchString_0067352c
             mov edx, dword ptr [ebp - 0x28]
             mov eax, dword ptr [edx + 0xc]
             push eax
@@ -2567,7 +2622,7 @@ int C2_NAKED C2_HOOK_FASTCALL S3SoundBankReadEntry(tS3_soundbank_read_ctx *pCont
             mov edx, dword ptr [ebp - 0x18]
             add edx, 0xc
             push edx
-            push offset gS3_CDA_enabled+0x30
+            push offset gMatchString_00673534
             mov eax, dword ptr [ebp - 0x28]
             mov ecx, dword ptr [eax + 0xc]
             push ecx
@@ -2591,7 +2646,7 @@ int C2_NAKED C2_HOOK_FASTCALL S3SoundBankReadEntry(tS3_soundbank_read_ctx *pCont
             mov ecx, dword ptr [ebp - 0x18]
             add ecx, 0x10
             push ecx
-            push offset gS3_CDA_enabled+0x38
+            push offset gMatchString_0067353c
             mov edx, dword ptr [ebp - 0x28]
             mov eax, dword ptr [edx + 0xc]
             push eax
@@ -2613,7 +2668,7 @@ int C2_NAKED C2_HOOK_FASTCALL S3SoundBankReadEntry(tS3_soundbank_read_ctx *pCont
             push edx
             lea eax, [ebp - 0xc]
             push eax
-            push offset gS3_CDA_enabled+0x40
+            push offset gMatchString_00673544
             mov ecx, dword ptr [ebp - 0x28]
             mov edx, dword ptr [ecx + 0xc]
             push edx
@@ -2630,7 +2685,7 @@ int C2_NAKED C2_HOOK_FASTCALL S3SoundBankReadEntry(tS3_soundbank_read_ctx *pCont
             mov ecx, dword ptr [ebp - 0x28]
             call S3SoundBankReaderNextLine
             fld qword ptr [ebp - 0xc]
-            fcomp qword ptr [rendererStateStoredDispatch+0xc80]
+            fcomp qword ptr [gMatchData_0058d518]
             fnstsw ax
             test ah, 0x40
             je L00568489
@@ -2638,7 +2693,7 @@ int C2_NAKED C2_HOOK_FASTCALL S3SoundBankReadEntry(tS3_soundbank_read_ctx *pCont
             mov dword ptr [ebp - 8], 0x3ff00000
     L00568489:
             fld qword ptr [ebp - 0x14]
-            fcomp qword ptr [rendererStateStoredDispatch+0xc80]
+            fcomp qword ptr [gMatchData_0058d518]
             fnstsw ax
             test ah, 0x40
             je L005684a7
@@ -2671,7 +2726,7 @@ int C2_NAKED C2_HOOK_FASTCALL S3SoundBankReadEntry(tS3_soundbank_read_ctx *pCont
             push ecx
             lea edx, [ebp - 0xc]
             push edx
-            push offset gS3_CDA_enabled+0x4c
+            push offset gMatchString_00673550
             mov eax, dword ptr [ebp - 0x28]
             mov ecx, dword ptr [eax + 0xc]
             push ecx
@@ -2688,7 +2743,7 @@ int C2_NAKED C2_HOOK_FASTCALL S3SoundBankReadEntry(tS3_soundbank_read_ctx *pCont
             mov ecx, dword ptr [ebp - 0x28]
             call S3SoundBankReaderNextLine
             fld qword ptr [ebp - 0xc]
-            fcomp qword ptr [rendererStateStoredDispatch+0xc80]
+            fcomp qword ptr [gMatchData_0058d518]
             fnstsw ax
             test ah, 0x40
             je L0056853e
@@ -2696,7 +2751,7 @@ int C2_NAKED C2_HOOK_FASTCALL S3SoundBankReadEntry(tS3_soundbank_read_ctx *pCont
             mov dword ptr [ebp - 8], 0x3ff00000
     L0056853e:
             fld qword ptr [ebp - 0x14]
-            fcomp qword ptr [rendererStateStoredDispatch+0xc80]
+            fcomp qword ptr [gMatchData_0058d518]
             fnstsw ax
             test ah, 0x40
             je L0056855c
@@ -2728,7 +2783,7 @@ int C2_NAKED C2_HOOK_FASTCALL S3SoundBankReadEntry(tS3_soundbank_read_ctx *pCont
             mov eax, dword ptr [ebp - 0x18]
             add eax, 0x38
             push eax
-            push offset gS3_CDA_enabled+0x58
+            push offset gMatchString_0067355c
             mov ecx, dword ptr [ebp - 0x28]
             mov edx, dword ptr [ecx + 0xc]
             push edx
@@ -2748,7 +2803,7 @@ int C2_NAKED C2_HOOK_FASTCALL S3SoundBankReadEntry(tS3_soundbank_read_ctx *pCont
             push eax
             lea ecx, [ebp - 0x24]
             push ecx
-            push offset gS3_CDA_enabled+0x60
+            push offset gMatchString_00673564
             mov edx, dword ptr [ebp - 0x28]
             mov eax, dword ptr [edx + 0xc]
             push eax
@@ -2780,7 +2835,7 @@ int C2_NAKED C2_HOOK_FASTCALL S3SoundBankReadEntry(tS3_soundbank_read_ctx *pCont
             push ecx
             lea edx, [ebp - 0x1c]
             push edx
-            push offset gS3_CDA_enabled+0x68
+            push offset gMatchString_0067356c
             mov eax, dword ptr [ebp - 0x28]
             mov ecx, dword ptr [eax + 0xc]
             push ecx
@@ -2829,7 +2884,7 @@ int C2_NAKED C2_HOOK_FASTCALL S3SoundBankReadEntry(tS3_soundbank_read_ctx *pCont
             mov edx, dword ptr [ebp - 0x18]
             mov eax, dword ptr [edx + 0x44]
             push eax
-            push offset gS3_CDA_enabled+0x70
+            push offset gMatchData_00673574
             call printf
             add esp, 8
             mov ecx, dword ptr [ebp - 0x28]
@@ -2979,7 +3034,13 @@ int C2_NAKED C2_HOOK_FASTCALL S3SoundBankReaderReadFilename(char** pPath, tS3_so
             mov eax, dword ptr [ebp - 0x14]
             cmp dword ptr [eax], 0
             je L00568782
-            cmp dword ptr [gQuickTime_call_component_with_storage+0x5a0], 1
+            _emit 0x83
+        _emit 0x3d
+        _emit 0x5c
+        _emit 0x3c
+        _emit 0x67
+        _emit 0x00
+        _emit 0x01
             jle L00568752
             push 8
             mov ecx, dword ptr [ebp - 0x14]
@@ -2994,7 +3055,12 @@ int C2_NAKED C2_HOOK_FASTCALL S3SoundBankReaderReadFilename(char** pPath, tS3_so
             mov ecx, dword ptr [ebp - 0x14]
             mov edx, dword ptr [ecx + 0xc]
             movsx eax, byte ptr [edx]
-            mov ecx, dword ptr [gQuickTime_call_component_with_storage+0x394]
+            _emit 0x8b
+        _emit 0x0d
+        _emit 0x50
+        _emit 0x3a
+        _emit 0x67
+        _emit 0x00
             xor edx, edx
             mov dx, word ptr [ecx + eax*2]
             and edx, 8
@@ -4412,7 +4478,7 @@ int C2_NAKED C2_HOOK_FASTCALL S3StartSound2(tS3_outlet* pOutlet, tS3_sound_id pS
             sub eax, dword ptr [ebp + 0xc]
             mov dword ptr [ebp - 0x1c], eax
             fild dword ptr [ebp - 0x1c]
-            fdiv dword ptr [rendererStateStoredDispatch+0xc38]
+            fdiv dword ptr [gMatchFloat_0058d4d0]
             fstp dword ptr [ebp - 4]
             mov ecx, dword ptr [ebp - 8]
             mov esi, dword ptr [ecx + 8]
@@ -5079,50 +5145,60 @@ void C2_NAKED C2_HOOK_CDECL FUN_00575730(void) {
 #else
     __asm {
             push esi
-            mov eax, dword ptr ds:[gQuickTime_module]
+            mov eax, dword ptr [gQuickTime_module]
             push edi
             xor esi, esi
             cmp eax, esi
             jne L00575750
             call LoadQuickTimeModule
-            mov dword ptr ds:[gQuickTime_module], eax
+            mov dword ptr [gQuickTime_module], eax
             test eax, eax
             je L005757c3
             mov esi, 1
     L00575750:
             push 0x6736e8
-            mov edi, dword ptr ds:[0x5891a4]
+            _emit 0x8b
+        _emit 0x3d
+        _emit 0xa4
+        _emit 0x91
+        _emit 0x58
+        _emit 0x00
             push eax
-            mov dword ptr ds:[gQuickTime_module], eax
+            mov dword ptr [gQuickTime_module], eax
             call edi
-            mov dword ptr ds:[gQuickTime_call_component_with_storage], eax
+            mov dword ptr [gQuickTime_call_component_with_storage], eax
             test eax, eax
             je L005757a9
             push 0x6736d8
-            mov eax, dword ptr ds:[gQuickTime_module]
+            mov eax, dword ptr [gQuickTime_module]
             push eax
             call edi
-            mov dword ptr ds:[gQuickTime_call_component], eax
+            mov dword ptr [gQuickTime_call_component], eax
             test eax, eax
-            mov eax, dword ptr ds:[gQuickTime_module]
+            mov eax, dword ptr [gQuickTime_module]
             je L005757ae
             push 0x6736c0
             push eax
             call edi
-            mov dword ptr ds:[gQuickTime_trap_dispatcher], eax
+            mov dword ptr [gQuickTime_trap_dispatcher], eax
             test eax, eax
-            mov eax, dword ptr ds:[gQuickTime_module]
+            mov eax, dword ptr [gQuickTime_module]
             je L005757ae
-            mov dword ptr ds:[gQuickTime_trap_callback], 0
+            mov dword ptr [gQuickTime_trap_callback], 0
             jmp L005757ae
     L005757a9:
-            mov eax, dword ptr ds:[gQuickTime_module]
+            mov eax, dword ptr [gQuickTime_module]
     L005757ae:
             test esi, esi
             je L005757c3
             push eax
-            call dword ptr ds:[0x589118]
-            mov dword ptr ds:[gQuickTime_module], 0
+            _emit 0xff
+        _emit 0x15
+        _emit 0x18
+        _emit 0x91
+        _emit 0x58
+        _emit 0x00
+            mov dword ptr [gQuickTime_module], 0
     L005757c3:
             pop edi
             pop esi
@@ -5174,21 +5250,36 @@ C2_NAKED void* C2_HOOK_CDECL LoadQuickTimeModule(void) {
             push esi
             push edi
             xor esi, esi
-            push 0x67370c
-            call dword ptr ds:[0x589098]
+            push offset gMatchString_0067370c
+            _emit 0xff
+        _emit 0x15
+        _emit 0x98
+        _emit 0x90
+        _emit 0x58
+        _emit 0x00
             test eax, eax
             je L00575818
             lea ecx, [esp + 8]
             push 0x104
             push ecx
-            mov edi, dword ptr ds:[0x58917c]
+            _emit 0x8b
+        _emit 0x3d
+        _emit 0x7c
+        _emit 0x91
+        _emit 0x58
+        _emit 0x00
             push eax
             call edi
             test eax, eax
             je L0057581e
             lea eax, [esp + 8]
             push eax
-            call dword ptr ds:[0x5891a8]
+            _emit 0xff
+        _emit 0x15
+        _emit 0xa8
+        _emit 0x91
+        _emit 0x58
+        _emit 0x00
             mov esi, eax
             pop edi
             mov eax, esi
@@ -5196,7 +5287,12 @@ C2_NAKED void* C2_HOOK_CDECL LoadQuickTimeModule(void) {
             add esp, 0x104
             ret
     L00575818:
-            mov edi, dword ptr ds:[0x58917c]
+            _emit 0x8b
+        _emit 0x3d
+        _emit 0x7c
+        _emit 0x91
+        _emit 0x58
+        _emit 0x00
     L0057581e:
             lea eax, [esp + 8]
             push 0x104
@@ -5228,7 +5324,7 @@ C2_NAKED void* C2_HOOK_CDECL LoadQuickTimeModule(void) {
             lea eax, [esp + 8]
             cmp ecx, eax
             jb L005758b5
-            mov edi, 0x67370c
+            mov edi, offset gMatchString_0067370c
             sub eax, eax
             mov byte ptr [ecx + 1], 0
             mov ecx, 0xffffffff
@@ -5250,7 +5346,12 @@ C2_NAKED void* C2_HOOK_CDECL LoadQuickTimeModule(void) {
             rep movsb
             lea eax, [esp + 8]
             push eax
-            call dword ptr ds:[0x5891a8]
+            _emit 0xff
+        _emit 0x15
+        _emit 0xa8
+        _emit 0x91
+        _emit 0x58
+        _emit 0x00
             mov esi, eax
             test esi, esi
             jne L0057593a
@@ -5258,7 +5359,12 @@ C2_NAKED void* C2_HOOK_CDECL LoadQuickTimeModule(void) {
             lea eax, [esp + 8]
             push 0x104
             push eax
-            call dword ptr ds:[0x589114]
+            _emit 0xff
+        _emit 0x15
+        _emit 0x14
+        _emit 0x91
+        _emit 0x58
+        _emit 0x00
             test eax, eax
             je L0057593a
             mov edi, 0x662528
@@ -5280,7 +5386,7 @@ C2_NAKED void* C2_HOOK_CDECL LoadQuickTimeModule(void) {
             mov ecx, edx
             and ecx, 3
             rep movsb
-            mov edi, 0x67370c
+            mov edi, offset gMatchString_0067370c
             mov ecx, 0xffffffff
             sub eax, eax
             repne scasb
@@ -5301,7 +5407,12 @@ C2_NAKED void* C2_HOOK_CDECL LoadQuickTimeModule(void) {
             rep movsb
             lea eax, [esp + 8]
             push eax
-            call dword ptr ds:[0x5891a8]
+            _emit 0xff
+        _emit 0x15
+        _emit 0xa8
+        _emit 0x91
+        _emit 0x58
+        _emit 0x00
             mov esi, eax
     L0057593a:
             mov eax, esi

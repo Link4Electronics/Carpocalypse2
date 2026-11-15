@@ -80,6 +80,12 @@ extern int C2_HOOK_FASTCALL PFfwrite(const void* buf, br_size_t size, unsigned i
 extern int gCurrent_APO_potential_levels[3];
 extern tNet_mode gNet_mode;
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gString_00658744[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchString_00658744[];
+#endif
 // FUNCTION: CARMA2_HW 0x00466e90
 void C2_HOOK_FASTCALL MaybeRestoreSavedGame(void) {
 
@@ -402,7 +408,7 @@ void C2_NAKED C2_HOOK_FASTCALL DoSaveGame(void) {
             call PathCat
             lea ecx, [esp + 4]
             call PDFileUnlock
-            mov edx, offset g_source_exists+0x130
+            mov edx, offset gMatchString_00658744
             lea ecx, [esp + 4]
             call DRfopen
             mov esi, eax
@@ -441,6 +447,18 @@ void C2_NAKED C2_HOOK_FASTCALL DoSaveGame(void) {
             pop esi
             add esp, 0x428
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }

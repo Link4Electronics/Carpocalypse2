@@ -201,6 +201,36 @@ extern int gPratcam_on;
 extern int gSave_game_out_of_sync;
 extern int gThis_net_player_index;
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gData_0058b16c[];
+extern char gData_00660d34[];
+extern char gData_00660d7c[];
+extern char gFloat_0058b170[];
+extern char gFloat_00660cec[];
+extern char gFloat_00660d04[];
+extern char gFloat_00660d1c[];
+extern char gFloat_00660d4c[];
+extern char gFloat_00660d64[];
+extern char gFloat_00660d9c[];
+extern char gFloat_00660db8[];
+extern char gFloat_00660dd0[];
+extern char gFloat_00660dec[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchData_0058b16c[];
+extern char gMatchData_00660d34[];
+extern char gMatchData_00660d7c[];
+extern char gMatchFloat_0058b170[];
+extern char gMatchFloat_00660cec[];
+extern char gMatchFloat_00660d04[];
+extern char gMatchFloat_00660d1c[];
+extern char gMatchFloat_00660d4c[];
+extern char gMatchFloat_00660d64[];
+extern char gMatchFloat_00660d9c[];
+extern char gMatchFloat_00660db8[];
+extern char gMatchFloat_00660dd0[];
+extern char gMatchFloat_00660dec[];
+#endif
 // FUNCTION: CARMA2_HW 0x004e3410
 void C2_HOOK_FASTCALL RecordAPOAndCredits(void) {
 
@@ -754,16 +784,16 @@ void C2_NAKED C2_HOOK_FASTCALL RaceCompleted(tRace_over_reason pReason) {
     }
 #else
     __asm {
-            mov eax, dword ptr ds:[gRace_finished]
+            mov eax, dword ptr [gRace_finished]
             push esi
             test eax, eax
             mov esi, ecx
             jne L0050323c
-            cmp dword ptr ds:[gNet_mode], 2
+            cmp dword ptr [gNet_mode], 2
             jne L005030db
             cmp esi, 8
             jge L005030db
-            mov ecx, dword ptr ds:[gCurrent_net_game]
+            mov ecx, dword ptr [gCurrent_net_game]
             mov edx, esi
             call NetFinishRace
     L005030db:
@@ -780,12 +810,12 @@ void C2_NAKED C2_HOOK_FASTCALL RaceCompleted(tRace_over_reason pReason) {
     L005030f6:
             call ChangeAmbientPratcam
     L005030fb:
-            mov eax, dword ptr ds:[gMap_view]
-            mov dword ptr ds:[gRace_over_reason], esi
+            mov eax, dword ptr [gMap_view]
+            mov dword ptr [gRace_over_reason], esi
             cmp eax, 2
             jne L00503116
             call ToggleMap
-            mov esi, dword ptr ds:[gRace_over_reason]
+            mov esi, dword ptr [gRace_over_reason]
     L00503116:
             cmp esi, 9
             ja L00503224
@@ -800,7 +830,7 @@ void C2_NAKED C2_HOOK_FASTCALL RaceCompleted(tRace_over_reason pReason) {
             jmp L0050321f
             mov ecx, 0x23
             call ChangeAmbientPratcam
-            mov eax, dword ptr ds:[0x762438]
+            mov eax, dword ptr [gCurrent_race+0x98]
             mov ecx, dword ptr [eax + 0x190]
             test ecx, ecx
             mov ecx, 0x21
@@ -808,7 +838,7 @@ void C2_NAKED C2_HOOK_FASTCALL RaceCompleted(tRace_over_reason pReason) {
             mov ecx, 0x16
     L00503171:
             call DoFancyHeadup
-            mov ecx, dword ptr ds:[gPedestrians_outlet]
+            mov ecx, dword ptr [gPedestrians_outlet]
             mov edx, 0x1f4a
             call DRS3StartSound
             jmp L00503224
@@ -818,7 +848,7 @@ void C2_NAKED C2_HOOK_FASTCALL RaceCompleted(tRace_over_reason pReason) {
             jmp L0050321f
             mov ecx, 0x22
             call ChangeAmbientPratcam
-            mov ecx, dword ptr ds:[0x762438]
+            mov ecx, dword ptr [gCurrent_race+0x98]
             mov eax, dword ptr [ecx + 0x190]
             mov ecx, 0x22
             test eax, eax
@@ -826,20 +856,20 @@ void C2_NAKED C2_HOOK_FASTCALL RaceCompleted(tRace_over_reason pReason) {
             mov ecx, 0x17
     L005031c3:
             call DoFancyHeadup
-            mov ecx, dword ptr ds:[gPedestrians_outlet]
+            mov ecx, dword ptr [gPedestrians_outlet]
             mov edx, 0x1f4b
             call DRS3StartSound
             jmp L00503224
-            cmp dword ptr ds:[gNet_mode], 3
+            cmp dword ptr [gNet_mode], 3
             jne L00503224
             xor edx, edx
             mov ecx, 0x57
-            mov dword ptr ds:[gHost_abandon_game], 1
+            mov dword ptr [gHost_abandon_game], 1
             call NetFullScreenMessage
             jmp L00503224
             mov ecx, 0x24
             call ChangeAmbientPratcam
-            mov edx, dword ptr ds:[0x762438]
+            mov edx, dword ptr [gCurrent_race+0x98]
             mov ecx, 0x21
             mov eax, dword ptr [edx + 0x190]
             test eax, eax
@@ -848,12 +878,12 @@ void C2_NAKED C2_HOOK_FASTCALL RaceCompleted(tRace_over_reason pReason) {
     L0050321f:
             call DoFancyHeadup
     L00503224:
-            mov eax, dword ptr ds:[gNet_mode]
+            mov eax, dword ptr [gNet_mode]
             neg eax
             sbb eax, eax
             and eax, 0xfffff830
             add eax, 0x2710
-            mov dword ptr ds:[gRace_finished], eax
+            mov dword ptr [gRace_finished], eax
     L0050323c:
             pop esi
             ret
@@ -1233,12 +1263,12 @@ void C2_NAKED C2_HOOK_FASTCALL CheckCheckpoints(void) {
             lea ecx, [esp + 0xa8]
             call CheckSingleFace
             fld dword ptr [esp + 0x24]
-            fcomp dword ptr [gFLOAT_0058b130+0x3c]
+            fcomp dword ptr [gMatchData_0058b16c]
             fnstsw ax
             test ah, 1
             jne L00503692
             fld dword ptr [esp + 0x24]
-            fcomp dword ptr [gFLOAT_0058b130+0x40]
+            fcomp dword ptr [gMatchFloat_0058b170]
             fnstsw ax
             test ah, 0x41
             jne L00503762
@@ -1283,12 +1313,12 @@ void C2_NAKED C2_HOOK_FASTCALL CheckCheckpoints(void) {
             lea ecx, [esp + 0x58]
             call CheckSingleFace
             fld dword ptr [esp + 0x2c]
-            fcomp dword ptr [gFLOAT_0058b130+0x3c]
+            fcomp dword ptr [gMatchData_0058b16c]
             fnstsw ax
             test ah, 1
             jne L00503740
             fld dword ptr [esp + 0x2c]
-            fcomp dword ptr [gFLOAT_0058b130+0x40]
+            fcomp dword ptr [gMatchFloat_0058b170]
             fnstsw ax
             test ah, 0x41
             jne L00503762
@@ -1490,6 +1520,9 @@ void C2_NAKED C2_HOOK_FASTCALL CheckCheckpoints(void) {
             pop ebx
             add esp, 0xf0
             ret
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -1927,40 +1960,40 @@ void C2_NAKED C2_HOOK_FASTCALL DoProgram(void) {
 #endif
 #else
     __asm {
-            mov eax, dword ptr ds:[gMirror_on__structur]
+            mov eax, dword ptr [gMirror_on__structur]
             push ebx
-            mov dword ptr ds:[0x75bbc4], eax
-            mov eax, dword ptr ds:[gAusterity_mode]
+            mov dword ptr [gProgram_state+0x44], eax
+            mov eax, dword ptr [gAusterity_mode]
             xor ebx, ebx
             push ebp
             push esi
             cmp eax, ebx
             push edi
-            mov dword ptr ds:[0x75bc24], ebx
-            mov dword ptr ds:[0x75bb9c], ebx
-            mov dword ptr ds:[0x75bc20], ebx
-            mov dword ptr ds:[0x75bc28], ebx
-            mov dword ptr ds:[0x75bba8], ebx
-            mov dword ptr ds:[0x75bbb0], ebx
-            mov dword ptr ds:[0x75bbb4], ebx
-            mov dword ptr ds:[0x75bbb8], ebx
-            mov dword ptr ds:[0x75bbbc], ebx
-            mov dword ptr ds:[0x75bbc0], ebx
-            mov dword ptr ds:[0x75bbac], ebx
+            mov dword ptr [gProgram_state+0xa4], ebx
+            mov dword ptr [gProgram_state+0x1c], ebx
+            mov dword ptr [gProgram_state+0xa0], ebx
+            mov dword ptr [gProgram_state+0xa8], ebx
+            mov dword ptr [gProgram_state+0x28], ebx
+            mov dword ptr [gProgram_state+0x30], ebx
+            mov dword ptr [gProgram_state+0x34], ebx
+            mov dword ptr [gProgram_state+0x38], ebx
+            mov dword ptr [gProgram_state+0x3c], ebx
+            mov dword ptr [gProgram_state+0x40], ebx
+            mov dword ptr [gProgram_state+0x2c], ebx
             je L00503cb9
-            mov dword ptr ds:[gPratcam_on], ebx
-            mov dword ptr ds:[0x75bbc8], ebx
+            mov dword ptr [gPratcam_on], ebx
+            mov dword ptr [gProgram_state+0x48], ebx
             jmp L00503cc5
     L00503cb9:
-            mov ecx, dword ptr ds:[gPratcam_on]
-            mov dword ptr ds:[0x75bbc8], ecx
+            mov ecx, dword ptr [gPratcam_on]
+            mov dword ptr [gProgram_state+0x48], ecx
     L00503cc5:
-            mov edx, dword ptr ds:[gCockpit_on]
+            mov edx, dword ptr [gCockpit_on]
             xor ecx, ecx
-            mov dword ptr ds:[0x75bbcc], edx
-            mov byte ptr ds:[0x75d5de], bl
+            mov dword ptr [gProgram_state+0x4c], edx
+            mov byte ptr [gProgram_state+0x1a5e], bl
             call SetSoundVolumes
-            mov eax, dword ptr ds:[0x75bc24]
+            mov eax, dword ptr [gProgram_state+0xa4]
             or ebp, 0xffffffff
     L00503ce6:
             cmp eax, 4
@@ -1976,60 +2009,60 @@ void C2_NAKED C2_HOOK_FASTCALL DoProgram(void) {
             call DisposeGameIfNecessary
             jmp L00503d8b
             call DisposeGameIfNecessary
-            cmp dword ptr ds:[gNo_current_game], ebx
+            cmp dword ptr [gNo_current_game], ebx
             je L00503d4d
             push ebp
             mov edx, offset gNumber_of_races
             mov ecx, offset gRace_list
             call LoadRaces
-            mov ecx, dword ptr ds:[gDev_initial_race]
+            mov ecx, dword ptr [gDev_initial_race]
             call InitGame
             call MaybeRestoreSavedGame
     L00503d4d:
-            cmp dword ptr ds:[gAuto_load], ebx
+            cmp dword ptr [gAuto_load], ebx
             je L00503d68
-            cmp dword ptr ds:[gLoad_last_save_game], ebx
+            cmp dword ptr [gLoad_last_save_game], ebx
             je L00503d68
             call DoLoadMostRecentGame
-            mov dword ptr ds:[gLoad_last_save_game], ebx
+            mov dword ptr [gLoad_last_save_game], ebx
     L00503d68:
             call DoMainScreen
-            mov eax, dword ptr ds:[0x75bc24]
+            mov eax, dword ptr [gProgram_state+0xa4]
             jmp L00504146
             call ClearEntireScreen
             call DoSCILogo
             call DoOpeningAnimation
             call DoStainlessLogo
     L00503d8b:
-            mov ecx, dword ptr ds:[gEffects_outlet]
-            mov dword ptr ds:[0x75bc24], 2
+            mov ecx, dword ptr [gEffects_outlet]
+            mov dword ptr [gProgram_state+0xa4], 2
             call DRS3StopOutletSound
-            mov eax, dword ptr ds:[0x75bc24]
+            mov eax, dword ptr [gProgram_state+0xa4]
             jmp L00504146
-            mov edx, 0x660dec
+            mov edx, offset gMatchFloat_00660dec
             xor ecx, ecx
             call PrintMemoryDump
-            mov dword ptr ds:[gAbandon_game], ebx
-            mov dword ptr ds:[gDisallow_abandon_race], ebx
-            mov dword ptr ds:[gCar_to_view], 0x75bc2c
+            mov dword ptr [gAbandon_game], ebx
+            mov dword ptr [gDisallow_abandon_race], ebx
+            mov dword ptr [gCar_to_view], 0x75bc2c
             call StartLoadingScreen
-            mov eax, dword ptr ds:[gNet_mode_of_last_game]
-            mov ecx, dword ptr ds:[gNet_mode]
+            mov eax, dword ptr [gNet_mode_of_last_game]
+            mov ecx, dword ptr [gNet_mode]
             cmp eax, ecx
-            mov dword ptr ds:[0x75bc24], 5
+            mov dword ptr [gProgram_state+0xa4], 5
             je L00503df4
             mov eax, 2
             jmp L00504141
     L00503df4:
-            mov edx, 0x660dd0
+            mov edx, offset gMatchFloat_00660dd0
             xor ecx, ecx
             call PrintMemoryDump
-            mov ecx, dword ptr ds:[0x75bbf8]
+            mov ecx, dword ptr [gProgram_state+0x78]
             mov edx, offset gCurrent_race
             call LoadRaceInfo
             mov ecx, offset gCurrent_race
             call SelectOpponents
-            mov eax, dword ptr ds:[gNet_mode]
+            mov eax, dword ptr [gNet_mode]
             mov ecx, offset gCurrent_race
             cmp eax, ebx
             je L00503e39
@@ -2039,33 +2072,33 @@ void C2_NAKED C2_HOOK_FASTCALL DoProgram(void) {
             jmp L00503e58
     L00503e39:
             call SelectOpponents
-            mov ecx, dword ptr ds:[0x75bbf8]
+            mov ecx, dword ptr [gProgram_state+0x78]
             mov edx, offset gCurrent_race
             call LoadRaceInfo
             mov ecx, offset gCurrent_race
             call FillInRaceInfo
     L00503e58:
-            mov edx, 0x660db8
+            mov edx, offset gMatchFloat_00660db8
             xor ecx, ecx
             call PrintMemoryDump
-            cmp dword ptr ds:[gNet_mode], ebx
+            cmp dword ptr [gNet_mode], ebx
             je L00503f00
-            mov ecx, dword ptr ds:[gCurrent_net_game]
+            mov ecx, dword ptr [gCurrent_net_game]
             mov eax, dword ptr [ecx + 0x70]
             cmp eax, 2
             je L00503e83
             cmp eax, 1
             jne L00503f00
     L00503e83:
-            cmp dword ptr ds:[gNo_races_yet], ebx
+            cmp dword ptr [gNo_races_yet], ebx
             jne L00503f00
             call DisableNetService
             call AboutToLoadFirstCar
-            mov eax, dword ptr ds:[gNumber_of_net_players]
+            mov eax, dword ptr [gNumber_of_net_players]
             xor edi, edi
             cmp eax, ebx
             jle L00503efb
-            mov esi, 0x74bd4c
+            mov esi, offset gNet_players+0x8c
     L00503ea5:
             mov eax, dword ptr [esi]
             cmp eax, ebx
@@ -2080,18 +2113,18 @@ void C2_NAKED C2_HOOK_FASTCALL DoProgram(void) {
             push edx
             push eax
             push ecx
-            mov ecx, dword ptr ds:[gThis_net_player_index]
+            mov ecx, dword ptr [gThis_net_player_index]
             xor edx, edx
             cmp edi, ecx
             lea ecx, [eax*8]
             sete dl
             sub ecx, eax
-            mov eax, dword ptr ds:[gOpponents]
+            mov eax, dword ptr [gOpponents]
             shl ecx, 6
             add edx, 7
             lea ecx, [ecx + eax + 0x50]
             call LoadCar
-            mov eax, dword ptr ds:[gNumber_of_net_players]
+            mov eax, dword ptr [gNumber_of_net_players]
             inc edi
             add esi, 0xd4
             cmp edi, eax
@@ -2099,12 +2132,12 @@ void C2_NAKED C2_HOOK_FASTCALL DoProgram(void) {
     L00503efb:
             call ReenableNetService
     L00503f00:
-            mov edx, 0x660d9c
+            mov edx, offset gMatchFloat_00660d9c
             xor ecx, ecx
             call PrintMemoryDump
             call InitRace
-            mov eax, dword ptr ds:[gNet_mode]
-            mov ecx, dword ptr ds:[gNet_mode_of_last_game]
+            mov eax, dword ptr [gNet_mode]
+            mov ecx, dword ptr [gNet_mode_of_last_game]
             cmp ecx, eax
             je L00503f2a
             mov eax, 2
@@ -2114,7 +2147,7 @@ void C2_NAKED C2_HOOK_FASTCALL DoProgram(void) {
             je L00503f4c
             mov ecx, 3
             call FrontEndProcessMenus
-            push 0x660d7c
+            push offset gMatchData_00660d7c
             call dr_dprintf
             add esp, 4
             call SwitchToLoresMode
@@ -2124,19 +2157,19 @@ void C2_NAKED C2_HOOK_FASTCALL DoProgram(void) {
             mov ecx, offset gCurrent_race
             call SetInitialPositions
     L00503f5b:
-            cmp dword ptr ds:[0x75bc24], 2
+            cmp dword ptr [gProgram_state+0xa4], 2
             jne L00503f9f
-            push 0x660d64
+            push offset gMatchFloat_00660d64
             call dr_dprintf
             add esp, 4
             call DisposeRace
-            push 0x660d4c
+            push offset gMatchFloat_00660d4c
             call dr_dprintf
             add esp, 4
             call DisposeTrack
-            push 0x660d34
+            push offset gMatchData_00660d34
             call dr_dprintf
-            mov eax, dword ptr ds:[0x75bc24]
+            mov eax, dword ptr [gProgram_state+0xa4]
             add esp, 4
             jmp L00504146
     L00503f9f:
@@ -2154,17 +2187,17 @@ void C2_NAKED C2_HOOK_FASTCALL DoProgram(void) {
             mov esi, eax
             call DisableAutoFogification
             call DisposeRace
-            mov edx, 0x660d1c
+            mov edx, offset gMatchFloat_00660d1c
             xor ecx, ecx
             call PrintMemoryDump
-            cmp dword ptr ds:[gNet_mode], ebx
+            cmp dword ptr [gNet_mode], ebx
             je L00504023
-            mov eax, dword ptr ds:[gPending_race]
-            mov ecx, dword ptr ds:[gCurrent_net_game]
-            mov dword ptr ds:[0x75bbf8], eax
+            mov eax, dword ptr [gPending_race]
+            mov ecx, dword ptr [gCurrent_net_game]
+            mov dword ptr [gProgram_state+0x78], eax
             cmp esi, ebx
             mov dword ptr [ecx + 0x38], eax
-            mov dword ptr ds:[gPending_race], ebp
+            mov dword ptr [gPending_race], ebp
             je L0050404e
             cmp esi, 1
             je L0050404e
@@ -2178,24 +2211,24 @@ void C2_NAKED C2_HOOK_FASTCALL DoProgram(void) {
             cmp esi, 3
             mov edi, eax
             jne L0050404e
-            mov dword ptr ds:[gSave_game_out_of_sync], 1
+            mov dword ptr [gSave_game_out_of_sync], 1
             call DoEndRaceAnimation
             mov edx, edi
             mov ecx, esi
             call DoEndRaceSummary
             call DoSaveGame
     L0050404e:
-            cmp dword ptr ds:[gNet_mode], ebx
+            cmp dword ptr [gNet_mode], ebx
             je L0050407f
-            mov eax, dword ptr ds:[gNumber_of_net_players]
+            mov eax, dword ptr [gNumber_of_net_players]
             xor edi, edi
             cmp eax, ebx
             jle L00504084
-            mov esi, 0x74bd88
+            mov esi, offset gNet_players+0xc8
     L00504066:
             mov ecx, dword ptr [esi]
             call TotallyRepairACar
-            mov eax, dword ptr ds:[gNumber_of_net_players]
+            mov eax, dword ptr [gNumber_of_net_players]
             inc edi
             add esi, 0xd4
             cmp edi, eax
@@ -2204,27 +2237,27 @@ void C2_NAKED C2_HOOK_FASTCALL DoProgram(void) {
     L0050407f:
             call TotallyRepairCar
     L00504084:
-            cmp dword ptr ds:[gNet_mode], ebx
+            cmp dword ptr [gNet_mode], ebx
             jne L00504098
             mov ecx, offset gCurrent_race
             call DisposeOpponentsCars
             jmp L0050410b
     L00504098:
-            mov edx, dword ptr ds:[gCurrent_net_game]
+            mov edx, dword ptr [gCurrent_net_game]
             mov eax, dword ptr [edx + 0x70]
             cmp eax, 2
             je L005040ab
             cmp eax, 1
             jne L0050410b
     L005040ab:
-            cmp dword ptr ds:[gNo_races_yet], ebx
+            cmp dword ptr [gNo_races_yet], ebx
             jne L0050410b
             call DisableNetService
-            mov eax, dword ptr ds:[gNumber_of_net_players]
+            mov eax, dword ptr [gNumber_of_net_players]
             xor edi, edi
             cmp eax, ebx
             jle L005040f2
-            mov esi, 0x74bd0c
+            mov esi, offset gNet_players+0x4c
     L005040c8:
             mov edx, dword ptr [esi]
             mov ecx, dword ptr [esi + 0x7c]
@@ -2235,7 +2268,7 @@ void C2_NAKED C2_HOOK_FASTCALL DoProgram(void) {
             lea eax, [eax + eax*4]
             mov dword ptr [eax*4 + gCar_details], ebx
     L005040e2:
-            mov eax, dword ptr ds:[gNumber_of_net_players]
+            mov eax, dword ptr [gNumber_of_net_players]
             inc edi
             add esi, 0xd4
             cmp edi, eax
@@ -2247,23 +2280,23 @@ void C2_NAKED C2_HOOK_FASTCALL DoProgram(void) {
             call ClearOutStorageSpace
             call ReenableNetService
     L0050410b:
-            mov edx, 0x660d04
+            mov edx, offset gMatchFloat_00660d04
             xor ecx, ecx
             call PrintMemoryDump
             call DisposeTrack
-            mov edx, 0x660cec
+            mov edx, offset gMatchFloat_00660cec
             xor ecx, ecx
             call PrintMemoryDump
-            mov eax, dword ptr ds:[0x75bc24]
+            mov eax, dword ptr [gProgram_state+0xa4]
             cmp eax, 5
             jne L00504146
-            mov eax, dword ptr ds:[gNet_mode]
+            mov eax, dword ptr [gNet_mode]
             neg eax
             sbb eax, eax
             and eax, 2
             add eax, 2
     L00504141:
-            mov dword ptr ds:[0x75bc24], eax
+            mov dword ptr [gProgram_state+0xa4], eax
     L00504146:
             cmp eax, 6
             jne L00503ce6

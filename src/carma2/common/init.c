@@ -448,6 +448,96 @@ extern int gStatbarRightHUD_dim_w;
 extern int gStatbarRightHUD_dim_x;
 extern int gStatbarRightHUD_dim_y;
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gData_00656f34[];
+extern char gData_006570dc[];
+extern char gData_006570f4[];
+extern char gData_0074d098[];
+extern char gData_0076213c[];
+extern char gFloat_0058a21c[];
+extern char gFloat_00656ecc[];
+extern char gFloat_00656f10[];
+extern char gFloat_00656f58[];
+extern char gFloat_00656f7c[];
+extern char gFloat_00656f98[];
+extern char gFloat_00656fb0[];
+extern char gFloat_00656fc8[];
+extern char gFloat_00656fe0[];
+extern char gFloat_00656ff8[];
+extern char gFloat_0065700c[];
+extern char gFloat_00657024[];
+extern char gFloat_00657038[];
+extern char gFloat_0065704c[];
+extern char gFloat_00657060[];
+extern char gFloat_00657078[];
+extern char gFloat_0065708c[];
+extern char gFloat_006570b0[];
+extern char gFloat_006570c8[];
+extern char gFloat_00657108[];
+extern char gFloat_0065712c[];
+extern char gFloat_00657198[];
+extern char gFloat_006571b4[];
+extern char gFloat_006571d4[];
+extern char gString_00656ee0[];
+extern char gString_00656ef0[];
+extern char gString_00656f00[];
+extern char gString_00656f24[];
+extern char gString_00656f48[];
+extern char gString_00656f6c[];
+extern char gString_006570a0[];
+extern char gString_0065711c[];
+extern char gString_00657140[];
+extern char gString_00657148[];
+extern char gString_00657158[];
+extern char gString_00657164[];
+extern char gString_00657174[];
+extern char gString_00657190[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchData_00656f34[];
+extern char gMatchData_006570dc[];
+extern char gMatchData_006570f4[];
+extern char gMatchData_0074d098[];
+extern char gMatchData_0076213c[];
+extern char gMatchFloat_0058a21c[];
+extern char gMatchFloat_00656ecc[];
+extern char gMatchFloat_00656f10[];
+extern char gMatchFloat_00656f58[];
+extern char gMatchFloat_00656f7c[];
+extern char gMatchFloat_00656f98[];
+extern char gMatchFloat_00656fb0[];
+extern char gMatchFloat_00656fc8[];
+extern char gMatchFloat_00656fe0[];
+extern char gMatchFloat_00656ff8[];
+extern char gMatchFloat_0065700c[];
+extern char gMatchFloat_00657024[];
+extern char gMatchFloat_00657038[];
+extern char gMatchFloat_0065704c[];
+extern char gMatchFloat_00657060[];
+extern char gMatchFloat_00657078[];
+extern char gMatchFloat_0065708c[];
+extern char gMatchFloat_006570b0[];
+extern char gMatchFloat_006570c8[];
+extern char gMatchFloat_00657108[];
+extern char gMatchFloat_0065712c[];
+extern char gMatchFloat_00657198[];
+extern char gMatchFloat_006571b4[];
+extern char gMatchFloat_006571d4[];
+extern char gMatchString_00656ee0[];
+extern char gMatchString_00656ef0[];
+extern char gMatchString_00656f00[];
+extern char gMatchString_00656f24[];
+extern char gMatchString_00656f48[];
+extern char gMatchString_00656f6c[];
+extern char gMatchString_006570a0[];
+extern char gMatchString_0065711c[];
+extern char gMatchString_00657140[];
+extern char gMatchString_00657148[];
+extern char gMatchString_00657158[];
+extern char gMatchString_00657164[];
+extern char gMatchString_00657174[];
+extern char gMatchString_00657190[];
+#endif
 // FUNCTION: CARMA2_HW 0x0044c130
 void C2_HOOK_FASTCALL DisposeGameIfNecessary(void) {
     int i;
@@ -860,7 +950,7 @@ void C2_NAKED C2_HOOK_FASTCALL InitRace(void) {
             mov dword ptr [gAuto_repair], ebx
             call SetIntegerMapRenders
             call AdjustRenderScreenSize
-            mov edx, offset gMini_map_glowing_line_animation_indices+0x824
+            mov edx, offset gMatchFloat_006571d4
             xor ecx, ecx
             call PrintMemoryDump
             mov edx, offset gProgram_state+0x1ba0
@@ -868,13 +958,13 @@ void C2_NAKED C2_HOOK_FASTCALL InitRace(void) {
             push offset gCurrent_race
             call LoadTrack
             fld dword ptr [gYon_multiplier]
-            fcomp dword ptr [gDouble_0058a068+0x1b4]
+            fcomp dword ptr [gMatchFloat_0058a21c]
             fnstsw ax
             test ah, 0x40
             jne L004819f5
             call AdjustRenderScreenSize
     L004819f5:
-            mov edx, offset gMini_map_glowing_line_animation_indices+0x804
+            mov edx, offset gMatchFloat_006571b4
             xor ecx, ecx
             call PrintMemoryDump
             call ResetCrushSystems
@@ -883,7 +973,7 @@ void C2_NAKED C2_HOOK_FASTCALL InitRace(void) {
             xor edi, edi
             mov esi, offset gRace_head_ups
     L00481a17:
-            push offset gDisable_sound+0x8
+            push 0x676920
             push -1
             push ebx
             xor edx, edx
@@ -892,10 +982,10 @@ void C2_NAKED C2_HOOK_FASTCALL InitRace(void) {
             mov dword ptr [esi], eax
             add esi, 4
             inc edi
-            cmp esi, offset gRace_head_ups+0x58
+            cmp esi, offset gMatchData_0074d098
             jl L00481a17
             mov eax, dword ptr [gNet_mode]
-            push offset gDisable_sound+0x8
+            push 0x676920
             cmp eax, ebx
             push -6
             push ebx
@@ -905,7 +995,7 @@ void C2_NAKED C2_HOOK_FASTCALL InitRace(void) {
             call NewTextHeadupSlot
             xor edx, edx
             mov ecx, 0xe
-            push offset gDisable_sound+0x8
+            push 0x676920
             push -6
             push ebx
             mov dword ptr [gNet_cash_headup], eax
@@ -931,7 +1021,7 @@ void C2_NAKED C2_HOOK_FASTCALL InitRace(void) {
             add eax, 4
             add edx, 0xb
             add esi, 0x2c
-            cmp eax, offset gInitial_powerup_slots+0xc
+            cmp eax, offset gMatchData_0076213c
             jl L00481a92
             jmp L00481bf5
     L00481abd:
@@ -940,35 +1030,35 @@ void C2_NAKED C2_HOOK_FASTCALL InitRace(void) {
             call NewTextHeadupSlot
             xor edx, edx
             mov ecx, 2
-            push offset gDisable_sound+0x8
+            push 0x676920
             push -6
             push ebx
             mov dword ptr [gCredits_won_headup], eax
             call NewTextHeadupSlot
             xor edx, edx
             mov ecx, 0xc
-            push offset gDisable_sound+0x8
+            push 0x676920
             push -6
             push ebx
             mov dword ptr [gPed_kill_count_headup], eax
             call NewTextHeadupSlot
             xor edx, edx
             mov ecx, 7
-            push offset gDisable_sound+0x8
+            push 0x676920
             push -5
             push ebx
             mov dword ptr [gCar_kill_count_headup], eax
             call NewTextHeadupSlot
             xor edx, edx
             mov ecx, 0xb
-            push offset gDisable_sound+0x8
+            push 0x676920
             push -2
             push ebx
             mov dword ptr [gTimer_headup], eax
             call NewTextHeadupSlot
             xor edx, edx
             mov ecx, 8
-            push offset gDisable_sound+0x8
+            push 0x676920
             push -6
             push ebx
             mov dword ptr [gTime_awarded_headup], eax
@@ -1022,7 +1112,7 @@ void C2_NAKED C2_HOOK_FASTCALL InitRace(void) {
             cdq
             idiv ebp
             add ebx, 0x2c
-            cmp ecx, offset gInitial_powerup_slots+0xc
+            cmp ecx, offset gMatchData_0076213c
             lea eax, [eax + edi + 1]
             mov dword ptr [ecx - 4], eax
             jl L00481b75
@@ -1055,7 +1145,7 @@ void C2_NAKED C2_HOOK_FASTCALL InitRace(void) {
             jne L00481c5a
             call ToggleDepthCueingQuietly
     L00481c5a:
-            mov edx, offset gMini_map_glowing_line_animation_indices+0x7e8
+            mov edx, offset gMatchFloat_00657198
             xor ecx, ecx
             call PrintMemoryDump
             call SaveShadeTables
@@ -1146,9 +1236,9 @@ void C2_NAKED C2_HOOK_FASTCALL InitRace(void) {
             call BRPM_convert
             mov edx, offset gApplication_path
             lea ecx, [esp + 0x110]
-            push offset gMini_map_glowing_line_animation_indices+0x7e0
+            push offset gMatchString_00657190
             call PathCat
-            mov edx, offset gNext_crush_actor_id+0x180
+            mov edx, 0x58f9e0
             lea ecx, [esp + 0x110]
             call DRfopen
             mov esi, eax
@@ -1156,12 +1246,12 @@ void C2_NAKED C2_HOOK_FASTCALL InitRace(void) {
             mov ecx, esi
             call GetALineAndDontArgue
             lea eax, [esp + 0x10]
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push eax
             call strtok
             add esp, 8
             push offset gForce_feedback_upper_limit
-            push offset gMini_map_glowing_line_animation_indices+0x7dc
+            push 0x65718c
             push eax
             call sscanf
             add esp, 0xc
@@ -1169,12 +1259,12 @@ void C2_NAKED C2_HOOK_FASTCALL InitRace(void) {
             mov ecx, esi
             call GetALineAndDontArgue
             lea ecx, [esp + 0x10]
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push ecx
             call strtok
             add esp, 8
             push offset Force_feedback_lower_limit
-            push offset gMini_map_glowing_line_animation_indices+0x7dc
+            push 0x65718c
             push eax
             call sscanf
             add esp, 0xc
@@ -1190,6 +1280,13 @@ void C2_NAKED C2_HOOK_FASTCALL InitRace(void) {
             pop ebx
             add esp, 0x200
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -1724,11 +1821,11 @@ void C2_NAKED C2_HOOK_FASTCALL Init2DStuff(void) {
             mov dword ptr [g2d_camera], eax
             push ebp
             push 4
-            push offset gMini_map_glowing_line_animation_indices+0x7c4
+            push offset gMatchString_00657174
             call BrModelAllocate
             add esp, 0xc
             mov dword ptr [gDim_model], eax
-            push offset gMini_map_glowing_line_animation_indices+0x7b4
+            push offset gMatchString_00657164
             call BrMaterialAllocate
             add esp, 4
             mov dword ptr [gDim_material], eax
@@ -1739,11 +1836,11 @@ void C2_NAKED C2_HOOK_FASTCALL Init2DStuff(void) {
             mov dword ptr [gDim_actor], eax
             push ebp
             push 4
-            push offset gMini_map_glowing_line_animation_indices+0x7a8
+            push offset gMatchString_00657158
             call BrModelAllocate
             add esp, 0xc
             mov dword ptr [gPrat_model], eax
-            push offset gMini_map_glowing_line_animation_indices+0x798
+            push offset gMatchString_00657148
             call BrMaterialAllocate
             add esp, 4
             mov dword ptr [gPrat_material], eax
@@ -1754,13 +1851,13 @@ void C2_NAKED C2_HOOK_FASTCALL Init2DStuff(void) {
             mov edx, offset gApplication_path
             lea ecx, [esp + 0x1c]
             mov dword ptr [gPrat_actor], eax
-            push offset gFrontend_QUIT+0xb900
+            push 0x6556f0
             call PathCat
             lea edx, [esp + 0x1c]
             lea ecx, [esp + 0x1c]
-            push offset gMini_map_glowing_line_animation_indices+0x790
+            push offset gMatchString_00657140
             call PathCat
-            mov edi, offset gFrontend_QUIT+0xbb7c
+            mov edi, 0x65596c
             or ecx, 0xffffffff
             xor eax, eax
             lea edx, [esp + 0x1c]
@@ -1784,7 +1881,7 @@ void C2_NAKED C2_HOOK_FASTCALL Init2DStuff(void) {
             call BrModelLoad
             add esp, 4
             mov dword ptr [gHeadup_model], eax
-            push offset gMini_map_glowing_line_animation_indices+0x77c
+            push offset gMatchFloat_0065712c
             call BrMaterialAllocate
             add esp, 4
             mov dword ptr [gHeadup_material], eax
@@ -1795,11 +1892,11 @@ void C2_NAKED C2_HOOK_FASTCALL Init2DStuff(void) {
             mov dword ptr [gHeadup_actor], eax
             push ebp
             push 4
-            push offset gMini_map_glowing_line_animation_indices+0x76c
+            push offset gMatchString_0065711c
             call BrModelAllocate
             add esp, 0xc
             mov dword ptr [gHeadup2_model], eax
-            push offset gMini_map_glowing_line_animation_indices+0x758
+            push offset gMatchFloat_00657108
             call BrMaterialAllocate
             add esp, 4
             mov dword ptr [gHeadup2_material], eax
@@ -1810,11 +1907,11 @@ void C2_NAKED C2_HOOK_FASTCALL Init2DStuff(void) {
             mov dword ptr [gHeadup2_actor], eax
             push ebp
             push 4
-            push offset gMini_map_glowing_line_animation_indices+0x744
+            push offset gMatchData_006570f4
             call BrModelAllocate
             add esp, 0xc
             mov dword ptr [gPowerupHUD_model], eax
-            push offset gMini_map_glowing_line_animation_indices+0x72c
+            push offset gMatchData_006570dc
             call BrMaterialAllocate
             add esp, 4
             mov dword ptr [gPowerupHUD_material], eax
@@ -1825,11 +1922,11 @@ void C2_NAKED C2_HOOK_FASTCALL Init2DStuff(void) {
             mov dword ptr [gPowerupHUD_actor], eax
             push ebp
             push 4
-            push offset gMini_map_glowing_line_animation_indices+0x718
+            push offset gMatchFloat_006570c8
             call BrModelAllocate
             add esp, 0xc
             mov dword ptr [gStatbarHUD1_model], eax
-            push offset gMini_map_glowing_line_animation_indices+0x700
+            push offset gMatchFloat_006570b0
             call BrMaterialAllocate
             add esp, 4
             mov dword ptr [gStatbarHUD1_material], eax
@@ -1840,11 +1937,11 @@ void C2_NAKED C2_HOOK_FASTCALL Init2DStuff(void) {
             mov dword ptr [gStatbarHUD1_actor], eax
             push ebp
             push 4
-            push offset gMini_map_glowing_line_animation_indices+0x6f0
+            push offset gMatchString_006570a0
             call BrModelAllocate
             add esp, 0xc
             mov dword ptr [gHUDcurve_model], eax
-            push offset gMini_map_glowing_line_animation_indices+0x6dc
+            push offset gMatchFloat_0065708c
             call BrMaterialAllocate
             add esp, 4
             mov dword ptr [gHUDcurve_material], eax
@@ -1855,11 +1952,11 @@ void C2_NAKED C2_HOOK_FASTCALL Init2DStuff(void) {
             mov dword ptr [gHUDcurve_actor], eax
             push ebp
             push 4
-            push offset gMini_map_glowing_line_animation_indices+0x6c8
+            push offset gMatchFloat_00657078
             call BrModelAllocate
             add esp, 0xc
             mov dword ptr [gStatbarHUD3_model], eax
-            push offset gMini_map_glowing_line_animation_indices+0x6b0
+            push offset gMatchFloat_00657060
             call BrMaterialAllocate
             add esp, 4
             mov dword ptr [gStatbarHUD3_material], eax
@@ -1870,11 +1967,11 @@ void C2_NAKED C2_HOOK_FASTCALL Init2DStuff(void) {
             mov dword ptr [gStatbarHUD3_actor], eax
             push ebp
             push 4
-            push offset gMini_map_glowing_line_animation_indices+0x69c
+            push offset gMatchFloat_0065704c
             call BrModelAllocate
             add esp, 0xc
             mov dword ptr [gHUDsquare_model], eax
-            push offset gMini_map_glowing_line_animation_indices+0x688
+            push offset gMatchFloat_00657038
             call BrMaterialAllocate
             add esp, 4
             mov dword ptr [gHUDsquare_material], eax
@@ -1885,11 +1982,11 @@ void C2_NAKED C2_HOOK_FASTCALL Init2DStuff(void) {
             mov dword ptr [gHUDsquare_actor], eax
             push ebp
             push 4
-            push offset gMini_map_glowing_line_animation_indices+0x674
+            push offset gMatchFloat_00657024
             call BrModelAllocate
             add esp, 0xc
             mov dword ptr [gStatbarHUD5_model], eax
-            push offset gMini_map_glowing_line_animation_indices+0x65c
+            push offset gMatchFloat_0065700c
             call BrMaterialAllocate
             add esp, 4
             mov dword ptr [gStatbarHUD5_material], eax
@@ -1900,11 +1997,11 @@ void C2_NAKED C2_HOOK_FASTCALL Init2DStuff(void) {
             mov dword ptr [gStatbarHUD5_actor], eax
             push ebp
             push 4
-            push offset gMini_map_glowing_line_animation_indices+0x648
+            push offset gMatchFloat_00656ff8
             call BrModelAllocate
             add esp, 0xc
             mov dword ptr [gTimerLeftHUD_model], eax
-            push offset gMini_map_glowing_line_animation_indices+0x630
+            push offset gMatchFloat_00656fe0
             call BrMaterialAllocate
             add esp, 4
             mov dword ptr [gTimerLeftHUD_material], eax
@@ -1915,11 +2012,11 @@ void C2_NAKED C2_HOOK_FASTCALL Init2DStuff(void) {
             mov dword ptr [gTimerLeftHUD_actor], eax
             push ebp
             push 4
-            push offset gMini_map_glowing_line_animation_indices+0x618
+            push offset gMatchFloat_00656fc8
             call BrModelAllocate
             add esp, 0xc
             mov dword ptr [gTimerRightHUD_model], eax
-            push offset gMini_map_glowing_line_animation_indices+0x600
+            push offset gMatchFloat_00656fb0
             call BrMaterialAllocate
             add esp, 4
             mov dword ptr [gTimerRightHUD_material], eax
@@ -1930,11 +2027,11 @@ void C2_NAKED C2_HOOK_FASTCALL Init2DStuff(void) {
             mov dword ptr [gTimerRightHUD_actor], eax
             push ebp
             push 4
-            push offset gMini_map_glowing_line_animation_indices+0x5e8
+            push offset gMatchFloat_00656f98
             call BrModelAllocate
             add esp, 0xc
             mov dword ptr [gStatbarRightHUD_model], eax
-            push offset gMini_map_glowing_line_animation_indices+0x5cc
+            push offset gMatchFloat_00656f7c
             call BrMaterialAllocate
             add esp, 4
             mov dword ptr [gStatbarRightHUD_material], eax
@@ -1945,11 +2042,11 @@ void C2_NAKED C2_HOOK_FASTCALL Init2DStuff(void) {
             mov dword ptr [gStatbarRightHUD_actor], eax
             push ebp
             push 4
-            push offset gMini_map_glowing_line_animation_indices+0x5bc
+            push offset gMatchString_00656f6c
             call BrModelAllocate
             add esp, 0xc
             mov dword ptr [gMapHUD_model], eax
-            push offset gMini_map_glowing_line_animation_indices+0x5a8
+            push offset gMatchFloat_00656f58
             call BrMaterialAllocate
             add esp, 4
             mov dword ptr [gMapHUD_material], eax
@@ -1960,11 +2057,11 @@ void C2_NAKED C2_HOOK_FASTCALL Init2DStuff(void) {
             mov dword ptr [gMapHUD_actor], eax
             push ebp
             push 4
-            push offset gMini_map_glowing_line_animation_indices+0x598
+            push offset gMatchString_00656f48
             call BrModelAllocate
             add esp, 0xc
             mov dword ptr [gTestFont_model], eax
-            push offset gMini_map_glowing_line_animation_indices+0x584
+            push offset gMatchData_00656f34
             call BrMaterialAllocate
             add esp, 4
             mov dword ptr [gTestFont_material], eax
@@ -1975,11 +2072,11 @@ void C2_NAKED C2_HOOK_FASTCALL Init2DStuff(void) {
             mov dword ptr [gTestFont_actor], eax
             push ebp
             push 4
-            push offset gMini_map_glowing_line_animation_indices+0x574
+            push offset gMatchString_00656f24
             call BrModelAllocate
             add esp, 0xc
             mov dword ptr [gArmour_model], eax
-            push offset gMini_map_glowing_line_animation_indices+0x560
+            push offset gMatchFloat_00656f10
             call BrMaterialAllocate
             add esp, 4
             mov dword ptr [gArmour_material], eax
@@ -1990,11 +2087,11 @@ void C2_NAKED C2_HOOK_FASTCALL Init2DStuff(void) {
             mov dword ptr [gArmour_actor], eax
             push ebp
             push 4
-            push offset gMini_map_glowing_line_animation_indices+0x550
+            push offset gMatchString_00656f00
             call BrModelAllocate
             add esp, 0xc
             mov dword ptr [gPower_model], eax
-            push offset gMini_map_glowing_line_animation_indices+0x540
+            push offset gMatchString_00656ef0
             call BrMaterialAllocate
             add esp, 4
             mov dword ptr [gPower_material], eax
@@ -2005,11 +2102,11 @@ void C2_NAKED C2_HOOK_FASTCALL Init2DStuff(void) {
             mov dword ptr [gPower_actor], eax
             push ebp
             push 4
-            push offset gMini_map_glowing_line_animation_indices+0x530
+            push offset gMatchString_00656ee0
             call BrModelAllocate
             add esp, 0xc
             mov dword ptr [gOffence_model], eax
-            push offset gMini_map_glowing_line_animation_indices+0x51c
+            push offset gMatchFloat_00656ecc
             call BrMaterialAllocate
             add esp, 4
             mov dword ptr [gOffence_material], eax

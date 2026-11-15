@@ -21,6 +21,18 @@ br_matrix34 mattmp2;
 #ifdef CARPOCALYPSE2_MATCHING
 extern char IID_IDirectInputDevice2A[];
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gDouble_0058b8c8[];
+extern char gFloat_0058b8c0[];
+extern char gFloat_0058b8c4[];
+extern char gFloat_0058b8d0[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchDouble_0058b8c8[];
+extern char gMatchFloat_0058b8c0[];
+extern char gMatchFloat_0058b8c4[];
+extern char gMatchFloat_0058b8d0[];
+#endif
 // FUNCTION: CARMA2_HW 0x005325d0
 void C2_HOOK_CDECL BrMatrix34Copy(br_matrix34* A, const br_matrix34* B) {
 
@@ -377,11 +389,21 @@ void C2_NAKED C2_HOOK_CDECL BrMatrix34Rotate(br_matrix34* mat, br_angle r, const
             and eax, 0xffff
             mov dword ptr [esp + 0x20], eax
             fild dword ptr [esp + 0x20]
-            fld dword ptr [IID_IDirectInputDevice2A+0x520]
+            _emit 0xd9
+        _emit 0x05
+        _emit 0xb8
+        _emit 0xb8
+        _emit 0x58
+        _emit 0x00
             _emit 0xd9
         _emit 0x01
             fxch st(2)
-            fmul qword ptr [IID_IDirectInputDevice2A+0x518]
+            _emit 0xdc
+        _emit 0x0d
+        _emit 0xb0
+        _emit 0xb8
+        _emit 0x58
+        _emit 0x00
             fld dword ptr [ecx + 8]
             fld dword ptr [ecx + 4]
             fld st(2)
@@ -675,11 +697,26 @@ br_scalar C2_NAKED C2_HOOK_CDECL BrMatrix34Inverse(br_matrix34* B, const br_matr
             _emit 0xd8
         _emit 0x09
             fmul dword ptr [ecx + 0x20]
-            fld dword ptr [IID_IDirectInputDevice2A+0x524]
-            fld dword ptr [IID_IDirectInputDevice2A+0x524]
+            _emit 0xd9
+        _emit 0x05
+        _emit 0xbc
+        _emit 0xb8
+        _emit 0x58
+        _emit 0x00
+            _emit 0xd9
+        _emit 0x05
+        _emit 0xbc
+        _emit 0xb8
+        _emit 0x58
+        _emit 0x00
             fxch st(2)
             fst dword ptr [esp + 0xc]
-            fcomp dword ptr [IID_IDirectInputDevice2A+0x524]
+            _emit 0xd8
+        _emit 0x1d
+        _emit 0xbc
+        _emit 0xb8
+        _emit 0x58
+        _emit 0x00
             fxch st(1)
             _emit 0xd9
         _emit 0x5c
@@ -701,7 +738,12 @@ br_scalar C2_NAKED C2_HOOK_CDECL BrMatrix34Inverse(br_matrix34* B, const br_matr
             fld dword ptr [ecx + 0x14]
             fmul dword ptr [ecx + 4]
             fmul dword ptr [ecx + 0x18]
-            fcom dword ptr [IID_IDirectInputDevice2A+0x524]
+            _emit 0xd8
+        _emit 0x15
+        _emit 0xbc
+        _emit 0xb8
+        _emit 0x58
+        _emit 0x00
             fnstsw ax
             test ah, 1
             jne L00532c2c
@@ -713,7 +755,12 @@ br_scalar C2_NAKED C2_HOOK_CDECL BrMatrix34Inverse(br_matrix34* B, const br_matr
             fld dword ptr [ecx + 8]
             fmul dword ptr [ecx + 0xc]
             fmul dword ptr [ecx + 0x1c]
-            fcom dword ptr [IID_IDirectInputDevice2A+0x524]
+            _emit 0xd8
+        _emit 0x15
+        _emit 0xbc
+        _emit 0xb8
+        _emit 0x58
+        _emit 0x00
             fnstsw ax
             test ah, 1
             jne L00532c48
@@ -727,7 +774,12 @@ br_scalar C2_NAKED C2_HOOK_CDECL BrMatrix34Inverse(br_matrix34* B, const br_matr
             fmulp st(1), st(0)
             fmul dword ptr [ecx + 0x18]
             fchs
-            fcom dword ptr [IID_IDirectInputDevice2A+0x524]
+            _emit 0xd8
+        _emit 0x15
+        _emit 0xbc
+        _emit 0xb8
+        _emit 0x58
+        _emit 0x00
             fnstsw ax
             test ah, 1
             jne L00532c68
@@ -741,7 +793,12 @@ br_scalar C2_NAKED C2_HOOK_CDECL BrMatrix34Inverse(br_matrix34* B, const br_matr
             fmulp st(1), st(0)
             fmul dword ptr [ecx + 0x20]
             fchs
-            fcom dword ptr [IID_IDirectInputDevice2A+0x524]
+            _emit 0xd8
+        _emit 0x15
+        _emit 0xbc
+        _emit 0xb8
+        _emit 0x58
+        _emit 0x00
             fnstsw ax
             test ah, 1
             jne L00532c88
@@ -755,7 +812,12 @@ br_scalar C2_NAKED C2_HOOK_CDECL BrMatrix34Inverse(br_matrix34* B, const br_matr
         _emit 0x09
             fmul dword ptr [ecx + 0x1c]
             fchs
-            fcom dword ptr [IID_IDirectInputDevice2A+0x524]
+            _emit 0xd8
+        _emit 0x15
+        _emit 0xbc
+        _emit 0xb8
+        _emit 0x58
+        _emit 0x00
             fnstsw ax
             test ah, 1
             jne L00532ca5
@@ -767,40 +829,65 @@ br_scalar C2_NAKED C2_HOOK_CDECL BrMatrix34Inverse(br_matrix34* B, const br_matr
             fld st(1)
             fadd st(0), st(1)
             fst dword ptr [esp + 0xc]
-            fcomp dword ptr [IID_IDirectInputDevice2A+0x524]
+            _emit 0xd8
+        _emit 0x1d
+        _emit 0xbc
+        _emit 0xb8
+        _emit 0x58
+        _emit 0x00
             fld dword ptr [esp + 0xc]
             fnstsw ax
             test ah, 1
             je L00532cc2
             fchs
     L00532cc2:
-            fcomp dword ptr [IID_IDirectInputDevice2A+0x528]
+            fcomp dword ptr [gMatchFloat_0058b8c0]
             fnstsw ax
             test ah, 0x41
             je L00532cdb
             fstp st(0)
             fstp st(0)
-            fld dword ptr [IID_IDirectInputDevice2A+0x524]
+            _emit 0xd9
+        _emit 0x05
+        _emit 0xbc
+        _emit 0xb8
+        _emit 0x58
+        _emit 0x00
             pop ecx
             ret
     L00532cdb:
             fsubrp st(1), st(0)
             fdivr dword ptr [esp + 0xc]
-            fcom dword ptr [IID_IDirectInputDevice2A+0x524]
+            _emit 0xd8
+        _emit 0x15
+        _emit 0xbc
+        _emit 0xb8
+        _emit 0x58
+        _emit 0x00
             fnstsw ax
             test ah, 1
             je L00532cf0
             fchs
     L00532cf0:
-            fcomp dword ptr [IID_IDirectInputDevice2A+0x52c]
+            fcomp dword ptr [gMatchFloat_0058b8c4]
             fnstsw ax
             test ah, 1
             je L00532d05
-            fld dword ptr [IID_IDirectInputDevice2A+0x524]
+            _emit 0xd9
+        _emit 0x05
+        _emit 0xbc
+        _emit 0xb8
+        _emit 0x58
+        _emit 0x00
             pop ecx
             ret
     L00532d05:
-            fld dword ptr [IID_IDirectInputDevice2A+0x520]
+            _emit 0xd9
+        _emit 0x05
+        _emit 0xb8
+        _emit 0xb8
+        _emit 0x58
+        _emit 0x00
             fdiv dword ptr [esp + 0xc]
             mov eax, dword ptr [esp + 8]
             fld dword ptr [ecx + 0x14]
@@ -1127,11 +1214,11 @@ void C2_NAKED C2_HOOK_CDECL BrMatrix34LPNormalise(br_matrix34* A, const br_matri
             fxch st(1)
             fsqrt
             fstp st(1)
-            fcom dword ptr [IID_IDirectInputDevice2A+0x528]
+            fcom dword ptr [gMatchFloat_0058b8c0]
             fnstsw ax
             test ah, 0x41
             jne L00532fce
-            fdivr qword ptr [IID_IDirectInputDevice2A+0x530]
+            fdivr qword ptr [gMatchDouble_0058b8c8]
             mov ecx, dword ptr [esp + 0xc]
             fld dword ptr [edx + 0x18]
             fmul st(0), st(1)
@@ -1200,11 +1287,11 @@ void C2_NAKED C2_HOOK_CDECL BrMatrix34LPNormalise(br_matrix34* A, const br_matri
             fstp dword ptr [ecx + 8]
             fsqrt
             fstp st(1)
-            fcom dword ptr [IID_IDirectInputDevice2A+0x528]
+            fcom dword ptr [gMatchFloat_0058b8c0]
             fnstsw ax
             test ah, 0x41
             jne L0053308f
-            fdivr qword ptr [IID_IDirectInputDevice2A+0x530]
+            fdivr qword ptr [gMatchDouble_0058b8c8]
             fld dword ptr [ecx + 8]
             fld dword ptr [ecx + 4]
             fld st(2)
@@ -1269,6 +1356,11 @@ void C2_NAKED C2_HOOK_CDECL BrMatrix34LPNormalise(br_matrix34* A, const br_matri
             mov dword ptr [ecx + 0x2c], edx
             pop ecx
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -1335,7 +1427,12 @@ void C2_NAKED C2_HOOK_CDECL BrMatrix34RollingBall(br_matrix34* mat, int dx, int 
             fsqrt
             fstp st(1)
             fst dword ptr [esp + 0xc]
-            fcomp dword ptr [IID_IDirectInputDevice2A+0x524]
+            _emit 0xd8
+        _emit 0x1d
+        _emit 0xbc
+        _emit 0xb8
+        _emit 0x58
+        _emit 0x00
             fnstsw ax
             test ah, 0x40
             je L0053316c
@@ -1387,7 +1484,12 @@ void C2_NAKED C2_HOOK_CDECL BrMatrix34RollingBall(br_matrix34* mat, int dx, int 
             fdiv dword ptr [esp + 0xc]
             fxch st(1)
             fdiv dword ptr [esp + 0xc]
-            fld dword ptr [IID_IDirectInputDevice2A+0x520]
+            _emit 0xd9
+        _emit 0x05
+        _emit 0xb8
+        _emit 0xb8
+        _emit 0x58
+        _emit 0x00
             fxch st(4)
             fchs
             fst dword ptr [esp + 0xc]
@@ -1460,6 +1562,15 @@ void C2_NAKED C2_HOOK_CDECL BrMatrix34RollingBall(br_matrix34* mat, int dx, int 
             mov dword ptr [eax + 0x2c], ecx
             pop ecx
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -1506,9 +1617,9 @@ C2_NAKED br_matrix34* C2_HOOK_CDECL BrBoundsToMatrix34(br_matrix34* mat, const b
             _emit 0xd9
         _emit 0x00
             fld dword ptr [eax + 0xc]
-            fmul dword ptr [IID_IDirectInputDevice2A+0x538]
+            fmul dword ptr [gMatchFloat_0058b8d0]
             fxch st(1)
-            fmul dword ptr [IID_IDirectInputDevice2A+0x538]
+            fmul dword ptr [gMatchFloat_0058b8d0]
             add eax, 4
             dec esi
             faddp st(1), st(0)
@@ -1527,9 +1638,9 @@ C2_NAKED br_matrix34* C2_HOOK_CDECL BrBoundsToMatrix34(br_matrix34* mat, const b
             _emit 0xd9
         _emit 0x01
             fld dword ptr [ecx + 0xc]
-            fmul dword ptr [IID_IDirectInputDevice2A+0x538]
+            fmul dword ptr [gMatchFloat_0058b8d0]
             fxch st(1)
-            fmul dword ptr [IID_IDirectInputDevice2A+0x538]
+            fmul dword ptr [gMatchFloat_0058b8d0]
             fsubp st(1), st(0)
             fstp dword ptr [edx + ecx]
             jmp L005332fc
@@ -1563,6 +1674,14 @@ C2_NAKED br_matrix34* C2_HOOK_CDECL BrBoundsToMatrix34(br_matrix34* mat, const b
             pop esi
             add esp, 0x18
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }

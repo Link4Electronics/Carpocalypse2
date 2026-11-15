@@ -89,6 +89,84 @@ extern tU32 C2_HOOK_FASTCALL PDGetTotalTime(void);
 extern void C2_HOOK_CDECL dr_dprintf();
 extern tNet_mode gNet_mode;
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gData_006619b4[];
+extern char gData_00661b48[];
+extern char gData_00661ca0[];
+extern char gData_00661d08[];
+extern char gData_006ac580[];
+extern char gFloat_006619c8[];
+extern char gFloat_006619f0[];
+extern char gFloat_00661a04[];
+extern char gFloat_00661a34[];
+extern char gFloat_00661a74[];
+extern char gFloat_00661a9c[];
+extern char gFloat_00661ac8[];
+extern char gFloat_00661b08[];
+extern char gFloat_00661b30[];
+extern char gFloat_00661b60[];
+extern char gFloat_00661be4[];
+extern char gFloat_00661c0c[];
+extern char gFloat_00661c50[];
+extern char gFloat_00661c8c[];
+extern char gFloat_00661cc0[];
+extern char gFloat_00661ce4[];
+extern char gFloat_00661d28[];
+extern char gFloat_00661d44[];
+extern char gFloat_00661d74[];
+extern char gFloat_00661dac[];
+extern char gFloat_00661de0[];
+extern char gFloat_00661e1c[];
+extern char gFloat_00661e50[];
+extern char gFloat_00661fec[];
+extern char gFloat_0066202c[];
+extern char gFloat_00662070[];
+extern char gString_006619b8[];
+extern char gString_00661a2c[];
+extern char gString_00661b4c[];
+extern char gString_00661b54[];
+extern char gString_00661e3c[];
+extern char gString_00661e48[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchData_006619b4[];
+extern char gMatchData_00661b48[];
+extern char gMatchData_00661ca0[];
+extern char gMatchData_00661d08[];
+extern char gMatchData_006ac580[];
+extern char gMatchFloat_006619c8[];
+extern char gMatchFloat_006619f0[];
+extern char gMatchFloat_00661a04[];
+extern char gMatchFloat_00661a34[];
+extern char gMatchFloat_00661a74[];
+extern char gMatchFloat_00661a9c[];
+extern char gMatchFloat_00661ac8[];
+extern char gMatchFloat_00661b08[];
+extern char gMatchFloat_00661b30[];
+extern char gMatchFloat_00661b60[];
+extern char gMatchFloat_00661be4[];
+extern char gMatchFloat_00661c0c[];
+extern char gMatchFloat_00661c50[];
+extern char gMatchFloat_00661c8c[];
+extern char gMatchFloat_00661cc0[];
+extern char gMatchFloat_00661ce4[];
+extern char gMatchFloat_00661d28[];
+extern char gMatchFloat_00661d44[];
+extern char gMatchFloat_00661d74[];
+extern char gMatchFloat_00661dac[];
+extern char gMatchFloat_00661de0[];
+extern char gMatchFloat_00661e1c[];
+extern char gMatchFloat_00661e50[];
+extern char gMatchFloat_00661fec[];
+extern char gMatchFloat_0066202c[];
+extern char gMatchFloat_00662070[];
+extern char gMatchString_006619b8[];
+extern char gMatchString_00661a2c[];
+extern char gMatchString_00661b4c[];
+extern char gMatchString_00661b54[];
+extern char gMatchString_00661e3c[];
+extern char gMatchString_00661e48[];
+#endif
 // FUNCTION: CARMA2_HW 0x0051a190
 void C2_HOOK_FASTCALL PDNetObtainSystemUserName(char* pName, int pMax_length) {
     char buffer[16];
@@ -163,11 +241,15 @@ void C2_NAKED C2_HOOK_FASTCALL NetNowIPXLocalTarget2String(char* pString, struct
             xor eax, eax
             mov al, byte ptr [edx + 2]
             push eax
-            push offset gSocket+0x84
+            push offset gMatchFloat_00661a34
             push ecx
             call sprintf
             add esp, 0x38
             ret
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -303,16 +385,21 @@ int C2_NAKED C2_HOOK_FASTCALL PDNetInitialise(void) {
             push ebp
             push esi
             push edi
-            push 0x661b60
+            push offset gMatchFloat_00661b60
             mov dword ptr [esp + 0x20], 0xe
             mov byte ptr [esp + 0x17], 0
             call dr_dprintf
-            mov ecx, dword ptr ds:[gPathNetworkIniValid]
-            mov ebp, dword ptr ds:[0x589054]
+            mov ecx, dword ptr [gPathNetworkIniValid]
+            _emit 0x8b
+        _emit 0x2d
+        _emit 0x54
+        _emit 0x90
+        _emit 0x58
+        _emit 0x00
             add esp, 4
             mov ax, 0xfe2f
             or ebx, 0xffffffff
-            mov word ptr ds:[gIpx_sock_addr], ax
+            mov word ptr [gIpx_sock_addr], ax
             test ecx, ecx
             je L00519616
             push offset gPathNetworkIni
@@ -321,15 +408,15 @@ int C2_NAKED C2_HOOK_FASTCALL PDNetInitialise(void) {
             lea ecx, [esp + 0x1b]
             push eax
             push ecx
-            push 0x661b54
-            push 0x661b4c
+            push offset gMatchString_00661b54
+            push offset gMatchString_00661b4c
             call ebp
             test eax, eax
             je L00519610
             lea edx, [esp + 0x14]
             lea eax, [esp + 0x28]
             push edx
-            push 0x661b48
+            push offset gMatchData_00661b48
             push eax
             call sscanf
             add esp, 0xc
@@ -339,7 +426,7 @@ int C2_NAKED C2_HOOK_FASTCALL PDNetInitialise(void) {
             je L00519610
             mov ecx, dword ptr [esp + 0x14]
             push ecx
-            push 0x661b30
+            push offset gMatchFloat_00661b30
             call dr_dprintf
             mov eax, dword ptr [esp + 0x1c]
             xor ecx, ecx
@@ -350,43 +437,43 @@ int C2_NAKED C2_HOOK_FASTCALL PDNetInitialise(void) {
             shl edx, 8
             add edx, ecx
             mov ax, dx
-            mov word ptr ds:[gIpx_sock_addr], ax
+            mov word ptr [gIpx_sock_addr], ax
             jmp L00519616
     L00519610:
-            mov ax, word ptr ds:[gIpx_sock_addr]
+            mov ax, word ptr [gIpx_sock_addr]
     L00519616:
             xor edx, edx
             xor ecx, ecx
-            mov dword ptr ds:[gLocal_address], edx
-            mov dword ptr ds:[gListen_address], ecx
-            mov dword ptr ds:[0x6ac314], edx
-            mov dword ptr ds:[0x6ac11c], ecx
-            mov dword ptr ds:[0x6ac318], edx
-            mov dword ptr ds:[0x6ac120], ecx
-            mov dword ptr ds:[0x6ac31c], edx
-            mov dword ptr ds:[gBroadcast_address], edx
-            mov dword ptr ds:[0x6ac304], edx
+            mov dword ptr [gLocal_address], edx
+            mov dword ptr [gListen_address], ecx
+            mov dword ptr [gLocal_address+0x4], edx
+            mov dword ptr [gListen_address+0x4], ecx
+            mov dword ptr [gLocal_address+0x8], edx
+            mov dword ptr [gListen_address+0x8], ecx
+            mov dword ptr [gLocal_address+0xc], edx
+            mov dword ptr [gBroadcast_address], edx
+            mov dword ptr [gBroadcast_address+0x4], edx
             mov esi, 6
-            mov dword ptr ds:[0x6ac308], edx
+            mov dword ptr [gBroadcast_address+0x8], edx
             push offset gWSA_data
-            mov dword ptr ds:[0x6ac124], ecx
-            mov dword ptr ds:[0x6ac30c], edx
+            mov dword ptr [gListen_address+0xc], ecx
+            mov dword ptr [gBroadcast_address+0xc], edx
             push 0x101
-            mov dword ptr ds:[gPtr_local_address], 0x6ac310
-            mov dword ptr ds:[gPtr_listen_address], 0x6ac118
-            mov dword ptr ds:[gPtr_broadcast_address], 0x6ac300
-            mov word ptr ds:[gLocal_address], si
-            mov word ptr ds:[gListen_address], si
-            mov word ptr ds:[gBroadcast_address], si
-            mov word ptr ds:[0x6ac31c], ax
-            mov word ptr ds:[0x6ac124], ax
-            mov word ptr ds:[0x6ac30c], ax
-            mov byte ptr ds:[0x6ac306], bl
-            mov byte ptr ds:[0x6ac307], bl
-            mov byte ptr ds:[0x6ac308], bl
-            mov byte ptr ds:[0x6ac309], bl
-            mov byte ptr ds:[0x6ac30a], bl
-            mov byte ptr ds:[0x6ac30b], bl
+            mov dword ptr [gPtr_local_address], 0x6ac310
+            mov dword ptr [gPtr_listen_address], 0x6ac118
+            mov dword ptr [gPtr_broadcast_address], 0x6ac300
+            mov word ptr [gLocal_address], si
+            mov word ptr [gListen_address], si
+            mov word ptr [gBroadcast_address], si
+            mov word ptr [gLocal_address+0xc], ax
+            mov word ptr [gListen_address+0xc], ax
+            mov word ptr [gBroadcast_address+0xc], ax
+            mov byte ptr [gBroadcast_address+0x6], bl
+            mov byte ptr [gBroadcast_address+0x7], bl
+            mov byte ptr [gBroadcast_address+0x8], bl
+            mov byte ptr [gBroadcast_address+0x9], bl
+            mov byte ptr [gBroadcast_address+0xa], bl
+            mov byte ptr [gBroadcast_address+0xb], bl
             _emit 0xe8
         _emit 0xdf
         _emit 0x47
@@ -394,7 +481,7 @@ int C2_NAKED C2_HOOK_FASTCALL PDNetInitialise(void) {
         _emit 0x00
             cmp eax, ebx
             jne L005196fa
-            push 0x661b08
+            push offset gMatchFloat_00661b08
             call dr_dprintf
             add esp, 4
             mov eax, ebx
@@ -410,11 +497,11 @@ int C2_NAKED C2_HOOK_FASTCALL PDNetInitialise(void) {
             push esi
             call socket
             cmp eax, ebx
-            mov dword ptr ds:[gSocket], eax
+            mov dword ptr [gSocket], eax
             jne L00519732
             call WSAGetLastError
             push eax
-            push 0x661ac8
+            push offset gMatchFloat_00661ac8
             call dr_dprintf
             add esp, 8
             call WSACleanup
@@ -427,12 +514,12 @@ int C2_NAKED C2_HOOK_FASTCALL PDNetInitialise(void) {
             ret
     L00519732:
             push 4
-            push 0x6619b4
+            push offset gMatchData_006619b4
             push 0x20
             push 0xffff
             push eax
             call setsockopt
-            mov ecx, dword ptr ds:[gSocket]
+            mov ecx, dword ptr [gSocket]
             lea eax, [esp + 0x20]
             push 8
             push eax
@@ -443,8 +530,8 @@ int C2_NAKED C2_HOOK_FASTCALL PDNetInitialise(void) {
             mov dword ptr [esp + 0x34], edi
             mov dword ptr [esp + 0x38], 0
             call setsockopt
-            mov edx, dword ptr ds:[gSocket]
-            push 0x6619b4
+            mov edx, dword ptr [gSocket]
+            push offset gMatchData_006619b4
             push 0x8004667e
             push edx
             call ioctlsocket
@@ -452,9 +539,9 @@ int C2_NAKED C2_HOOK_FASTCALL PDNetInitialise(void) {
             jne L005197bb
             call WSAGetLastError
             push eax
-            push 0x661a9c
+            push offset gMatchFloat_00661a9c
             call dr_dprintf
-            mov eax, dword ptr ds:[gSocket]
+            mov eax, dword ptr [gSocket]
             add esp, 8
             push eax
             call closesocket
@@ -467,7 +554,7 @@ int C2_NAKED C2_HOOK_FASTCALL PDNetInitialise(void) {
             add esp, 0x58
             ret
     L005197bb:
-            mov ecx, dword ptr ds:[gSocket]
+            mov ecx, dword ptr [gSocket]
             push 0xe
             push offset gLocal_address
             push ecx
@@ -476,9 +563,9 @@ int C2_NAKED C2_HOOK_FASTCALL PDNetInitialise(void) {
             jne L00519800
             call WSAGetLastError
             push eax
-            push 0x661a74
+            push offset gMatchFloat_00661a74
             call dr_dprintf
-            mov edx, dword ptr ds:[gSocket]
+            mov edx, dword ptr [gSocket]
             add esp, 8
             push edx
             call closesocket
@@ -491,7 +578,7 @@ int C2_NAKED C2_HOOK_FASTCALL PDNetInitialise(void) {
             add esp, 0x58
             ret
     L00519800:
-            mov ecx, dword ptr ds:[gSocket]
+            mov ecx, dword ptr [gSocket]
             lea eax, [esp + 0x1c]
             push eax
             push offset gLocal_address
@@ -501,7 +588,7 @@ int C2_NAKED C2_HOOK_FASTCALL PDNetInitialise(void) {
         _emit 0x46
         _emit 0x00
         _emit 0x00
-            mov eax, dword ptr ds:[gPtr_local_address]
+            mov eax, dword ptr [gPtr_local_address]
             xor edx, edx
             xor ecx, ecx
             mov dl, byte ptr [eax + 0xd]
@@ -539,22 +626,22 @@ int C2_NAKED C2_HOOK_FASTCALL PDNetInitialise(void) {
             mov cl, byte ptr [eax + 2]
             push edx
             push ecx
-            push 0x661a34
+            push offset gMatchFloat_00661a34
             push offset gLocal_address_text
             call sprintf
-            mov eax, dword ptr ds:[gPtr_local_address]
-            mov ecx, dword ptr ds:[gPathNetworkIniValid]
+            mov eax, dword ptr [gPtr_local_address]
+            mov ecx, dword ptr [gPathNetworkIniValid]
             add esp, 0x38
             mov edx, dword ptr [eax + 2]
-            mov dword ptr ds:[gNumber_of_networks], edi
+            mov dword ptr [gNumber_of_networks], edi
             test ecx, ecx
-            mov dword ptr ds:[gIpx_network_numbers], edx
+            mov dword ptr [gIpx_network_numbers], edx
             je L005199a1
     L0051989d:
             push edi
-            push 0x661b4c
+            push offset gMatchString_00661b4c
             lea eax, [esp + 0x50]
-            push 0x661a2c
+            push offset gMatchString_00661a2c
             push eax
             call sprintf
             add esp, 0x10
@@ -566,14 +653,14 @@ int C2_NAKED C2_HOOK_FASTCALL PDNetInitialise(void) {
             push ecx
             push edx
             push eax
-            push 0x661b4c
+            push offset gMatchString_00661b4c
             call ebp
             test eax, eax
             je L0051997a
             lea ecx, [esp + 0x18]
             lea edx, [esp + 0x28]
             push ecx
-            push 0x661b48
+            push offset gMatchData_00661b48
             push edx
             call sscanf
             add esp, 0xc
@@ -583,70 +670,70 @@ int C2_NAKED C2_HOOK_FASTCALL PDNetInitialise(void) {
             je L0051997a
             mov eax, dword ptr [esp + 0x18]
             push eax
-            push 0x661a04
+            push offset gMatchFloat_00661a04
             call dr_dprintf
             mov ecx, dword ptr [esp + 0x20]
-            mov eax, dword ptr ds:[gNumber_of_networks]
+            mov eax, dword ptr [gNumber_of_networks]
             mov edx, ecx
-            mov esi, dword ptr ds:[gPtr_local_address]
+            mov esi, dword ptr [gPtr_local_address]
             shr edx, 0x18
             mov byte ptr [eax*4 + gIpx_network_numbers], dl
             mov edx, ecx
             shr edx, 0x10
-            mov byte ptr [eax*4 + 0x6ac131], dl
+            mov byte ptr [eax*4 + gIpx_network_numbers+0x1], dl
             mov edx, ecx
             shr edx, 8
-            mov byte ptr [eax*4 + 0x6ac132], dl
-            mov byte ptr [eax*4 + 0x6ac133], cl
+            mov byte ptr [eax*4 + gIpx_network_numbers+0x2], dl
+            mov byte ptr [eax*4 + gIpx_network_numbers+0x3], cl
             mov dl, byte ptr [eax*4 + gIpx_network_numbers]
             add esp, 8
             cmp dl, byte ptr [esi + 2]
             jne L00519972
-            mov dl, byte ptr [eax*4 + 0x6ac131]
+            mov dl, byte ptr [eax*4 + gIpx_network_numbers+0x1]
             cmp dl, byte ptr [esi + 3]
             jne L00519972
-            mov dl, byte ptr [eax*4 + 0x6ac132]
+            mov dl, byte ptr [eax*4 + gIpx_network_numbers+0x2]
             cmp dl, byte ptr [esi + 4]
             jne L00519972
             cmp cl, byte ptr [esi + 5]
             je L0051997f
     L00519972:
             inc eax
-            mov dword ptr ds:[gNumber_of_networks], eax
+            mov dword ptr [gNumber_of_networks], eax
             jmp L0051997f
     L0051997a:
-            mov eax, dword ptr ds:[gNumber_of_networks]
+            mov eax, dword ptr [gNumber_of_networks]
     L0051997f:
             inc edi
             cmp edi, 0xf
             jle L0051989d
             push eax
-            push 0x6619f0
+            push offset gMatchFloat_006619f0
             call dr_dprintf
-            mov eax, dword ptr ds:[gPtr_local_address]
+            mov eax, dword ptr [gPtr_local_address]
             add esp, 8
             mov edi, 1
     L005199a1:
             mov ecx, dword ptr [eax]
             push offset gLocal_address_text
-            mov dword ptr ds:[gLocal_address_2], ecx
+            mov dword ptr [gLocal_address_2], ecx
             mov edx, dword ptr [eax + 4]
-            mov dword ptr ds:[0x6abf0c], edx
+            mov dword ptr [gLocal_address_2+0x4], edx
             mov ecx, dword ptr [eax + 8]
-            mov dword ptr ds:[0x6abf10], ecx
+            mov dword ptr [gLocal_address_2+0x8], ecx
             mov dx, word ptr [eax + 0xc]
-            push 0x6619c8
-            mov word ptr ds:[0x6abf14], dx
+            push offset gMatchFloat_006619c8
+            mov word ptr [gLocal_address_2+0xc], dx
             call dr_dprintf
             add esp, 8
-            mov dword ptr ds:[gMsg_header_strlen], 7
-            push 0x6619b8
+            mov dword ptr [gMsg_header_strlen], 7
+            push offset gMatchString_006619b8
             push offset gLocal_address_text
             call strstr
             add esp, 8
             test eax, eax
             je L005199fe
-            mov dword ptr ds:[gSpecial_server], edi
+            mov dword ptr [gSpecial_server], edi
     L005199fe:
             pop edi
             pop esi
@@ -655,6 +742,14 @@ int C2_NAKED C2_HOOK_FASTCALL PDNetInitialise(void) {
             pop ebx
             add esp, 0x58
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -855,13 +950,13 @@ int C2_NAKED C2_HOOK_FASTCALL PDNetGetNextJoinGame(tNet_game_details* pGame, int
             push edi
             push esi
             mov dword ptr [esp + 0x18], ecx
-            push 0x661e50
+            push offset gMatchFloat_00661e50
             mov dword ptr [esp + 0x20], esi
             call dr_dprintf
             add esp, 8
             test esi, esi
             jne L00519ca6
-            mov esi, dword ptr ds:[gNumber_of_hosts]
+            mov esi, dword ptr [gNumber_of_hosts]
     L00519ae0:
             xor eax, eax
             xor ebx, ebx
@@ -871,12 +966,12 @@ int C2_NAKED C2_HOOK_FASTCALL PDNetGetNextJoinGame(tNet_game_details* pGame, int
             xor ebp, ebp
     L00519aee:
             call PDGetTotalTime
-            mov ecx, dword ptr ds:[gJoinable_games]
+            mov ecx, dword ptr [gJoinable_games]
             mov edx, dword ptr [ecx + ebp + 0x10]
             add edx, 0x2710
             cmp eax, edx
             jbe L00519b49
-            mov esi, dword ptr ds:[gNumber_of_hosts]
+            mov esi, dword ptr [gNumber_of_hosts]
             mov dword ptr [esp + 0x10], 1
             mov edx, ebx
             lea eax, [esi - 1]
@@ -885,21 +980,21 @@ int C2_NAKED C2_HOOK_FASTCALL PDNetGetNextJoinGame(tNet_game_details* pGame, int
             mov eax, ebp
             jmp L00519b28
     L00519b22:
-            mov ecx, dword ptr ds:[gJoinable_games]
+            mov ecx, dword ptr [gJoinable_games]
     L00519b28:
             lea esi, [ecx + eax + 0x14]
             lea edi, [ecx + eax]
             mov ecx, 5
             inc edx
             rep movsd
-            mov esi, dword ptr ds:[gNumber_of_hosts]
+            mov esi, dword ptr [gNumber_of_hosts]
             add eax, 0x14
             lea ecx, [esi - 1]
             cmp edx, ecx
             jl L00519b22
             jmp L00519b4f
     L00519b49:
-            mov esi, dword ptr ds:[gNumber_of_hosts]
+            mov esi, dword ptr [gNumber_of_hosts]
     L00519b4f:
             inc ebx
             add ebp, 0x14
@@ -911,21 +1006,21 @@ int C2_NAKED C2_HOOK_FASTCALL PDNetGetNextJoinGame(tNet_game_details* pGame, int
             je L00519b6e
             dec esi
             test eax, eax
-            mov dword ptr ds:[gNumber_of_hosts], esi
+            mov dword ptr [gNumber_of_hosts], esi
             jne L00519ae0
     L00519b6e:
             call PDGetTotalTime
-            cmp eax, dword ptr ds:[0x6ac580]
+            cmp eax, dword ptr [gMatchData_006ac580]
             jbe L00519ca6
             call PDGetTotalTime
             add eax, 0xbb8
             push 1
-            push 0x661e48
-            push 0x661e3c
+            push offset gMatchString_00661e48
+            push offset gMatchString_00661e3c
             push offset gSend_buffer
-            mov dword ptr ds:[0x6ac580], eax
+            mov dword ptr [gMatchData_006ac580], eax
             call sprintf
-            mov eax, dword ptr ds:[gNumber_of_networks]
+            mov eax, dword ptr [gNumber_of_networks]
             add esp, 0x10
             xor ebp, ebp
             xor ebx, ebx
@@ -933,11 +1028,11 @@ int C2_NAKED C2_HOOK_FASTCALL PDNetGetNextJoinGame(tNet_game_details* pGame, int
             jle L00519c95
             mov esi, offset gIpx_network_numbers
     L00519bbd:
-            mov eax, dword ptr ds:[gPtr_broadcast_address]
+            mov eax, dword ptr [gPtr_broadcast_address]
             mov edx, dword ptr [esi]
             xor ecx, ecx
             mov dword ptr [eax + 2], edx
-            mov eax, dword ptr ds:[gPtr_broadcast_address]
+            mov eax, dword ptr [gPtr_broadcast_address]
             xor edx, edx
             mov cl, byte ptr [eax + 0xd]
             mov dl, byte ptr [eax + 0xc]
@@ -975,20 +1070,20 @@ int C2_NAKED C2_HOOK_FASTCALL PDNetGetNextJoinGame(tNet_game_details* pGame, int
             push ecx
             push edx
             lea eax, [esp + 0x4c]
-            push 0x661a34
+            push offset gMatchFloat_00661a34
             push eax
             call sprintf
             add esp, 0x38
             lea ecx, [esp + 0x1c]
             push ecx
-            push 0x661e1c
+            push offset gMatchFloat_00661e1c
             call dr_dprintf
             mov edi, offset gSend_buffer
             or ecx, 0xffffffff
             xor eax, eax
             add esp, 8
             repne scasb
-            mov edx, dword ptr ds:[gSocket]
+            mov edx, dword ptr [gSocket]
             push 0xe
             push offset gBroadcast_address
             push 0
@@ -1001,12 +1096,12 @@ int C2_NAKED C2_HOOK_FASTCALL PDNetGetNextJoinGame(tNet_game_details* pGame, int
             jne L00519c84
             call WSAGetLastError
             push eax
-            push 0x661de0
+            push offset gMatchFloat_00661de0
             call dr_dprintf
             add esp, 8
             mov ebp, 1
     L00519c84:
-            mov eax, dword ptr ds:[gNumber_of_networks]
+            mov eax, dword ptr [gNumber_of_networks]
             inc ebx
             add esi, 4
             cmp ebx, eax
@@ -1014,11 +1109,11 @@ int C2_NAKED C2_HOOK_FASTCALL PDNetGetNextJoinGame(tNet_game_details* pGame, int
     L00519c95:
             test ebp, ebp
             je L00519ca6
-            push 0x661dac
+            push offset gMatchFloat_00661dac
             call dr_dprintf
             add esp, 4
     L00519ca6:
-            mov ecx, dword ptr ds:[gSocket]
+            mov ecx, dword ptr [gSocket]
             lea eax, [esp + 0x10]
             push eax
             push offset gListen_address
@@ -1040,7 +1135,7 @@ int C2_NAKED C2_HOOK_FASTCALL PDNetGetNextJoinGame(tNet_game_details* pGame, int
             je L00519f83
     L00519ce2:
             jle L00519f50
-            mov eax, dword ptr ds:[gPtr_listen_address]
+            mov eax, dword ptr [gPtr_listen_address]
             xor ecx, ecx
             xor edx, edx
             mov cl, byte ptr [eax + 0xd]
@@ -1079,17 +1174,17 @@ int C2_NAKED C2_HOOK_FASTCALL PDNetGetNextJoinGame(tNet_game_details* pGame, int
             push ecx
             push edx
             lea eax, [esp + 0x4c]
-            push 0x661a34
+            push offset gMatchFloat_00661a34
             push eax
             call sprintf
             add esp, 0x38
             lea ecx, [esp + 0x1c]
             push ecx
             push offset gReceive_buffer
-            push 0x661d74
+            push offset gMatchFloat_00661d74
             call dr_dprintf
-            mov eax, dword ptr ds:[gPtr_local_address]
-            mov ecx, dword ptr ds:[gPtr_listen_address]
+            mov eax, dword ptr [gPtr_local_address]
+            mov ecx, dword ptr [gPtr_listen_address]
             add esp, 0xc
             mov edx, dword ptr [eax + 6]
             mov esi, dword ptr [ecx + 6]
@@ -1098,38 +1193,48 @@ int C2_NAKED C2_HOOK_FASTCALL PDNetGetNextJoinGame(tNet_game_details* pGame, int
             mov ax, word ptr [eax + 0xa]
             cmp ax, word ptr [ecx + 0xa]
             jne L00519d8d
-            push 0x661d44
+            push offset gMatchFloat_00661d44
             jmp L00519f48
     L00519d8d:
-            mov ecx, dword ptr ds:[gMsg_header_strlen]
+            mov ecx, dword ptr [gMsg_header_strlen]
             xor esi, esi
             push ecx
-            push 0x661e48
-            push 0x6abf1c
+            push offset gMatchString_00661e48
+            push offset gReceive_buffer+0x4
             call strncmp
             add esp, 0xc
             test eax, eax
             jne L00519e04
-            cmp dword ptr ds:[0x673c5c], 1
+            _emit 0x83
+        _emit 0x3d
+        _emit 0x5c
+        _emit 0x3c
+        _emit 0x67
+        _emit 0x00
+        _emit 0x01
             jle L00519dcf
-            mov edx, dword ptr ds:[gMsg_header_strlen]
+            mov edx, dword ptr [gMsg_header_strlen]
             push 4
-            movsx eax, byte ptr [edx + 0x6abf1c]
+            movsx eax, byte ptr [edx + gReceive_buffer+0x4]
             push eax
             call _isctype
             add esp, 8
             jmp L00519de7
     L00519dcf:
-            mov ecx, dword ptr ds:[gMsg_header_strlen]
-            mov eax, dword ptr ds:[0x673a50]
-            movsx edx, byte ptr [ecx + 0x6abf1c]
+            mov ecx, dword ptr [gMsg_header_strlen]
+            _emit 0xa1
+        _emit 0x50
+        _emit 0x3a
+        _emit 0x67
+        _emit 0x00
+            movsx edx, byte ptr [ecx + gReceive_buffer+0x4]
             mov al, byte ptr [eax + edx*2]
             and eax, 4
     L00519de7:
             test eax, eax
             je L00519dfb
-            mov ecx, dword ptr ds:[gMsg_header_strlen]
-            movsx esi, byte ptr [ecx + 0x6abf1c]
+            mov ecx, dword ptr [gMsg_header_strlen]
+            movsx esi, byte ptr [ecx + gReceive_buffer+0x4]
             sub esi, 0x30
     L00519dfb:
             test esi, esi
@@ -1141,16 +1246,16 @@ int C2_NAKED C2_HOOK_FASTCALL PDNetGetNextJoinGame(tNet_game_details* pGame, int
     L00519e09:
             cmp esi, 2
             jne L00519f43
-            push 0x661d28
+            push offset gMatchFloat_00661d28
             call dr_dprintf
-            mov ecx, dword ptr ds:[gNumber_of_hosts]
+            mov ecx, dword ptr [gNumber_of_hosts]
             add esp, 4
             xor ebx, ebx
             xor esi, esi
             test ecx, ecx
             jle L00519e5b
-            mov edx, dword ptr ds:[gPtr_listen_address]
-            mov eax, dword ptr ds:[gJoinable_games]
+            mov edx, dword ptr [gPtr_listen_address]
+            mov eax, dword ptr [gJoinable_games]
             add eax, 0xa
             mov edi, dword ptr [edx + 6]
     L00519e3e:
@@ -1170,24 +1275,24 @@ int C2_NAKED C2_HOOK_FASTCALL PDNetGetNextJoinGame(tNet_game_details* pGame, int
     L00519e5b:
             test ebx, ebx
             je L00519e80
-            push 0x661d08
+            push offset gMatchData_00661d08
             call dr_dprintf
             add esp, 4
             call PDGetTotalTime
-            mov edx, dword ptr ds:[gJoinable_games]
+            mov edx, dword ptr [gJoinable_games]
             lea ecx, [esi + esi*4]
             mov dword ptr [edx + ecx*4 + 0x10], eax
             jmp L00519eed
     L00519e80:
             push ecx
-            push 0x661ce4
+            push offset gMatchFloat_00661ce4
             call dr_dprintf
-            mov eax, dword ptr ds:[gNumber_of_hosts]
-            mov ecx, dword ptr ds:[gJoinable_games]
+            mov eax, dword ptr [gNumber_of_hosts]
+            mov ecx, dword ptr [gJoinable_games]
             add esp, 8
             lea eax, [eax + eax*4]
             lea edx, [ecx + eax*4]
-            mov eax, dword ptr ds:[gPtr_listen_address]
+            mov eax, dword ptr [gPtr_listen_address]
             mov ecx, dword ptr [eax]
             mov dword ptr [edx], ecx
             mov ecx, dword ptr [eax + 4]
@@ -1197,40 +1302,40 @@ int C2_NAKED C2_HOOK_FASTCALL PDNetGetNextJoinGame(tNet_game_details* pGame, int
             mov ax, word ptr [eax + 0xc]
             mov word ptr [edx + 0xc], ax
             call PDGetTotalTime
-            mov ecx, dword ptr ds:[gNumber_of_hosts]
-            mov edx, dword ptr ds:[gJoinable_games]
+            mov ecx, dword ptr [gNumber_of_hosts]
+            mov edx, dword ptr [gJoinable_games]
             lea ecx, [ecx + ecx*4]
             mov dword ptr [edx + ecx*4 + 0x10], eax
-            mov eax, dword ptr ds:[gNumber_of_hosts]
+            mov eax, dword ptr [gNumber_of_hosts]
             inc eax
             push eax
-            push 0x661cc0
-            mov dword ptr ds:[gNumber_of_hosts], eax
+            push offset gMatchFloat_00661cc0
+            mov dword ptr [gNumber_of_hosts], eax
             call dr_dprintf
             add esp, 8
     L00519eed:
-            mov eax, dword ptr ds:[gNumber_of_hosts]
+            mov eax, dword ptr [gNumber_of_hosts]
             test eax, eax
             je L00519f50
-            push 0x661ca0
+            push offset gMatchData_00661ca0
             call dr_dprintf
-            mov eax, dword ptr ds:[gNumber_of_hosts]
+            mov eax, dword ptr [gNumber_of_hosts]
             add esp, 4
             xor esi, esi
             test eax, eax
             jle L00519f50
             xor edi, edi
     L00519f10:
-            mov eax, dword ptr ds:[gJoinable_games]
+            mov eax, dword ptr [gJoinable_games]
             lea ecx, [esp + 0x3c]
             lea edx, [eax + edi]
             call NetNowIPXLocalTarget2String
             lea ecx, [esp + 0x3c]
             push ecx
             push esi
-            push 0x661c8c
+            push offset gMatchFloat_00661c8c
             call dr_dprintf
-            mov eax, dword ptr ds:[gNumber_of_hosts]
+            mov eax, dword ptr [gNumber_of_hosts]
             add esp, 0xc
             inc esi
             add edi, 0x14
@@ -1238,12 +1343,12 @@ int C2_NAKED C2_HOOK_FASTCALL PDNetGetNextJoinGame(tNet_game_details* pGame, int
             jl L00519f10
             jmp L00519f50
     L00519f43:
-            push 0x661c50
+            push offset gMatchFloat_00661c50
     L00519f48:
             call dr_dprintf
             add esp, 4
     L00519f50:
-            mov eax, dword ptr ds:[gSocket]
+            mov eax, dword ptr [gSocket]
             lea edx, [esp + 0x10]
             push edx
             push offset gListen_address
@@ -1271,17 +1376,17 @@ int C2_NAKED C2_HOOK_FASTCALL PDNetGetNextJoinGame(tNet_game_details* pGame, int
             test eax, eax
             je L00519fa6
             push eax
-            push 0x661c0c
+            push offset gMatchFloat_00661c0c
             call dr_dprintf
             add esp, 8
     L00519fa6:
             mov esi, dword ptr [esp + 0x18]
-            mov eax, dword ptr ds:[gNumber_of_hosts]
+            mov eax, dword ptr [gNumber_of_hosts]
             cmp esi, eax
             jge L00519ff8
-            push 0x661be4
+            push offset gMatchFloat_00661be4
             call dr_dprintf
-            mov ecx, dword ptr ds:[gJoinable_games]
+            mov ecx, dword ptr [gJoinable_games]
             lea eax, [esi + esi*4]
             add esp, 4
             lea edx, [ecx + eax*4]
@@ -1309,6 +1414,17 @@ int C2_NAKED C2_HOOK_FASTCALL PDNetGetNextJoinGame(tNet_game_details* pGame, int
             pop ebx
             add esp, 0x12c
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -1415,7 +1531,7 @@ C2_NAKED tNet_message* C2_HOOK_FASTCALL PDNetGetNextMessage(tNet_game_details* p
             mov ecx, 0x200
             mov dword ptr [esp + 0x14], 0xe
             call NetAllocateMessage
-            mov ecx, dword ptr ds:[gSocket]
+            mov ecx, dword ptr [gSocket]
             mov esi, eax
             lea eax, [esp + 0x14]
             push eax
@@ -1436,7 +1552,7 @@ C2_NAKED tNet_message* C2_HOOK_FASTCALL PDNetGetNextMessage(tNet_game_details* p
             test ebp, ebp
             je L0051a5a7
             jle L0051a5ac
-            mov eax, dword ptr ds:[gPtr_listen_address]
+            mov eax, dword ptr [gPtr_listen_address]
             xor ecx, ecx
             xor edx, edx
             mov cl, byte ptr [eax + 0xd]
@@ -1475,11 +1591,11 @@ C2_NAKED tNet_message* C2_HOOK_FASTCALL PDNetGetNextMessage(tNet_game_details* p
             push ecx
             push edx
             lea eax, [esp + 0x4c]
-            push 0x661a34
+            push offset gMatchFloat_00661a34
             push eax
             call sprintf
-            mov eax, dword ptr ds:[gPtr_local_address]
-            mov ecx, dword ptr ds:[gPtr_listen_address]
+            mov eax, dword ptr [gPtr_local_address]
+            mov ecx, dword ptr [gPtr_listen_address]
             add esp, 0x38
             mov edx, dword ptr [eax + 6]
             mov edi, dword ptr [ecx + 6]
@@ -1489,19 +1605,25 @@ C2_NAKED tNet_message* C2_HOOK_FASTCALL PDNetGetNextMessage(tNet_game_details* p
             cmp ax, word ptr [ecx + 0xa]
             je L0051a5ac
     L0051a461:
-            mov ecx, dword ptr ds:[gMsg_header_strlen]
+            mov ecx, dword ptr [gMsg_header_strlen]
             lea edi, [esi + 4]
             push ecx
-            push 0x661e48
+            push offset gMatchString_00661e48
             push edi
             xor ebx, ebx
             call strncmp
             add esp, 0xc
             test eax, eax
             jne L0051a4d0
-            cmp dword ptr ds:[0x673c5c], 1
+            _emit 0x83
+        _emit 0x3d
+        _emit 0x5c
+        _emit 0x3c
+        _emit 0x67
+        _emit 0x00
+        _emit 0x01
             jle L0051a49f
-            mov edx, dword ptr ds:[gMsg_header_strlen]
+            mov edx, dword ptr [gMsg_header_strlen]
             push 4
             movsx eax, byte ptr [edi + edx]
             push eax
@@ -1509,15 +1631,19 @@ C2_NAKED tNet_message* C2_HOOK_FASTCALL PDNetGetNextMessage(tNet_game_details* p
             add esp, 8
             jmp L0051a4b4
     L0051a49f:
-            mov ecx, dword ptr ds:[gMsg_header_strlen]
-            mov eax, dword ptr ds:[0x673a50]
+            mov ecx, dword ptr [gMsg_header_strlen]
+            _emit 0xa1
+        _emit 0x50
+        _emit 0x3a
+        _emit 0x67
+        _emit 0x00
             movsx edx, byte ptr [edi + ecx]
             mov al, byte ptr [eax + edx*2]
             and eax, 4
     L0051a4b4:
             test eax, eax
             je L0051a4c5
-            mov ecx, dword ptr ds:[gMsg_header_strlen]
+            mov ecx, dword ptr [gMsg_header_strlen]
             movsx ebx, byte ptr [edi + ecx]
             sub ebx, 0x30
     L0051a4c5:
@@ -1539,19 +1665,19 @@ C2_NAKED tNet_message* C2_HOOK_FASTCALL PDNetGetNextMessage(tNet_game_details* p
             push edx
             push eax
             push ebp
-            push 0x662070
+            push offset gMatchFloat_00662070
             call dr_dprintf
-            mov ecx, dword ptr ds:[gPtr_listen_address]
+            mov ecx, dword ptr [gPtr_listen_address]
             add esp, 0x10
             mov edx, dword ptr [ecx]
-            mov dword ptr ds:[gLast_received_addr], edx
+            mov dword ptr [gLast_received_addr], edx
             mov eax, dword ptr [ecx + 4]
-            mov dword ptr ds:[0x6ac34c], eax
+            mov dword ptr [gLast_received_addr+0x4], eax
             mov edx, dword ptr [ecx + 8]
-            mov dword ptr ds:[0x6ac350], edx
+            mov dword ptr [gLast_received_addr+0x8], edx
             mov ax, word ptr [ecx + 0xc]
             mov ecx, dword ptr [esp + 0x18]
-            mov word ptr ds:[0x6ac354], ax
+            mov word ptr [gLast_received_addr+0xc], ax
             mov eax, esi
             mov dword ptr [ecx], 0x6ac348
             pop edi
@@ -1561,17 +1687,17 @@ C2_NAKED tNet_message* C2_HOOK_FASTCALL PDNetGetNextMessage(tNet_game_details* p
             add esp, 0x2c
             ret
     L0051a535:
-            cmp dword ptr ds:[gNet_mode], 2
+            cmp dword ptr [gNet_mode], 2
             jne L0051a5ac
             lea edx, [esp + 0x1c]
             push edx
             push esi
-            push 0x66202c
+            push offset gMatchFloat_0066202c
             call dr_dprintf
             add esp, 0xc
             push 2
-            push 0x661e48
-            push 0x661e3c
+            push offset gMatchString_00661e48
+            push offset gMatchString_00661e3c
             push offset gSend_buffer
             call sprintf
             mov edi, offset gSend_buffer
@@ -1579,7 +1705,7 @@ C2_NAKED tNet_message* C2_HOOK_FASTCALL PDNetGetNextMessage(tNet_game_details* p
             xor eax, eax
             add esp, 0x10
             repne scasb
-            mov eax, dword ptr ds:[gSocket]
+            mov eax, dword ptr [gSocket]
             push 0xe
             push offset gListen_address
             push 0
@@ -1591,7 +1717,7 @@ C2_NAKED tNet_message* C2_HOOK_FASTCALL PDNetGetNextMessage(tNet_game_details* p
             cmp eax, -1
             jne L0051a5ac
             push ebp
-            push 0x661fec
+            push offset gMatchFloat_00661fec
             call dr_dprintf
             add esp, 8
             jmp L0051a5ac
@@ -1609,6 +1735,15 @@ C2_NAKED tNet_message* C2_HOOK_FASTCALL PDNetGetNextMessage(tNet_game_details* p
             pop ebx
             add esp, 0x2c
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }

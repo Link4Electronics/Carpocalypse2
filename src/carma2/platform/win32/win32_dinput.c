@@ -212,6 +212,79 @@ extern int gPerformanceCounterInitialized;
 extern LARGE_INTEGER gPerformanceCounterStart;
 extern tU32 gTime_app_activated;
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gData_0058b494[];
+extern char gData_00595fc8[];
+extern char gData_00595fec[];
+extern char gData_0059600c[];
+extern char gData_0059602c[];
+extern char gData_00596044[];
+extern char gData_00684624[];
+extern char gData_0079e044[];
+extern char gFile_mode_rb[];
+extern char gFloat_00589f6c[];
+extern char gFloat_0058b488[];
+extern char gFloat_0058b48c[];
+extern char gFloat_0058b490[];
+extern char gFloat_00595fa0[];
+extern char gFloat_00596060[];
+extern char gFloat_00596074[];
+extern char gFloat_005960d4[];
+extern char gFloat_005960f0[];
+extern char gFloat_0059610c[];
+extern char gFloat_00662f84[];
+extern char gFloat_00662fb0[];
+extern char gFloat_00662fe4[];
+extern char gFloat_00663008[];
+extern char gFloat_0066302c[];
+extern char gFloat_0066307c[];
+extern char gFloat_006630a4[];
+extern char gFloat_006630d8[];
+extern char gFloat_006630fc[];
+extern char gString_00596058[];
+extern char gString_005960a0[];
+extern char gString_005960a8[];
+extern char gString_005960b8[];
+extern char gString_005960c4[];
+extern char gString_00596248[];
+extern char gString_00663094[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchData_0058b494[];
+extern char gMatchData_00595fc8[];
+extern char gMatchData_00595fec[];
+extern char gMatchData_0059600c[];
+extern char gMatchData_0059602c[];
+extern char gMatchData_00596044[];
+extern char gMatchData_00684624[];
+extern char gMatchData_0079e044[];
+extern char gMatchFloat_00589f6c[];
+extern char gMatchFloat_0058b488[];
+extern char gMatchFloat_0058b48c[];
+extern char gMatchFloat_0058b490[];
+extern char gMatchFloat_00595fa0[];
+extern char gMatchFloat_00596060[];
+extern char gMatchFloat_00596074[];
+extern char gMatchFloat_005960d4[];
+extern char gMatchFloat_005960f0[];
+extern char gMatchFloat_0059610c[];
+extern char gMatchFloat_00662f84[];
+extern char gMatchFloat_00662fb0[];
+extern char gMatchFloat_00662fe4[];
+extern char gMatchFloat_00663008[];
+extern char gMatchFloat_0066302c[];
+extern char gMatchFloat_0066307c[];
+extern char gMatchFloat_006630a4[];
+extern char gMatchFloat_006630d8[];
+extern char gMatchFloat_006630fc[];
+extern char gMatchString_00596058[];
+extern char gMatchString_005960a0[];
+extern char gMatchString_005960a8[];
+extern char gMatchString_005960b8[];
+extern char gMatchString_005960c4[];
+extern char gMatchString_00596248[];
+extern char gMatchString_00663094[];
+#endif
 // FUNCTION: CARMA2_HW 0x004587c0
 void C2_NAKED C2_HOOK_FASTCALL FUN_004587c0(void) {
 #ifndef CARPOCALYPSE2_MATCHING
@@ -241,7 +314,7 @@ void C2_NAKED C2_HOOK_FASTCALL FUN_004587c0(void) {
     }
 #else
     __asm {
-            mov eax, dword ptr ds:[gDirectInputJoystickHandle]
+            mov eax, dword ptr [gDirectInputJoystickHandle]
             push ebx
             xor ebx, ebx
             cmp eax, ebx
@@ -250,7 +323,7 @@ void C2_NAKED C2_HOOK_FASTCALL FUN_004587c0(void) {
             mov ecx, 0x10
             xor eax, eax
             mov edi, offset gDirectInputJoystickDevices
-            mov edx, 0x79d9c4
+            mov edx, offset gDirectInputJoystickInfos+0x4
             rep stosd
     L004587e0:
             mov dword ptr [edx - 4], ebx
@@ -260,7 +333,7 @@ void C2_NAKED C2_HOOK_FASTCALL FUN_004587c0(void) {
             mov dword ptr [edx + 0x5c], ebx
             mov dword ptr [edx + 0x60], ebx
             add edx, 0x68
-            cmp edx, 0x79e044
+            cmp edx, offset gMatchData_0079e044
             jl L004587e0
             push ebx
             mov ecx, 0x1e
@@ -270,9 +343,14 @@ void C2_NAKED C2_HOOK_FASTCALL FUN_004587c0(void) {
             push 0x500
             rep stosd
             push ebx
-            mov dword ptr ds:[gJoystickFFB], ebx
-            mov dword ptr ds:[gCountEnumeratedJoystickDinputDevices], ebx
-            call dword ptr ds:[0x589098]
+            mov dword ptr [gJoystickFFB], ebx
+            mov dword ptr [gCountEnumeratedJoystickDinputDevices], ebx
+            _emit 0xff
+        _emit 0x15
+        _emit 0x98
+        _emit 0x90
+        _emit 0x58
+        _emit 0x00
             push eax
             call DirectInputCreateA
             pop edi
@@ -460,13 +538,13 @@ C2_NAKED tDirectInputJoystickInfo* C2_HOOK_FASTCALL JoystickDInputGetInfo(int pJ
             je L00458a2f
             mov dword ptr [eax], esi
     L00458a2f:
-            mov ecx, dword ptr ds:[gDirectInputJoystickHandle]
+            mov ecx, dword ptr [gDirectInputJoystickHandle]
             cmp ecx, esi
             jne L00458ab4
             mov ecx, 0x10
             xor eax, eax
             mov edi, offset gDirectInputJoystickDevices
-            mov edx, 0x79d9c4
+            mov edx, offset gDirectInputJoystickInfos+0x4
             rep stosd
     L00458a4c:
             mov dword ptr [edx - 4], esi
@@ -476,7 +554,7 @@ C2_NAKED tDirectInputJoystickInfo* C2_HOOK_FASTCALL JoystickDInputGetInfo(int pJ
             mov dword ptr [edx + 0x5c], esi
             mov dword ptr [edx + 0x60], esi
             add edx, 0x68
-            cmp edx, 0x79e044
+            cmp edx, offset gMatchData_0079e044
             jl L00458a4c
             push esi
             mov ecx, 0x1e
@@ -486,12 +564,17 @@ C2_NAKED tDirectInputJoystickInfo* C2_HOOK_FASTCALL JoystickDInputGetInfo(int pJ
             push 0x500
             rep stosd
             push esi
-            mov dword ptr ds:[gJoystickFFB], esi
-            mov dword ptr ds:[gCountEnumeratedJoystickDinputDevices], esi
-            call dword ptr ds:[0x589098]
+            mov dword ptr [gJoystickFFB], esi
+            mov dword ptr [gCountEnumeratedJoystickDinputDevices], esi
+            _emit 0xff
+        _emit 0x15
+        _emit 0x98
+        _emit 0x90
+        _emit 0x58
+        _emit 0x00
             push eax
             call DirectInputCreateA
-            mov ecx, dword ptr ds:[gDirectInputJoystickHandle]
+            mov ecx, dword ptr [gDirectInputJoystickHandle]
             cmp ecx, esi
             jne L00458ab4
             xor eax, eax
@@ -521,28 +604,28 @@ C2_NAKED tDirectInputJoystickInfo* C2_HOOK_FASTCALL JoystickDInputGetInfo(int pJ
             cmp eax, esi
             jne L00458ae4
             push ebx
-            push 0x59602c
+            push offset gMatchData_0059602c
             jmp L00458b14
     L00458ae4:
             cmp eax, 1
             jne L00458af1
             push ebx
-            push 0x59600c
+            push offset gMatchData_0059600c
             jmp L00458b14
     L00458af1:
             cmp eax, 0x80070057
             jne L00458b00
             push ebx
-            push 0x595fec
+            push offset gMatchData_00595fec
             jmp L00458b14
     L00458b00:
             cmp eax, 0x80070005
             push ebx
             jne L00458b0f
-            push 0x595fc8
+            push offset gMatchData_00595fc8
             jmp L00458b14
     L00458b0f:
-            push 0x595fa0
+            push offset gMatchFloat_00595fa0
     L00458b14:
             call dr_dprintf
             add esp, 8
@@ -554,7 +637,7 @@ C2_NAKED tDirectInputJoystickInfo* C2_HOOK_FASTCALL JoystickDInputGetInfo(int pJ
             lea ebp, [edi + gDirectInputJoystickInfos]
             cmp eax, esi
             jne L00458c7a
-            cmp dword ptr [edi + 0x79d9c4], esi
+            cmp dword ptr [edi + gDirectInputJoystickInfos+0x4], esi
             jne L00458c7a
             mov eax, dword ptr [ebx*4 + gDirectInputJoystickDevices]
             lea edx, [esp + 0x3c]
@@ -579,12 +662,12 @@ C2_NAKED tDirectInputJoystickInfo* C2_HOOK_FASTCALL JoystickDInputGetInfo(int pJ
             mov eax, 1
             mov ecx, ebx
             shl eax, cl
-            or dword ptr ds:[gJoystickFFB], eax
+            or dword ptr [gJoystickFFB], eax
     L00458b8a:
             mov eax, dword ptr [esp + 0x4c]
             mov dword ptr [esp + 0x68], 0x13c
             test eax, eax
-            mov dword ptr [edi + 0x79da1c], eax
+            mov dword ptr [edi + gDirectInputJoystickInfos+0x5c], eax
             mov dword ptr [esp + 0x10], esi
             jbe L00458bf3
     L00458ba4:
@@ -645,9 +728,9 @@ C2_NAKED tDirectInputJoystickInfo* C2_HOOK_FASTCALL JoystickDInputGetInfo(int pJ
             mov eax, 1
             mov ecx, esi
             shl eax, cl
-            mov ecx, dword ptr [edi + 0x79d9c4]
+            mov ecx, dword ptr [edi + gDirectInputJoystickInfos+0x4]
             or ecx, eax
-            mov dword ptr [edi + 0x79d9c4], ecx
+            mov dword ptr [edi + gDirectInputJoystickInfos+0x4], ecx
             mov eax, ecx
             mov ecx, dword ptr [esp + 0x1a8]
             test ecx, ecx
@@ -678,7 +761,7 @@ C2_NAKED tDirectInputJoystickInfo* C2_HOOK_FASTCALL JoystickDInputGetInfo(int pJ
             mov eax, dword ptr [esp + 0x1a8]
             cmp eax, esi
             je L00458c97
-            mov edx, dword ptr [edi + 0x79d9c4]
+            mov edx, dword ptr [edi + gDirectInputJoystickInfos+0x4]
             mov dword ptr [eax], edx
     L00458c97:
             pop edi
@@ -698,7 +781,7 @@ C2_NAKED tDirectInputJoystickInfo* C2_HOOK_FASTCALL JoystickDInputGetInfo(int pJ
             nop
             nop
             nop
-            mov eax, dword ptr ds:[gDirectInputJoystickHandle]
+            mov eax, dword ptr [gDirectInputJoystickHandle]
             push esi
             test eax, eax
             mov esi, ecx
@@ -712,7 +795,7 @@ C2_NAKED tDirectInputJoystickInfo* C2_HOOK_FASTCALL JoystickDInputGetInfo(int pJ
             test eax, eax
             jne L00458cea
             push esi
-            push 0x59602c
+            push offset gMatchData_0059602c
             call dr_dprintf
             add esp, 8
             mov eax, 1
@@ -722,7 +805,7 @@ C2_NAKED tDirectInputJoystickInfo* C2_HOOK_FASTCALL JoystickDInputGetInfo(int pJ
             cmp eax, 1
             jne L00458d04
             push esi
-            push 0x59600c
+            push offset gMatchData_0059600c
             call dr_dprintf
             add esp, 8
             mov eax, 1
@@ -732,7 +815,7 @@ C2_NAKED tDirectInputJoystickInfo* C2_HOOK_FASTCALL JoystickDInputGetInfo(int pJ
             cmp eax, 0x80070057
             jne L00458d1d
             push esi
-            push 0x595fec
+            push offset gMatchData_00595fec
             call dr_dprintf
             add esp, 8
             xor eax, eax
@@ -742,14 +825,14 @@ C2_NAKED tDirectInputJoystickInfo* C2_HOOK_FASTCALL JoystickDInputGetInfo(int pJ
             cmp eax, 0x80070005
             push esi
             jne L00458d36
-            push 0x595fc8
+            push offset gMatchData_00595fc8
             call dr_dprintf
             add esp, 8
             xor eax, eax
             pop esi
             ret
     L00458d36:
-            push 0x595fa0
+            push offset gMatchFloat_00595fa0
             call dr_dprintf
             add esp, 8
             xor eax, eax
@@ -794,7 +877,7 @@ C2_NAKED tDirectInputJoystickInfo* C2_HOOK_FASTCALL JoystickDInputGetInfo(int pJ
             je L00458ea0
             cmp eax, 0x8007001e
             jne L00458dc5
-            mov eax, dword ptr ds:[gDirectInputJoystickHandle]
+            mov eax, dword ptr [gDirectInputJoystickHandle]
             test eax, eax
             je L00458e64
             mov eax, dword ptr [esi*4 + gDirectInputJoystickDevices]
@@ -807,7 +890,7 @@ C2_NAKED tDirectInputJoystickInfo* C2_HOOK_FASTCALL JoystickDInputGetInfo(int pJ
     L00458dc5:
             cmp eax, 0x8007000c
             jne L00458e88
-            mov eax, dword ptr ds:[gDirectInputJoystickHandle]
+            mov eax, dword ptr [gDirectInputJoystickHandle]
             test eax, eax
             je L00458e64
             mov eax, dword ptr [esi*4 + gDirectInputJoystickDevices]
@@ -820,7 +903,7 @@ C2_NAKED tDirectInputJoystickInfo* C2_HOOK_FASTCALL JoystickDInputGetInfo(int pJ
             test eax, eax
             jne L00458e07
             push esi
-            push 0x59602c
+            push offset gMatchData_0059602c
             call dr_dprintf
             add esp, 8
             mov eax, 1
@@ -829,7 +912,7 @@ C2_NAKED tDirectInputJoystickInfo* C2_HOOK_FASTCALL JoystickDInputGetInfo(int pJ
             cmp eax, 1
             jne L00458e21
             push esi
-            push 0x59600c
+            push offset gMatchData_0059600c
             call dr_dprintf
             add esp, 8
             mov eax, 1
@@ -838,7 +921,7 @@ C2_NAKED tDirectInputJoystickInfo* C2_HOOK_FASTCALL JoystickDInputGetInfo(int pJ
             cmp eax, 0x80070057
             jne L00458e3a
             push esi
-            push 0x595fec
+            push offset gMatchData_00595fec
             call dr_dprintf
             add esp, 8
             xor eax, eax
@@ -847,13 +930,13 @@ C2_NAKED tDirectInputJoystickInfo* C2_HOOK_FASTCALL JoystickDInputGetInfo(int pJ
             cmp eax, 0x80070005
             push esi
             jne L00458e53
-            push 0x595fc8
+            push offset gMatchData_00595fc8
             call dr_dprintf
             add esp, 8
             xor eax, eax
             jmp L00458e67
     L00458e53:
-            push 0x595fa0
+            push offset gMatchFloat_00595fa0
             call dr_dprintf
             add esp, 8
             xor eax, eax
@@ -864,7 +947,7 @@ C2_NAKED tDirectInputJoystickInfo* C2_HOOK_FASTCALL JoystickDInputGetInfo(int pJ
             test eax, eax
             jne L00458f81
             push esi
-            push 0x59610c
+            push offset gMatchFloat_0059610c
             call dr_dprintf
             add esp, 8
             xor eax, eax
@@ -874,7 +957,7 @@ C2_NAKED tDirectInputJoystickInfo* C2_HOOK_FASTCALL JoystickDInputGetInfo(int pJ
             add esp, 0x50
             ret 0x1c
     L00458e88:
-            push 0x5960f0
+            push offset gMatchFloat_005960f0
             call dr_dprintf
             add esp, 4
             xor eax, eax
@@ -894,12 +977,12 @@ C2_NAKED tDirectInputJoystickInfo* C2_HOOK_FASTCALL JoystickDInputGetInfo(int pJ
             mov ebx, eax
             test ebx, ebx
             je L00458f8c
-            push 0x5960d4
+            push offset gMatchFloat_005960d4
             call dr_dprintf
             add esp, 4
             cmp ebx, 0x8007001e
             jne L00458f81
-            mov eax, dword ptr ds:[gDirectInputJoystickHandle]
+            mov eax, dword ptr [gDirectInputJoystickHandle]
             test eax, eax
             je L00458f81
             mov eax, dword ptr [esi*4 + gDirectInputJoystickDevices]
@@ -911,7 +994,7 @@ C2_NAKED tDirectInputJoystickInfo* C2_HOOK_FASTCALL JoystickDInputGetInfo(int pJ
             test eax, eax
             jne L00458f16
             push esi
-            push 0x59602c
+            push offset gMatchData_0059602c
             call dr_dprintf
             add esp, 8
             xor eax, eax
@@ -924,7 +1007,7 @@ C2_NAKED tDirectInputJoystickInfo* C2_HOOK_FASTCALL JoystickDInputGetInfo(int pJ
             cmp eax, 1
             jne L00458f34
             push esi
-            push 0x59600c
+            push offset gMatchData_0059600c
             call dr_dprintf
             add esp, 8
             xor eax, eax
@@ -937,7 +1020,7 @@ C2_NAKED tDirectInputJoystickInfo* C2_HOOK_FASTCALL JoystickDInputGetInfo(int pJ
             cmp eax, 0x80070057
             jne L00458f54
             push esi
-            push 0x595fec
+            push offset gMatchData_00595fec
             call dr_dprintf
             add esp, 8
             xor eax, eax
@@ -950,7 +1033,7 @@ C2_NAKED tDirectInputJoystickInfo* C2_HOOK_FASTCALL JoystickDInputGetInfo(int pJ
             cmp eax, 0x80070005
             push esi
             jne L00458f74
-            push 0x595fc8
+            push offset gMatchData_00595fc8
             call dr_dprintf
             add esp, 8
             xor eax, eax
@@ -960,7 +1043,7 @@ C2_NAKED tDirectInputJoystickInfo* C2_HOOK_FASTCALL JoystickDInputGetInfo(int pJ
             add esp, 0x50
             ret 0x1c
     L00458f74:
-            push 0x595fa0
+            push offset gMatchFloat_00595fa0
             call dr_dprintf
             add esp, 8
     L00458f81:
@@ -974,7 +1057,7 @@ C2_NAKED tDirectInputJoystickInfo* C2_HOOK_FASTCALL JoystickDInputGetInfo(int pJ
             mov eax, dword ptr [esp + 0x60]
             test eax, eax
             je L00458fac
-            mov ecx, dword ptr ds:[gINT_00595f98]
+            mov ecx, dword ptr [gINT_00595f98]
             test ecx, ecx
             je L00458fa6
             mov ecx, dword ptr [esp + 0xc]
@@ -986,7 +1069,7 @@ C2_NAKED tDirectInputJoystickInfo* C2_HOOK_FASTCALL JoystickDInputGetInfo(int pJ
             mov eax, dword ptr [esp + 0x64]
             test eax, eax
             je L00458fcc
-            mov ecx, dword ptr ds:[gUNK_00595f9c]
+            mov ecx, dword ptr [gUNK_00595f9c]
             test ecx, ecx
             je L00458fc6
             mov edx, dword ptr [esp + 0x10]
@@ -1049,12 +1132,22 @@ C2_NAKED tDirectInputJoystickInfo* C2_HOOK_FASTCALL JoystickDInputGetInfo(int pJ
             pop ebx
             add esp, 0x50
             ret 0x1c
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
 
 // FUNCTION: CARMA2_HW 0x00459c70
-BOOL CALLBACK Win32DInputJoystickEnum(const DIDEVICEINSTANCEA* pDeviceInstance, void *pContext) {
+BOOL C2_NAKED C2_HOOK_STDCALL Win32DInputJoystickEnum(const DIDEVICEINSTANCEA* pDeviceInstance, void *pContext) {
+#ifndef CARPOCALYPSE2_MATCHING
     HRESULT hResult;
     IDirectInputDeviceA *device;
     IDirectInputDevice2A *device2;
@@ -1139,6 +1232,218 @@ BOOL CALLBACK Win32DInputJoystickEnum(const DIDEVICEINSTANCEA* pDeviceInstance, 
     }
     gCountEnumeratedJoystickDinputDevices++;
     return DIENUM_CONTINUE;
+#else
+    __asm {
+            sub esp, 0x18
+            push ebx
+            push esi
+            mov esi, dword ptr [esp + 0x24]
+            push 0x50
+            lea eax, [esi + 0x12c]
+            push eax
+            mov eax, dword ptr [gCountEnumeratedJoystickDinputDevices]
+            lea ecx, [eax + eax*2]
+            lea edx, [eax + ecx*4]
+            lea eax, [edx*8 + gDirectInputJoystickInfos+0xc]
+            push eax
+            call strncpy
+            mov eax, dword ptr [gCountEnumeratedJoystickDinputDevices]
+            xor ebx, ebx
+            add esp, 0xc
+            lea ecx, [eax + eax*2]
+            lea eax, [eax + ecx*4]
+            xor ecx, ecx
+            shl eax, 3
+            mov byte ptr [eax + gDirectInputJoystickInfos+0x5b], bl
+            mov cl, byte ptr [esi + 0x25]
+            and ecx, 0xff
+            sub ecx, 4
+            je L00459ce0
+            sub ecx, 2
+            je L00459cd4
+            mov dword ptr [eax + gDirectInputJoystickInfos+0x8], 1
+            jmp L00459cea
+    L00459cd4:
+            mov dword ptr [eax + gDirectInputJoystickInfos+0x8], 2
+            jmp L00459cea
+    L00459ce0:
+            mov dword ptr [eax + gDirectInputJoystickInfos+0x8], 4
+    L00459cea:
+            mov eax, dword ptr [esp + 0x28]
+            lea ecx, [esp + 0x24]
+            push ebx
+            add esi, 4
+            mov edx, dword ptr [eax]
+            push ecx
+            push esi
+            push eax
+            call dword ptr [edx + 0xc]
+            test eax, eax
+            je L00459d1c
+            push 0x596228
+            call dr_dprintf
+            add esp, 4
+            mov eax, 1
+            pop esi
+            pop ebx
+            add esp, 0x18
+            ret 8
+    L00459d1c:
+            mov eax, dword ptr [esp + 0x24]
+            push 0x54d310
+            push eax
+            mov edx, dword ptr [eax]
+            call dword ptr [edx + 0x2c]
+            test eax, eax
+            je L00459d53
+            push 0x5961fc
+            call dr_dprintf
+            mov eax, dword ptr [esp + 0x28]
+            add esp, 4
+            mov ecx, dword ptr [eax]
+            push eax
+            call dword ptr [ecx + 8]
+            mov eax, 1
+            pop esi
+            pop ebx
+            add esp, 0x18
+            ret 8
+    L00459d53:
+            mov ecx, dword ptr [gCountEnumeratedJoystickDinputDevices]
+            mov eax, dword ptr [esp + 0x24]
+            mov edx, dword ptr [eax]
+            lea ecx, [ecx*4 + gDirectInputJoystickDevices]
+            push ecx
+            push offset IID_IDirectInputDevice2A
+            push eax
+            call dword ptr [edx]
+            test eax, eax
+            je L00459d97
+            push 0x5961d4
+            call dr_dprintf
+            mov eax, dword ptr [esp + 0x28]
+            add esp, 4
+            mov edx, dword ptr [eax]
+            push eax
+            call dword ptr [edx + 8]
+            mov eax, 1
+            pop esi
+            pop ebx
+            add esp, 0x18
+            ret 8
+    L00459d97:
+            mov eax, dword ptr [gCountEnumeratedJoystickDinputDevices]
+            mov eax, dword ptr [eax*4 + gDirectInputJoystickDevices]
+            cmp eax, ebx
+            je L00459dba
+            mov edx, dword ptr [gHWnd]
+            mov ecx, dword ptr [eax]
+            push 9
+            push edx
+            push eax
+            call dword ptr [ecx + 0x34]
+            test eax, eax
+            je L00459dd1
+    L00459dba:
+            push 0x5961b0
+            call dr_dprintf
+            add esp, 4
+            xor eax, eax
+            pop esi
+            pop ebx
+            add esp, 0x18
+            ret 8
+    L00459dd1:
+            mov eax, dword ptr [esp + 0x24]
+            lea edx, [esp + 8]
+            push edx
+            push 4
+            mov ecx, dword ptr [eax]
+            push eax
+            mov esi, eax
+            mov dword ptr [esp + 0x14], 0x18
+            mov dword ptr [esp + 0x18], 0x10
+            mov dword ptr [esp + 0x20], 1
+            mov dword ptr [esp + 0x24], ebx
+            mov dword ptr [esp + 0x28], 0xffff
+            mov dword ptr [esp + 0x1c], ebx
+            call dword ptr [ecx + 0x18]
+            test eax, eax
+            jne L00459e29
+            mov ecx, dword ptr [esi]
+            lea edx, [esp + 8]
+            push edx
+            push 4
+            push esi
+            mov dword ptr [esp + 0x1c], 4
+            call dword ptr [ecx + 0x18]
+            test eax, eax
+            je L00459e3c
+    L00459e29:
+            push 0x596140
+            call dr_dprintf
+            mov eax, dword ptr [esi]
+            add esp, 4
+            push esi
+            call dword ptr [eax + 8]
+    L00459e3c:
+            mov eax, dword ptr [esp + 0x24]
+            lea edx, [esp + 8]
+            push edx
+            push 5
+            mov ecx, dword ptr [eax]
+            push eax
+            mov esi, eax
+            mov dword ptr [esp + 0x14], 0x14
+            mov dword ptr [esp + 0x18], 0x10
+            mov dword ptr [esp + 0x20], 1
+            mov dword ptr [esp + 0x24], 0x3e8
+            mov dword ptr [esp + 0x1c], ebx
+            call dword ptr [ecx + 0x18]
+            test eax, eax
+            jne L00459e90
+            mov ecx, dword ptr [esi]
+            lea edx, [esp + 8]
+            push edx
+            push 5
+            push esi
+            mov dword ptr [esp + 0x1c], 4
+            call dword ptr [ecx + 0x18]
+            test eax, eax
+            je L00459ea3
+    L00459e90:
+            push 0x596178
+            call dr_dprintf
+            mov eax, dword ptr [esi]
+            add esp, 4
+            push esi
+            call dword ptr [eax + 8]
+    L00459ea3:
+            mov eax, dword ptr [esp + 0x24]
+            push eax
+            mov ecx, dword ptr [eax]
+            call dword ptr [ecx + 8]
+            mov eax, dword ptr [gCountEnumeratedJoystickDinputDevices]
+            pop esi
+            inc eax
+            pop ebx
+            mov dword ptr [gCountEnumeratedJoystickDinputDevices], eax
+            mov eax, 1
+            add esp, 0x18
+            ret 8
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00459ed0
@@ -1346,7 +1651,8 @@ void C2_HOOK_FASTCALL SelectNextDInputJoystick(void) {
 }
 
 // FUNCTION: CARMA2_HW 0x00459b50
-int C2_HOOK_FASTCALL SetDirectInputDeviceRange(IDirectInputDevice2A* pDevice, LONG pMin, LONG pMax) {
+int C2_NAKED C2_HOOK_FASTCALL SetDirectInputDeviceRange(IDirectInputDevice2A* pDevice, LONG pMin, LONG pMax) {
+#ifndef CARPOCALYPSE2_MATCHING
     DIPROPRANGE range;
     HRESULT hResult;
 
@@ -1367,6 +1673,116 @@ int C2_HOOK_FASTCALL SetDirectInputDeviceRange(IDirectInputDevice2A* pDevice, LO
         return 0;
     }
     return 1;
+#else
+    __asm {
+            sub esp, 0x18
+            mov eax, dword ptr [esp + 0x1c]
+            push esi
+            mov dword ptr [esp + 0x14], edx
+            mov esi, ecx
+            lea edx, [esp + 4]
+            mov dword ptr [esp + 4], 0x18
+            mov ecx, dword ptr [esi]
+            push edx
+            push 4
+            push esi
+            mov dword ptr [esp + 0x14], 0x10
+            mov dword ptr [esp + 0x1c], 1
+            mov dword ptr [esp + 0x24], eax
+            mov dword ptr [esp + 0x18], 0
+            call dword ptr [ecx + 0x18]
+            test eax, eax
+            jne L00459bac
+            mov ecx, dword ptr [esi]
+            lea edx, [esp + 4]
+            push edx
+            push 4
+            push esi
+            mov dword ptr [esp + 0x18], 4
+            call dword ptr [ecx + 0x18]
+            test eax, eax
+            je L00459bc8
+    L00459bac:
+            push 0x596140
+            call dr_dprintf
+            mov eax, dword ptr [esi]
+            add esp, 4
+            push esi
+            call dword ptr [eax + 8]
+            xor eax, eax
+            pop esi
+            add esp, 0x18
+            ret 4
+    L00459bc8:
+            mov eax, 1
+            pop esi
+            add esp, 0x18
+            ret 4
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            lea eax, [edx + edx*4]
+            sub esp, 0x14
+            lea eax, [eax + eax*4]
+            push esi
+            shl eax, 2
+            cmp eax, 0x2710
+            mov esi, ecx
+            jbe L00459bfb
+            mov eax, 0x2710
+    L00459bfb:
+            lea ecx, [esp + 4]
+            mov dword ptr [esp + 0x14], eax
+            mov eax, dword ptr [esi]
+            push ecx
+            push 5
+            push esi
+            mov dword ptr [esp + 0x10], 0x14
+            mov dword ptr [esp + 0x14], 0x10
+            mov dword ptr [esp + 0x1c], 1
+            mov dword ptr [esp + 0x18], 0
+            call dword ptr [eax + 0x18]
+            test eax, eax
+            jne L00459c49
+            mov eax, dword ptr [esi]
+            lea ecx, [esp + 4]
+            push ecx
+            push 5
+            push esi
+            mov dword ptr [esp + 0x18], 4
+            call dword ptr [eax + 0x18]
+            test eax, eax
+            je L00459c63
+    L00459c49:
+            push 0x596178
+            call dr_dprintf
+            mov edx, dword ptr [esi]
+            add esp, 4
+            push esi
+            call dword ptr [edx + 8]
+            xor eax, eax
+            pop esi
+            add esp, 0x14
+            ret
+    L00459c63:
+            mov eax, 1
+            pop esi
+            add esp, 0x14
+            ret
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 #pragma auto_inline(off)
@@ -1655,14 +2071,14 @@ int C2_NAKED C2_HOOK_FASTCALL CreateDinputEffect(int joystick_index, tJoystick_e
 #else
     __asm {
             push ecx
-            mov eax, dword ptr ds:[gCount_joystick_effects]
+            mov eax, dword ptr [gCount_joystick_effects]
             push ebx
             push ebp
             push esi
             cmp eax, 0x1e
             push edi
             jl L00457c47
-            push 0x596074
+            push offset gMatchFloat_00596074
             call dr_dprintf
             add esp, 4
             or eax, 0xffffffff
@@ -1678,7 +2094,7 @@ int C2_NAKED C2_HOOK_FASTCALL CreateDinputEffect(int joystick_index, tJoystick_e
             cmp esi, edi
             mov dword ptr [esp + 0x10], esi
             je L00457e63
-            mov ebx, dword ptr ds:[gJoystickFFB]
+            mov ebx, dword ptr [gJoystickFFB]
             mov esi, 1
             shl esi, cl
             test ebx, esi
@@ -1699,9 +2115,9 @@ int C2_NAKED C2_HOOK_FASTCALL CreateDinputEffect(int joystick_index, tJoystick_e
             sub ebx, eax
             lea eax, [eax + ebx*4]
             shl eax, 3
-            mov dword ptr [eax + 0x684630], esi
+            mov dword ptr [eax + gJoystick_effects+0x8], esi
             mov esi, dword ptr [edx + 0x3c]
-            mov dword ptr [eax + 0x684638], esi
+            mov dword ptr [eax + gJoystick_effects+0x10], esi
             mov esi, dword ptr [edx + 0x44]
             cmp esi, -1
             jne L00457cb5
@@ -1710,11 +2126,11 @@ int C2_NAKED C2_HOOK_FASTCALL CreateDinputEffect(int joystick_index, tJoystick_e
     L00457cb5:
             add esi, 0x30
     L00457cb8:
-            mov dword ptr [eax + 0x68463c], esi
+            mov dword ptr [eax + gJoystick_effects+0x14], esi
             mov esi, dword ptr [edx + 0x48]
-            mov dword ptr [eax + 0x684640], esi
+            mov dword ptr [eax + gJoystick_effects+0x18], esi
             mov esi, dword ptr [edx + 0x4c]
-            lea ebp, [eax + 0x684688]
+            lea ebp, [eax + gJoystick_effects+0x60]
             lea esi, [esi + esi*4]
             lea esi, [esi + esi*4]
             shl esi, 2
@@ -1725,26 +2141,45 @@ int C2_NAKED C2_HOOK_FASTCALL CreateDinputEffect(int joystick_index, tJoystick_e
             lea ebx, [ecx + ecx*2]
             lea ebx, [ecx + ebx*4]
             mov ecx, 2
-            test byte ptr [ebx*8 + 0x79d9c8], cl
+            test byte ptr [ebx*8 + gDirectInputJoystickInfos+0x8], cl
             jne L00457d3a
             cmp esi, 1
             jne L00457d18
-            mov dword ptr [eax + 0x684644], esi
-            mov dword ptr [eax + 0x684648], 0x684620
-            mov dword ptr ds:[0x684620], 4
+            mov dword ptr [eax + gJoystick_effects+0x1c], esi
+            mov dword ptr [eax + gJoystick_effects+0x20], 0x684620
+            _emit 0xc7
+        _emit 0x05
+        _emit 0x20
+        _emit 0x46
+        _emit 0x68
+        _emit 0x00
+        _emit 0x04
+        _emit 0x00
+        _emit 0x00
+        _emit 0x00
             jmp L00457d54
     L00457d18:
-            mov dword ptr [eax + 0x684644], ecx
-            mov dword ptr [eax + 0x684648], 0x684620
-            mov dword ptr ds:[0x684620], edi
-            mov dword ptr ds:[0x684624], 4
+            mov dword ptr [eax + gJoystick_effects+0x1c], ecx
+            mov dword ptr [eax + gJoystick_effects+0x20], 0x684620
+            _emit 0x89
+        _emit 0x3d
+        _emit 0x20
+        _emit 0x46
+        _emit 0x68
+        _emit 0x00
+            mov dword ptr [gMatchData_00684624], 4
             jmp L00457d54
     L00457d3a:
-            mov dword ptr [eax + 0x684644], 1
-            mov dword ptr [eax + 0x684648], 0x684620
-            mov dword ptr ds:[0x684620], edi
+            mov dword ptr [eax + gJoystick_effects+0x1c], 1
+            mov dword ptr [eax + gJoystick_effects+0x20], 0x684620
+            _emit 0x89
+        _emit 0x3d
+        _emit 0x20
+        _emit 0x46
+        _emit 0x68
+        _emit 0x00
     L00457d54:
-            lea ebx, [eax + 0x68465c]
+            lea ebx, [eax + gJoystick_effects+0x34]
             lea esi, [edx + 4]
             mov ecx, 6
             mov edi, ebx
@@ -1752,28 +2187,28 @@ int C2_NAKED C2_HOOK_FASTCALL CreateDinputEffect(int joystick_index, tJoystick_e
             lea ecx, [eax + gJoystick_effects]
             xor edi, edi
             mov dword ptr [ecx], 0x34
-            mov dword ptr [eax + 0x68462c], 0x22
-            mov dword ptr [eax + 0x684634], edi
-            mov dword ptr [eax + 0x68464c], ebp
-            mov dword ptr [eax + 0x68468c], edi
-            mov dword ptr [eax + 0x684650], edi
-            mov dword ptr [eax + 0x684658], ebx
+            mov dword ptr [eax + gJoystick_effects+0x4], 0x22
+            mov dword ptr [eax + gJoystick_effects+0xc], edi
+            mov dword ptr [eax + gJoystick_effects+0x24], ebp
+            mov dword ptr [eax + gJoystick_effects+0x64], edi
+            mov dword ptr [eax + gJoystick_effects+0x28], edi
+            mov dword ptr [eax + gJoystick_effects+0x30], ebx
             mov esi, dword ptr [edx]
             cmp esi, 0xc
             ja L00457e56
             jmp dword ptr [esi*4 + 0x457e70]
-            mov dword ptr [eax + 0x684654], 4
+            mov dword ptr [eax + gJoystick_effects+0x2c], 4
             jmp L00457de8
-            mov dword ptr [eax + 0x684654], 8
+            mov dword ptr [eax + gJoystick_effects+0x2c], 8
             jmp L00457de8
-            mov dword ptr [eax + 0x684654], 0x10
+            mov dword ptr [eax + gJoystick_effects+0x2c], 0x10
             jmp L00457de8
-            mov dword ptr [eax + 0x684654], 0x18
+            mov dword ptr [eax + gJoystick_effects+0x2c], 0x18
             jmp L00457de8
-            mov dword ptr [eax + 0x684654], 0x30
+            mov dword ptr [eax + gJoystick_effects+0x2c], 0x30
     L00457de8:
             push edi
-            mov edi, dword ptr ds:[gCount_joystick_effects]
+            mov edi, dword ptr [gCount_joystick_effects]
             mov eax, dword ptr [esp + 0x14]
             lea edi, [edi*4 + gDirectInputEffects]
             mov esi, dword ptr [eax]
@@ -1784,14 +2219,14 @@ int C2_NAKED C2_HOOK_FASTCALL CreateDinputEffect(int joystick_index, tJoystick_e
             push edx
             push eax
             call dword ptr [esi + 0x48]
-            mov edx, dword ptr ds:[gCount_joystick_effects]
+            mov edx, dword ptr [gCount_joystick_effects]
             mov eax, edx
             mov edi, dword ptr [esp + 0x18]
             shl eax, 3
             sub eax, edx
             lea ecx, [edx + eax*4]
             xor eax, eax
-            lea ebx, [ecx*8 + 0x684690]
+            lea ebx, [ecx*8 + gJoystick_effects+0x68]
             or ecx, 0xffffffff
             repne scasb
             not ecx
@@ -1805,7 +2240,7 @@ int C2_NAKED C2_HOOK_FASTCALL CreateDinputEffect(int joystick_index, tJoystick_e
             and ecx, 3
             inc edx
             rep movsb
-            mov dword ptr ds:[gCount_joystick_effects], edx
+            mov dword ptr [gCount_joystick_effects], edx
             lea eax, [edx - 1]
             pop edi
             pop esi
@@ -1814,7 +2249,7 @@ int C2_NAKED C2_HOOK_FASTCALL CreateDinputEffect(int joystick_index, tJoystick_e
             pop ecx
             ret 4
     L00457e56:
-            push 0x596060
+            push offset gMatchFloat_00596060
             call dr_dprintf
             add esp, 4
     L00457e63:
@@ -1956,7 +2391,7 @@ int C2_NAKED C2_HOOK_FASTCALL ReadIforceEffectsNames(const char *path, char **na
             push ebp
             push esi
             push edi
-            push offset gCancel_recover+0x1a4
+            push offset gFile_mode_rb
             mov esi, edx
             push ecx
             mov dword ptr [esp + 0x20], 0
@@ -1985,7 +2420,7 @@ int C2_NAKED C2_HOOK_FASTCALL ReadIforceEffectsNames(const char *path, char **na
             add esp, 0x10
             lea ecx, [esp + 0x20]
             push 4
-            push offset gUNK_00595f9c+0x2ac
+            push offset gMatchString_00596248
             push ecx
             call strncmp
             add esp, 0xc
@@ -2013,7 +2448,11 @@ int C2_NAKED C2_HOOK_FASTCALL ReadIforceEffectsNames(const char *path, char **na
             mov eax, dword ptr [esp + 0xa4]
             cmp edx, eax
             jge L0045a654
-            mov al, byte ptr [gDisable_sound+0x8]
+            _emit 0xa0
+        _emit 0x20
+        _emit 0x69
+        _emit 0x67
+        _emit 0x00
             xor ebx, ebx
             push ebp
             mov byte ptr [esp + 0x24], al
@@ -2083,7 +2522,12 @@ int C2_NAKED C2_HOOK_FASTCALL ReadIforceEffectsNames(const char *path, char **na
             mov ecx, eax
             and ecx, 3
             rep movsb
-            mov cl, byte ptr [gDisable_sound+0x8]
+            _emit 0x8a
+        _emit 0x0d
+        _emit 0x20
+        _emit 0x69
+        _emit 0x67
+        _emit 0x00
             mov byte ptr [esp + 0x24], cl
             call fgetc
             add esp, 4
@@ -2129,7 +2573,11 @@ int C2_NAKED C2_HOOK_FASTCALL ReadIforceEffectsNames(const char *path, char **na
             add esp, 0xc
             mov byte ptr [esp + 0x13], 0
     L0045a565:
-            mov al, byte ptr [gDisable_sound+0x8]
+            _emit 0xa0
+        _emit 0x20
+        _emit 0x69
+        _emit 0x67
+        _emit 0x00
             push ebp
             xor ebx, ebx
             mov byte ptr [esp + 0x24], al
@@ -2229,6 +2677,17 @@ int C2_NAKED C2_HOOK_FASTCALL ReadIforceEffectsNames(const char *path, char **na
             pop ebx
             add esp, 0x90
             ret 4
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -2304,7 +2763,7 @@ int C2_NAKED C2_HOOK_FASTCALL InitForceFeedback(void) {
 #else
     __asm {
     L00457760:
-            mov eax, dword ptr ds:[gCountEnumeratedJoystickDinputDevices]
+            mov eax, dword ptr [gCountEnumeratedJoystickDinputDevices]
             sub esp, 0x15c
             push ebx
             xor ebx, ebx
@@ -2314,13 +2773,13 @@ int C2_NAKED C2_HOOK_FASTCALL InitForceFeedback(void) {
             push edi
             mov ebp, 1
             jne L004578ca
-            mov eax, dword ptr ds:[gDirectInputJoystickHandle]
+            mov eax, dword ptr [gDirectInputJoystickHandle]
             cmp eax, ebx
             jne L004577fc
             mov ecx, 0x10
             xor eax, eax
             mov edi, offset gDirectInputJoystickDevices
-            mov edx, 0x79d9c4
+            mov edx, offset gDirectInputJoystickInfos+0x4
             rep stosd
     L0045779a:
             mov dword ptr [edx - 4], ebx
@@ -2330,7 +2789,7 @@ int C2_NAKED C2_HOOK_FASTCALL InitForceFeedback(void) {
             mov dword ptr [edx + 0x5c], ebx
             mov dword ptr [edx + 0x60], ebx
             add edx, 0x68
-            cmp edx, 0x79e044
+            cmp edx, offset gMatchData_0079e044
             jl L0045779a
             push ebx
             mov ecx, 0x1e
@@ -2340,20 +2799,25 @@ int C2_NAKED C2_HOOK_FASTCALL InitForceFeedback(void) {
             push 0x500
             rep stosd
             push ebx
-            mov dword ptr ds:[gJoystickFFB], ebx
-            mov dword ptr ds:[gCountEnumeratedJoystickDinputDevices], ebx
-            call dword ptr ds:[0x589098]
+            mov dword ptr [gJoystickFFB], ebx
+            mov dword ptr [gCountEnumeratedJoystickDinputDevices], ebx
+            _emit 0xff
+        _emit 0x15
+        _emit 0x98
+        _emit 0x90
+        _emit 0x58
+        _emit 0x00
             push eax
             call DirectInputCreateA
-            mov eax, dword ptr ds:[gDirectInputJoystickHandle]
+            mov eax, dword ptr [gDirectInputJoystickHandle]
             cmp eax, ebx
             je L004578ca
-            mov dword ptr ds:[gDirectInputJoystickEnumerated], ebx
+            mov dword ptr [gDirectInputJoystickEnumerated], ebx
     L004577fc:
-            cmp dword ptr ds:[gDirectInputJoystickEnumerated], ebx
+            cmp dword ptr [gDirectInputJoystickEnumerated], ebx
             jne L004578ca
-            mov ecx, dword ptr ds:[gCountEnumeratedJoystickDinputDevices]
-            mov dword ptr ds:[gDirectInputJoystickEnumerated], ebp
+            mov ecx, dword ptr [gCountEnumeratedJoystickDinputDevices]
+            mov dword ptr [gDirectInputJoystickEnumerated], ebp
             cmp ecx, ebx
             jne L00457827
             mov ecx, dword ptr [eax]
@@ -2364,7 +2828,7 @@ int C2_NAKED C2_HOOK_FASTCALL InitForceFeedback(void) {
             push eax
             call dword ptr [ecx + 0x10]
     L00457827:
-            cmp dword ptr ds:[gCountEnumeratedJoystickDinputDevices], ebx
+            cmp dword ptr [gCountEnumeratedJoystickDinputDevices], ebx
             je L004578a9
             xor esi, esi
             mov edi, offset gDirectInputJoystickDevices
@@ -2373,7 +2837,7 @@ int C2_NAKED C2_HOOK_FASTCALL InitForceFeedback(void) {
             xor edx, edx
             mov ecx, esi
             call JoystickDInputGetInfo
-            cmp dword ptr ds:[gDirectInputJoystickHandle], ebx
+            cmp dword ptr [gDirectInputJoystickHandle], ebx
             je L00457897
             mov eax, dword ptr [edi]
             cmp eax, ebx
@@ -2384,28 +2848,28 @@ int C2_NAKED C2_HOOK_FASTCALL InitForceFeedback(void) {
             cmp eax, ebx
             jne L00457860
             push esi
-            push 0x59602c
+            push offset gMatchData_0059602c
             jmp L0045788f
     L00457860:
             cmp eax, ebp
             jne L0045786c
             push esi
-            push 0x59600c
+            push offset gMatchData_0059600c
             jmp L0045788f
     L0045786c:
             cmp eax, 0x80070057
             jne L0045787b
             push esi
-            push 0x595fec
+            push offset gMatchData_00595fec
             jmp L0045788f
     L0045787b:
             cmp eax, 0x80070005
             push esi
             jne L0045788a
-            push 0x595fc8
+            push offset gMatchData_00595fc8
             jmp L0045788f
     L0045788a:
-            push 0x595fa0
+            push offset gMatchFloat_00595fa0
     L0045788f:
             call dr_dprintf
             add esp, 8
@@ -2414,18 +2878,18 @@ int C2_NAKED C2_HOOK_FASTCALL InitForceFeedback(void) {
             inc esi
             cmp edi, offset gDirectInputEffects
             jl L00457836
-            mov dword ptr ds:[gJoystick_index], ebx
+            mov dword ptr [gJoystick_index], ebx
     L004578a9:
-            cmp dword ptr ds:[gJoystick_index], ebx
+            cmp dword ptr [gJoystick_index], ebx
             jl L004578ca
             call L00457760
             test eax, eax
             je L004578ca
-            mov ecx, dword ptr ds:[gJoystick_index]
+            mov ecx, dword ptr [gJoystick_index]
             call ResetDInputJoystickFFB
             call RegisterJoystickFFBForces
     L004578ca:
-            cmp dword ptr ds:[gJoystickFFB], ebx
+            cmp dword ptr [gJoystickFFB], ebx
             je L00457908
             xor edi, edi
             mov esi, offset gDirectInputJoystickDevices
@@ -2436,34 +2900,39 @@ int C2_NAKED C2_HOOK_FASTCALL InitForceFeedback(void) {
             mov edx, ebp
             mov ecx, edi
             shl edx, cl
-            mov ecx, dword ptr ds:[gJoystickFFB]
+            mov ecx, dword ptr [gJoystickFFB]
             test edx, ecx
             je L004578fc
             mov edx, dword ptr [eax]
             push ebp
             push eax
             call dword ptr [edx + 0x58]
-            mov dword ptr ds:[gForceFeedbackAvailable], ebp
+            mov dword ptr [gForceFeedbackAvailable], ebp
     L004578fc:
             add esi, 4
             inc edi
             cmp esi, offset gDirectInputEffects
             jl L004578d9
     L00457908:
-            cmp dword ptr ds:[gForceFeedbackAvailable], ebx
+            cmp dword ptr [gForceFeedbackAvailable], ebx
             je L00457a4b
-            push 0x596058
+            push offset gMatchString_00596058
             mov edx, offset gApplication_path
             lea ecx, [esp + 0x70]
             call PathCat
-            mov eax, dword ptr ds:[gJoystick_index]
+            mov eax, dword ptr [gJoystick_index]
             lea edx, [esp + 0x6c]
             mov ecx, dword ptr [eax*4 + gDirectInputJoystickDevices]
             push ecx
             push edx
-            call dword ptr ds:[0x589034]
+            _emit 0xff
+        _emit 0x15
+        _emit 0x34
+        _emit 0x90
+        _emit 0x58
+        _emit 0x00
             cmp eax, ebx
-            mov dword ptr ds:[gIfr_project], eax
+            mov dword ptr [gIfr_project], eax
             je L00457a41
             push 0x14
             lea edx, [esp + 0x20]
@@ -2475,15 +2944,20 @@ int C2_NAKED C2_HOOK_FASTCALL InitForceFeedback(void) {
             mov dword ptr [esp + 0x10], eax
     L0045796b:
             mov ecx, dword ptr [ebp]
-            mov edx, dword ptr ds:[gIfr_project]
+            mov edx, dword ptr [gIfr_project]
             lea eax, [esp + 0x18]
             push eax
             push ecx
             push edx
-            call dword ptr ds:[0x589038]
+            _emit 0xff
+        _emit 0x15
+        _emit 0x38
+        _emit 0x90
+        _emit 0x58
+        _emit 0x00
             mov ecx, dword ptr [ebp]
             mov edx, dword ptr [eax]
-            mov eax, dword ptr ds:[gCount_joystick_effects]
+            mov eax, dword ptr [gCount_joystick_effects]
             mov dword ptr [esp + 0x14], ecx
             mov ecx, eax
             mov esi, dword ptr [edx + 0x10]
@@ -2498,20 +2972,20 @@ int C2_NAKED C2_HOOK_FASTCALL InitForceFeedback(void) {
             mov edi, ebx
             push ebx
             rep movsd
-            mov ecx, dword ptr ds:[gJoystick_index]
+            mov ecx, dword ptr [gJoystick_index]
             push edx
             mov ecx, dword ptr [ecx*4 + gDirectInputJoystickDevices]
             push ecx
             mov esi, dword ptr [ecx]
             call dword ptr [esi + 0x48]
-            mov edx, dword ptr ds:[gCount_joystick_effects]
+            mov edx, dword ptr [gCount_joystick_effects]
             mov ecx, edx
             mov edi, dword ptr [esp + 0x14]
             shl ecx, 3
             sub ecx, edx
             lea eax, [edx + ecx*4]
             or ecx, 0xffffffff
-            lea ebx, [eax*8 + 0x684690]
+            lea ebx, [eax*8 + gJoystick_effects+0x68]
             xor eax, eax
             repne scasb
             not ecx
@@ -2526,7 +3000,7 @@ int C2_NAKED C2_HOOK_FASTCALL InitForceFeedback(void) {
             inc edx
             rep movsb
             mov ecx, dword ptr [ebp]
-            mov dword ptr ds:[gCount_joystick_effects], edx
+            mov dword ptr [gCount_joystick_effects], edx
             call UnloadDinputFFBEfectwithName
             mov eax, dword ptr [esp + 0x10]
             add ebp, 4
@@ -2534,10 +3008,15 @@ int C2_NAKED C2_HOOK_FASTCALL InitForceFeedback(void) {
             mov dword ptr [esp + 0x10], eax
             jne L0045796b
     L00457a24:
-            mov ecx, dword ptr ds:[gIfr_project]
+            mov ecx, dword ptr [gIfr_project]
             push ecx
-            call dword ptr ds:[0x589030]
-            mov eax, dword ptr ds:[gForceFeedbackAvailable]
+            _emit 0xff
+        _emit 0x15
+        _emit 0x30
+        _emit 0x90
+        _emit 0x58
+        _emit 0x00
+            mov eax, dword ptr [gForceFeedbackAvailable]
             pop edi
             pop esi
             pop ebp
@@ -2545,10 +3024,10 @@ int C2_NAKED C2_HOOK_FASTCALL InitForceFeedback(void) {
             add esp, 0x15c
             ret
     L00457a41:
-            mov ecx, 0x596044
+            mov ecx, offset gMatchData_00596044
             call PDFatalError
     L00457a4b:
-            mov eax, dword ptr ds:[gForceFeedbackAvailable]
+            mov eax, dword ptr [gForceFeedbackAvailable]
             pop edi
             pop esi
             pop ebp
@@ -2630,7 +3109,7 @@ void C2_NAKED C2_HOOK_FASTCALL RegisterJoystickFFBForces(void) {
             push esi
             xor esi, esi
             mov eax, 0x2710
-            push offset gUNK_00595f9c+0x128
+            push offset gMatchString_005960c4
             lea edx, [esp + 8]
             mov dword ptr [esp + 8], 0xc
             mov dword ptr [esp + 0xc], esi
@@ -2643,7 +3122,7 @@ void C2_NAKED C2_HOOK_FASTCALL RegisterJoystickFFBForces(void) {
             call CreateDinputEffect
             mov ecx, dword ptr [gJoystick_index]
             lea edx, [esp + 4]
-            push offset gUNK_00595f9c+0x11c
+            push offset gMatchString_005960b8
             mov dword ptr [gBasic_friction_joystick_effect_index], eax
             mov dword ptr [esp + 8], esi
             mov dword ptr [esp + 0xc], esi
@@ -2655,7 +3134,7 @@ void C2_NAKED C2_HOOK_FASTCALL RegisterJoystickFFBForces(void) {
             call CreateDinputEffect
             mov ecx, dword ptr [gJoystick_index]
             lea edx, [esp + 4]
-            push offset gUNK_00595f9c+0x10c
+            push offset gMatchString_005960a8
             mov dword ptr [gBasic_force_joystick_effect_index], eax
             mov dword ptr [esp + 8], esi
             mov dword ptr [esp + 0xc], esi
@@ -2669,6 +3148,7 @@ void C2_NAKED C2_HOOK_FASTCALL RegisterJoystickFFBForces(void) {
             pop esi
             add esp, 0x60
             ret
+            nop
     }
 #endif
 }
@@ -2968,7 +3448,7 @@ int C2_NAKED C2_HOOK_FASTCALL JoystickDInputBegin(void) {
     return gCountEnumeratedJoystickDinputDevices;
 #else
     __asm {
-            mov eax, dword ptr ds:[gDirectInputJoystickHandle]
+            mov eax, dword ptr [gDirectInputJoystickHandle]
             push ebx
             xor ebx, ebx
             push esi
@@ -2978,7 +3458,7 @@ int C2_NAKED C2_HOOK_FASTCALL JoystickDInputBegin(void) {
             mov ecx, 0x10
             xor eax, eax
             mov edi, offset gDirectInputJoystickDevices
-            mov edx, 0x79d9c4
+            mov edx, offset gDirectInputJoystickInfos+0x4
             rep stosd
     L00458881:
             mov dword ptr [edx - 4], ebx
@@ -2988,7 +3468,7 @@ int C2_NAKED C2_HOOK_FASTCALL JoystickDInputBegin(void) {
             mov dword ptr [edx + 0x5c], ebx
             mov dword ptr [edx + 0x60], ebx
             add edx, 0x68
-            cmp edx, 0x79e044
+            cmp edx, offset gMatchData_0079e044
             jl L00458881
             push ebx
             mov ecx, 0x1e
@@ -2998,12 +3478,17 @@ int C2_NAKED C2_HOOK_FASTCALL JoystickDInputBegin(void) {
             push 0x500
             rep stosd
             push ebx
-            mov dword ptr ds:[gJoystickFFB], ebx
-            mov dword ptr ds:[gCountEnumeratedJoystickDinputDevices], ebx
-            call dword ptr ds:[0x589098]
+            mov dword ptr [gJoystickFFB], ebx
+            mov dword ptr [gCountEnumeratedJoystickDinputDevices], ebx
+            _emit 0xff
+        _emit 0x15
+        _emit 0x98
+        _emit 0x90
+        _emit 0x58
+        _emit 0x00
             push eax
             call DirectInputCreateA
-            mov eax, dword ptr ds:[gDirectInputJoystickHandle]
+            mov eax, dword ptr [gDirectInputJoystickHandle]
             cmp eax, ebx
             jne L004588de
             xor eax, eax
@@ -3012,12 +3497,12 @@ int C2_NAKED C2_HOOK_FASTCALL JoystickDInputBegin(void) {
             pop ebx
             ret
     L004588de:
-            mov dword ptr ds:[gDirectInputJoystickEnumerated], ebx
+            mov dword ptr [gDirectInputJoystickEnumerated], ebx
     L004588e4:
-            cmp dword ptr ds:[gDirectInputJoystickEnumerated], ebx
+            cmp dword ptr [gDirectInputJoystickEnumerated], ebx
             jne L004589be
-            mov ecx, dword ptr ds:[gCountEnumeratedJoystickDinputDevices]
-            mov dword ptr ds:[gDirectInputJoystickEnumerated], 1
+            mov ecx, dword ptr [gCountEnumeratedJoystickDinputDevices]
+            mov dword ptr [gDirectInputJoystickEnumerated], 1
             cmp ecx, ebx
             jne L00458914
             mov ecx, dword ptr [eax]
@@ -3028,7 +3513,7 @@ int C2_NAKED C2_HOOK_FASTCALL JoystickDInputBegin(void) {
             push eax
             call dword ptr [ecx + 0x10]
     L00458914:
-            cmp dword ptr ds:[gCountEnumeratedJoystickDinputDevices], ebx
+            cmp dword ptr [gCountEnumeratedJoystickDinputDevices], ebx
             je L00458997
             xor esi, esi
             mov edi, offset gDirectInputJoystickDevices
@@ -3037,7 +3522,7 @@ int C2_NAKED C2_HOOK_FASTCALL JoystickDInputBegin(void) {
             xor edx, edx
             mov ecx, esi
             call JoystickDInputGetInfo
-            cmp dword ptr ds:[gDirectInputJoystickHandle], ebx
+            cmp dword ptr [gDirectInputJoystickHandle], ebx
             je L00458985
             mov eax, dword ptr [edi]
             cmp eax, ebx
@@ -3048,28 +3533,28 @@ int C2_NAKED C2_HOOK_FASTCALL JoystickDInputBegin(void) {
             cmp eax, ebx
             jne L0045894d
             push esi
-            push 0x59602c
+            push offset gMatchData_0059602c
             jmp L0045897d
     L0045894d:
             cmp eax, 1
             jne L0045895a
             push esi
-            push 0x59600c
+            push offset gMatchData_0059600c
             jmp L0045897d
     L0045895a:
             cmp eax, 0x80070057
             jne L00458969
             push esi
-            push 0x595fec
+            push offset gMatchData_00595fec
             jmp L0045897d
     L00458969:
             cmp eax, 0x80070005
             push esi
             jne L00458978
-            push 0x595fc8
+            push offset gMatchData_00595fc8
             jmp L0045897d
     L00458978:
-            push 0x595fa0
+            push offset gMatchFloat_00595fa0
     L0045897d:
             call dr_dprintf
             add esp, 8
@@ -3078,9 +3563,9 @@ int C2_NAKED C2_HOOK_FASTCALL JoystickDInputBegin(void) {
             inc esi
             cmp edi, offset gDirectInputEffects
             jl L00458923
-            mov dword ptr ds:[gJoystick_index], ebx
+            mov dword ptr [gJoystick_index], ebx
     L00458997:
-            cmp dword ptr ds:[gJoystick_index], ebx
+            cmp dword ptr [gJoystick_index], ebx
             jge L004589a5
             xor eax, eax
             pop edi
@@ -3091,15 +3576,24 @@ int C2_NAKED C2_HOOK_FASTCALL JoystickDInputBegin(void) {
             call InitForceFeedback
             test eax, eax
             je L004589be
-            mov ecx, dword ptr ds:[gJoystick_index]
+            mov ecx, dword ptr [gJoystick_index]
             call ResetDInputJoystickFFB
             call RegisterJoystickFFBForces
     L004589be:
-            mov eax, dword ptr ds:[gCountEnumeratedJoystickDinputDevices]
+            mov eax, dword ptr [gCountEnumeratedJoystickDinputDevices]
             pop edi
             pop esi
             pop ebx
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -3555,14 +4049,14 @@ void C2_NAKED C2_HOOK_FASTCALL Win32InitInputDevice(void) {
 #else
     __asm {
             sub esp, 0x10
-            mov ecx, dword ptr ds:[0x58b48c]
-            mov eax, dword ptr ds:[0x58b488]
-            mov edx, dword ptr ds:[0x58b490]
+            mov ecx, dword ptr [gMatchFloat_0058b48c]
+            mov eax, dword ptr [gMatchFloat_0058b488]
+            mov edx, dword ptr [gMatchFloat_0058b490]
             mov dword ptr [esp + 4], ecx
-            mov ecx, dword ptr ds:[gHInstance]
+            mov ecx, dword ptr [gHInstance]
             push 0
             mov dword ptr [esp + 4], eax
-            mov eax, dword ptr ds:[0x58b494]
+            mov eax, dword ptr [gMatchData_0058b494]
             push offset gDirectInput
             push 0x500
             push ecx
@@ -3571,10 +4065,10 @@ void C2_NAKED C2_HOOK_FASTCALL Win32InitInputDevice(void) {
             call DirectInputCreateA
             test eax, eax
             je L0051ccaf
-            push 0x66302c
+            push offset gMatchFloat_0066302c
             push 0x66242c
             call dr_dprintf
-            mov ecx, 0x66302c
+            mov ecx, offset gMatchFloat_0066302c
             add esp, 8
             mov edx, ecx
             mov eax, 0x676920
@@ -3591,19 +4085,19 @@ void C2_NAKED C2_HOOK_FASTCALL Win32InitInputDevice(void) {
             push ecx
             push 0x66240c
             push offset gFatalErrorMessage
-            mov dword ptr ds:[gIsFatalError], 1
+            mov dword ptr [gIsFatalError], 1
             call sprintf
-            mov eax, dword ptr ds:[gBack_screen]
+            mov eax, dword ptr [gBack_screen]
             add esp, 0x10
             test eax, eax
-            mov dword ptr ds:[gExit_code], 0x2bc
+            mov dword ptr [gExit_code], 0x2bc
             je L0051ce90
             mov ecx, dword ptr [eax + 8]
             test ecx, ecx
             je L0051ce90
             jmp L0051ce86
     L0051ccaf:
-            mov eax, dword ptr ds:[gDirectInput]
+            mov eax, dword ptr [gDirectInput]
             push 0
             lea edx, [esp + 4]
             push offset gDirectInputDevice
@@ -3613,10 +4107,10 @@ void C2_NAKED C2_HOOK_FASTCALL Win32InitInputDevice(void) {
             call dword ptr [ecx + 0xc]
             test eax, eax
             je L0051cd44
-            push 0x663008
+            push offset gMatchFloat_00663008
             push 0x66242c
             call dr_dprintf
-            mov ecx, 0x663008
+            mov ecx, offset gMatchFloat_00663008
             add esp, 8
             mov edx, ecx
             mov eax, 0x676920
@@ -3633,29 +4127,29 @@ void C2_NAKED C2_HOOK_FASTCALL Win32InitInputDevice(void) {
             push ecx
             push 0x66240c
             push offset gFatalErrorMessage
-            mov dword ptr ds:[gIsFatalError], 1
+            mov dword ptr [gIsFatalError], 1
             call sprintf
-            mov eax, dword ptr ds:[gBack_screen]
+            mov eax, dword ptr [gBack_screen]
             add esp, 0x10
             test eax, eax
-            mov dword ptr ds:[gExit_code], 0x2bc
+            mov dword ptr [gExit_code], 0x2bc
             je L0051ce90
             mov ecx, dword ptr [eax + 8]
             test ecx, ecx
             je L0051ce90
             jmp L0051ce86
     L0051cd44:
-            mov eax, dword ptr ds:[gDirectInputDevice]
+            mov eax, dword ptr [gDirectInputDevice]
             push 0x54e330
             push eax
             mov ecx, dword ptr [eax]
             call dword ptr [ecx + 0x2c]
             test eax, eax
             je L0051cdfd
-            push 0x662fe4
+            push offset gMatchFloat_00662fe4
             push 0x66242c
             call dr_dprintf
-            mov ecx, 0x662fe4
+            mov ecx, offset gMatchFloat_00662fe4
             add esp, 8
             mov edx, ecx
             mov eax, 0x676920
@@ -3666,23 +4160,23 @@ void C2_NAKED C2_HOOK_FASTCALL Win32InitInputDevice(void) {
             test edx, edx
             jne L0051ce4e
             mov eax, 0x662414
-            mov dword ptr ds:[gIsFatalError], 1
+            mov dword ptr [gIsFatalError], 1
             push eax
             push ecx
             push 0x66240c
             push offset gFatalErrorMessage
             call sprintf
-            mov eax, dword ptr ds:[gBack_screen]
+            mov eax, dword ptr [gBack_screen]
             add esp, 0x10
             test eax, eax
-            mov dword ptr ds:[gExit_code], 0x2bc
+            mov dword ptr [gExit_code], 0x2bc
             je L0051ce90
             mov ecx, dword ptr [eax + 8]
             test ecx, ecx
             je L0051ce90
             mov ecx, 1
             call PossibleUnlock
-            mov eax, dword ptr ds:[gBr_initialized]
+            mov eax, dword ptr [gBr_initialized]
             test eax, eax
             je L0051ce9e
             call DRBrEnd
@@ -3691,8 +4185,8 @@ void C2_NAKED C2_HOOK_FASTCALL Win32InitInputDevice(void) {
             add esp, 0x10
             ret
     L0051cdfd:
-            mov eax, dword ptr ds:[gDirectInputDevice]
-            mov edx, dword ptr ds:[gHWnd]
+            mov eax, dword ptr [gDirectInputDevice]
+            mov edx, dword ptr [gHWnd]
             push 6
             push edx
             mov ecx, dword ptr [eax]
@@ -3700,10 +4194,10 @@ void C2_NAKED C2_HOOK_FASTCALL Win32InitInputDevice(void) {
             call dword ptr [ecx + 0x34]
             test eax, eax
             je L0051cea9
-            push 0x662fb0
+            push offset gMatchFloat_00662fb0
             push 0x66242c
             call dr_dprintf
-            mov ecx, 0x662fb0
+            mov ecx, offset gMatchFloat_00662fb0
             add esp, 8
             mov edx, ecx
             mov eax, 0x676920
@@ -3720,12 +4214,12 @@ void C2_NAKED C2_HOOK_FASTCALL Win32InitInputDevice(void) {
             push ecx
             push 0x66240c
             push offset gFatalErrorMessage
-            mov dword ptr ds:[gIsFatalError], 1
+            mov dword ptr [gIsFatalError], 1
             call sprintf
-            mov eax, dword ptr ds:[gBack_screen]
+            mov eax, dword ptr [gBack_screen]
             add esp, 0x10
             test eax, eax
-            mov dword ptr ds:[gExit_code], 0x2bc
+            mov dword ptr [gExit_code], 0x2bc
             je L0051ce90
             mov ecx, dword ptr [eax + 8]
             test ecx, ecx
@@ -3734,7 +4228,7 @@ void C2_NAKED C2_HOOK_FASTCALL Win32InitInputDevice(void) {
             mov ecx, 1
             call PossibleUnlock
     L0051ce90:
-            mov eax, dword ptr ds:[gBr_initialized]
+            mov eax, dword ptr [gBr_initialized]
             test eax, eax
             je L0051ce9e
             call DRBrEnd
@@ -3744,14 +4238,14 @@ void C2_NAKED C2_HOOK_FASTCALL Win32InitInputDevice(void) {
             add esp, 0x10
             ret
     L0051cea9:
-            mov eax, dword ptr ds:[gDirectInputDevice]
+            mov eax, dword ptr [gDirectInputDevice]
             push eax
             mov ecx, dword ptr [eax]
             call dword ptr [ecx + 0x1c]
             test eax, eax
             jge L0051cec6
             push eax
-            push 0x662f84
+            push offset gMatchFloat_00662f84
             call dr_dprintf
             add esp, 8
     L0051cec6:
@@ -3761,10 +4255,14 @@ void C2_NAKED C2_HOOK_FASTCALL Win32InitInputDevice(void) {
             call CollectJoystickButtonInfos
             call LoadJoystickPreferences
     L0051ced9:
-            mov dword ptr ds:[gJoystick_deadzone], 0x1f40
+            mov dword ptr [gJoystick_deadzone], 0x1f40
             mov eax, 1
             add esp, 0x10
             ret
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -3857,7 +4355,7 @@ tU32 C2_NAKED C2_HOOK_FASTCALL PDGetJoystickButtonStates(void) {
             test eax, eax
             jne L0045970b
             push esi
-            push offset gUNK_00595f9c+0x90
+            push offset gMatchData_0059602c
             call dr_dprintf
             add esp, 8
             mov eax, 1
@@ -3866,7 +4364,7 @@ tU32 C2_NAKED C2_HOOK_FASTCALL PDGetJoystickButtonStates(void) {
             cmp eax, 1
             jne L00459725
             push esi
-            push offset gUNK_00595f9c+0x70
+            push offset gMatchData_0059600c
             call dr_dprintf
             add esp, 8
             mov eax, 1
@@ -3875,7 +4373,7 @@ tU32 C2_NAKED C2_HOOK_FASTCALL PDGetJoystickButtonStates(void) {
             cmp eax, 0x80070057
             jne L0045973e
             push esi
-            push offset gUNK_00595f9c+0x50
+            push offset gMatchData_00595fec
             call dr_dprintf
             add esp, 8
             xor eax, eax
@@ -3884,13 +4382,13 @@ tU32 C2_NAKED C2_HOOK_FASTCALL PDGetJoystickButtonStates(void) {
             cmp eax, 0x80070005
             push esi
             jne L00459757
-            push offset gUNK_00595f9c+0x2c
+            push offset gMatchData_00595fc8
             call dr_dprintf
             add esp, 8
             xor eax, eax
             jmp L0045976b
     L00459757:
-            push offset gUNK_00595f9c+0x4
+            push offset gMatchFloat_00595fa0
             call dr_dprintf
             add esp, 8
             xor eax, eax
@@ -3902,7 +4400,7 @@ tU32 C2_NAKED C2_HOOK_FASTCALL PDGetJoystickButtonStates(void) {
             jne L00459944
             mov eax, dword ptr [gJoystick_index]
             push eax
-            push offset gUNK_00595f9c+0x170
+            push offset gMatchFloat_0059610c
             call dr_dprintf
             add esp, 8
             xor eax, eax
@@ -3925,7 +4423,7 @@ tU32 C2_NAKED C2_HOOK_FASTCALL PDGetJoystickButtonStates(void) {
             test eax, eax
             jne L004597d5
             push esi
-            push offset gUNK_00595f9c+0x90
+            push offset gMatchData_0059602c
             call dr_dprintf
             add esp, 8
             mov eax, 1
@@ -3934,7 +4432,7 @@ tU32 C2_NAKED C2_HOOK_FASTCALL PDGetJoystickButtonStates(void) {
             cmp eax, 1
             jne L004597ef
             push esi
-            push offset gUNK_00595f9c+0x70
+            push offset gMatchData_0059600c
             call dr_dprintf
             add esp, 8
             mov eax, 1
@@ -3943,7 +4441,7 @@ tU32 C2_NAKED C2_HOOK_FASTCALL PDGetJoystickButtonStates(void) {
             cmp eax, 0x80070057
             jne L00459808
             push esi
-            push offset gUNK_00595f9c+0x50
+            push offset gMatchData_00595fec
             call dr_dprintf
             add esp, 8
             xor eax, eax
@@ -3952,13 +4450,13 @@ tU32 C2_NAKED C2_HOOK_FASTCALL PDGetJoystickButtonStates(void) {
             cmp eax, 0x80070005
             push esi
             jne L00459821
-            push offset gUNK_00595f9c+0x2c
+            push offset gMatchData_00595fc8
             call dr_dprintf
             add esp, 8
             xor eax, eax
             jmp L00459835
     L00459821:
-            push offset gUNK_00595f9c+0x4
+            push offset gMatchFloat_00595fa0
             call dr_dprintf
             add esp, 8
             xor eax, eax
@@ -3970,7 +4468,7 @@ tU32 C2_NAKED C2_HOOK_FASTCALL PDGetJoystickButtonStates(void) {
             jne L00459944
             mov edx, dword ptr [gJoystick_index]
             push edx
-            push offset gUNK_00595f9c+0x170
+            push offset gMatchFloat_0059610c
             call dr_dprintf
             add esp, 8
             xor eax, eax
@@ -3978,7 +4476,7 @@ tU32 C2_NAKED C2_HOOK_FASTCALL PDGetJoystickButtonStates(void) {
             add esp, 0x50
             ret
     L00459858:
-            push offset gUNK_00595f9c+0x154
+            push offset gMatchFloat_005960f0
             call dr_dprintf
             add esp, 4
             xor eax, eax
@@ -3997,7 +4495,7 @@ tU32 C2_NAKED C2_HOOK_FASTCALL PDGetJoystickButtonStates(void) {
             mov esi, eax
             test esi, esi
             jge L0045994b
-            push offset gUNK_00595f9c+0x138
+            push offset gMatchFloat_005960d4
             call dr_dprintf
             add esp, 4
             cmp esi, 0x8007001e
@@ -4015,7 +4513,7 @@ tU32 C2_NAKED C2_HOOK_FASTCALL PDGetJoystickButtonStates(void) {
             test eax, eax
             jne L004598e5
             push esi
-            push offset gUNK_00595f9c+0x90
+            push offset gMatchData_0059602c
             call dr_dprintf
             add esp, 8
             xor eax, eax
@@ -4026,7 +4524,7 @@ tU32 C2_NAKED C2_HOOK_FASTCALL PDGetJoystickButtonStates(void) {
             cmp eax, 1
             jne L004598ff
             push esi
-            push offset gUNK_00595f9c+0x70
+            push offset gMatchData_0059600c
             call dr_dprintf
             add esp, 8
             xor eax, eax
@@ -4037,7 +4535,7 @@ tU32 C2_NAKED C2_HOOK_FASTCALL PDGetJoystickButtonStates(void) {
             cmp eax, 0x80070057
             jne L0045991b
             push esi
-            push offset gUNK_00595f9c+0x50
+            push offset gMatchData_00595fec
             call dr_dprintf
             add esp, 8
             xor eax, eax
@@ -4048,7 +4546,7 @@ tU32 C2_NAKED C2_HOOK_FASTCALL PDGetJoystickButtonStates(void) {
             cmp eax, 0x80070005
             push esi
             jne L00459937
-            push offset gUNK_00595f9c+0x2c
+            push offset gMatchData_00595fc8
             call dr_dprintf
             add esp, 8
             xor eax, eax
@@ -4056,7 +4554,7 @@ tU32 C2_NAKED C2_HOOK_FASTCALL PDGetJoystickButtonStates(void) {
             add esp, 0x50
             ret
     L00459937:
-            push offset gUNK_00595f9c+0x4
+            push offset gMatchFloat_00595fa0
             call dr_dprintf
             add esp, 8
     L00459944:
@@ -4081,6 +4579,11 @@ tU32 C2_NAKED C2_HOOK_FASTCALL PDGetJoystickButtonStates(void) {
             pop esi
             add esp, 0x50
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -4237,17 +4740,22 @@ void C2_NAKED C2_HOOK_FASTCALL PDSetKeyArray(int* pKeys, int pMark) {
             xor ebx, ebx
             mov edi, edx
             mov esi, ecx
-            mov dword ptr ds:[gKeys_pressed], ebx
+            mov dword ptr [gKeys_pressed], ebx
             call SDL3ServiceMessages
-            cmp dword ptr ds:[gWindowActiveState], 2
+            cmp dword ptr [gWindowActiveState], 2
             jne L0051d14b
-            cmp dword ptr ds:[gTime_app_activated], ebx
+            cmp dword ptr [gTime_app_activated], ebx
             je L0051cfba
-            cmp dword ptr ds:[gPerformanceCounterInitialized], ebx
+            cmp dword ptr [gPerformanceCounterInitialized], ebx
             je L0051cfa4
             lea eax, [ebp - 0xc]
             push eax
-            call dword ptr ds:[0x589040]
+            _emit 0xff
+        _emit 0x15
+        _emit 0x40
+        _emit 0x90
+        _emit 0x58
+        _emit 0x00
             mov eax, dword ptr [ebp - 8]
             mov ebx, 0x10
             cdq
@@ -4270,14 +4778,14 @@ void C2_NAKED C2_HOOK_FASTCALL PDSetKeyArray(int* pKeys, int pMark) {
             mov ecx, dword ptr [ebp - 0xc]
             xor ebx, ebx
             add eax, ecx
-            mov ecx, dword ptr ds:[0x6acc84]
+            mov ecx, dword ptr [gPerformanceCounterStart+0x4]
             adc edx, ebx
-            mov ebx, dword ptr ds:[gPerformanceCounterStart]
+            mov ebx, dword ptr [gPerformanceCounterStart]
             sub eax, ebx
             sbb edx, ecx
-            mov ecx, dword ptr ds:[0x6ad1f4]
+            mov ecx, dword ptr [gPerformanceCounterFrequency_ms+0x4]
             push ecx
-            mov ecx, dword ptr ds:[gPerformanceCounterFrequency_ms]
+            mov ecx, dword ptr [gPerformanceCounterFrequency_ms]
             push ecx
             push edx
             push eax
@@ -4288,14 +4796,14 @@ void C2_NAKED C2_HOOK_FASTCALL PDSetKeyArray(int* pKeys, int pMark) {
     L0051cfa4:
             xor eax, eax
     L0051cfa6:
-            mov edx, dword ptr ds:[gTime_app_activated]
+            mov edx, dword ptr [gTime_app_activated]
             add edx, 0x3e8
             cmp eax, edx
             jb L0051d14b
     L0051cfba:
-            mov eax, dword ptr ds:[gDirectInputDevice]
+            mov eax, dword ptr [gDirectInputDevice]
             lea edx, [ebp - 0x114]
-            mov dword ptr ds:[gTime_app_activated], ebx
+            mov dword ptr [gTime_app_activated], ebx
             push edx
             mov ecx, dword ptr [eax]
             push 0x100
@@ -4303,19 +4811,19 @@ void C2_NAKED C2_HOOK_FASTCALL PDSetKeyArray(int* pKeys, int pMark) {
             call dword ptr [ecx + 0x24]
             cmp eax, ebx
             je L0051d04f
-            push 0x6630fc
+            push offset gMatchFloat_006630fc
             call dr_dprintf
             add esp, 4
-            push 0x6630d8
+            push offset gMatchFloat_006630d8
             call dr_dprintf
-            mov eax, dword ptr ds:[gDirectInputDevice]
+            mov eax, dword ptr [gDirectInputDevice]
             add esp, 4
             cmp eax, ebx
             je L0051d009
             mov ecx, dword ptr [eax]
             push eax
             call dword ptr [ecx + 0x1c]
-            mov eax, dword ptr ds:[gDirectInputDevice]
+            mov eax, dword ptr [gDirectInputDevice]
     L0051d009:
             mov edx, dword ptr [eax]
             lea ecx, [ebp - 0x114]
@@ -4325,10 +4833,10 @@ void C2_NAKED C2_HOOK_FASTCALL PDSetKeyArray(int* pKeys, int pMark) {
             call dword ptr [edx + 0x24]
             cmp eax, ebx
             je L0051d042
-            push 0x6630a4
+            push offset gMatchFloat_006630a4
             call dr_dprintf
             add esp, 4
-            push 0x663094
+            push offset gMatchString_00663094
             call dr_dprintf
             add esp, 4
             mov dword ptr [esi], ebx
@@ -4339,14 +4847,14 @@ void C2_NAKED C2_HOOK_FASTCALL PDSetKeyArray(int* pKeys, int pMark) {
             pop ebp
             ret
     L0051d042:
-            push 0x66307c
+            push offset gMatchFloat_0066307c
             call dr_dprintf
             add esp, 4
     L0051d04f:
             xor ecx, ecx
             mov dl, 0x80
     L0051d053:
-            mov eax, dword ptr [ecx*4 + 0x6b34a0]
+            mov eax, dword ptr [ecx*4 + gScan_code+0x30]
             cmp eax, ebx
             je L0051d137
             cmp eax, 0xff
@@ -4354,10 +4862,10 @@ void C2_NAKED C2_HOOK_FASTCALL PDSetKeyArray(int* pKeys, int pMark) {
             cmp ecx, 3
             ja L0051d137
             jmp dword ptr [ecx*4 + 0x51d154]
-            mov eax, dword ptr ds:[0x6b34c0]
+            mov eax, dword ptr [gScan_code+0x50]
             test byte ptr [ebp + eax - 0x114], dl
             jne L0051d0a8
-            mov eax, dword ptr ds:[0x6b34b4]
+            mov eax, dword ptr [gScan_code+0x44]
             test byte ptr [ebp + eax - 0x114], dl
             jne L0051d0a8
             cmp dword ptr [esi], edi
@@ -4367,10 +4875,10 @@ void C2_NAKED C2_HOOK_FASTCALL PDSetKeyArray(int* pKeys, int pMark) {
     L0051d0a8:
             mov dword ptr [esi], edi
             jmp L0051d137
-            mov eax, dword ptr ds:[0x6b34c4]
+            mov eax, dword ptr [gScan_code+0x54]
             test byte ptr [ebp + eax - 0x114], dl
             jne L0051d0d5
-            mov eax, dword ptr ds:[0x6b34b8]
+            mov eax, dword ptr [gScan_code+0x48]
             test byte ptr [ebp + eax - 0x114], dl
             jne L0051d0d5
             cmp dword ptr [esi + 4], edi
@@ -4380,10 +4888,10 @@ void C2_NAKED C2_HOOK_FASTCALL PDSetKeyArray(int* pKeys, int pMark) {
     L0051d0d5:
             mov dword ptr [esi + 4], edi
             jmp L0051d137
-            mov eax, dword ptr ds:[0x6b34c8]
+            mov eax, dword ptr [gScan_code+0x58]
             test byte ptr [ebp + eax - 0x114], dl
             jne L0051d108
-            mov eax, dword ptr ds:[0x6b34bc]
+            mov eax, dword ptr [gScan_code+0x4c]
             test byte ptr [ebp + eax - 0x114], dl
             jne L0051d108
             cmp dword ptr [esi + 8], edi
@@ -4402,10 +4910,10 @@ void C2_NAKED C2_HOOK_FASTCALL PDSetKeyArray(int* pKeys, int pMark) {
             test byte ptr [ebp + eax - 0x114], dl
             je L0051d12f
             mov dword ptr [esi + ecx*4], edi
-            mov eax, dword ptr ds:[gKeys_pressed]
+            mov eax, dword ptr [gKeys_pressed]
             shl eax, 8
             lea eax, [eax + ecx + 1]
-            mov dword ptr ds:[gKeys_pressed], eax
+            mov dword ptr [gKeys_pressed], eax
             jmp L0051d137
     L0051d12f:
             cmp dword ptr [esi + ecx*4], edi
@@ -4675,7 +5183,7 @@ int C2_NAKED C2_HOOK_FASTCALL GetDirectInputJoy1X(void) {
             test eax, eax
             jne L004590e0
             push esi
-            push offset gUNK_00595f9c+0x90
+            push offset gMatchData_0059602c
             call dr_dprintf
             add esp, 8
             mov eax, 1
@@ -4684,7 +5192,7 @@ int C2_NAKED C2_HOOK_FASTCALL GetDirectInputJoy1X(void) {
             cmp eax, 1
             jne L004590fa
             push esi
-            push offset gUNK_00595f9c+0x70
+            push offset gMatchData_0059600c
             call dr_dprintf
             add esp, 8
             mov eax, 1
@@ -4693,7 +5201,7 @@ int C2_NAKED C2_HOOK_FASTCALL GetDirectInputJoy1X(void) {
             cmp eax, 0x80070057
             jne L00459113
             push esi
-            push offset gUNK_00595f9c+0x50
+            push offset gMatchData_00595fec
             call dr_dprintf
             add esp, 8
             xor eax, eax
@@ -4702,13 +5210,13 @@ int C2_NAKED C2_HOOK_FASTCALL GetDirectInputJoy1X(void) {
             cmp eax, 0x80070005
             push esi
             jne L0045912c
-            push offset gUNK_00595f9c+0x2c
+            push offset gMatchData_00595fc8
             call dr_dprintf
             add esp, 8
             xor eax, eax
             jmp L00459140
     L0045912c:
-            push offset gUNK_00595f9c+0x4
+            push offset gMatchFloat_00595fa0
             call dr_dprintf
             add esp, 8
             xor eax, eax
@@ -4720,7 +5228,7 @@ int C2_NAKED C2_HOOK_FASTCALL GetDirectInputJoy1X(void) {
             jne L00459324
             mov eax, dword ptr [gJoystick_index]
             push eax
-            push offset gUNK_00595f9c+0x170
+            push offset gMatchFloat_0059610c
             call dr_dprintf
             add esp, 8
             or eax, 0xffffffff
@@ -4743,7 +5251,7 @@ int C2_NAKED C2_HOOK_FASTCALL GetDirectInputJoy1X(void) {
             test eax, eax
             jne L004591ab
             push esi
-            push offset gUNK_00595f9c+0x90
+            push offset gMatchData_0059602c
             call dr_dprintf
             add esp, 8
             mov eax, 1
@@ -4752,7 +5260,7 @@ int C2_NAKED C2_HOOK_FASTCALL GetDirectInputJoy1X(void) {
             cmp eax, 1
             jne L004591c5
             push esi
-            push offset gUNK_00595f9c+0x70
+            push offset gMatchData_0059600c
             call dr_dprintf
             add esp, 8
             mov eax, 1
@@ -4761,7 +5269,7 @@ int C2_NAKED C2_HOOK_FASTCALL GetDirectInputJoy1X(void) {
             cmp eax, 0x80070057
             jne L004591de
             push esi
-            push offset gUNK_00595f9c+0x50
+            push offset gMatchData_00595fec
             call dr_dprintf
             add esp, 8
             xor eax, eax
@@ -4770,13 +5278,13 @@ int C2_NAKED C2_HOOK_FASTCALL GetDirectInputJoy1X(void) {
             cmp eax, 0x80070005
             push esi
             jne L004591f7
-            push offset gUNK_00595f9c+0x2c
+            push offset gMatchData_00595fc8
             call dr_dprintf
             add esp, 8
             xor eax, eax
             jmp L0045920b
     L004591f7:
-            push offset gUNK_00595f9c+0x4
+            push offset gMatchFloat_00595fa0
             call dr_dprintf
             add esp, 8
             xor eax, eax
@@ -4788,7 +5296,7 @@ int C2_NAKED C2_HOOK_FASTCALL GetDirectInputJoy1X(void) {
             jne L00459324
             mov edx, dword ptr [gJoystick_index]
             push edx
-            push offset gUNK_00595f9c+0x170
+            push offset gMatchFloat_0059610c
             call dr_dprintf
             add esp, 8
             or eax, 0xffffffff
@@ -4796,7 +5304,7 @@ int C2_NAKED C2_HOOK_FASTCALL GetDirectInputJoy1X(void) {
             add esp, 0x54
             ret
     L0045922f:
-            push offset gUNK_00595f9c+0x154
+            push offset gMatchFloat_005960f0
             call dr_dprintf
             add esp, 4
             or eax, 0xffffffff
@@ -4815,7 +5323,7 @@ int C2_NAKED C2_HOOK_FASTCALL GetDirectInputJoy1X(void) {
             mov esi, eax
             test esi, esi
             je L0045932c
-            push offset gUNK_00595f9c+0x138
+            push offset gMatchFloat_005960d4
             call dr_dprintf
             add esp, 4
             cmp esi, 0x8007001e
@@ -4833,7 +5341,7 @@ int C2_NAKED C2_HOOK_FASTCALL GetDirectInputJoy1X(void) {
             test eax, eax
             jne L004592c2
             push esi
-            push offset gUNK_00595f9c+0x90
+            push offset gMatchData_0059602c
             call dr_dprintf
             add esp, 8
             or eax, 0xffffffff
@@ -4844,7 +5352,7 @@ int C2_NAKED C2_HOOK_FASTCALL GetDirectInputJoy1X(void) {
             cmp eax, 1
             jne L004592dd
             push esi
-            push offset gUNK_00595f9c+0x70
+            push offset gMatchData_0059600c
             call dr_dprintf
             add esp, 8
             or eax, 0xffffffff
@@ -4855,7 +5363,7 @@ int C2_NAKED C2_HOOK_FASTCALL GetDirectInputJoy1X(void) {
             cmp eax, 0x80070057
             jne L004592fa
             push esi
-            push offset gUNK_00595f9c+0x50
+            push offset gMatchData_00595fec
             call dr_dprintf
             add esp, 8
             or eax, 0xffffffff
@@ -4866,7 +5374,7 @@ int C2_NAKED C2_HOOK_FASTCALL GetDirectInputJoy1X(void) {
             cmp eax, 0x80070005
             push esi
             jne L00459317
-            push offset gUNK_00595f9c+0x2c
+            push offset gMatchData_00595fc8
             call dr_dprintf
             add esp, 8
             or eax, 0xffffffff
@@ -4874,7 +5382,7 @@ int C2_NAKED C2_HOOK_FASTCALL GetDirectInputJoy1X(void) {
             add esp, 0x54
             ret
     L00459317:
-            push offset gUNK_00595f9c+0x4
+            push offset gMatchFloat_00595fa0
             call dr_dprintf
             add esp, 8
     L00459324:
@@ -4888,7 +5396,7 @@ int C2_NAKED C2_HOOK_FASTCALL GetDirectInputJoy1X(void) {
             mov dword ptr [esp + 4], edx
             fild dword ptr [esp + 4]
             fmul dword ptr [gJoystick_x_steering]
-            fsub dword ptr [gJoystick_effect_guids+0x34]
+            fsub dword ptr [gMatchFloat_00589f6c]
             call _ftol
             cmp eax, 0xffff
             jle L00459360
@@ -4904,6 +5412,11 @@ int C2_NAKED C2_HOOK_FASTCALL GetDirectInputJoy1X(void) {
             pop esi
             add esp, 0x54
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -5007,7 +5520,7 @@ int C2_NAKED C2_HOOK_FASTCALL GetDirectInputJoy1Y(void) {
             test eax, eax
             jne L00459400
             push esi
-            push offset gUNK_00595f9c+0x90
+            push offset gMatchData_0059602c
             call dr_dprintf
             add esp, 8
             mov eax, 1
@@ -5016,7 +5529,7 @@ int C2_NAKED C2_HOOK_FASTCALL GetDirectInputJoy1Y(void) {
             cmp eax, 1
             jne L0045941a
             push esi
-            push offset gUNK_00595f9c+0x70
+            push offset gMatchData_0059600c
             call dr_dprintf
             add esp, 8
             mov eax, 1
@@ -5025,7 +5538,7 @@ int C2_NAKED C2_HOOK_FASTCALL GetDirectInputJoy1Y(void) {
             cmp eax, 0x80070057
             jne L00459433
             push esi
-            push offset gUNK_00595f9c+0x50
+            push offset gMatchData_00595fec
             call dr_dprintf
             add esp, 8
             xor eax, eax
@@ -5034,13 +5547,13 @@ int C2_NAKED C2_HOOK_FASTCALL GetDirectInputJoy1Y(void) {
             cmp eax, 0x80070005
             push esi
             jne L0045944c
-            push offset gUNK_00595f9c+0x2c
+            push offset gMatchData_00595fc8
             call dr_dprintf
             add esp, 8
             xor eax, eax
             jmp L00459460
     L0045944c:
-            push offset gUNK_00595f9c+0x4
+            push offset gMatchFloat_00595fa0
             call dr_dprintf
             add esp, 8
             xor eax, eax
@@ -5052,7 +5565,7 @@ int C2_NAKED C2_HOOK_FASTCALL GetDirectInputJoy1Y(void) {
             jne L00459644
             mov eax, dword ptr [gJoystick_index]
             push eax
-            push offset gUNK_00595f9c+0x170
+            push offset gMatchFloat_0059610c
             call dr_dprintf
             add esp, 8
             or eax, 0xffffffff
@@ -5075,7 +5588,7 @@ int C2_NAKED C2_HOOK_FASTCALL GetDirectInputJoy1Y(void) {
             test eax, eax
             jne L004594cb
             push esi
-            push offset gUNK_00595f9c+0x90
+            push offset gMatchData_0059602c
             call dr_dprintf
             add esp, 8
             mov eax, 1
@@ -5084,7 +5597,7 @@ int C2_NAKED C2_HOOK_FASTCALL GetDirectInputJoy1Y(void) {
             cmp eax, 1
             jne L004594e5
             push esi
-            push offset gUNK_00595f9c+0x70
+            push offset gMatchData_0059600c
             call dr_dprintf
             add esp, 8
             mov eax, 1
@@ -5093,7 +5606,7 @@ int C2_NAKED C2_HOOK_FASTCALL GetDirectInputJoy1Y(void) {
             cmp eax, 0x80070057
             jne L004594fe
             push esi
-            push offset gUNK_00595f9c+0x50
+            push offset gMatchData_00595fec
             call dr_dprintf
             add esp, 8
             xor eax, eax
@@ -5102,13 +5615,13 @@ int C2_NAKED C2_HOOK_FASTCALL GetDirectInputJoy1Y(void) {
             cmp eax, 0x80070005
             push esi
             jne L00459517
-            push offset gUNK_00595f9c+0x2c
+            push offset gMatchData_00595fc8
             call dr_dprintf
             add esp, 8
             xor eax, eax
             jmp L0045952b
     L00459517:
-            push offset gUNK_00595f9c+0x4
+            push offset gMatchFloat_00595fa0
             call dr_dprintf
             add esp, 8
             xor eax, eax
@@ -5120,7 +5633,7 @@ int C2_NAKED C2_HOOK_FASTCALL GetDirectInputJoy1Y(void) {
             jne L00459644
             mov edx, dword ptr [gJoystick_index]
             push edx
-            push offset gUNK_00595f9c+0x170
+            push offset gMatchFloat_0059610c
             call dr_dprintf
             add esp, 8
             or eax, 0xffffffff
@@ -5128,7 +5641,7 @@ int C2_NAKED C2_HOOK_FASTCALL GetDirectInputJoy1Y(void) {
             add esp, 0x54
             ret
     L0045954f:
-            push offset gUNK_00595f9c+0x154
+            push offset gMatchFloat_005960f0
             call dr_dprintf
             add esp, 4
             or eax, 0xffffffff
@@ -5147,7 +5660,7 @@ int C2_NAKED C2_HOOK_FASTCALL GetDirectInputJoy1Y(void) {
             mov esi, eax
             test esi, esi
             je L0045964c
-            push offset gUNK_00595f9c+0x138
+            push offset gMatchFloat_005960d4
             call dr_dprintf
             add esp, 4
             cmp esi, 0x8007001e
@@ -5165,7 +5678,7 @@ int C2_NAKED C2_HOOK_FASTCALL GetDirectInputJoy1Y(void) {
             test eax, eax
             jne L004595e2
             push esi
-            push offset gUNK_00595f9c+0x90
+            push offset gMatchData_0059602c
             call dr_dprintf
             add esp, 8
             or eax, 0xffffffff
@@ -5176,7 +5689,7 @@ int C2_NAKED C2_HOOK_FASTCALL GetDirectInputJoy1Y(void) {
             cmp eax, 1
             jne L004595fd
             push esi
-            push offset gUNK_00595f9c+0x70
+            push offset gMatchData_0059600c
             call dr_dprintf
             add esp, 8
             or eax, 0xffffffff
@@ -5187,7 +5700,7 @@ int C2_NAKED C2_HOOK_FASTCALL GetDirectInputJoy1Y(void) {
             cmp eax, 0x80070057
             jne L0045961a
             push esi
-            push offset gUNK_00595f9c+0x50
+            push offset gMatchData_00595fec
             call dr_dprintf
             add esp, 8
             or eax, 0xffffffff
@@ -5198,7 +5711,7 @@ int C2_NAKED C2_HOOK_FASTCALL GetDirectInputJoy1Y(void) {
             cmp eax, 0x80070005
             push esi
             jne L00459637
-            push offset gUNK_00595f9c+0x2c
+            push offset gMatchData_00595fc8
             call dr_dprintf
             add esp, 8
             or eax, 0xffffffff
@@ -5206,7 +5719,7 @@ int C2_NAKED C2_HOOK_FASTCALL GetDirectInputJoy1Y(void) {
             add esp, 0x54
             ret
     L00459637:
-            push offset gUNK_00595f9c+0x4
+            push offset gMatchFloat_00595fa0
             call dr_dprintf
             add esp, 8
     L00459644:
@@ -5220,7 +5733,7 @@ int C2_NAKED C2_HOOK_FASTCALL GetDirectInputJoy1Y(void) {
             mov dword ptr [esp + 4], edx
             fild dword ptr [esp + 4]
             fmul dword ptr [gJoystick_y_throttle]
-            fsub dword ptr [gJoystick_effect_guids+0x34]
+            fsub dword ptr [gMatchFloat_00589f6c]
             call _ftol
             cmp eax, 0xffff
             jle L00459680
@@ -5236,6 +5749,11 @@ int C2_NAKED C2_HOOK_FASTCALL GetDirectInputJoy1Y(void) {
             pop esi
             add esp, 0x54
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -5362,20 +5880,20 @@ void C2_NAKED C2_HOOK_FASTCALL PDInitJoysticks(void) {
     ResetForceFeedback();
 #else
     __asm {
-            mov eax, dword ptr ds:[gCountEnumeratedJoystickDinputDevices]
+            mov eax, dword ptr [gCountEnumeratedJoystickDinputDevices]
             push ebx
             xor ebx, ebx
             push esi
             cmp eax, ebx
             push edi
             jne L00457713
-            mov eax, dword ptr ds:[gDirectInputJoystickHandle]
+            mov eax, dword ptr [gDirectInputJoystickHandle]
             cmp eax, ebx
             jne L0045763f
             mov ecx, 0x10
             xor eax, eax
             mov edi, offset gDirectInputJoystickDevices
-            mov edx, 0x79d9c4
+            mov edx, offset gDirectInputJoystickInfos+0x4
             rep stosd
     L004575de:
             mov dword ptr [edx - 4], ebx
@@ -5385,7 +5903,7 @@ void C2_NAKED C2_HOOK_FASTCALL PDInitJoysticks(void) {
             mov dword ptr [edx + 0x5c], ebx
             mov dword ptr [edx + 0x60], ebx
             add edx, 0x68
-            cmp edx, 0x79e044
+            cmp edx, offset gMatchData_0079e044
             jl L004575de
             push ebx
             mov ecx, 0x1e
@@ -5395,20 +5913,25 @@ void C2_NAKED C2_HOOK_FASTCALL PDInitJoysticks(void) {
             push 0x500
             rep stosd
             push ebx
-            mov dword ptr ds:[gJoystickFFB], ebx
-            mov dword ptr ds:[gCountEnumeratedJoystickDinputDevices], ebx
-            call dword ptr ds:[0x589098]
+            mov dword ptr [gJoystickFFB], ebx
+            mov dword ptr [gCountEnumeratedJoystickDinputDevices], ebx
+            _emit 0xff
+        _emit 0x15
+        _emit 0x98
+        _emit 0x90
+        _emit 0x58
+        _emit 0x00
             push eax
             call DirectInputCreateA
-            mov eax, dword ptr ds:[gDirectInputJoystickHandle]
+            mov eax, dword ptr [gDirectInputJoystickHandle]
             cmp eax, ebx
             je L00457713
-            mov dword ptr ds:[gDirectInputJoystickEnumerated], ebx
+            mov dword ptr [gDirectInputJoystickEnumerated], ebx
     L0045763f:
-            cmp dword ptr ds:[gDirectInputJoystickEnumerated], ebx
+            cmp dword ptr [gDirectInputJoystickEnumerated], ebx
             jne L00457713
-            mov ecx, dword ptr ds:[gCountEnumeratedJoystickDinputDevices]
-            mov dword ptr ds:[gDirectInputJoystickEnumerated], 1
+            mov ecx, dword ptr [gCountEnumeratedJoystickDinputDevices]
+            mov dword ptr [gDirectInputJoystickEnumerated], 1
             cmp ecx, ebx
             jne L0045766f
             mov ecx, dword ptr [eax]
@@ -5419,7 +5942,7 @@ void C2_NAKED C2_HOOK_FASTCALL PDInitJoysticks(void) {
             push eax
             call dword ptr [ecx + 0x10]
     L0045766f:
-            cmp dword ptr ds:[gCountEnumeratedJoystickDinputDevices], ebx
+            cmp dword ptr [gCountEnumeratedJoystickDinputDevices], ebx
             je L004576f2
             xor esi, esi
             mov edi, offset gDirectInputJoystickDevices
@@ -5428,7 +5951,7 @@ void C2_NAKED C2_HOOK_FASTCALL PDInitJoysticks(void) {
             xor edx, edx
             mov ecx, esi
             call JoystickDInputGetInfo
-            cmp dword ptr ds:[gDirectInputJoystickHandle], ebx
+            cmp dword ptr [gDirectInputJoystickHandle], ebx
             je L004576e0
             mov eax, dword ptr [edi]
             cmp eax, ebx
@@ -5439,28 +5962,28 @@ void C2_NAKED C2_HOOK_FASTCALL PDInitJoysticks(void) {
             cmp eax, ebx
             jne L004576a8
             push esi
-            push 0x59602c
+            push offset gMatchData_0059602c
             jmp L004576d8
     L004576a8:
             cmp eax, 1
             jne L004576b5
             push esi
-            push 0x59600c
+            push offset gMatchData_0059600c
             jmp L004576d8
     L004576b5:
             cmp eax, 0x80070057
             jne L004576c4
             push esi
-            push 0x595fec
+            push offset gMatchData_00595fec
             jmp L004576d8
     L004576c4:
             cmp eax, 0x80070005
             push esi
             jne L004576d3
-            push 0x595fc8
+            push offset gMatchData_00595fc8
             jmp L004576d8
     L004576d3:
-            push 0x595fa0
+            push offset gMatchFloat_00595fa0
     L004576d8:
             call dr_dprintf
             add esp, 8
@@ -5469,18 +5992,18 @@ void C2_NAKED C2_HOOK_FASTCALL PDInitJoysticks(void) {
             inc esi
             cmp edi, offset gDirectInputEffects
             jl L0045767e
-            mov dword ptr ds:[gJoystick_index], ebx
+            mov dword ptr [gJoystick_index], ebx
     L004576f2:
-            cmp dword ptr ds:[gJoystick_index], ebx
+            cmp dword ptr [gJoystick_index], ebx
             jl L00457713
             call InitForceFeedback
             test eax, eax
             je L00457713
-            mov ecx, dword ptr ds:[gJoystick_index]
+            mov ecx, dword ptr [gJoystick_index]
             call ResetDInputJoystickFFB
             call RegisterJoystickFFBForces
     L00457713:
-            cmp dword ptr ds:[gJoystickFFB], ebx
+            cmp dword ptr [gJoystickFFB], ebx
             je L0045774f
             xor edi, edi
             mov esi, offset gDirectInputJoystickDevices
@@ -5491,7 +6014,7 @@ void C2_NAKED C2_HOOK_FASTCALL PDInitJoysticks(void) {
             mov edx, 1
             mov ecx, edi
             shl edx, cl
-            mov ecx, dword ptr ds:[gJoystickFFB]
+            mov ecx, dword ptr [gJoystickFFB]
             test edx, ecx
             je L00457743
             mov edx, dword ptr [eax]
@@ -5508,6 +6031,19 @@ void C2_NAKED C2_HOOK_FASTCALL PDInitJoysticks(void) {
             pop esi
             pop ebx
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -5972,7 +6508,7 @@ void C2_NAKED C2_HOOK_FASTCALL FUN_00458460(void) {
             sub esp, 0x64
             mov ecx, dword ptr [gJoystick_index]
             push esi
-            push 0x5960a0
+            push offset gMatchString_005960a0
             lea edx, [esp + 0xc]
             mov dword ptr [esp + 8], 0x3d090
             mov dword ptr [esp + 0xc], 0
@@ -5990,7 +6526,12 @@ void C2_NAKED C2_HOOK_FASTCALL FUN_00458460(void) {
             push edi
             mov ecx, esi
             call StartDinputEffect
-            mov edi, dword ptr ds:[0x589094]
+            _emit 0x8b
+        _emit 0x3d
+        _emit 0x94
+        _emit 0x90
+        _emit 0x58
+        _emit 0x00
             push 0x64
             call edi
             lea eax, [esp + 8]

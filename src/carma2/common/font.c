@@ -226,6 +226,100 @@ extern void C2_HOOK_FASTCALL PrintMemoryDump(int pFlags, char* pTitle);
 extern void C2_HOOK_FASTCALL RemovePolyFont(int pFont);
 extern br_model* gPower_model;
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gData_0059af54[];
+extern char gData_007663d4[];
+extern char gData_0076d9a4[];
+extern char gData_0076d9ac[];
+extern char gData_0076d9b8[];
+extern char gData_0076d9c8[];
+extern char gData_0076d9d0[];
+extern char gData_0076d9d8[];
+extern char gData_0076d9dc[];
+extern char gData_0076f5c4[];
+extern char gData_0076f5cc[];
+extern char gData_0076f628[];
+extern char gData_0076f634[];
+extern char gData_00771234[];
+extern char gData_00771290[];
+extern char gData_0077129c[];
+extern char gData_00772e9c[];
+extern char gData_00772ef8[];
+extern char gData_00772f04[];
+extern char gData_00774b04[];
+extern char gData_00774b60[];
+extern char gData_00774b6c[];
+extern char gData_0077676c[];
+extern char gData_007767c8[];
+extern char gData_007767d4[];
+extern char gData_007783d4[];
+extern char gData_0077f5d0[];
+extern char gData_0077f5dc[];
+extern char gData_007811dc[];
+extern char gData_00781238[];
+extern char gData_00781244[];
+extern char gData_00782e44[];
+extern char gDouble_0058a048[];
+extern char gFloat_0058a040[];
+extern char gFloat_0059aef8[];
+extern char gFloat_0059afd4[];
+extern char gFloat_0059b064[];
+extern char gString_0059af10[];
+extern char gString_0059af1c[];
+extern char gString_0059af28[];
+extern char gString_0059af38[];
+extern char gString_0059af48[];
+extern char gString_0059af70[];
+extern char gString_0059af7c[];
+extern char gString_0059aff0[];
+extern char gString_0059affc[];
+extern char gString_0059b004[];
+extern char gString_0059b00c[];
+extern char gString_0059b014[];
+extern char gString_0059b01c[];
+extern char gString_0059b024[];
+extern char gString_0059b02c[];
+extern char gString_0059b034[];
+extern char gString_0059b03c[];
+extern char gString_0059b044[];
+extern char gString_0059b054[];
+extern char gString_0059b07c[];
+extern char gString_0059b084[];
+extern char gString_0059b090[];
+extern char gString_0059b0a4[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchData_0059af54[];
+extern char gMatchData_007663d4[];
+extern char gMatchDouble_0058a048[];
+extern char gMatchFloat_0058a040[];
+extern char gMatchFloat_0059aef8[];
+extern char gMatchFloat_0059afd4[];
+extern char gMatchFloat_0059b064[];
+extern char gMatchString_0059af10[];
+extern char gMatchString_0059af1c[];
+extern char gMatchString_0059af28[];
+extern char gMatchString_0059af38[];
+extern char gMatchString_0059af48[];
+extern char gMatchString_0059af70[];
+extern char gMatchString_0059af7c[];
+extern char gMatchString_0059aff0[];
+extern char gMatchString_0059affc[];
+extern char gMatchString_0059b004[];
+extern char gMatchString_0059b00c[];
+extern char gMatchString_0059b014[];
+extern char gMatchString_0059b01c[];
+extern char gMatchString_0059b024[];
+extern char gMatchString_0059b02c[];
+extern char gMatchString_0059b034[];
+extern char gMatchString_0059b03c[];
+extern char gMatchString_0059b044[];
+extern char gMatchString_0059b054[];
+extern char gMatchString_0059b07c[];
+extern char gMatchString_0059b084[];
+extern char gMatchString_0059b090[];
+extern char gMatchString_0059b0a4[];
+#endif
 // FUNCTION: CARMA2_HW 0x00463730
 int C2_HOOK_FASTCALL PolyFontHeight(int pFont_index) {
 
@@ -577,6 +671,9 @@ void C2_NAKED C2_HOOK_FASTCALL PolyFontTextInABox(int pFont, const char* pText, 
             pop ebx
             add esp, 0x11c
             ret 0x18
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -883,6 +980,21 @@ void C2_NAKED C2_HOOK_FASTCALL TransparentPolyFontTextInABox(int pFont, const ch
             pop ebx
             add esp, 0x118
             ret 0x20
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -995,7 +1107,7 @@ void C2_NAKED C2_HOOK_FASTCALL InitPolyFonts(void) {
 #else
     __asm {
             sub esp, 0x10c
-            mov edx, 0x59afd4
+            mov edx, offset gMatchFloat_0059afd4
             xor ecx, ecx
             push ebx
             push ebp
@@ -1017,7 +1129,7 @@ void C2_NAKED C2_HOOK_FASTCALL InitPolyFonts(void) {
             add esp, 4
     L00463d82:
             mov dword ptr [esi + 0x20], ebp
-            mov eax, dword ptr ds:[gTexture_maps]
+            mov eax, dword ptr [gTexture_maps]
             push esi
             mov dword ptr [esi + 0x40], eax
             call BrMaterialAdd
@@ -1035,24 +1147,24 @@ void C2_NAKED C2_HOOK_FASTCALL InitPolyFonts(void) {
             call BrActorAllocate
             add esp, 8
             cmp eax, ebx
-            mov dword ptr ds:[gString_root_actor], eax
+            mov dword ptr [gString_root_actor], eax
             jne L00463dd3
             push 0x5e
             call FatalError
-            mov eax, dword ptr ds:[gString_root_actor]
+            mov eax, dword ptr [gString_root_actor]
             add esp, 4
     L00463dd3:
             mov dword ptr [eax + 0x14], 0x59af8c
-            mov ecx, dword ptr ds:[gString_root_actor]
+            mov ecx, dword ptr [gString_root_actor]
             mov edi, 5
             mov esi, offset gPolyfont_glyph_actors
             mov word ptr [ecx + 0x28], di
-            mov edx, dword ptr ds:[gString_root_actor]
-            mov ebp, 0x59af7c
+            mov edx, dword ptr [gString_root_actor]
+            mov ebp, offset gMatchString_0059af7c
             mov dword ptr [edx + 0x50], ebx
-            mov eax, dword ptr ds:[gString_root_actor]
+            mov eax, dword ptr [gString_root_actor]
             mov dword ptr [eax + 0x54], ebx
-            mov ecx, dword ptr ds:[gString_root_actor]
+            mov ecx, dword ptr [gString_root_actor]
             mov dword ptr [ecx + 0x58], ebx
     L00463e0d:
             push ebx
@@ -1079,7 +1191,7 @@ void C2_NAKED C2_HOOK_FASTCALL InitPolyFonts(void) {
             mov eax, dword ptr [esi - 4]
             mov dword ptr [eax + 0x14], ebp
             jl L00463e0d
-            push 0x59af70
+            push offset gMatchString_0059af70
             mov edx, offset gApplication_path
             lea ecx, [esp + 0x20]
             call PathCat
@@ -1089,7 +1201,7 @@ void C2_NAKED C2_HOOK_FASTCALL InitPolyFonts(void) {
             mov edi, eax
             cmp edi, ebx
             je L00463f3f
-            mov esi, 0x765ec4
+            mov esi, offset gPoly_font_border_colours+0x4
     L00463e81:
             lea ecx, [esp + 0x14]
             lea edx, [esp + 0x10]
@@ -1144,85 +1256,85 @@ void C2_NAKED C2_HOOK_FASTCALL InitPolyFonts(void) {
             mov dword ptr [esi - 0x10], eax
             mov dword ptr [esi - 0xc], ecx
             mov dword ptr [esi - 8], edx
-            cmp esi, 0x7663d4
+            cmp esi, offset gMatchData_007663d4
             jl L00463e81
             push edi
             call fclose
             jmp L00463f49
     L00463f3f:
-            push 0x59af54
+            push offset gMatchData_0059af54
             call BrFailure
     L00463f49:
-            mov ecx, dword ptr ds:[gIcons_pix]
+            mov ecx, dword ptr [gIcons_pix]
             add esp, 4
             call ConvertCarIcons
             mov edx, 8
-            mov ecx, 0x59af48
+            mov ecx, offset gMatchString_0059af48
             push 0xc
             call CreatePolyFont
             mov edx, 8
-            mov ecx, 0x59af48
+            mov ecx, offset gMatchString_0059af48
             push 0xd
             call CreatePolyFont
             mov edx, 8
-            mov ecx, 0x59af48
+            mov ecx, offset gMatchString_0059af48
             push 0xe
             call CreatePolyFont
             mov edx, 8
-            mov ecx, 0x59af48
+            mov ecx, offset gMatchString_0059af48
             push 0xf
             call CreatePolyFont
             mov edx, 0x20
-            mov ecx, 0x59af38
+            mov ecx, offset gMatchString_0059af38
             push 0x10
             call CreatePolyFont
-            mov eax, 0x78a054
+            mov eax, offset gPoly_fonts+0x1c6f4
     L00463fb1:
             mov dword ptr [eax], 0x1b
             add eax, 0x1c
-            cmp eax, 0x78bc54
+            cmp eax, offset gPoly_fonts+0x1e2f4
             jl L00463fb1
             push 0x11
             mov edx, 0x10
-            mov ecx, 0x59af28
-            mov dword ptr ds:[0x78a6ac], 0xb
+            mov ecx, offset gMatchString_0059af28
+            mov dword ptr [gPoly_fonts+0x1cd4c], 0xb
             call CreatePolyFont
             mov edx, 0x10
-            mov ecx, 0x59af28
+            mov ecx, offset gMatchString_0059af28
             push 0x12
             call CreatePolyFont
             mov edx, 0x10
-            mov ecx, 0x59af28
+            mov ecx, offset gMatchString_0059af28
             push 0x13
             call CreatePolyFont
             mov edx, 0x10
-            mov ecx, 0x59af28
+            mov ecx, offset gMatchString_0059af28
             push 0x14
             call CreatePolyFont
             mov edx, 0x20
-            mov ecx, 0x59af1c
+            mov ecx, offset gMatchString_0059af1c
             push 0x15
             call CreatePolyFont
             mov edx, 0x20
-            mov ecx, 0x59af1c
+            mov ecx, offset gMatchString_0059af1c
             push 0x16
             call CreatePolyFont
             mov edx, 0x20
-            mov ecx, 0x59af1c
+            mov ecx, offset gMatchString_0059af1c
             push 0x17
             call CreatePolyFont
             mov edx, 0x20
-            mov ecx, 0x59af1c
+            mov ecx, offset gMatchString_0059af1c
             push 0x18
             call CreatePolyFont
             mov edx, 0x10
-            mov ecx, 0x59af10
+            mov ecx, offset gMatchString_0059af10
             push 0x19
             call CreatePolyFont
-            mov eax, dword ptr ds:[gSize_font_texture_pages]
-            mov edx, 0x59aef8
+            mov eax, dword ptr [gSize_font_texture_pages]
+            mov edx, offset gMatchFloat_0059aef8
             xor ecx, ecx
-            mov dword ptr ds:[gInitial_count_font_texture_pages], eax
+            mov dword ptr [gInitial_count_font_texture_pages], eax
             call PrintMemoryDump
             pop edi
             pop esi
@@ -1230,6 +1342,17 @@ void C2_NAKED C2_HOOK_FASTCALL InitPolyFonts(void) {
             pop ebx
             add esp, 0x10c
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -1321,7 +1444,7 @@ C2_NAKED br_pixelmap* C2_HOOK_FASTCALL GetThisFuckingPixelmap(const char* path, 
             push edi
             mov edi, edx
             mov esi, ecx
-            push offset gDRFont_to_polyfont_mapping+0x304
+            push offset gMatchString_0059b0a4
             mov edx, esi
             lea ecx, [esp + 0xc]
             call PathCat
@@ -1406,6 +1529,17 @@ C2_NAKED br_pixelmap* C2_HOOK_FASTCALL GetThisFuckingPixelmap(const char* path, 
             pop esi
             add esp, 0x100
             ret 4
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -1467,14 +1601,14 @@ void C2_NAKED C2_HOOK_FASTCALL DisposeInterfaceFonts(void) {
     }
 #else
     __asm {
-            mov eax, dword ptr ds:[gInterface_fonts_loaded]
+            mov eax, dword ptr [gInterface_fonts_loaded]
             push ebx
             xor ebx, ebx
             cmp eax, ebx
             je L00464289
             push edi
             push esi
-            mov eax, 0x76d9cc
+            mov eax, offset gPoly_fonts+0x6c
     L00464107:
             cmp dword ptr [eax], ebx
             je L00464113
@@ -1483,10 +1617,10 @@ void C2_NAKED C2_HOOK_FASTCALL DisposeInterfaceFonts(void) {
             mov dword ptr [eax], ebx
     L00464113:
             add eax, 0x1c
-            cmp eax, 0x76f5cc
+            cmp eax, offset gPoly_fonts+0x1c6c
             jl L00464107
-            mov dword ptr ds:[0x76d9c0], ebx
-            mov eax, 0x76f634
+            mov dword ptr [gPoly_fonts+0x60], ebx
+            mov eax, offset gPoly_fonts+0x1cd4
     L00464128:
             cmp dword ptr [eax], ebx
             je L00464134
@@ -1495,10 +1629,10 @@ void C2_NAKED C2_HOOK_FASTCALL DisposeInterfaceFonts(void) {
             mov dword ptr [eax], ebx
     L00464134:
             add eax, 0x1c
-            cmp eax, 0x771234
+            cmp eax, offset gPoly_fonts+0x38d4
             jl L00464128
-            mov dword ptr ds:[0x76f628], ebx
-            mov eax, 0x77129c
+            mov dword ptr [gPoly_fonts+0x1cc8], ebx
+            mov eax, offset gPoly_fonts+0x393c
     L00464149:
             cmp dword ptr [eax], ebx
             je L00464155
@@ -1507,10 +1641,10 @@ void C2_NAKED C2_HOOK_FASTCALL DisposeInterfaceFonts(void) {
             mov dword ptr [eax], ebx
     L00464155:
             add eax, 0x1c
-            cmp eax, 0x772e9c
+            cmp eax, offset gPoly_fonts+0x553c
             jl L00464149
-            mov dword ptr ds:[0x771290], ebx
-            mov eax, 0x772f04
+            mov dword ptr [gPoly_fonts+0x3930], ebx
+            mov eax, offset gPoly_fonts+0x55a4
     L0046416a:
             cmp dword ptr [eax], ebx
             je L00464176
@@ -1519,10 +1653,10 @@ void C2_NAKED C2_HOOK_FASTCALL DisposeInterfaceFonts(void) {
             mov dword ptr [eax], ebx
     L00464176:
             add eax, 0x1c
-            cmp eax, 0x774b04
+            cmp eax, offset gPoly_fonts+0x71a4
             jl L0046416a
-            mov dword ptr ds:[0x772ef8], ebx
-            mov eax, 0x77f5dc
+            mov dword ptr [gPoly_fonts+0x5598], ebx
+            mov eax, offset gPoly_fonts+0x11c7c
     L0046418b:
             cmp dword ptr [eax], ebx
             je L00464197
@@ -1531,10 +1665,10 @@ void C2_NAKED C2_HOOK_FASTCALL DisposeInterfaceFonts(void) {
             mov dword ptr [eax], ebx
     L00464197:
             add eax, 0x1c
-            cmp eax, 0x7811dc
+            cmp eax, offset gPoly_fonts+0x1387c
             jl L0046418b
-            mov dword ptr ds:[0x77f5d0], ebx
-            mov eax, 0x781244
+            mov dword ptr [gPoly_fonts+0x11c70], ebx
+            mov eax, offset gPoly_fonts+0x138e4
     L004641ac:
             cmp dword ptr [eax], ebx
             je L004641b8
@@ -1543,10 +1677,10 @@ void C2_NAKED C2_HOOK_FASTCALL DisposeInterfaceFonts(void) {
             mov dword ptr [eax], ebx
     L004641b8:
             add eax, 0x1c
-            cmp eax, 0x782e44
+            cmp eax, offset gPoly_fonts+0x154e4
             jl L004641ac
-            mov dword ptr ds:[0x781238], ebx
-            mov eax, 0x774b6c
+            mov dword ptr [gPoly_fonts+0x138d8], ebx
+            mov eax, offset gPoly_fonts+0x720c
     L004641cd:
             cmp dword ptr [eax], ebx
             je L004641d9
@@ -1555,10 +1689,10 @@ void C2_NAKED C2_HOOK_FASTCALL DisposeInterfaceFonts(void) {
             mov dword ptr [eax], ebx
     L004641d9:
             add eax, 0x1c
-            cmp eax, 0x77676c
+            cmp eax, offset gPoly_fonts+0x8e0c
             jl L004641cd
-            mov dword ptr ds:[0x774b60], ebx
-            mov eax, 0x7767d4
+            mov dword ptr [gPoly_fonts+0x7200], ebx
+            mov eax, offset gPoly_fonts+0x8e74
     L004641ee:
             cmp dword ptr [eax], ebx
             je L004641fa
@@ -1567,10 +1701,10 @@ void C2_NAKED C2_HOOK_FASTCALL DisposeInterfaceFonts(void) {
             mov dword ptr [eax], ebx
     L004641fa:
             add eax, 0x1c
-            cmp eax, 0x7783d4
+            cmp eax, offset gPoly_fonts+0xaa74
             jl L004641ee
             mov ecx, 6
-            mov dword ptr ds:[0x7767c8], ebx
+            mov dword ptr [gPoly_fonts+0x8e68], ebx
             call RemovePolyFont
             mov ecx, 7
             call RemovePolyFont
@@ -1580,7 +1714,7 @@ void C2_NAKED C2_HOOK_FASTCALL DisposeInterfaceFonts(void) {
             call RemovePolyFont
             mov ecx, 0x1a
             call RemovePolyFont
-            mov ecx, dword ptr ds:[gInterface_polyfont_texture_pages]
+            mov ecx, dword ptr [gInterface_polyfont_texture_pages]
             xor edi, edi
             cmp ecx, ebx
             jle L00464281
@@ -1595,7 +1729,7 @@ void C2_NAKED C2_HOOK_FASTCALL DisposeInterfaceFonts(void) {
             add esp, 4
             push eax
             call BrPixelmapFree
-            mov ecx, dword ptr ds:[gInterface_polyfont_texture_pages]
+            mov ecx, dword ptr [gInterface_polyfont_texture_pages]
             add esp, 4
             mov dword ptr [esi*4 + gTexture_maps], ebx
     L0046427c:
@@ -1604,7 +1738,7 @@ void C2_NAKED C2_HOOK_FASTCALL DisposeInterfaceFonts(void) {
             jl L00464248
     L00464281:
             pop esi
-            mov dword ptr ds:[gInterface_fonts_loaded], ebx
+            mov dword ptr [gInterface_fonts_loaded], ebx
             pop edi
     L00464289:
             pop ebx
@@ -1659,72 +1793,76 @@ void C2_NAKED C2_HOOK_FASTCALL LoadInterfaceFonts(void) {
     }
 #else
     __asm {
-            mov eax, dword ptr ds:[gInterface_fonts_loaded]
+            mov eax, dword ptr [gInterface_fonts_loaded]
             test eax, eax
             jne L004643eb
-            mov eax, dword ptr ds:[gInitial_count_font_texture_pages]
+            mov eax, dword ptr [gInitial_count_font_texture_pages]
             push 0
             mov edx, 0x10
-            mov ecx, 0x59b03c
-            mov dword ptr ds:[gSize_font_texture_pages], eax
+            mov ecx, offset gMatchString_0059b03c
+            mov dword ptr [gSize_font_texture_pages], eax
             call CreatePolyFont
             mov edx, 0x10
-            mov ecx, 0x59b034
+            mov ecx, offset gMatchString_0059b034
             push 1
             call CreatePolyFont
             mov edx, 0x10
-            mov ecx, 0x59b03c
+            mov ecx, offset gMatchString_0059b03c
             push 2
             call CreatePolyFont
             mov edx, 0x10
-            mov ecx, 0x59b034
+            mov ecx, offset gMatchString_0059b034
             push 3
             call CreatePolyFont
             mov edx, 0x10
-            mov ecx, 0x59b02c
+            mov ecx, offset gMatchString_0059b02c
             push 0xa
             call CreatePolyFont
             mov edx, 0x10
-            mov ecx, 0x59b024
+            mov ecx, offset gMatchString_0059b024
             push 0xb
             call CreatePolyFont
             mov edx, 0x10
-            mov ecx, 0x59b01c
+            mov ecx, offset gMatchString_0059b01c
             push 4
             call CreatePolyFont
             mov edx, 0x20
-            mov ecx, 0x59b014
+            mov ecx, offset gMatchString_0059b014
             push 5
             call CreatePolyFont
             mov edx, 0x20
-            mov ecx, 0x59b00c
+            mov ecx, offset gMatchString_0059b00c
             push 6
             call CreatePolyFont
             mov edx, 0x20
-            mov ecx, 0x59b014
+            mov ecx, offset gMatchString_0059b014
             push 7
             call CreatePolyFont
             mov edx, 0x40
-            mov ecx, 0x59b004
+            mov ecx, offset gMatchString_0059b004
             push 8
             call CreatePolyFont
-            mov edx, 0x59affc
+            mov edx, offset gMatchString_0059affc
             mov ecx, 9
             push 0x40
             push 0x3f800000
             call CreatePolyFontWithTimerFix
-            mov edx, 0x59aff0
+            mov edx, offset gMatchString_0059aff0
             mov ecx, 0x1a
             push 0x10
             push 0x3f800000
             call CreatePolyFontWithTimerFix
-            mov ecx, dword ptr ds:[gSize_font_texture_pages]
-            mov eax, dword ptr ds:[gInitial_count_font_texture_pages]
+            mov ecx, dword ptr [gSize_font_texture_pages]
+            mov eax, dword ptr [gInitial_count_font_texture_pages]
             sub ecx, eax
-            mov dword ptr ds:[gInterface_fonts_loaded], 1
-            mov dword ptr ds:[gInterface_polyfont_texture_pages], ecx
+            mov dword ptr [gInterface_fonts_loaded], 1
+            mov dword ptr [gInterface_polyfont_texture_pages], ecx
     L004643eb:
             ret
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -2069,7 +2207,7 @@ void C2_NAKED C2_HOOK_FASTCALL CreatePolyFont(const char* pName, int pSize, int 
             call PathCat
             lea edx, [esp + 0x40]
             lea ecx, [esp + 0x40]
-            push offset gDRFont_to_polyfont_mapping+0x2fc
+            push 0x59b09c
             call PathCat
             lea edx, [esp + 0x40]
             lea ecx, [esp + 0x40]
@@ -2088,7 +2226,7 @@ void C2_NAKED C2_HOOK_FASTCALL CreatePolyFont(const char* pName, int pSize, int 
             mov eax, ecx
             mov esi, edi
             mov edi, edx
-            push offset gDRFont_to_polyfont_mapping+0x2f0
+            push offset gMatchString_0059b090
             shr ecx, 2
             rep movsd
             mov ecx, eax
@@ -2098,7 +2236,7 @@ void C2_NAKED C2_HOOK_FASTCALL CreatePolyFont(const char* pName, int pSize, int 
             lea ecx, [esp + 0x144]
             call PathCat
             xor esi, esi
-            mov edx, offset gNext_crush_actor_id+0x180
+            mov edx, 0x58f9e0
             lea ecx, [esp + 0x140]
             mov dword ptr [esp + 0x14], esi
             mov dword ptr [esp + 0x18], esi
@@ -2173,7 +2311,7 @@ void C2_NAKED C2_HOOK_FASTCALL CreatePolyFont(const char* pName, int pSize, int 
             repne scasb
             not ecx
             sub edi, ecx
-            push offset gDRFont_to_polyfont_mapping+0x2e4
+            push offset gMatchString_0059b084
             mov eax, ecx
             mov esi, edi
             mov edi, edx
@@ -2185,14 +2323,14 @@ void C2_NAKED C2_HOOK_FASTCALL CreatePolyFont(const char* pName, int pSize, int 
             rep movsb
             lea ecx, [esp + 0x144]
             call PathCat
-            mov edx, offset gDRFont_to_polyfont_mapping+0x2e4
+            mov edx, offset gMatchString_0059b084
             lea ecx, [esp + 0x40]
             push 1
             call GetThisFuckingPixelmap
             test eax, eax
             mov dword ptr [esp + 0x3c], eax
             jne L004645e8
-            push offset gDRFont_to_polyfont_mapping+0x2e4
+            push offset gMatchString_0059b084
             push 0x14
             call FatalError
             add esp, 8
@@ -2223,7 +2361,7 @@ void C2_NAKED C2_HOOK_FASTCALL CreatePolyFont(const char* pName, int pSize, int 
             add esi, ecx
             lea ecx, [esp + 0x240]
             push esi
-            push offset gDRFont_to_polyfont_mapping+0x2dc
+            push offset gMatchString_0059b07c
             push ecx
             call sprintf
             add esp, 0xc
@@ -2280,13 +2418,13 @@ void C2_NAKED C2_HOOK_FASTCALL CreatePolyFont(const char* pName, int pSize, int 
             push eax
             push eax
             push edx
-            push offset gDRFont_to_polyfont_mapping+0x2c4
+            push offset gMatchFloat_0059b064
             call printf
             add esp, 0x10
-            push offset gQuickTime_call_component_with_storage+0x134
+            push 0x6737f0
             call fflush
             add esp, 4
-            push offset gDRFont_to_polyfont_mapping+0x2b4
+            push offset gMatchString_0059b054
             call BrFailure
             add esp, 4
             jmp L004649dd
@@ -2310,7 +2448,7 @@ void C2_NAKED C2_HOOK_FASTCALL CreatePolyFont(const char* pName, int pSize, int 
             mov eax, esi
             mov ecx, dword ptr [gSize_font_texture_pages]
             shl eax, 3
-            fmul dword ptr [gUNK_0058a038+0x8]
+            fmul dword ptr [gMatchFloat_0058a040]
             sub eax, esi
             xor edx, edx
             add esp, 8
@@ -2320,7 +2458,7 @@ void C2_NAKED C2_HOOK_FASTCALL CreatePolyFont(const char* pName, int pSize, int 
             fstp dword ptr [ebx + gPoly_fonts+0x78]
             fild dword ptr [esp + 0x18]
             xor ecx, ecx
-            fmul dword ptr [gUNK_0058a038+0x8]
+            fmul dword ptr [gMatchFloat_0058a040]
             fstp dword ptr [ebx + gPoly_fonts+0x7c]
             mov dx, word ptr [edi + 0x34]
             mov cx, word ptr [edi + 0x36]
@@ -2387,7 +2525,7 @@ void C2_NAKED C2_HOOK_FASTCALL CreatePolyFont(const char* pName, int pSize, int 
     L00464851:
             push 2
             push 4
-            push offset gDRFont_to_polyfont_mapping+0x2a4
+            push offset gMatchString_0059b044
             call BrModelAllocate
             mov edx, dword ptr [ebp + gPoly_fonts+0x1c64]
             mov esi, eax
@@ -2554,6 +2692,12 @@ void C2_NAKED C2_HOOK_FASTCALL CreatePolyFont(const char* pName, int pSize, int 
             mov ebp, dword ptr [esp + 0x30]
             inc edi
             jmp L00464800
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -2603,7 +2747,7 @@ C2_NAKED br_model* C2_HOOK_FASTCALL CreateCharacterModel(int width, int height, 
             mov edi, edx
             push 4
             mov dword ptr [esp + 0x10], ecx
-            push offset gDRFont_to_polyfont_mapping+0x2a4
+            push offset gMatchString_0059b044
             mov dword ptr [esp + 0x18], edi
             call BrModelAllocate
             mov esi, eax
@@ -2659,16 +2803,16 @@ C2_NAKED br_model* C2_HOOK_FASTCALL CreateCharacterModel(int width, int height, 
             mov ecx, dword ptr [esi + 8]
             fstp dword ptr [ecx + 0x7c]
             mov edx, dword ptr [esi + 8]
-            fmul dword ptr [gUNK_0058a038+0x8]
+            fmul dword ptr [gMatchFloat_0058a040]
             mov dword ptr [edx + 0x80], eax
             mov eax, dword ptr [esi + 8]
             fstp dword ptr [esp + 0x20]
             fild dword ptr [esp + 0x10]
-            fmul dword ptr [gUNK_0058a038+0x8]
+            fmul dword ptr [gMatchFloat_0058a040]
             fild dword ptr [esp + 0x18]
-            fmul dword ptr [gUNK_0058a038+0x8]
+            fmul dword ptr [gMatchFloat_0058a040]
             fild dword ptr [esp + 0x1c]
-            fmul dword ptr [gUNK_0058a038+0x8]
+            fmul dword ptr [gMatchFloat_0058a040]
             fst dword ptr [esp + 0x18]
             fld st(1)
             fstp dword ptr [eax + 0xc]
@@ -2868,7 +3012,7 @@ C2_NAKED br_material* C2_HOOK_FASTCALL GetPolyFontMaterial(int pFont_index, char
             lea ecx, [esi + 0x24]
             mov dword ptr [esi + 0x94], eax
             fild dword ptr [ebx + gPoly_fonts+0x58]
-            fmul dword ptr [gUNK_0058a038+0x8]
+            fmul dword ptr [gMatchFloat_0058a040]
             fstp dword ptr [esp + 0xc]
             mov eax, dword ptr [esp + 0xc]
             push eax
@@ -3357,6 +3501,16 @@ void C2_NAKED C2_HOOK_FASTCALL PolyFontText(const char *pText, int pX, int pY, i
             pop ebx
             add esp, 0x10
             ret 0x10
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -3615,7 +3769,7 @@ void C2_NAKED C2_HOOK_FASTCALL TransparentPolyFontText(const char *pText, int pX
             cmp edx, 0x100
             jge L004657a0
             fld qword ptr [esp + 0x48]
-            fmul qword ptr [gUNK_0058a038+0x10]
+            fmul qword ptr [gMatchDouble_0058a048]
             mov dword ptr [esp + 0x1c], 0x85
             mov dword ptr [esp + 0x20], 1
             mov dword ptr [esp + 0x24], 0xbe
@@ -3780,6 +3934,12 @@ void C2_NAKED C2_HOOK_FASTCALL TransparentPolyFontText(const char *pText, int pX
             pop ebx
             add esp, 0x24
             ret 0x18
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -4381,6 +4541,21 @@ int C2_NAKED C2_HOOK_FASTCALL DRTextCleverWidth(const tDR_font* pFont, const cha
             pop ebx
             add esp, 0xc
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -4501,7 +4676,7 @@ C2_NAKED br_font* C2_HOOK_FASTCALL LoadBRFont(const char* pName) {
             call PathCat
             lea edx, [esp + 0x10]
             lea ecx, [esp + 0x10]
-            push offset gDRFont_to_polyfont_mapping+0x2fc
+            push 0x59b09c
             call PathCat
             lea edx, [esp + 0x10]
             lea ecx, [esp + 0x10]
@@ -4613,6 +4788,13 @@ C2_NAKED br_font* C2_HOOK_FASTCALL LoadBRFont(const char* pName) {
             pop ebp
             add esp, 0x104
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }

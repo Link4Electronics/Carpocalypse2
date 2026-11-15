@@ -73,6 +73,16 @@ extern int gStart_race_sent;
 extern int gThis_net_player_index;
 extern int gTyping_slot;
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gString_00655b1c[];
+extern char gString_00655b28[];
+extern char gString_00655b34[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchString_00655b1c[];
+extern char gMatchString_00655b28[];
+extern char gMatchString_00655b34[];
+#endif
 // FUNCTION: CARMA2_HW 0x00473570
 int C2_HOOK_FASTCALL NetSynchRaceStart2(tNet_synch_mode pMode) {
 
@@ -250,7 +260,7 @@ int C2_NAKED C2_HOOK_FASTCALL NetSync_Infunc(tFrontend_spec* pFrontend) {
             call GetMiscString
             lea edx, [esi + 0x2e1]
             push eax
-            push offset gFrontend_QUIT+0xbd2c
+            push offset gMatchString_00655b1c
             push edx
             jmp L004737a6
     L00473773:
@@ -266,7 +276,7 @@ int C2_NAKED C2_HOOK_FASTCALL NetSync_Infunc(tFrontend_spec* pFrontend) {
             call GetMiscString
             lea ecx, [esi + 0x2e1]
             push eax
-            push offset gFrontend_QUIT+0xbd2c
+            push offset gMatchString_00655b1c
             push ecx
     L004737a6:
             call sprintf
@@ -318,6 +328,21 @@ int C2_NAKED C2_HOOK_FASTCALL NetSync_Infunc(tFrontend_spec* pFrontend) {
             pop ebp
             pop ebx
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -757,7 +782,7 @@ int C2_NAKED C2_HOOK_FASTCALL NetSync_MenuHandler(tFrontend_spec* pFrontend) {
             lea ecx, [ebx - 0xff3]
             push eax
             push ebp
-            push offset gFrontend_QUIT+0xbd44
+            push offset gMatchString_00655b34
             push ecx
             call sprintf
             add esp, 0x10
@@ -850,7 +875,7 @@ int C2_NAKED C2_HOOK_FASTCALL NetSync_MenuHandler(tFrontend_spec* pFrontend) {
             call IString_Get
             lea ecx, [esp + 0x24]
             push eax
-            push offset gFrontend_QUIT+0xbd38
+            push offset gMatchString_00655b28
             push ecx
             call sprintf
             mov edx, dword ptr [esp + 0x24]
@@ -1025,6 +1050,16 @@ int C2_NAKED C2_HOOK_FASTCALL NetSync_MenuHandler(tFrontend_spec* pFrontend) {
     L00473f2f:
             mov eax, ecx
             jmp L00473a63
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }

@@ -775,6 +775,12 @@ void C2_NAKED C2_HOOK_CDECL BrMaterialUpdate(br_material* mat, br_uint_16 flags)
             pop edi
             add esp, 0x10c
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }

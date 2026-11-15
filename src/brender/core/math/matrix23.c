@@ -17,6 +17,18 @@ br_matrix23 mattmp2_23;
 #ifdef CARPOCALYPSE2_MATCHING
 extern char IID_IDirectInputDevice2A[];
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gData_0058b8f8[];
+extern char gDouble_0058b908[];
+extern char gFloat_0058b8fc[];
+extern char gFloat_0058b900[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchData_0058b8f8[];
+extern char gMatchDouble_0058b908[];
+extern char gMatchFloat_0058b8fc[];
+extern char gMatchFloat_0058b900[];
+#endif
 // FUNCTION: CARMA2_HW 0x00534ae0
 void C2_HOOK_CDECL BrMatrix23Copy(br_matrix23* A, const br_matrix23* B) {
 
@@ -152,11 +164,11 @@ br_scalar C2_NAKED C2_HOOK_CDECL BrMatrix23Inverse(br_matrix23* B, const br_matr
             fld dword ptr [ecx + 0xc]
             _emit 0xd8
         _emit 0x09
-            fld dword ptr [IID_IDirectInputDevice2A+0x560]
-            fld dword ptr [IID_IDirectInputDevice2A+0x560]
+            fld dword ptr [gMatchData_0058b8f8]
+            fld dword ptr [gMatchData_0058b8f8]
             fxch st(2)
             fst dword ptr [esp + 0xc]
-            fcomp dword ptr [IID_IDirectInputDevice2A+0x560]
+            fcomp dword ptr [gMatchData_0058b8f8]
             _emit 0xd9
         _emit 0x5c
         _emit 0x24
@@ -177,7 +189,7 @@ br_scalar C2_NAKED C2_HOOK_CDECL BrMatrix23Inverse(br_matrix23* B, const br_matr
             fld dword ptr [ecx + 8]
             fchs
             fmul dword ptr [ecx + 4]
-            fcom dword ptr [IID_IDirectInputDevice2A+0x560]
+            fcom dword ptr [gMatchData_0058b8f8]
             fnstsw ax
             test ah, 1
             jne L00534d2a
@@ -195,29 +207,29 @@ br_scalar C2_NAKED C2_HOOK_CDECL BrMatrix23Inverse(br_matrix23* B, const br_matr
             fadd st(0), st(1)
             fst dword ptr [esp + 0xc]
             fabs
-            fcomp dword ptr [IID_IDirectInputDevice2A+0x564]
+            fcomp dword ptr [gMatchFloat_0058b8fc]
             fnstsw ax
             test ah, 0x41
             je L00534d55
             fstp st(0)
             fstp st(0)
-            fld dword ptr [IID_IDirectInputDevice2A+0x560]
+            fld dword ptr [gMatchData_0058b8f8]
             pop ecx
             ret
     L00534d55:
             fsub st(0), st(1)
             fdivr dword ptr [esp + 0xc]
-            fcomp dword ptr [IID_IDirectInputDevice2A+0x568]
+            fcomp dword ptr [gMatchFloat_0058b900]
             fnstsw ax
             test ah, 1
             fstp st(0)
             je L00534d72
-            fld dword ptr [IID_IDirectInputDevice2A+0x560]
+            fld dword ptr [gMatchData_0058b8f8]
             pop ecx
             ret
     L00534d72:
             fld dword ptr [esp + 0xc]
-            fdivr qword ptr [IID_IDirectInputDevice2A+0x570]
+            fdivr qword ptr [gMatchDouble_0058b908]
             mov eax, dword ptr [esp + 8]
             fld dword ptr [ecx + 0xc]
             fmul st(0), st(1)
@@ -259,6 +271,13 @@ br_scalar C2_NAKED C2_HOOK_CDECL BrMatrix23Inverse(br_matrix23* B, const br_matr
             fstp st(0)
             pop ecx
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -343,11 +362,11 @@ void C2_NAKED C2_HOOK_CDECL BrMatrix23LPNormalise(br_matrix23* A, const br_matri
             faddp st(1), st(0)
             fsqrt
             fstp st(1)
-            fcom dword ptr [IID_IDirectInputDevice2A+0x564]
+            fcom dword ptr [gMatchFloat_0058b8fc]
             fnstsw ax
             test ah, 0x41
             jne L00534e7b
-            fdivr qword ptr [IID_IDirectInputDevice2A+0x570]
+            fdivr qword ptr [gMatchDouble_0058b908]
             mov eax, dword ptr [esp + 4]
             fld dword ptr [ecx + 8]
             fmul st(0), st(1)
@@ -373,6 +392,13 @@ void C2_NAKED C2_HOOK_CDECL BrMatrix23LPNormalise(br_matrix23* A, const br_matri
             mov ecx, dword ptr [ecx + 0x14]
             mov dword ptr [eax + 0x14], ecx
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }

@@ -8,6 +8,14 @@
 extern float C2_HOOK_CDECL BrFloatSqrt();
 extern char IID_IDirectInputDevice2A[];
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gData_0058b95c[];
+extern char gFloat_0058b960[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchData_0058b95c[];
+extern char gMatchFloat_0058b960[];
+#endif
 // FUNCTION: CARMA2_HW 0x00536fb0
 br_int_32 C2_NAKED C2_HOOK_CDECL BrPlaneEquation(br_vector4* eqn, const br_vector3* v0, const br_vector3* v1, const br_vector3* v2) {
 #ifndef CARPOCALYPSE2_MATCHING
@@ -123,12 +131,12 @@ br_int_32 C2_NAKED C2_HOOK_CDECL BrPlaneEquation(br_vector4* eqn, const br_vecto
         _emit 0x1c
         _emit 0x24
             call BrFloatSqrt
-            fcom dword ptr [IID_IDirectInputDevice2A+0x5c4]
+            fcom dword ptr [gMatchData_0058b95c]
             add esp, 4
             fnstsw ax
             test ah, 0x40
             jne L005370a3
-            fdivr dword ptr [IID_IDirectInputDevice2A+0x5c8]
+            fdivr dword ptr [gMatchFloat_0058b960]
             fld st(0)
             fld st(1)
             fld st(2)
@@ -143,9 +151,9 @@ br_int_32 C2_NAKED C2_HOOK_CDECL BrPlaneEquation(br_vector4* eqn, const br_vecto
             fxch st(1)
             jmp L005370b5
     L005370a3:
-            fld dword ptr [IID_IDirectInputDevice2A+0x5c4]
-            fld dword ptr [IID_IDirectInputDevice2A+0x5c4]
-            fld dword ptr [IID_IDirectInputDevice2A+0x5c8]
+            fld dword ptr [gMatchData_0058b95c]
+            fld dword ptr [gMatchData_0058b95c]
+            fld dword ptr [gMatchFloat_0058b960]
     L005370b5:
             fld dword ptr [esi + 8]
             fld dword ptr [esi + 4]
@@ -160,7 +168,7 @@ br_int_32 C2_NAKED C2_HOOK_CDECL BrPlaneEquation(br_vector4* eqn, const br_vecto
             fxch st(2)
             faddp st(1), st(0)
             fxch st(5)
-            fcomp dword ptr [IID_IDirectInputDevice2A+0x5c4]
+            fcomp dword ptr [gMatchData_0058b95c]
             faddp st(4), st(0)
             fxch st(3)
             fnstsw ax

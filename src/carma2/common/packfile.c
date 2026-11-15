@@ -45,6 +45,13 @@ extern void C2_HOOK_FASTCALL SplungeSomeData(void* pData, br_size_t size);
 extern int gCancel_recover;
 extern char gInterface_0065cd70[];
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gFile_mode_rb[];
+extern char gString_0065cf1c[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchString_0065cf1c[];
+#endif
 // FUNCTION: CARMA2_HW 0x004b4570
 void C2_NAKED C2_HOOK_FASTCALL InitPackFiles(void) {
 #ifndef CARPOCALYPSE2_MATCHING
@@ -170,9 +177,9 @@ tTWTVFS C2_NAKED C2_HOOK_FASTCALL OpenPackFile(const char* path) {
             mov ecx, eax
             xor eax, eax
             and ecx, 3
-            push offset gCancel_recover+0x1a4
+            push offset gFile_mode_rb
             rep movsb
-            mov edi, offset gInterface_0065cd70+0x1ac
+            mov edi, offset gMatchString_0065cf1c
             or ecx, 0xffffffff
             repne scasb
             not ecx

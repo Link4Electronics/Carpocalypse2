@@ -17,6 +17,22 @@ extern void __cdecl _ftol();
 extern char rendererStateStoredDispatch[];
 extern static_cache_soft scache;
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gData_0058c9b4[];
+extern char gDouble_0058c9a8[];
+extern char gDouble_0058c9b8[];
+extern char gDouble_0058c9c0[];
+extern char gFloat_0058c9a4[];
+extern char gFloat_0058c9c8[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchData_0058c9b4[];
+extern char gMatchDouble_0058c9a8[];
+extern char gMatchDouble_0058c9b8[];
+extern char gMatchDouble_0058c9c0[];
+extern char gMatchFloat_0058c9a4[];
+extern char gMatchFloat_0058c9c8[];
+#endif
 // FUNCTION: CARMA2_HW 0x0054b150
 void C2_NAKED C2_HOOK_CDECL SurfaceMapEnvironmentInfinite(br_soft_renderer* self, br_vector3* p, br_vector2* map, br_vector3* normal, br_colour colour, br_scalar* comp) {
 #ifndef CARPOCALYPSE2_MATCHING
@@ -109,11 +125,11 @@ void C2_NAKED C2_HOOK_CDECL SurfaceMapEnvironmentInfinite(br_soft_renderer* self
             add esp, 0xc
             faddp st(1), st(0)
             fsqrt
-            fcom dword ptr [rendererStateStoredDispatch+0x10c]
+            fcom dword ptr [gMatchFloat_0058c9a4]
             fnstsw ax
             test ah, 0x41
             jne L0054b251
-            fdivr qword ptr [rendererStateStoredDispatch+0x110]
+            fdivr qword ptr [gMatchDouble_0058c9a8]
             fld st(0)
             fld st(1)
             fxch st(1)
@@ -127,8 +143,8 @@ void C2_NAKED C2_HOOK_CDECL SurfaceMapEnvironmentInfinite(br_soft_renderer* self
             jmp L0054b289
     L0054b251:
             fstp st(0)
-            fld dword ptr [rendererStateStoredDispatch+0x11c]
-            fld dword ptr [rendererStateStoredDispatch+0x11c]
+            fld dword ptr [gMatchData_0058c9b4]
+            fld dword ptr [gMatchData_0058c9b4]
             mov dword ptr [esp + 4], 0x3f800000
             jmp L0054b289
     L0054b269:
@@ -145,19 +161,19 @@ void C2_NAKED C2_HOOK_CDECL SurfaceMapEnvironmentInfinite(br_soft_renderer* self
             fxch st(1)
             fchs
             fpatan
-            fmul qword ptr [rendererStateStoredDispatch+0x120]
+            fmul qword ptr [gMatchDouble_0058c9b8]
             call _ftol
             and eax, 0xffff
             mov dword ptr [esp + 0x2c], eax
             mov eax, dword ptr [esp + 0x34]
             fild dword ptr [esp + 0x2c]
             fxch st(1)
-            fmul dword ptr [rendererStateStoredDispatch+0x130]
+            fmul dword ptr [gMatchFloat_0058c9c8]
             fld dword ptr [esi + 0x774]
             fxch st(2)
-            fmul qword ptr [rendererStateStoredDispatch+0x128]
+            fmul qword ptr [gMatchDouble_0058c9c0]
             fxch st(1)
-            fsubr dword ptr [rendererStateStoredDispatch+0x130]
+            fsubr dword ptr [gMatchFloat_0058c9c8]
             fld dword ptr [esi + 0x76c]
             fxch st(2)
             fxch st(3)
@@ -183,6 +199,18 @@ void C2_NAKED C2_HOOK_CDECL SurfaceMapEnvironmentInfinite(br_soft_renderer* self
             fstp st(0)
             add esp, 0x18
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -238,11 +266,11 @@ void C2_NAKED C2_HOOK_CDECL SurfaceMapEnvironmentLocal(br_soft_renderer* self, b
             faddp st(2), st(0)
             faddp st(1), st(0)
             fsqrt
-            fcom dword ptr [rendererStateStoredDispatch+0x10c]
+            fcom dword ptr [gMatchFloat_0058c9a4]
             fnstsw ax
             test ah, 0x41
             jne L0054b397
-            fdivr qword ptr [rendererStateStoredDispatch+0x110]
+            fdivr qword ptr [gMatchDouble_0058c9a8]
             fld st(0)
             fld st(1)
             fxch st(1)
@@ -332,11 +360,11 @@ void C2_NAKED C2_HOOK_CDECL SurfaceMapEnvironmentLocal(br_soft_renderer* self, b
             add esp, 0xc
             faddp st(1), st(0)
             fsqrt
-            fcom dword ptr [rendererStateStoredDispatch+0x10c]
+            fcom dword ptr [gMatchFloat_0058c9a4]
             fnstsw ax
             test ah, 0x41
             jne L0054b49c
-            fdivr qword ptr [rendererStateStoredDispatch+0x110]
+            fdivr qword ptr [gMatchDouble_0058c9a8]
             fld st(0)
             fld st(1)
             fxch st(1)
@@ -350,8 +378,8 @@ void C2_NAKED C2_HOOK_CDECL SurfaceMapEnvironmentLocal(br_soft_renderer* self, b
             jmp L0054b4d4
     L0054b49c:
             fstp st(0)
-            fld dword ptr [rendererStateStoredDispatch+0x11c]
-            fld dword ptr [rendererStateStoredDispatch+0x11c]
+            fld dword ptr [gMatchData_0058c9b4]
+            fld dword ptr [gMatchData_0058c9b4]
             mov dword ptr [esp + 4], 0x3f800000
             jmp L0054b4d4
     L0054b4b4:
@@ -368,19 +396,19 @@ void C2_NAKED C2_HOOK_CDECL SurfaceMapEnvironmentLocal(br_soft_renderer* self, b
             fxch st(1)
             fchs
             fpatan
-            fmul qword ptr [rendererStateStoredDispatch+0x120]
+            fmul qword ptr [gMatchDouble_0058c9b8]
             call _ftol
             and eax, 0xffff
             mov dword ptr [esp + 0x24], eax
             mov eax, dword ptr [esp + 0x34]
             fild dword ptr [esp + 0x24]
             fxch st(1)
-            fmul dword ptr [rendererStateStoredDispatch+0x130]
+            fmul dword ptr [gMatchFloat_0058c9c8]
             fld dword ptr [esi + 0x774]
             fxch st(2)
-            fmul qword ptr [rendererStateStoredDispatch+0x128]
+            fmul qword ptr [gMatchDouble_0058c9c0]
             fxch st(1)
-            fsubr dword ptr [rendererStateStoredDispatch+0x130]
+            fsubr dword ptr [gMatchFloat_0058c9c8]
             fld dword ptr [esi + 0x76c]
             fxch st(2)
             fxch st(3)
@@ -406,6 +434,7 @@ void C2_NAKED C2_HOOK_CDECL SurfaceMapEnvironmentLocal(br_soft_renderer* self, b
             fstp st(0)
             add esp, 0x18
             ret
+            nop
     }
 #endif
 }
@@ -551,10 +580,38 @@ void C2_NAKED C2_HOOK_CDECL SurfaceMapGeometryMap(br_soft_renderer* self, br_vec
 }
 
 // FUNCTION: CARMA2_HW 0x0054b6a0
-void C2_HOOK_CDECL SurfaceMapGeometryMapScale(br_soft_renderer* self, br_vector3* p, br_vector2* map, br_vector3* n, br_colour colour, br_scalar* comp) {
+void C2_NAKED C2_HOOK_CDECL SurfaceMapGeometryMapScale(br_soft_renderer* self, br_vector3* p, br_vector2* map, br_vector3* n, br_colour colour, br_scalar* comp) {
+#ifndef CARPOCALYPSE2_MATCHING
 
     comp[C_U] = self->state.cache.map_transform.m[0][0] * map->v[0];
     comp[C_V] = self->state.cache.map_transform.m[1][1] * map->v[1];
+#else
+    __asm {
+            mov eax, dword ptr [esp + 4]
+            mov ecx, dword ptr [esp + 0xc]
+            mov edx, dword ptr [esp + 0x18]
+            fld dword ptr [eax + 0x76c]
+            _emit 0xd8
+        _emit 0x09
+            fstp dword ptr [edx + 0x20]
+            fld dword ptr [ecx + 4]
+            fmul dword ptr [eax + 0x778]
+            fstp dword ptr [edx + 0x24]
+            ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0054b6d0

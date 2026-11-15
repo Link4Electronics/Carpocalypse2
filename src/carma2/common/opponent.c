@@ -511,6 +511,318 @@ extern int gNum_viewable_cars;
 extern int gNumber_of_races;
 extern tCar_spec* gViewable_car_list[50];
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gData_00589310[];
+extern char gData_0058a490[];
+extern char gData_0065a3f4[];
+extern char gData_0065a504[];
+extern char gData_0065a730[];
+extern char gData_0065a77c[];
+extern char gData_0065a780[];
+extern char gData_0065a784[];
+extern char gData_0065bb74[];
+extern char gDouble_00589328[];
+extern char gDouble_0058a530[];
+extern char gDouble_0058a538[];
+extern char gDouble_0058a548[];
+extern char gDouble_0058a550[];
+extern char gDouble_0058a570[];
+extern char gDouble_0058a578[];
+extern char gDouble_0058a580[];
+extern char gDouble_0058a588[];
+extern char gDouble_0058a5a0[];
+extern char gDouble_0058a5b8[];
+extern char gDouble_0058a5c0[];
+extern char gDouble_0058a5e0[];
+extern char gDouble_0058a5e8[];
+extern char gDouble_0058a5f8[];
+extern char gDouble_0058a608[];
+extern char gDouble_0058a668[];
+extern char gDouble_0058a678[];
+extern char gFloat_00589324[];
+extern char gFloat_0058a484[];
+extern char gFloat_0058a498[];
+extern char gFloat_0058a4f4[];
+extern char gFloat_0058a4f8[];
+extern char gFloat_0058a528[];
+extern char gFloat_0058a540[];
+extern char gFloat_0058a558[];
+extern char gFloat_0058a560[];
+extern char gFloat_0058a564[];
+extern char gFloat_0058a568[];
+extern char gFloat_0058a590[];
+extern char gFloat_0058a594[];
+extern char gFloat_0058a598[];
+extern char gFloat_0058a5f0[];
+extern char gFloat_0058a600[];
+extern char gFloat_0058a604[];
+extern char gFloat_0058a610[];
+extern char gFloat_0058a614[];
+extern char gFloat_0058a618[];
+extern char gFloat_0058a624[];
+extern char gFloat_0058a628[];
+extern char gFloat_0058a63c[];
+extern char gFloat_0058a640[];
+extern char gFloat_0058a648[];
+extern char gFloat_0058a650[];
+extern char gFloat_0058a654[];
+extern char gFloat_0058a658[];
+extern char gFloat_0058a65c[];
+extern char gFloat_0058a660[];
+extern char gFloat_0058a684[];
+extern char gFloat_0065a43c[];
+extern char gFloat_0065a46c[];
+extern char gFloat_0065a4d8[];
+extern char gFloat_0065a55c[];
+extern char gFloat_0065a5c4[];
+extern char gFloat_0065a610[];
+extern char gFloat_0065a634[];
+extern char gFloat_0065a64c[];
+extern char gFloat_0065a694[];
+extern char gFloat_0065a6d8[];
+extern char gFloat_0065a718[];
+extern char gFloat_0065a750[];
+extern char gFloat_0065a7e8[];
+extern char gFloat_0065a814[];
+extern char gFloat_0065a840[];
+extern char gFloat_0065a86c[];
+extern char gFloat_0065a894[];
+extern char gFloat_0065a8d0[];
+extern char gFloat_0065a8f8[];
+extern char gFloat_0065a918[];
+extern char gFloat_0065a948[];
+extern char gFloat_0065a994[];
+extern char gFloat_0065a9f4[];
+extern char gFloat_0065aa40[];
+extern char gFloat_0065aa80[];
+extern char gFloat_0065aac4[];
+extern char gFloat_0065aaf0[];
+extern char gFloat_0065ab24[];
+extern char gFloat_0065ab3c[];
+extern char gFloat_0065ab70[];
+extern char gFloat_0065abc0[];
+extern char gFloat_0065abf4[];
+extern char gFloat_0065ac2c[];
+extern char gFloat_0065ac44[];
+extern char gFloat_0065ac98[];
+extern char gFloat_0065acc0[];
+extern char gFloat_0065acf0[];
+extern char gFloat_0065ad0c[];
+extern char gFloat_0065ad54[];
+extern char gFloat_0065ad8c[];
+extern char gFloat_0065adcc[];
+extern char gFloat_0065ae00[];
+extern char gFloat_0065ae40[];
+extern char gFloat_0065ae8c[];
+extern char gFloat_0065aed8[];
+extern char gFloat_0065b108[];
+extern char gFloat_0065b138[];
+extern char gFloat_0065b16c[];
+extern char gFloat_0065b1ac[];
+extern char gFloat_0065b1f0[];
+extern char gFloat_0065b21c[];
+extern char gFloat_0065b24c[];
+extern char gFloat_0065b28c[];
+extern char gFloat_0065b2c8[];
+extern char gFloat_0065b2fc[];
+extern char gFloat_0065b32c[];
+extern char gFloat_0065b35c[];
+extern char gFloat_0065b378[];
+extern char gFloat_0065b390[];
+extern char gFloat_0065b3ac[];
+extern char gFloat_0065b3fc[];
+extern char gFloat_0065b41c[];
+extern char gFloat_0065b458[];
+extern char gFloat_0065b480[];
+extern char gFloat_0065b4c4[];
+extern char gFloat_0065b4e0[];
+extern char gFloat_0065b504[];
+extern char gFloat_0065b51c[];
+extern char gFloat_0065b534[];
+extern char gFloat_0065b54c[];
+extern char gFloat_0065b564[];
+extern char gFloat_0065b5e4[];
+extern char gFloat_0065b614[];
+extern char gFloat_0065b650[];
+extern char gFloat_0065b6a0[];
+extern char gFloat_0065b6cc[];
+extern char gFloat_0065b734[];
+extern char gFloat_0065b760[];
+extern char gFloat_0065b7c8[];
+extern char gFloat_0065b7fc[];
+extern char gFloat_0065b980[];
+extern char gFloat_0065ba34[];
+extern char gFloat_0065ba74[];
+extern char gFloat_0065bab8[];
+extern char gFloat_0065baf8[];
+extern char gFloat_0065bb34[];
+extern char gFloat_0065bba4[];
+extern char gFloat_0065bbd4[];
+extern char gFloat_0065bbe8[];
+extern char gFloat_0065bc2c[];
+extern char gFloat_0065bc78[];
+extern char gFloat_0065bca0[];
+extern char gFloat_0065bce0[];
+extern char gFloat_0065bd04[];
+extern char gString_00594fa8[];
+extern char gString_0065a600[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchData_00589310[];
+extern char gMatchData_0058a490[];
+extern char gMatchData_0065a3f4[];
+extern char gMatchData_0065a504[];
+extern char gMatchData_0065a730[];
+extern char gMatchData_0065a77c[];
+extern char gMatchData_0065a780[];
+extern char gMatchData_0065a784[];
+extern char gMatchData_0065bb74[];
+extern char gMatchDouble_00589328[];
+extern char gMatchDouble_0058a530[];
+extern char gMatchDouble_0058a538[];
+extern char gMatchDouble_0058a548[];
+extern char gMatchDouble_0058a550[];
+extern char gMatchDouble_0058a570[];
+extern char gMatchDouble_0058a578[];
+extern char gMatchDouble_0058a580[];
+extern char gMatchDouble_0058a588[];
+extern char gMatchDouble_0058a5a0[];
+extern char gMatchDouble_0058a5b8[];
+extern char gMatchDouble_0058a5c0[];
+extern char gMatchDouble_0058a5e0[];
+extern char gMatchDouble_0058a5e8[];
+extern char gMatchDouble_0058a5f8[];
+extern char gMatchDouble_0058a608[];
+extern char gMatchDouble_0058a668[];
+extern char gMatchDouble_0058a678[];
+extern char gMatchFloat_00589324[];
+extern char gMatchFloat_0058a484[];
+extern char gMatchFloat_0058a498[];
+extern char gMatchFloat_0058a4f4[];
+extern char gMatchFloat_0058a4f8[];
+extern char gMatchFloat_0058a528[];
+extern char gMatchFloat_0058a540[];
+extern char gMatchFloat_0058a558[];
+extern char gMatchFloat_0058a560[];
+extern char gMatchFloat_0058a564[];
+extern char gMatchFloat_0058a568[];
+extern char gMatchFloat_0058a590[];
+extern char gMatchFloat_0058a594[];
+extern char gMatchFloat_0058a598[];
+extern char gMatchFloat_0058a5f0[];
+extern char gMatchFloat_0058a600[];
+extern char gMatchFloat_0058a604[];
+extern char gMatchFloat_0058a610[];
+extern char gMatchFloat_0058a614[];
+extern char gMatchFloat_0058a618[];
+extern char gMatchFloat_0058a624[];
+extern char gMatchFloat_0058a628[];
+extern char gMatchFloat_0058a63c[];
+extern char gMatchFloat_0058a640[];
+extern char gMatchFloat_0058a648[];
+extern char gMatchFloat_0058a650[];
+extern char gMatchFloat_0058a654[];
+extern char gMatchFloat_0058a658[];
+extern char gMatchFloat_0058a65c[];
+extern char gMatchFloat_0058a660[];
+extern char gMatchFloat_0058a684[];
+extern char gMatchFloat_0065a43c[];
+extern char gMatchFloat_0065a46c[];
+extern char gMatchFloat_0065a4d8[];
+extern char gMatchFloat_0065a55c[];
+extern char gMatchFloat_0065a5c4[];
+extern char gMatchFloat_0065a610[];
+extern char gMatchFloat_0065a634[];
+extern char gMatchFloat_0065a64c[];
+extern char gMatchFloat_0065a694[];
+extern char gMatchFloat_0065a6d8[];
+extern char gMatchFloat_0065a718[];
+extern char gMatchFloat_0065a750[];
+extern char gMatchFloat_0065a7e8[];
+extern char gMatchFloat_0065a814[];
+extern char gMatchFloat_0065a840[];
+extern char gMatchFloat_0065a86c[];
+extern char gMatchFloat_0065a894[];
+extern char gMatchFloat_0065a8d0[];
+extern char gMatchFloat_0065a8f8[];
+extern char gMatchFloat_0065a918[];
+extern char gMatchFloat_0065a948[];
+extern char gMatchFloat_0065a994[];
+extern char gMatchFloat_0065a9f4[];
+extern char gMatchFloat_0065aa40[];
+extern char gMatchFloat_0065aa80[];
+extern char gMatchFloat_0065aac4[];
+extern char gMatchFloat_0065aaf0[];
+extern char gMatchFloat_0065ab24[];
+extern char gMatchFloat_0065ab3c[];
+extern char gMatchFloat_0065ab70[];
+extern char gMatchFloat_0065abc0[];
+extern char gMatchFloat_0065abf4[];
+extern char gMatchFloat_0065ac2c[];
+extern char gMatchFloat_0065ac44[];
+extern char gMatchFloat_0065ac98[];
+extern char gMatchFloat_0065acc0[];
+extern char gMatchFloat_0065acf0[];
+extern char gMatchFloat_0065ad0c[];
+extern char gMatchFloat_0065ad54[];
+extern char gMatchFloat_0065ad8c[];
+extern char gMatchFloat_0065adcc[];
+extern char gMatchFloat_0065ae00[];
+extern char gMatchFloat_0065ae40[];
+extern char gMatchFloat_0065ae8c[];
+extern char gMatchFloat_0065aed8[];
+extern char gMatchFloat_0065b108[];
+extern char gMatchFloat_0065b138[];
+extern char gMatchFloat_0065b16c[];
+extern char gMatchFloat_0065b1ac[];
+extern char gMatchFloat_0065b1f0[];
+extern char gMatchFloat_0065b21c[];
+extern char gMatchFloat_0065b24c[];
+extern char gMatchFloat_0065b28c[];
+extern char gMatchFloat_0065b2c8[];
+extern char gMatchFloat_0065b2fc[];
+extern char gMatchFloat_0065b32c[];
+extern char gMatchFloat_0065b35c[];
+extern char gMatchFloat_0065b378[];
+extern char gMatchFloat_0065b390[];
+extern char gMatchFloat_0065b3ac[];
+extern char gMatchFloat_0065b3fc[];
+extern char gMatchFloat_0065b41c[];
+extern char gMatchFloat_0065b458[];
+extern char gMatchFloat_0065b480[];
+extern char gMatchFloat_0065b4c4[];
+extern char gMatchFloat_0065b4e0[];
+extern char gMatchFloat_0065b504[];
+extern char gMatchFloat_0065b51c[];
+extern char gMatchFloat_0065b534[];
+extern char gMatchFloat_0065b54c[];
+extern char gMatchFloat_0065b564[];
+extern char gMatchFloat_0065b5e4[];
+extern char gMatchFloat_0065b614[];
+extern char gMatchFloat_0065b650[];
+extern char gMatchFloat_0065b6a0[];
+extern char gMatchFloat_0065b6cc[];
+extern char gMatchFloat_0065b734[];
+extern char gMatchFloat_0065b760[];
+extern char gMatchFloat_0065b7c8[];
+extern char gMatchFloat_0065b7fc[];
+extern char gMatchFloat_0065b980[];
+extern char gMatchFloat_0065ba34[];
+extern char gMatchFloat_0065ba74[];
+extern char gMatchFloat_0065bab8[];
+extern char gMatchFloat_0065baf8[];
+extern char gMatchFloat_0065bb34[];
+extern char gMatchFloat_0065bba4[];
+extern char gMatchFloat_0065bbd4[];
+extern char gMatchFloat_0065bbe8[];
+extern char gMatchFloat_0065bc2c[];
+extern char gMatchFloat_0065bc78[];
+extern char gMatchFloat_0065bca0[];
+extern char gMatchFloat_0065bce0[];
+extern char gMatchFloat_0065bd04[];
+extern char gMatchString_00594fa8[];
+extern char gMatchString_0065a600[];
+#endif
 // FUNCTION: CARMA2_HW 0x004a7a20
 void C2_HOOK_FASTCALL SetOppoRender(tOpponent_spec* pOpponent_spec, int pRender) {
     if (gAction_replay_mode && ARGetReplayRate() < gOppo_render_zero) {
@@ -1102,7 +1414,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadInOppoPaths(FILE* pF) {
             push esi
             push edi
             mov ebx, ecx
-            push offset gOpponent_nastyness_frigger+0x364
+            push offset gMatchData_0065a730
             mov dword ptr [esp + 0x14], ebx
             call DoNotDprintf_opponent
             add esp, 4
@@ -1121,7 +1433,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadInOppoPaths(FILE* pF) {
             test edi, edi
             je L004a9c43
             lea esi, [esp + 0x5c]
-            mov ecx, offset gOpponent_nastyness_frigger+0x34c
+            mov ecx, offset gMatchFloat_0065a718
     L004a9670:
             mov al, byte ptr [ecx]
             mov dl, al
@@ -1189,7 +1501,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadInOppoPaths(FILE* pF) {
             add ebp, ecx
             shl ebp, 5
             push ebp
-            push offset gOpponent_nastyness_frigger+0x30c
+            push offset gMatchFloat_0065a6d8
             call DoNotDprintf_opponent
             mov eax, dword ptr [gProgram_state+0x1c28]
             add esp, 0xc
@@ -1268,7 +1580,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadInOppoPaths(FILE* pF) {
             lea ecx, [ebp + ebp*4]
             shl ecx, 2
             push ecx
-            push offset gOpponent_nastyness_frigger+0x2c8
+            push offset gMatchFloat_0065a694
             call DoNotDprintf_opponent
             mov eax, dword ptr [gProgram_state+0x1c2c]
             add esp, 0xc
@@ -1346,12 +1658,12 @@ void C2_NAKED C2_HOOK_FASTCALL LoadInOppoPaths(FILE* pF) {
             fsqrt
             fstp dword ptr [ecx + esi + 0xc]
             fld dword ptr [esp + 0x3c]
-            fcomp dword ptr [DAT_0058a4f0+0x4]
+            fcomp dword ptr [gMatchFloat_0058a4f4]
             fld dword ptr [esp + 0x3c]
             fnstsw ax
             test ah, 1
             jne L004a998b
-            fsub dword ptr [DAT_0058a4f0+0x4]
+            fsub dword ptr [gMatchFloat_0058a4f4]
             call _ftol
             mov ecx, dword ptr [gProgram_state+0x5ec4]
             mov byte ptr [ecx + esi + 0x10], al
@@ -1386,7 +1698,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadInOppoPaths(FILE* pF) {
     L004a99df:
             push edx
             push ebp
-            push offset gOpponent_nastyness_frigger+0x280
+            push offset gMatchFloat_0065a64c
             call DoNotDprintf_opponent
             add esp, 0xc
     L004a99ee:
@@ -1423,7 +1735,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadInOppoPaths(FILE* pF) {
             mov ecx, ebx
             call GetNScalars
             fld dword ptr [esp + 0x2c]
-            fcomp dword ptr [DAT_0058a4f0+0x8]
+            fcomp dword ptr [gMatchFloat_0058a4f8]
             mov edx, dword ptr [esp + 0x20]
             mov eax, dword ptr [esp + 0x24]
             mov ecx, dword ptr [esp + 0x28]
@@ -1434,12 +1746,12 @@ void C2_NAKED C2_HOOK_FASTCALL LoadInOppoPaths(FILE* pF) {
             test ah, 0x40
             je L004a9aa9
             fld dword ptr [esp + 0x30]
-            fcomp dword ptr [DAT_0058a4f0+0x8]
+            fcomp dword ptr [gMatchFloat_0058a4f8]
             fnstsw ax
             test ah, 0x40
             je L004a9aa9
             fld dword ptr [esp + 0x34]
-            fcomp dword ptr [DAT_0058a4f0+0x8]
+            fcomp dword ptr [gMatchFloat_0058a4f8]
             fnstsw ax
             test ah, 0x40
             je L004a9aa9
@@ -1531,7 +1843,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadInOppoPaths(FILE* pF) {
             mov ecx, ebx
             call GetALineAndDontArgue
             lea esi, [esp + 0x5c]
-            mov eax, offset gOpponent_nastyness_frigger+0x268
+            mov eax, offset gMatchFloat_0065a634
     L004a9ba8:
             mov dl, byte ptr [eax]
             mov cl, dl
@@ -1574,17 +1886,17 @@ void C2_NAKED C2_HOOK_FASTCALL LoadInOppoPaths(FILE* pF) {
     L004a9c04:
             mov dword ptr [gBit_per_node], 0
     L004a9c0e:
-            push offset gOpponent_nastyness_frigger+0x244
+            push offset gMatchFloat_0065a610
             call DoNotDprintf_opponent
             mov ecx, dword ptr [gProgram_state+0x1c28]
             add esp, 4
             push ecx
-            push offset gDefault_drone_direction+0x7e8
+            push offset gMatchString_00594fa8
             call DoNotDprintf_opponent
             mov edx, dword ptr [gProgram_state+0x1c2c]
             add esp, 8
             push edx
-            push offset gOpponent_nastyness_frigger+0x234
+            push offset gMatchString_0065a600
             call DoNotDprintf_opponent
             add esp, 8
     L004a9c43:
@@ -1801,15 +2113,15 @@ void C2_NAKED C2_HOOK_FASTCALL CalcPlayerConspicuousness(tOpponent_spec* pOppone
             fild qword ptr [esp + 0x1c]
             mov dword ptr [esp + 0x1c], ecx
             mov dword ptr [esp + 0x20], eax
-            fmul qword ptr [gOppo_pursuit_reverse_acceleration+0x14]
+            fmul qword ptr [gMatchDouble_0058a538]
             fstp qword ptr [esp + 8]
             fild qword ptr [esp + 0x1c]
-            fmul qword ptr [gOppo_pursuit_reverse_acceleration+0x14]
+            fmul qword ptr [gMatchDouble_0058a538]
             _emit 0xdd
         _emit 0x1c
         _emit 0x24
             push edx
-            push offset gOpponent_nastyness_frigger+0x1218
+            push offset gMatchFloat_0065b5e4
             call DoNotDprintf_opponent
             fld dword ptr [esi + 0x18]
             fcomp dword ptr [gOppo_pursuit_cheat_distance]
@@ -1871,6 +2183,16 @@ void C2_NAKED C2_HOOK_FASTCALL CalcPlayerConspicuousness(tOpponent_spec* pOppone
             pop esi
             add esp, 0x6c
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -1901,13 +2223,13 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessPursueAndTwat(tOpponent_spec* pOpponent_sp
             cmp eax, 0x300
             jne L004ab1fe
             fld dword ptr [esi + 0x14]
-            fcomp dword ptr ds:[gOppo_pursuit_precinct_distance]
+            fcomp dword ptr [gOppo_pursuit_precinct_distance]
             fnstsw ax
             test ah, 0x41
             jne L004ab1fe
             add ecx, 0xec
             push ecx
-            push 0x65ad8c
+            push offset gMatchFloat_0065ad8c
             call DoNotDprintf_opponent
             add esp, 8
             push 9
@@ -1922,23 +2244,23 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessPursueAndTwat(tOpponent_spec* pOpponent_sp
             ret
     L004ab1fe:
             fld dword ptr [esi + 0x18]
-            fld dword ptr ds:[gOppo_pursuit_near_distance]
+            fld dword ptr [gOppo_pursuit_near_distance]
             fcompp
             fnstsw ax
             test ah, 0x41
             jne L004ab218
-            fld dword ptr ds:[gOppo_pursuit_near_distance]
+            fld dword ptr [gOppo_pursuit_near_distance]
             jmp L004ab21b
     L004ab218:
             fld dword ptr [esi + 0x18]
     L004ab21b:
             fstp dword ptr [esi + 0x178]
             fld dword ptr [esi + 0x18]
-            fcomp dword ptr ds:[gOppo_pursuit_near_distance]
+            fcomp dword ptr [gOppo_pursuit_near_distance]
             fnstsw ax
             test ah, 0x41
             jne L004ab23d
-            mov ecx, dword ptr ds:[gTime_stamp_for_this_munging]
+            mov ecx, dword ptr [gTime_stamp_for_this_munging]
             mov dword ptr [esi + 0x128], ecx
     L004ab23d:
             mov eax, dword ptr [esi + 0xb4]
@@ -1949,14 +2271,14 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessPursueAndTwat(tOpponent_spec* pOpponent_sp
             mov edx, eax
             shl edx, 3
             sub edx, eax
-            mov eax, dword ptr ds:[gOpponents]
+            mov eax, dword ptr [gOpponents]
             shl edx, 6
             cmp byte ptr [edx + eax + 0x1b8], 0xf
             jae L004ab2f1
             mov ecx, dword ptr [esi + 8]
             add ecx, 0xec
             push ecx
-            push 0x65ad54
+            push offset gMatchFloat_0065ad54
             call DoNotDprintf_opponent
             mov edx, dword ptr [esi + 8]
             add esp, 8
@@ -1975,7 +2297,7 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessPursueAndTwat(tOpponent_spec* pOpponent_sp
             je L004ab2cf
             sub esi, 2
             jne L004ab8a1
-            dec dword ptr ds:[gNum_of_opponents_getting_near]
+            dec dword ptr [gNum_of_opponents_getting_near]
             pop edi
             pop esi
             pop ebp
@@ -1983,7 +2305,7 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessPursueAndTwat(tOpponent_spec* pOpponent_sp
             add esp, 0x148
             ret
     L004ab2cf:
-            dec dword ptr ds:[gNum_of_opponents_pursuing]
+            dec dword ptr [gNum_of_opponents_pursuing]
             pop edi
             pop esi
             pop ebp
@@ -1991,7 +2313,7 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessPursueAndTwat(tOpponent_spec* pOpponent_sp
             add esp, 0x148
             ret
     L004ab2e0:
-            dec dword ptr ds:[gNum_of_opponents_completing_race]
+            dec dword ptr [gNum_of_opponents_completing_race]
             pop edi
             pop esi
             pop ebp
@@ -2002,7 +2324,7 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessPursueAndTwat(tOpponent_spec* pOpponent_sp
             cmp byte ptr [esi + 0x180], bl
             je L004ab39b
             mov ecx, dword ptr [esi + 0x120]
-            mov edx, dword ptr ds:[gTime_stamp_for_this_munging]
+            mov edx, dword ptr [gTime_stamp_for_this_munging]
             lea eax, [ecx + 0x3e8]
             cmp edx, eax
             jbe L004ab8ac
@@ -2031,16 +2353,16 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessPursueAndTwat(tOpponent_spec* pOpponent_sp
             fxch st(1)
             fsqrt
             fstp st(1)
-            fcomp dword ptr ds:[gOppo_pursuit_stationary_speed]
+            fcomp dword ptr [gOppo_pursuit_stationary_speed]
             fnstsw ax
             test ah, 1
             je L004ab8ac
             mov ecx, dword ptr [esi + 8]
             add ecx, 0xec
             push ecx
-            push 0x65ad0c
+            push offset gMatchFloat_0065ad0c
             call DoNotDprintf_opponent
-            mov edx, dword ptr ds:[gTime_stamp_for_this_munging]
+            mov edx, dword ptr [gTime_stamp_for_this_munging]
             add esp, 8
             mov dword ptr [esi + 0x11c], edx
             mov byte ptr [esi + 0x180], bl
@@ -2051,7 +2373,7 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessPursueAndTwat(tOpponent_spec* pOpponent_sp
             ja L004ab8a1
             jmp dword ptr [eax*4 + 0x4abbe8]
             mov edx, dword ptr [esi + 0x11c]
-            mov eax, dword ptr ds:[gTime_stamp_for_this_munging]
+            mov eax, dword ptr [gTime_stamp_for_this_munging]
             add edx, 0x898
             cmp eax, edx
             jbe L004ab430
@@ -2060,10 +2382,10 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessPursueAndTwat(tOpponent_spec* pOpponent_sp
             mov eax, dword ptr [esi + 8]
             mov ecx, dword ptr [eax + 8]
             fld dword ptr [ecx + 4]
-            fmul dword ptr ds:[gOppo_pursuit_reverse_brake]
+            fmul dword ptr [gOppo_pursuit_reverse_brake]
             fstp dword ptr [eax + 0x12c0]
             mov edx, dword ptr [esi + 0x11c]
-            mov eax, dword ptr ds:[gTime_stamp_for_this_munging]
+            mov eax, dword ptr [gTime_stamp_for_this_munging]
             add edx, 0xbb8
             cmp eax, edx
             jbe L004ab8a1
@@ -2073,7 +2395,7 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessPursueAndTwat(tOpponent_spec* pOpponent_sp
             mov ecx, dword ptr [esi + 8]
             add ecx, 0xec
             push ecx
-            push 0x65acf0
+            push offset gMatchFloat_0065acf0
             call DoNotDprintf_opponent
             add esp, 8
             pop edi
@@ -2090,7 +2412,7 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessPursueAndTwat(tOpponent_spec* pOpponent_sp
             mov esi, dword ptr [esi + 8]
             mov ecx, dword ptr [esi + 8]
             fld dword ptr [ecx + 4]
-            fmul dword ptr ds:[gOppo_pursuit_reverse_acceleration]
+            fmul dword ptr [gOppo_pursuit_reverse_acceleration]
             fstp dword ptr [esi + 0x12b8]
             pop edi
             pop esi
@@ -2165,18 +2487,18 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessPursueAndTwat(tOpponent_spec* pOpponent_sp
             fsqrt
             fst dword ptr [esp + 0x14]
             fst dword ptr [esp + 0x14]
-            fcomp dword ptr ds:[gOppo_pursuit_one]
+            fcomp dword ptr [gOppo_pursuit_one]
             fxch st(1)
             fstp st(1)
             fnstsw ax
             test ah, 1
             je L004ab543
-            fld dword ptr ds:[gOppo_render_zero]
+            fld dword ptr [gOppo_render_zero]
             jmp L004ab54f
     L004ab543:
             fld st(0)
             fdiv dword ptr [esp + 0x14]
-            fmul dword ptr ds:[gOppo_pursuit_velocity_scale]
+            fmul dword ptr [gOppo_pursuit_velocity_scale]
     L004ab54f:
             fld dword ptr [edx + 0x68]
             fmul st(0), st(1)
@@ -2185,7 +2507,7 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessPursueAndTwat(tOpponent_spec* pOpponent_sp
             fld dword ptr [eax + 0x6c]
             fmul st(0), st(1)
             fxch st(2)
-            fcomp dword ptr ds:[gOppo_pursuit_minimum_velocity_ratio]
+            fcomp dword ptr [gOppo_pursuit_minimum_velocity_ratio]
             fxch st(1)
             fstp dword ptr [esi + 0x150]
             mov edx, dword ptr [ecx + 8]
@@ -2252,13 +2574,13 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessPursueAndTwat(tOpponent_spec* pOpponent_sp
             add edx, 0xec
             push ecx
             push edx
-            push 0x65acc0
+            push offset gMatchFloat_0065acc0
             call DoNotDprintf_opponent
             add esp, 0xc
             cmp di, -1
             je L004ab739
             fld dword ptr [esp + 0x10]
-            fcomp dword ptr ds:[gOppo_pursuit_trail_distance]
+            fcomp dword ptr [gOppo_pursuit_trail_distance]
             fnstsw ax
             test ah, 0x41
             je L004ab739
@@ -2280,9 +2602,9 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessPursueAndTwat(tOpponent_spec* pOpponent_sp
             fxch st(1)
             fsub dword ptr [esp + 0x44]
             fxch st(3)
-            fsub dword ptr ds:[gOppo_pursuit_height_offset]
+            fsub dword ptr [gOppo_pursuit_height_offset]
             fxch st(2)
-            fsub dword ptr ds:[gOppo_pursuit_height_offset]
+            fsub dword ptr [gOppo_pursuit_height_offset]
             fld dword ptr [esp + 0x3c]
             fld dword ptr [esp + 0x44]
             fxch st(3)
@@ -2299,7 +2621,7 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessPursueAndTwat(tOpponent_spec* pOpponent_sp
             fstp dword ptr [esp + 0x28]
             call FindFace
             fld dword ptr [esp + 0x14]
-            fcomp dword ptr ds:[gOppo_pursuit_one]
+            fcomp dword ptr [gOppo_pursuit_one]
             fnstsw ax
             test ah, 0x41
             jne L004ab739
@@ -2321,7 +2643,7 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessPursueAndTwat(tOpponent_spec* pOpponent_sp
             push eax
             push ecx
             push edx
-            push 0x65ac98
+            push offset gMatchFloat_0065ac98
             call DoNotDprintf_opponent
             add esp, 0x10
             jmp L004ab76f
@@ -2334,7 +2656,7 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessPursueAndTwat(tOpponent_spec* pOpponent_sp
         _emit 0x1c
         _emit 0x24
             push eax
-            push 0x65ac44
+            push offset gMatchFloat_0065ac44
     L004ab751:
             call DoNotDprintf_opponent
             add esp, 0x10
@@ -2360,7 +2682,7 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessPursueAndTwat(tOpponent_spec* pOpponent_sp
             push eax
             push ecx
             lea edx, [esp + 0x64]
-            push 0x65ac2c
+            push offset gMatchFloat_0065ac2c
             push edx
             call sprintf
             add esp, 0x14
@@ -2395,7 +2717,7 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessPursueAndTwat(tOpponent_spec* pOpponent_sp
             pop ebx
             add esp, 0x148
             ret
-            mov ecx, 0x65abf4
+            mov ecx, offset gMatchFloat_0065abf4
             call PDEnterDebugger
             pop edi
             pop esi
@@ -2407,7 +2729,7 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessPursueAndTwat(tOpponent_spec* pOpponent_sp
             mov eax, dword ptr [esi + 8]
             add eax, 0xec
             push eax
-            push 0x65abc0
+            push offset gMatchFloat_0065abc0
             call DoNotDprintf_opponent
             mov eax, 0x2710
             mov byte ptr [esi + 0x148], 1
@@ -2427,7 +2749,7 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessPursueAndTwat(tOpponent_spec* pOpponent_sp
             mov dword ptr [esi + 0x118], ebp
             mov dword ptr [esi + 0x124], ebp
             mov dword ptr [esi + 0x120], ebp
-            mov ecx, dword ptr ds:[gTime_stamp_for_this_munging]
+            mov ecx, dword ptr [gTime_stamp_for_this_munging]
             add esp, 8
             mov dword ptr [esi + 0x128], ecx
             mov byte ptr [esi + 0x180], 0
@@ -2453,9 +2775,9 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessPursueAndTwat(tOpponent_spec* pOpponent_sp
             mov edx, dword ptr [esi + 8]
             add edx, 0xec
             push edx
-            push 0x65ab70
+            push offset gMatchFloat_0065ab70
             call DoNotDprintf_opponent
-            mov eax, dword ptr ds:[gTime_stamp_for_this_munging]
+            mov eax, dword ptr [gTime_stamp_for_this_munging]
             add esp, 8
             mov dword ptr [esi + 0x11c], eax
             mov byte ptr [esi + 0x180], bl
@@ -2465,7 +2787,7 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessPursueAndTwat(tOpponent_spec* pOpponent_sp
             test al, 0x20
             je L004ab9d0
             fld dword ptr [esi + 0x18]
-            fcomp dword ptr ds:[gOppo_pursuit_cheat_distance]
+            fcomp dword ptr [gOppo_pursuit_cheat_distance]
             fnstsw ax
             test ah, 1
             je L004ab9c5
@@ -2490,10 +2812,10 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessPursueAndTwat(tOpponent_spec* pOpponent_sp
             fxch st(1)
             fsub dword ptr [eax + 8]
             fxch st(3)
-            fsub dword ptr ds:[gOppo_pursuit_height_offset]
+            fsub dword ptr [gOppo_pursuit_height_offset]
             fxch st(2)
             fst dword ptr [esp + 0x24]
-            fsub dword ptr ds:[gOppo_pursuit_height_offset]
+            fsub dword ptr [gOppo_pursuit_height_offset]
             _emit 0xd9
         _emit 0x00
             fld dword ptr [eax + 8]
@@ -2513,11 +2835,11 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessPursueAndTwat(tOpponent_spec* pOpponent_sp
             fstp dword ptr [esp + 0x34]
             call FindFace
             fld dword ptr [esp + 0x14]
-            fcomp dword ptr ds:[gOppo_pursuit_one]
+            fcomp dword ptr [gOppo_pursuit_one]
             fnstsw ax
             test ah, 0x41
             jne L004ab9c5
-            mov ecx, dword ptr ds:[gTime_stamp_for_this_munging]
+            mov ecx, dword ptr [gTime_stamp_for_this_munging]
             mov dword ptr [esi + 0x124], ecx
             jmp L004abaa5
     L004ab9c5:
@@ -2529,7 +2851,7 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessPursueAndTwat(tOpponent_spec* pOpponent_sp
             cmp edx, dword ptr [esi + 0x118]
             jbe L004abaa5
             fld dword ptr [esi + 0x18]
-            fcomp dword ptr ds:[gOppo_pursuit_sight_distance]
+            fcomp dword ptr [gOppo_pursuit_sight_distance]
             fnstsw ax
             test ah, 1
             je L004abaa5
@@ -2554,10 +2876,10 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessPursueAndTwat(tOpponent_spec* pOpponent_sp
             fxch st(1)
             fsub dword ptr [eax + 8]
             fxch st(3)
-            fsub dword ptr ds:[gOppo_pursuit_height_offset]
+            fsub dword ptr [gOppo_pursuit_height_offset]
             fxch st(2)
             fst dword ptr [esp + 0x24]
-            fsub dword ptr ds:[gOppo_pursuit_height_offset]
+            fsub dword ptr [gOppo_pursuit_height_offset]
             _emit 0xd9
         _emit 0x00
             fld dword ptr [eax + 8]
@@ -2577,19 +2899,19 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessPursueAndTwat(tOpponent_spec* pOpponent_sp
             fstp dword ptr [esp + 0x34]
             call FindFace
             fld dword ptr [esp + 0x14]
-            fcomp dword ptr ds:[gOppo_pursuit_one]
+            fcomp dword ptr [gOppo_pursuit_one]
             fnstsw ax
             test ah, 0x41
             jne L004abaa5
     L004aba89:
-            mov edx, dword ptr ds:[gTime_stamp_for_this_munging]
+            mov edx, dword ptr [gTime_stamp_for_this_munging]
             mov dword ptr [esi + 0x124], edx
-            mov eax, dword ptr ds:[gTime_stamp_for_this_munging]
+            mov eax, dword ptr [gTime_stamp_for_this_munging]
             add eax, 0x384
             mov dword ptr [esi + 0x118], eax
     L004abaa5:
             mov ecx, dword ptr [esi + 0x124]
-            mov eax, dword ptr ds:[gTime_stamp_for_this_munging]
+            mov eax, dword ptr [gTime_stamp_for_this_munging]
             add ecx, 0xbb8
             cmp eax, ecx
             jae L004abb13
@@ -2598,7 +2920,7 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessPursueAndTwat(tOpponent_spec* pOpponent_sp
             mov edx, dword ptr [esi + 8]
             add edx, 0xec
             push edx
-            push 0x65ab3c
+            push offset gMatchFloat_0065ab3c
             call DoNotDprintf_opponent
             mov byte ptr [esi + 0x180], 2
             mov eax, dword ptr [esi + 8]
@@ -2606,7 +2928,7 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessPursueAndTwat(tOpponent_spec* pOpponent_sp
             add eax, 0xec
             lea ecx, [esp + 0x58]
             push eax
-            push 0x65ab24
+            push offset gMatchFloat_0065ab24
             push ecx
             call sprintf
             add esp, 0xc
@@ -2624,7 +2946,7 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessPursueAndTwat(tOpponent_spec* pOpponent_sp
             mov edx, dword ptr [esi + 8]
             add edx, 0xec
             push edx
-            push 0x65aaf0
+            push offset gMatchFloat_0065aaf0
             call DoNotDprintf_opponent
             add esp, 8
             push 4
@@ -2651,7 +2973,7 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessPursueAndTwat(tOpponent_spec* pOpponent_sp
             add edx, 0x50
             call FindNearestGeneralSection
             fld dword ptr [esp + 0x10]
-            fcomp dword ptr ds:[gOppo_pursuit_trail_distance]
+            fcomp dword ptr [gOppo_pursuit_trail_distance]
             mov edi, eax
             mov byte ptr [esi + 0x180], 1
             fnstsw ax
@@ -2662,7 +2984,7 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessPursueAndTwat(tOpponent_spec* pOpponent_sp
             mov eax, dword ptr [esi + 8]
             add eax, 0xec
             push eax
-            push 0x65aac4
+            push offset gMatchFloat_0065aac4
             call DoNotDprintf_opponent
             add esp, 8
             xor edx, edx
@@ -2682,7 +3004,7 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessPursueAndTwat(tOpponent_spec* pOpponent_sp
         _emit 0x1c
         _emit 0x24
             push ecx
-            push 0x65aa80
+            push offset gMatchFloat_0065aa80
             jmp L004ab751
             mov edi, edi
             _emit 0xed
@@ -2863,28 +3185,28 @@ opponent_found:
             xor eax, eax
     L004a9d55:
             mov dl, byte ptr [eax + 0xb0]
-            mov ebx, offset gOpponent_nastyness_frigger+0x3bc
+            mov ebx, 0x65a788
             movsx ecx, word ptr [eax + 0xe8]
             test dl, 0x20
             jne L004a9d71
-            mov ebx, offset gDisable_sound+0x8
+            mov ebx, 0x676920
     L004a9d71:
             cmp ecx, 0x4e20
             jl L004a9d89
             mov dl, byte ptr [eax + ecx*4 - 0x137fe]
-            mov edi, offset gOpponent_nastyness_frigger+0x3b8
+            mov edi, offset gMatchData_0065a784
             test dl, dl
             je L004a9d8e
     L004a9d89:
-            mov edi, offset gOpponent_nastyness_frigger+0x3b4
+            mov edi, offset gMatchData_0065a780
     L004a9d8e:
             cmp ecx, 0x3a98
             jl L004a9da3
             cmp ecx, 0x4e20
-            mov esi, offset gOpponent_nastyness_frigger+0x3b0
+            mov esi, offset gMatchData_0065a77c
             jl L004a9da8
     L004a9da3:
-            mov esi, offset gDisable_sound+0x8
+            mov esi, 0x676920
     L004a9da8:
             cmp ecx, 0x4e20
             jl L004a9dba
@@ -2905,7 +3227,7 @@ opponent_found:
             push eax
             push ebp
             lea ecx, [esp + 0x30]
-            push offset gOpponent_nastyness_frigger+0x384
+            push offset gMatchFloat_0065a750
             push ecx
             call sprintf
             add esp, 0x28
@@ -3132,7 +3454,7 @@ void C2_NAKED C2_HOOK_FASTCALL RebuildActiveCarList(void) {
     L004a7afb:
             test edi, edi
             jle L004a7b0f
-            mov ecx, offset gOpponent_nastyness_frigger+0x28
+            mov ecx, offset gMatchData_0065a3f4
             call PDFatalError
             mov ecx, dword ptr [gProgram_state+0xb4]
     L004a7b0f:
@@ -3449,6 +3771,17 @@ void C2_NAKED C2_HOOK_FASTCALL RebuildActiveCarList(void) {
     L004a7e88:
             mov dword ptr [esp + eax*4 + 0x24], 0
             jmp L004a7b60
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -3546,7 +3879,7 @@ done:
     return;
 #else
     __asm {
-            mov eax, dword ptr ds:[0x75d7a4]
+            mov eax, dword ptr [gProgram_state+0x1c24]
             push ebx
             push ebp
             push esi
@@ -3554,20 +3887,20 @@ done:
             xor edi, edi
             xor ebx, ebx
             cmp eax, edi
-            mov dword ptr ds:[gNumber_of_cops_before_faffage], eax
-            mov dword ptr ds:[gDefinite_no_cop_pursuit_speed], 0x418f07c8
-            mov dword ptr ds:[gCop_pursuit_speed_value_00691730], 0x4232c9ba
-            mov dword ptr ds:[gCop_pursuit_speed_percentage_multiplier], 0x406ea4d7
+            mov dword ptr [gNumber_of_cops_before_faffage], eax
+            mov dword ptr [gDefinite_no_cop_pursuit_speed], 0x418f07c8
+            mov dword ptr [gCop_pursuit_speed_value_00691730], 0x4232c9ba
+            mov dword ptr [gCop_pursuit_speed_percentage_multiplier], 0x406ea4d7
             jle L004ae558
-            mov ebp, 0x75d7b4
-            mov esi, 0x760a34
+            mov ebp, offset gProgram_state+0x1c34
+            mov esi, offset gProgram_state+0x4eb4
     L004ae3c2:
             call PossibleService
             mov ecx, dword ptr [esi - 0x54]
             lea eax, [ebx + 0x300]
             mov edx, 0x384
             mov word ptr [ecx + 0x80], ax
-            mov eax, dword ptr ds:[gTime_stamp_for_this_munging]
+            mov eax, dword ptr [gTime_stamp_for_this_munging]
             mov dword ptr [esi - 0x5c], 0x62
             mov dword ptr [esi + 0x10], eax
             mov dword ptr [esi + 0x14], eax
@@ -3576,7 +3909,7 @@ done:
             xor ecx, ecx
             mov dword ptr [esi], edi
             call IRandomBetween
-            mov ecx, dword ptr ds:[gTime_stamp_for_this_munging]
+            mov ecx, dword ptr [gTime_stamp_for_this_munging]
             lea edx, [eax + ecx + 0x1388]
             add ecx, 0x1f4
             mov dword ptr [esi + 4], edx
@@ -3591,18 +3924,18 @@ done:
             mov ecx, dword ptr [esi + 0x54]
             or ecx, edx
             mov dword ptr [esi + 0x54], ecx
-            mov ecx, dword ptr ds:[0x762438]
+            mov ecx, dword ptr [gCurrent_race+0x98]
             mov dword ptr [esi - 0x58], edi
             mov eax, dword ptr [esi + 0x54]
             and ah, 0xf8
             mov dword ptr [esi + 0x54], eax
             fld dword ptr [ecx + 0x180]
-            fild dword ptr ds:[0x75bba0]
-            fmul qword ptr ds:[gCop_nastiness_skill_adjustment]
+            fild dword ptr [gProgram_state+0x20]
+            fmul qword ptr [gCop_nastiness_skill_adjustment]
             fsubp st(1), st(0)
-            fsub qword ptr ds:[gCop_nastiness_bias]
-            fmul qword ptr ds:[gCop_nastiness_divisor]
-            fmul dword ptr ds:[gOpponent_nastyness_frigger]
+            fsub qword ptr [gCop_nastiness_bias]
+            fmul qword ptr [gCop_nastiness_divisor]
+            fmul dword ptr [gOpponent_nastyness_frigger]
             fstp dword ptr [esi - 0x3188]
             mov eax, dword ptr [ebp - 4]
             mov dword ptr [esi - 0x40], eax
@@ -3616,14 +3949,14 @@ done:
             mov dword ptr [esi - 0x30], eax
             mov ecx, dword ptr [ebp + 0x7c]
             mov dword ptr [esi - 0x2c], ecx
-            mov ecx, dword ptr ds:[gNum_viewable_cars]
+            mov ecx, dword ptr [gNum_viewable_cars]
             mov dword ptr [esi - 0x28], edi
             mov dword ptr [esi - 0x24], edi
             mov dword ptr [esi - 0x20], edi
             mov eax, dword ptr [esi - 0x54]
             mov dword ptr [ecx*4 + gViewable_car_list], eax
             inc ecx
-            mov dword ptr ds:[gNum_viewable_cars], ecx
+            mov dword ptr [gNum_viewable_cars], ecx
             mov dword ptr [eax + 0x1560], edi
             mov eax, dword ptr [esi - 0x54]
             mov dword ptr [eax + 0x1564], edi
@@ -3641,7 +3974,7 @@ done:
             mov edx, eax
             shl edx, 3
             sub edx, eax
-            mov eax, dword ptr ds:[gOpponents]
+            mov eax, dword ptr [gOpponents]
             shl edx, 6
             mov byte ptr [edx + eax + 0x1b8], 0xa
             mov ecx, dword ptr [esi - 0x54]
@@ -3650,7 +3983,7 @@ done:
             mov dword ptr [edx + 0x12c0], edi
             mov eax, dword ptr [esi - 0x54]
             mov dword ptr [eax + 0x1254], edi
-            mov ecx, dword ptr ds:[gTime_stamp_for_this_munging]
+            mov ecx, dword ptr [gTime_stamp_for_this_munging]
             lea eax, [ecx + 0xfffffff]
             mov ecx, dword ptr [esi]
             cmp ecx, eax
@@ -3658,7 +3991,7 @@ done:
             mov eax, ecx
     L004ae53f:
             mov dword ptr [esi], eax
-            mov eax, dword ptr ds:[0x75d7a4]
+            mov eax, dword ptr [gProgram_state+0x1c24]
             inc ebx
             add ebp, 0xc
             add esi, 0x1a4
@@ -3666,10 +3999,10 @@ done:
             jl L004ae3c2
     L004ae558:
             xor ebp, ebp
-            mov esi, 0x7609e0
-            mov ebx, 0x75d7b4
+            mov esi, offset gProgram_state+0x4e60
+            mov ebx, offset gProgram_state+0x1c34
     L004ae564:
-            cmp ebp, dword ptr ds:[gNumber_of_cops_before_faffage]
+            cmp ebp, dword ptr [gNumber_of_cops_before_faffage]
             jge L004ae5c9
             call PossibleService
             mov edx, dword ptr [esi]
@@ -3971,10 +4304,10 @@ void C2_NAKED C2_HOOK_FASTCALL RecordOpponentTwattageOccurrence(tCar_spec* pTwat
     L004aef1e:
             fld dword ptr [edi + 0x133c]
             fst dword ptr [esp + 0x14]
-            fld qword ptr [gCop_nastiness_bias+0x10]
+            fld qword ptr [gMatchDouble_0058a5e8]
             fxch st(1)
             fst qword ptr [esp + 0x1c]
-            fmul qword ptr [gCop_nastiness_bias+0x8]
+            fmul qword ptr [gMatchDouble_0058a5e0]
             fsqrt
             fxch st(1)
             fcomp st(1)
@@ -3982,7 +4315,7 @@ void C2_NAKED C2_HOOK_FASTCALL RecordOpponentTwattageOccurrence(tCar_spec* pTwat
             test ah, 1
             je L004aef51
             fstp st(0)
-            fld qword ptr [gCop_nastiness_bias+0x10]
+            fld qword ptr [gMatchDouble_0058a5e8]
             jmp L004aef59
     L004aef51:
             fld dword ptr [esp + 0x14]
@@ -4021,7 +4354,7 @@ void C2_NAKED C2_HOOK_FASTCALL RecordOpponentTwattageOccurrence(tCar_spec* pTwat
             push ecx
             push edx
             push eax
-            push offset gOpponent_nastyness_frigger+0x15b4
+            push offset gMatchFloat_0065b980
             call DoNotDprintf_opponent
             add esp, 0x24
             cmp esi, 5
@@ -4431,6 +4764,13 @@ void C2_NAKED C2_HOOK_FASTCALL RecordOpponentTwattageOccurrence(tCar_spec* pTwat
             lea eax, [eax + eax*4]
             lea eax, [eax*4 + gProgram_state+0x4e58]
             jmp L004af38b
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -4609,74 +4949,74 @@ void C2_NAKED C2_HOOK_FASTCALL InitOpponents(tRace_info* pRace_info) {
 #else
     __asm {
             sub esp, 0x24
-            mov eax, dword ptr ds:[gTime_stamp_for_this_munging]
-            mov edx, dword ptr ds:[0x75d734]
+            mov eax, dword ptr [gTime_stamp_for_this_munging]
+            mov edx, dword ptr [gProgram_state+0x1bb4]
             push ebx
             add eax, 0x2710
             push ebp
             push esi
             mov ebx, ecx
-            mov dword ptr ds:[gNext_grudge_reduction], eax
+            mov dword ptr [gNext_grudge_reduction], eax
             push edi
-            mov edi, dword ptr ds:[0x75bba0]
+            mov edi, dword ptr [gProgram_state+0x20]
             mov eax, 1
             mov ecx, 3
-            mov dword ptr ds:[gFirst_frame], eax
-            mov dword ptr ds:[gNum_viewable_cars], eax
+            mov dword ptr [gFirst_frame], eax
+            mov dword ptr [gNum_viewable_cars], eax
             sub ecx, edi
             lea eax, [esp + 0x1c]
             xor edi, edi
             push edx
             push eax
             mov dword ptr [esp + 0x1c], ebx
-            mov dword ptr ds:[gGrudge_reduction_per_period], ecx
-            mov dword ptr ds:[gAcknowledged_start], edi
-            mov dword ptr ds:[gStart_jumped], edi
-            mov dword ptr ds:[gViewable_car_list], 0x75bc2c
+            mov dword ptr [gGrudge_reduction_per_period], ecx
+            mov dword ptr [gAcknowledged_start], edi
+            mov dword ptr [gStart_jumped], edi
+            mov dword ptr [gViewable_car_list], 0x75bc2c
             call BrActorToBounds
             fld dword ptr [esp + 0x28]
-            fsub dword ptr ds:[gOppo_pursuit_minimum_velocity_ratio]
+            fsub dword ptr [gOppo_pursuit_minimum_velocity_ratio]
             add esp, 8
-            mov dword ptr ds:[gAcme_frame_count], edi
-            mov dword ptr ds:[0x75d020], edi
-            mov dword ptr ds:[0x75d16c], edi
-            mov word ptr ds:[0x75d188], 0xffff
-            fstp dword ptr ds:[gMinimum_yness_before_knackerisation]
-            fld qword ptr ds:[0x58a570]
+            mov dword ptr [gAcme_frame_count], edi
+            mov dword ptr [gProgram_state+0x14a0], edi
+            mov dword ptr [gProgram_state+0x15ec], edi
+            mov word ptr [gProgram_state+0x1608], 0xffff
+            fstp dword ptr [gMinimum_yness_before_knackerisation]
+            fld qword ptr [gMatchDouble_0058a570]
             fcos
-            fstp dword ptr ds:[gHead_on_cos_value]
-            fild dword ptr ds:[gCurrent_race]
-            fidiv dword ptr ds:[gNumber_of_races]
-            fsubr qword ptr ds:[DAT_0058a4a0]
-            fmul qword ptr ds:[0x58a578]
-            fsubr qword ptr ds:[0x58a580]
-            fmul qword ptr ds:[0x58a588]
+            fstp dword ptr [gHead_on_cos_value]
+            fild dword ptr [gCurrent_race]
+            fidiv dword ptr [gNumber_of_races]
+            fsubr qword ptr [DAT_0058a4a0]
+            fmul qword ptr [gMatchDouble_0058a578]
+            fsubr qword ptr [gMatchDouble_0058a580]
+            fmul qword ptr [gMatchDouble_0058a588]
             call _ftol
             lea ecx, [eax + eax*2]
-            mov eax, dword ptr ds:[0x75bba0]
+            mov eax, dword ptr [gProgram_state+0x20]
             lea edx, [eax + eax*4]
             shl edx, 1
             sub edx, ecx
             mov dword ptr [esp + 0x10], edx
             fild dword ptr [esp + 0x10]
-            fmul dword ptr ds:[gOpponent_nastyness_frigger]
-            fsubr dword ptr ds:[0x58a590]
+            fmul dword ptr [gOpponent_nastyness_frigger]
+            fsubr dword ptr [gMatchFloat_0058a590]
             call _ftol
-            fld dword ptr ds:[gCamera_yon]
-            fsub dword ptr ds:[0x58a594]
-            fld dword ptr ds:[0x58a598]
-            mov dword ptr ds:[gBig_bang], eax
+            fld dword ptr [gCamera_yon]
+            fsub dword ptr [gMatchFloat_0058a594]
+            fld dword ptr [gMatchFloat_0058a598]
+            mov dword ptr [gBig_bang], eax
             fcomp st(1)
             fnstsw ax
             test ah, 0x41
             jne L004ade72
             fstp st(0)
-            mov dword ptr ds:[gIn_view_distance], 0x42340000
+            mov dword ptr [gIn_view_distance], 0x42340000
             jmp L004ade78
     L004ade72:
-            fstp dword ptr ds:[gIn_view_distance]
+            fstp dword ptr [gIn_view_distance]
     L004ade78:
-            cmp dword ptr ds:[gNet_mode], edi
+            cmp dword ptr [gNet_mode], edi
             je L004ade84
             xor ecx, ecx
             jmp L004ade8b
@@ -4686,12 +5026,12 @@ void C2_NAKED C2_HOOK_FASTCALL InitOpponents(tRace_info* pRace_info) {
     L004ade8b:
             xor ebp, ebp
             cmp ecx, edi
-            mov dword ptr ds:[0x75d7a0], ecx
+            mov dword ptr [gProgram_state+0x1c20], ecx
             jle L004ae0dc
             mov eax, dword ptr [esp + 0x14]
             add ebx, 0xce4
             add eax, 0xcf0
-            mov esi, 0x75d8fc
+            mov esi, offset gProgram_state+0x1d7c
             mov dword ptr [esp + 0x10], eax
     L004adeb3:
             call PossibleService
@@ -4713,19 +5053,19 @@ void C2_NAKED C2_HOOK_FASTCALL InitOpponents(tRace_info* pRace_info) {
             add eax, 0xec
             push ecx
             push eax
-            push 0x65b650
+            push offset gMatchFloat_0065b650
             call DoNotDprintf_opponent
             mov edx, dword ptr [ebx]
-            mov eax, dword ptr ds:[gTime_stamp_for_this_munging]
-            mov ecx, dword ptr ds:[gMinTimeOpponentRepair]
+            mov eax, dword ptr [gTime_stamp_for_this_munging]
+            mov ecx, dword ptr [gMinTimeOpponentRepair]
             mov dword ptr [esi - 0x5c], edx
-            mov edx, dword ptr ds:[gMaxTimeOpponentRepair]
+            mov edx, dword ptr [gMaxTimeOpponentRepair]
             add esp, 0xc
             mov dword ptr [esi + 0x10], eax
             mov dword ptr [esi - 0xc], edi
             call IRandomBetween
             lea eax, [eax + eax*2]
-            mov edx, dword ptr ds:[gTime_stamp_for_this_munging]
+            mov edx, dword ptr [gTime_stamp_for_this_munging]
             lea eax, [eax + eax*4]
             lea eax, [eax + eax*4]
             lea eax, [eax + eax*4]
@@ -4740,7 +5080,7 @@ void C2_NAKED C2_HOOK_FASTCALL InitOpponents(tRace_info* pRace_info) {
             push ecx
             push 0x65b590
             call DoNotDprintf_opponent
-            mov eax, dword ptr ds:[gTime_stamp_for_this_munging]
+            mov eax, dword ptr [gTime_stamp_for_this_munging]
             add esp, 0xc
             mov dword ptr [esi + 0x14], eax
             mov dword ptr [esi + 8], eax
@@ -4749,7 +5089,7 @@ void C2_NAKED C2_HOOK_FASTCALL InitOpponents(tRace_info* pRace_info) {
             xor ecx, ecx
             mov dword ptr [esi], edi
             call IRandomBetween
-            mov ecx, dword ptr ds:[gTime_stamp_for_this_munging]
+            mov ecx, dword ptr [gTime_stamp_for_this_munging]
             lea edx, [eax + ecx + 0x7d0]
             add ecx, 0x1f4
             mov dword ptr [esi + 4], edx
@@ -4766,7 +5106,7 @@ void C2_NAKED C2_HOOK_FASTCALL InitOpponents(tRace_info* pRace_info) {
             mov eax, dword ptr [esi - 0x54]
             mov dword ptr [eax + 0x1544], edi
             mov ecx, dword ptr [esi - 0x54]
-            mov edx, dword ptr ds:[gTime_stamp_for_this_munging]
+            mov edx, dword ptr [gTime_stamp_for_this_munging]
             mov dword ptr [ecx + 0x1548], edx
             mov eax, dword ptr [esi - 0x54]
             mov ecx, 1
@@ -4783,11 +5123,11 @@ void C2_NAKED C2_HOOK_FASTCALL InitOpponents(tRace_info* pRace_info) {
             mov edx, dword ptr [esi + 0x54]
             and dh, 0xf8
             mov dword ptr [esi + 0x54], edx
-            mov ecx, dword ptr ds:[0x762438]
+            mov ecx, dword ptr [gCurrent_race+0x98]
             mov dword ptr [esi + 0x58], edi
             mov eax, dword ptr [esi - 0x5c]
             fld dword ptr [ecx + 0x180]
-            mov ecx, dword ptr ds:[gOpponents]
+            mov ecx, dword ptr [gOpponents]
             mov edx, eax
             shl edx, 3
             sub edx, eax
@@ -4796,13 +5136,13 @@ void C2_NAKED C2_HOOK_FASTCALL InitOpponents(tRace_info* pRace_info) {
             dec eax
             mov dword ptr [esp + 0x14], eax
             fild dword ptr [esp + 0x14]
-            fmul qword ptr ds:[0x58a5a0]
-            fild dword ptr ds:[0x75bba0]
-            fmul qword ptr ds:[gCop_nastiness_skill_adjustment]
+            fmul qword ptr [gMatchDouble_0058a5a0]
+            fild dword ptr [gProgram_state+0x20]
+            fmul qword ptr [gCop_nastiness_skill_adjustment]
             faddp st(1), st(0)
             fsubp st(1), st(0)
-            fmul qword ptr ds:[gCop_nastiness_divisor]
-            fmul dword ptr ds:[gOpponent_nastyness_frigger]
+            fmul qword ptr [gCop_nastiness_divisor]
+            fmul dword ptr [gOpponent_nastyness_frigger]
             fstp dword ptr [esi - 0x50]
             mov dword ptr [esi - 0x28], edi
             mov dword ptr [esi - 0x24], edi
@@ -4813,18 +5153,18 @@ void C2_NAKED C2_HOOK_FASTCALL InitOpponents(tRace_info* pRace_info) {
             sub edx, eax
             shl edx, 6
             mov byte ptr [edx + ecx + 0x1b8], 0xa
-            mov eax, dword ptr ds:[gNum_viewable_cars]
+            mov eax, dword ptr [gNum_viewable_cars]
             mov ecx, dword ptr [esi - 0x54]
             mov dword ptr [eax*4 + gViewable_car_list], ecx
             inc eax
             mov edx, ecx
-            mov dword ptr ds:[gNum_viewable_cars], eax
+            mov dword ptr [gNum_viewable_cars], eax
             mov dword ptr [edx + 0x12b8], edi
             mov eax, dword ptr [esi - 0x54]
             mov dword ptr [eax + 0x12c0], edi
             mov ecx, dword ptr [esi - 0x54]
             mov dword ptr [ecx + 0x1254], edi
-            mov edx, dword ptr ds:[gTime_stamp_for_this_munging]
+            mov edx, dword ptr [gTime_stamp_for_this_munging]
             mov ecx, dword ptr [esi]
             lea eax, [edx + 0xfffffff]
             cmp ecx, eax
@@ -4833,7 +5173,7 @@ void C2_NAKED C2_HOOK_FASTCALL InitOpponents(tRace_info* pRace_info) {
     L004ae0b7:
             mov edx, dword ptr [esp + 0x10]
             mov dword ptr [esi], eax
-            mov ecx, dword ptr ds:[0x75d7a0]
+            mov ecx, dword ptr [gProgram_state+0x1c20]
             inc ebp
             add esi, 0x1a4
             add edx, 0x10
@@ -4842,13 +5182,13 @@ void C2_NAKED C2_HOOK_FASTCALL InitOpponents(tRace_info* pRace_info) {
             mov dword ptr [esp + 0x10], edx
             jl L004adeb3
     L004ae0dc:
-            mov ebx, dword ptr ds:[gChallenger_index__opponent]
+            mov ebx, dword ptr [gChallenger_index__opponent]
             cmp ebx, edi
             jl L004ae1b1
             xor eax, eax
             cmp ecx, edi
             jle L004ae108
-            mov edx, 0x75d8a0
+            mov edx, offset gProgram_state+0x1d20
     L004ae0f5:
             cmp dword ptr [edx], ebx
             je L004ae367
@@ -4865,7 +5205,7 @@ void C2_NAKED C2_HOOK_FASTCALL InitOpponents(tRace_info* pRace_info) {
             cmp eax, 0x200
             jne L004ae14a
             xor eax, eax
-            mov edx, 0x75d8a8
+            mov edx, offset gProgram_state+0x1d28
     L004ae123:
             cmp eax, ecx
             jge L004ae185
@@ -4880,14 +5220,14 @@ void C2_NAKED C2_HOOK_FASTCALL InitOpponents(tRace_info* pRace_info) {
             sub ecx, eax
             lea eax, [ecx + ecx*2]
             lea ecx, [eax + eax*4]
-            lea eax, [ecx*4 + 0x75d8a0]
+            lea eax, [ecx*4 + gProgram_state+0x1d20]
             jmp L004ae187
     L004ae14a:
             cmp eax, 0x300
             jne L004ae185
-            mov edx, dword ptr ds:[gNumber_of_cops_before_faffage]
+            mov edx, dword ptr [gNumber_of_cops_before_faffage]
             xor eax, eax
-            mov ecx, 0x7609e0
+            mov ecx, offset gProgram_state+0x4e60
     L004ae15e:
             cmp eax, edx
             jge L004ae185
@@ -4902,7 +5242,7 @@ void C2_NAKED C2_HOOK_FASTCALL InitOpponents(tRace_info* pRace_info) {
             sub ecx, eax
             lea eax, [ecx + ecx*2]
             lea edx, [eax + eax*4]
-            lea eax, [edx*4 + 0x7609d8]
+            lea eax, [edx*4 + gProgram_state+0x4e58]
             jmp L004ae187
     L004ae185:
             xor eax, eax
@@ -4912,18 +5252,18 @@ void C2_NAKED C2_HOOK_FASTCALL InitOpponents(tRace_info* pRace_info) {
             or dword ptr [eax + 0xb0], 0x10
             jmp L004ae1a1
     L004ae194:
-            push 0x65b614
+            push offset gMatchFloat_0065b614
             call DoNotDprintf_opponent
             add esp, 4
     L004ae1a1:
-            mov ecx, dword ptr ds:[0x75d7a0]
-            mov dword ptr ds:[gChallenger_index__opponent], 0xffffffff
+            mov ecx, dword ptr [gProgram_state+0x1c20]
+            mov dword ptr [gChallenger_index__opponent], 0xffffffff
     L004ae1b1:
             xor esi, esi
             cmp ecx, edi
             mov dword ptr [esp + 0x10], esi
             jle L004ae1d9
-            mov eax, 0x75d8a8
+            mov eax, offset gProgram_state+0x1d28
             mov ebx, ecx
     L004ae1c2:
             mov edx, dword ptr [eax]
@@ -4938,18 +5278,18 @@ void C2_NAKED C2_HOOK_FASTCALL InitOpponents(tRace_info* pRace_info) {
     L004ae1d9:
             cmp esi, edi
             je L004ae350
-            mov eax, dword ptr ds:[0x762438]
+            mov eax, dword ptr [gCurrent_race+0x98]
             fld dword ptr [eax + 0x180]
-            fcomp dword ptr ds:[DAT_0058a4ec]
+            fcomp dword ptr [DAT_0058a4ec]
             fnstsw ax
             test ah, 1
             jne L004ae221
             cmp ecx, edi
             jle L004ae350
-            mov eax, 0x75d954
+            mov eax, offset gProgram_state+0x1dd4
     L004ae206:
             mov dword ptr [eax], 3
-            mov ecx, dword ptr ds:[0x75d7a0]
+            mov ecx, dword ptr [gProgram_state+0x1c20]
             inc edi
             add eax, 0x1a4
             cmp edi, ecx
@@ -4959,10 +5299,10 @@ void C2_NAKED C2_HOOK_FASTCALL InitOpponents(tRace_info* pRace_info) {
             xor eax, eax
             cmp ecx, edi
             jle L004ae23f
-            mov ecx, 0x75d954
+            mov ecx, offset gProgram_state+0x1dd4
     L004ae22c:
             mov dword ptr [ecx], edi
-            mov edx, dword ptr ds:[0x75d7a0]
+            mov edx, dword ptr [gProgram_state+0x1c20]
             inc eax
             add ecx, 0x1a4
             cmp eax, edx
@@ -4970,9 +5310,9 @@ void C2_NAKED C2_HOOK_FASTCALL InitOpponents(tRace_info* pRace_info) {
     L004ae23f:
             fild dword ptr [esp + 0x10]
             fld st(0)
-            fmul qword ptr ds:[0x58a5b8]
+            fmul qword ptr [gMatchDouble_0058a5b8]
             call _ftol
-            fmul qword ptr ds:[0x58a5c0]
+            fmul qword ptr [gMatchDouble_0058a5c0]
             mov ebp, eax
             mov dword ptr [esp + 0x18], ebp
             call _ftol
@@ -4992,7 +5332,7 @@ void C2_NAKED C2_HOOK_FASTCALL InitOpponents(tRace_info* pRace_info) {
             sub ecx, eax
             lea ecx, [ecx + ecx*2]
             lea ecx, [ecx + ecx*4]
-            cmp dword ptr [ecx*4 + 0x75d954], edi
+            cmp dword ptr [ecx*4 + gProgram_state+0x1dd4], edi
             je L004ae2b9
     L004ae294:
             mov ecx, dword ptr [esp + 0x10]
@@ -5008,7 +5348,7 @@ void C2_NAKED C2_HOOK_FASTCALL InitOpponents(tRace_info* pRace_info) {
             sub ecx, eax
             lea ecx, [ecx + ecx*2]
             lea ecx, [ecx + ecx*4]
-            cmp dword ptr [ecx*4 + 0x75d954], edi
+            cmp dword ptr [ecx*4 + gProgram_state+0x1dd4], edi
             jne L004ae294
     L004ae2b9:
             mov ecx, eax
@@ -5016,7 +5356,7 @@ void C2_NAKED C2_HOOK_FASTCALL InitOpponents(tRace_info* pRace_info) {
             sub ecx, eax
             lea eax, [ecx + ecx*2]
             lea edx, [eax + eax*4]
-            mov dword ptr [edx*4 + 0x75d954], ebp
+            mov dword ptr [edx*4 + gProgram_state+0x1dd4], ebp
     L004ae2cd:
             dec ebx
             dec esi
@@ -5041,7 +5381,7 @@ void C2_NAKED C2_HOOK_FASTCALL InitOpponents(tRace_info* pRace_info) {
             sub ecx, eax
             lea ecx, [ecx + ecx*2]
             lea ecx, [ecx + ecx*4]
-            cmp dword ptr [ecx*4 + 0x75d954], edi
+            cmp dword ptr [ecx*4 + gProgram_state+0x1dd4], edi
             je L004ae32c
     L004ae30b:
             inc eax
@@ -5056,7 +5396,7 @@ void C2_NAKED C2_HOOK_FASTCALL InitOpponents(tRace_info* pRace_info) {
             sub ecx, eax
             lea ecx, [ecx + ecx*2]
             lea ecx, [ecx + ecx*4]
-            cmp dword ptr [ecx*4 + 0x75d954], edi
+            cmp dword ptr [ecx*4 + gProgram_state+0x1dd4], edi
             jne L004ae30b
     L004ae32c:
             mov ecx, eax
@@ -5064,7 +5404,7 @@ void C2_NAKED C2_HOOK_FASTCALL InitOpponents(tRace_info* pRace_info) {
             sub ecx, eax
             lea eax, [ecx + ecx*2]
             lea edx, [eax + eax*4]
-            mov dword ptr [edx*4 + 0x75d954], 1
+            mov dword ptr [edx*4 + gProgram_state+0x1dd4], 1
     L004ae344:
             mov eax, dword ptr [esp + 0x10]
             dec ebx
@@ -5072,7 +5412,7 @@ void C2_NAKED C2_HOOK_FASTCALL InitOpponents(tRace_info* pRace_info) {
             mov dword ptr [esp + 0x10], eax
             jne L004ae2e7
     L004ae350:
-            mov dword ptr ds:[gActive_car_list_rebuild_required], 1
+            mov dword ptr [gActive_car_list_rebuild_required], 1
             call RebuildActiveCarList
             pop edi
             pop esi
@@ -5086,7 +5426,7 @@ void C2_NAKED C2_HOOK_FASTCALL InitOpponents(tRace_info* pRace_info) {
             sub edx, eax
             lea eax, [edx + edx*2]
             lea eax, [eax + eax*4]
-            mov ebx, dword ptr [eax*4 + 0x75d8a8]
+            mov ebx, dword ptr [eax*4 + gProgram_state+0x1d28]
             jmp L004ae10a
     }
 #endif
@@ -5114,7 +5454,7 @@ void C2_NAKED C2_HOOK_FASTCALL CalcNegativeXVector(br_vector3* pNegative_x_vecto
         _emit 0x22
             fld dword ptr [eax + 8]
             fsub dword ptr [edx + 8]
-            fld dword ptr ds:[0x589310]
+            fld dword ptr [gMatchData_00589310]
             fxch st(2)
             fsubr dword ptr [esp + 0x14]
             fxch st(1)
@@ -5152,7 +5492,7 @@ void C2_NAKED C2_HOOK_FASTCALL CalcNegativeXVector(br_vector3* pNegative_x_vecto
             fsqrt
             fst dword ptr [esp + 0x14]
             fst dword ptr [esp + 0x14]
-            fcomp dword ptr ds:[0x589324]
+            fcomp dword ptr [gMatchFloat_00589324]
             fld st(4)
             fxch st(2)
             fstp dword ptr [esp + 8]
@@ -5165,7 +5505,7 @@ void C2_NAKED C2_HOOK_FASTCALL CalcNegativeXVector(br_vector3* pNegative_x_vecto
             test ah, 0x41
             jne L0040209e
             fld dword ptr [esp + 0x14]
-            fdivr qword ptr ds:[0x589328]
+            fdivr qword ptr [gMatchDouble_00589328]
             fld st(0)
             fld st(1)
             fxch st(1)
@@ -5957,7 +6297,7 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessThisOpponent(tOpponent_spec* pOpponent_spe
             je L004aa77e
             add eax, 0xec
             push eax
-            push offset gOpponent_nastyness_frigger+0x4a0
+            push offset gMatchFloat_0065a86c
             call DoNotDprintf_opponent
             mov edx, dword ptr [esi + 0xb0]
             mov eax, dword ptr [esi + 4]
@@ -6091,7 +6431,7 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessThisOpponent(tOpponent_spec* pOpponent_spe
     L004aa77e:
             add eax, 0xec
             push eax
-            push offset gOpponent_nastyness_frigger+0x474
+            push offset gMatchFloat_0065a840
             call DoNotDprintf_opponent
             add esp, 8
             mov ecx, esi
@@ -6103,7 +6443,7 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessThisOpponent(tOpponent_spec* pOpponent_spe
             mov ecx, dword ptr [esi + 8]
             add ecx, 0xec
             push ecx
-            push offset gOpponent_nastyness_frigger+0x448
+            push offset gMatchFloat_0065a814
             call DoNotDprintf_opponent
             mov ebp, dword ptr [esi + 0xb0]
             mov eax, dword ptr [esi + 8]
@@ -6117,7 +6457,7 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessThisOpponent(tOpponent_spec* pOpponent_spe
             jne L004aa831
             add eax, 0xec
             push eax
-            push offset gOpponent_nastyness_frigger+0x41c
+            push offset gMatchFloat_0065a7e8
             call DoNotDprintf_opponent
             mov eax, dword ptr [esi + 8]
             add esp, 8
@@ -6202,6 +6542,10 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessThisOpponent(tOpponent_spec* pOpponent_spe
             pop ebp
             add esp, 0x1c
             ret
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -6963,7 +7307,7 @@ tS16 C2_NAKED C2_HOOK_FASTCALL FindNearestGeneralSection(tCar_spec* pCar, const 
 #else
     __asm {
             sub esp, 0x44
-            fld dword ptr [gOppo_pursuit_velocity_scale+0x4]
+            fld dword ptr [gMatchData_0058a490]
             push ebx
             push ebp
             or ebx, 0xffffffff
@@ -7112,7 +7456,7 @@ tS16 C2_NAKED C2_HOOK_FASTCALL FindNearestGeneralSection(tCar_spec* pCar, const 
             fxch st(1)
             faddp st(1), st(0)
             fld st(0)
-            fcomp dword ptr [gOppo_pursuit_minimum_velocity_ratio+0x4]
+            fcomp dword ptr [gMatchFloat_0058a498]
             fnstsw ax
             test ah, 1
             jne L004a852f
@@ -7402,6 +7746,21 @@ tS16 C2_NAKED C2_HOOK_FASTCALL FindNearestGeneralSection(tCar_spec* pCar, const 
             pop ebx
             add esp, 0x44
             ret 0xc
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -7707,7 +8066,7 @@ void C2_NAKED C2_HOOK_FASTCALL ChooseNewObjective(tOpponent_spec* pOpponent_spec
             add ebp, 0xec
             or al, 4
             push ebp
-            push offset gOpponent_nastyness_frigger+0x1198
+            push offset gMatchFloat_0065b564
             mov dword ptr [esi + 0xb0], eax
             call DoNotDprintf_opponent
             mov eax, dword ptr [esi + 8]
@@ -7756,7 +8115,7 @@ void C2_NAKED C2_HOOK_FASTCALL ChooseNewObjective(tOpponent_spec* pOpponent_spec
             jne L004ad818
             add ebp, 0xec
             push ebp
-            push offset gOpponent_nastyness_frigger+0x1180
+            push offset gMatchFloat_0065b54c
             call DoNotDprintf_opponent
             mov al, byte ptr [esi + 0xb0]
             add esp, 8
@@ -7780,7 +8139,7 @@ void C2_NAKED C2_HOOK_FASTCALL ChooseNewObjective(tOpponent_spec* pOpponent_spec
             je L004ad032
             add ebp, 0xec
             push ebp
-            push offset gOpponent_nastyness_frigger+0x1168
+            push offset gMatchFloat_0065b534
             call DoNotDprintf_opponent
             mov eax, dword ptr [esi + 4]
             add esp, 8
@@ -7814,7 +8173,7 @@ void C2_NAKED C2_HOOK_FASTCALL ChooseNewObjective(tOpponent_spec* pOpponent_spec
             test eax, eax
             jne L004ad73a
             fld dword ptr [esi + 0xc]
-            fmul dword ptr [DAT_0058a55c+0x4]
+            fmul dword ptr [gMatchFloat_0058a560]
             fsubr dword ptr [DAT_0058a4ec]
             call _ftol
             mov dword ptr [esp + 0x18], eax
@@ -7840,7 +8199,7 @@ void C2_NAKED C2_HOOK_FASTCALL ChooseNewObjective(tOpponent_spec* pOpponent_spec
             mov eax, dword ptr [esi + 8]
             add eax, 0xec
             push eax
-            push offset gOpponent_nastyness_frigger+0x1150
+            push offset gMatchFloat_0065b51c
             call DoNotDprintf_opponent
             add esp, 8
             push 3
@@ -7866,7 +8225,7 @@ void C2_NAKED C2_HOOK_FASTCALL ChooseNewObjective(tOpponent_spec* pOpponent_spec
             mov dword ptr [esp + 0x10], ecx
             fild dword ptr [esp + 0x10]
             fld dword ptr [esi + 0xc]
-            fmul dword ptr [DAT_0058a55c+0x8]
+            fmul dword ptr [gMatchFloat_0058a564]
             fsubp st(1), st(0)
             call _ftol
             mov ecx, eax
@@ -7876,7 +8235,7 @@ void C2_NAKED C2_HOOK_FASTCALL ChooseNewObjective(tOpponent_spec* pOpponent_spec
             mov ecx, dword ptr [esi + 8]
             add ecx, 0xec
             push ecx
-            push offset gOpponent_nastyness_frigger+0x1150
+            push offset gMatchFloat_0065b51c
             call DoNotDprintf_opponent
             add esp, 8
             push 3
@@ -7956,14 +8315,14 @@ void C2_NAKED C2_HOOK_FASTCALL ChooseNewObjective(tOpponent_spec* pOpponent_spec
             add edx, 0xec
             lea eax, [esp + 0x1c]
             push edx
-            push offset gOpponent_nastyness_frigger+0x1138
+            push offset gMatchFloat_0065b504
             push eax
             call sprintf
             mov ecx, dword ptr [esi + 8]
             add esp, 0xc
             add ecx, 0xec
             push ecx
-            push offset gOpponent_nastyness_frigger+0x1114
+            push offset gMatchFloat_0065b4e0
             call DoNotDprintf_opponent
             add esp, 8
             jmp L004ad8f2
@@ -8017,7 +8376,7 @@ void C2_NAKED C2_HOOK_FASTCALL ChooseNewObjective(tOpponent_spec* pOpponent_spec
             add edx, 0xec
             lea eax, [esp + 0x1c]
             push edx
-            push offset gOpponent_nastyness_frigger+0x10f8
+            push offset gMatchFloat_0065b4c4
             push eax
             call sprintf
             mov eax, dword ptr [esi + 8]
@@ -8027,7 +8386,7 @@ void C2_NAKED C2_HOOK_FASTCALL ChooseNewObjective(tOpponent_spec* pOpponent_spec
             add ecx, 0xec
             push ecx
             push eax
-            push offset gOpponent_nastyness_frigger+0x10b4
+            push offset gMatchFloat_0065b480
             call DoNotDprintf_opponent
             mov edx, dword ptr [esi + 8]
             add esp, 0xc
@@ -8090,7 +8449,7 @@ void C2_NAKED C2_HOOK_FASTCALL ChooseNewObjective(tOpponent_spec* pOpponent_spec
             add edx, 0xec
             lea eax, [esp + 0x1c]
             push edx
-            push offset gOpponent_nastyness_frigger+0x108c
+            push offset gMatchFloat_0065b458
             push eax
             call sprintf
             mov eax, dword ptr [esi + 8]
@@ -8100,7 +8459,7 @@ void C2_NAKED C2_HOOK_FASTCALL ChooseNewObjective(tOpponent_spec* pOpponent_spec
             add ecx, 0xec
             push ecx
             push eax
-            push offset gOpponent_nastyness_frigger+0x1050
+            push offset gMatchFloat_0065b41c
             call DoNotDprintf_opponent
             add esp, 0xc
             jmp L004ad8f2
@@ -8150,7 +8509,7 @@ void C2_NAKED C2_HOOK_FASTCALL ChooseNewObjective(tOpponent_spec* pOpponent_spec
             push offset gProgram_state+0x198
             push edx
             lea eax, [esp + 0x24]
-            push offset gOpponent_nastyness_frigger+0x1030
+            push offset gMatchFloat_0065b3fc
             push eax
             call sprintf
             mov eax, dword ptr [esi + 8]
@@ -8160,7 +8519,7 @@ void C2_NAKED C2_HOOK_FASTCALL ChooseNewObjective(tOpponent_spec* pOpponent_spec
             add ecx, 0xec
             push ecx
             push eax
-            push offset gOpponent_nastyness_frigger+0xfe0
+            push offset gMatchFloat_0065b3ac
             call DoNotDprintf_opponent
             add esp, 0xc
             jmp L004ad8f2
@@ -8225,7 +8584,7 @@ void C2_NAKED C2_HOOK_FASTCALL ChooseNewObjective(tOpponent_spec* pOpponent_spec
             mov dword ptr [esp + 0x10], edx
             fild dword ptr [esp + 0x10]
             fld dword ptr [esi + 0xc]
-            fmul dword ptr [DAT_0058a55c+0xc]
+            fmul dword ptr [gMatchFloat_0058a568]
             fsubp st(1), st(0)
             call _ftol
             mov edi, eax
@@ -8310,7 +8669,7 @@ void C2_NAKED C2_HOOK_FASTCALL ChooseNewObjective(tOpponent_spec* pOpponent_spec
             fnstsw ax
             test ah, 0x41
             jne L004ad681
-            push offset gOpponent_nastyness_frigger+0xfc4
+            push offset gMatchFloat_0065b390
             call DoNotDprintf_opponent
             add esp, 4
             mov eax, 1
@@ -8328,17 +8687,17 @@ void C2_NAKED C2_HOOK_FASTCALL ChooseNewObjective(tOpponent_spec* pOpponent_spec
             mov ecx, edi
             call PercentageChance
             mov ebp, eax
-            mov eax, offset gOpponent_nastyness_frigger+0xfac
+            mov eax, offset gMatchFloat_0065b378
             test ebp, ebp
             jne L004ad6a3
-            mov eax, offset gOpponent_nastyness_frigger+0xf90
+            mov eax, offset gMatchFloat_0065b35c
     L004ad6a3:
             mov edx, dword ptr [esi + 8]
             push eax
             add edx, 0xec
             push edi
             push edx
-            push offset gOpponent_nastyness_frigger+0xf60
+            push offset gMatchFloat_0065b32c
             call DoNotDprintf_opponent
             add esp, 0x10
             test ebp, ebp
@@ -8380,7 +8739,7 @@ void C2_NAKED C2_HOOK_FASTCALL ChooseNewObjective(tOpponent_spec* pOpponent_spec
             add edx, 0xec
             lea eax, [esp + 0x1c]
             push edx
-            push offset gOpponent_nastyness_frigger+0xf30
+            push offset gMatchFloat_0065b2fc
             push eax
             call sprintf
             add esp, 0xc
@@ -8394,7 +8753,7 @@ void C2_NAKED C2_HOOK_FASTCALL ChooseNewObjective(tOpponent_spec* pOpponent_spec
             add eax, 0xec
             push ecx
             push eax
-            push offset gOpponent_nastyness_frigger+0xefc
+            push offset gMatchFloat_0065b2c8
             call DoNotDprintf_opponent
             mov eax, dword ptr [esi + 0xb0]
             add esp, 0xc
@@ -8436,7 +8795,7 @@ void C2_NAKED C2_HOOK_FASTCALL ChooseNewObjective(tOpponent_spec* pOpponent_spec
             mov ecx, dword ptr [esi + 8]
             add ecx, 0xec
             push ecx
-            push offset gOpponent_nastyness_frigger+0xec0
+            push offset gMatchFloat_0065b28c
             call DoNotDprintf_opponent
             add esp, 0xc
             push 4
@@ -8453,7 +8812,7 @@ void C2_NAKED C2_HOOK_FASTCALL ChooseNewObjective(tOpponent_spec* pOpponent_spec
             mov edx, dword ptr [esi + 8]
             add edx, 0xec
             push edx
-            push offset gOpponent_nastyness_frigger+0xe80
+            push offset gMatchFloat_0065b24c
             call DoNotDprintf_opponent
             add esp, 0xc
     L004ad80d:
@@ -8516,7 +8875,7 @@ void C2_NAKED C2_HOOK_FASTCALL ChooseNewObjective(tOpponent_spec* pOpponent_spec
             mov eax, 0x14
     L004ad89d:
             fld dword ptr [esi + 0xc]
-            fmul dword ptr [DAT_0058a55c+0x4]
+            fmul dword ptr [gMatchFloat_0058a560]
             fld dword ptr [DAT_0058a47c]
             add eax, 0x14
             mov dword ptr [esp + 0x14], eax
@@ -8556,6 +8915,9 @@ void C2_NAKED C2_HOOK_FASTCALL ChooseNewObjective(tOpponent_spec* pOpponent_spec
             pop ebx
             add esp, 0x10c
             ret
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -8638,7 +9000,7 @@ void C2_NAKED C2_HOOK_FASTCALL CalcRaceRoute(tOpponent_spec *pOpponent_spec) {
             mov eax, dword ptr [esi + 8]
             add eax, 0xec
             push eax
-            push offset gOpponent_nastyness_frigger+0x674
+            push offset gMatchFloat_0065aa40
             call DoNotDprintf_opponent
             add esp, 8
             pop edi
@@ -8655,7 +9017,7 @@ void C2_NAKED C2_HOOK_FASTCALL CalcRaceRoute(tOpponent_spec *pOpponent_spec) {
             mov ecx, dword ptr [esi + 8]
             add ecx, 0xec
             push ecx
-            push offset gOpponent_nastyness_frigger+0x628
+            push offset gMatchFloat_0065a9f4
             call DoNotDprintf_opponent
             add esp, 8
             lea edx, [esp + 0x24]
@@ -9506,9 +9868,9 @@ tFollow_path_result C2_NAKED C2_HOOK_FASTCALL ProcessFollowPath(tOpponent_spec* 
             dec eax
             je L004af9bd
             push 0x4f2
-            push offset gOpponent_nastyness_frigger+0x1938
+            push offset gMatchFloat_0065bd04
             push 0x4f2
-            push offset gOpponent_nastyness_frigger+0x1914
+            push offset gMatchFloat_0065bce0
             call BrFatal
             add esp, 0x10
             xor eax, eax
@@ -9667,7 +10029,7 @@ tFollow_path_result C2_NAKED C2_HOOK_FASTCALL ProcessFollowPath(tOpponent_spec* 
             mov ecx, dword ptr [esi + 8]
             add ecx, 0xec
             push ecx
-            push offset gOpponent_nastyness_frigger+0x18d4
+            push offset gMatchFloat_0065bca0
             call DoNotDprintf_oppoproc
             add esp, 8
             mov eax, 2
@@ -9703,9 +10065,9 @@ tFollow_path_result C2_NAKED C2_HOOK_FASTCALL ProcessFollowPath(tOpponent_spec* 
             fxch st(1)
             fsqrt
             fstp st(1)
-            fmul qword ptr [gCop_nastiness_bias+0x20]
+            fmul qword ptr [gMatchDouble_0058a5f8]
             fst dword ptr [esp + 0x10]
-            fcomp dword ptr [gCop_nastiness_bias+0x28]
+            fcomp dword ptr [gMatchFloat_0058a600]
             fnstsw ax
             test ah, 0x41
             jne L004afc68
@@ -9739,7 +10101,12 @@ tFollow_path_result C2_NAKED C2_HOOK_FASTCALL ProcessFollowPath(tOpponent_spec* 
             mov dword ptr [esp + 0x14], eax
             mov dword ptr [esp + 0x18], ebx
             fld dword ptr [edx + 4]
-            fmul dword ptr [gCop_nastiness_bias+0x1c]
+            _emit 0xd8
+        _emit 0x0d
+        _emit 0xf4
+        _emit 0xa5
+        _emit 0x58
+        _emit 0x00
             fsubr st(0), st(1)
             fiadd dword ptr [esp + 0x14]
             fld st(2)
@@ -9756,7 +10123,7 @@ tFollow_path_result C2_NAKED C2_HOOK_FASTCALL ProcessFollowPath(tOpponent_spec* 
         _emit 0x1c
         _emit 0x24
             push ecx
-            push offset gOpponent_nastyness_frigger+0x18ac
+            push offset gMatchFloat_0065bc78
             call DoNotDprintf_oppoproc
             mov eax, dword ptr [esi + 0xf0]
             add esp, 0x10
@@ -9772,7 +10139,7 @@ tFollow_path_result C2_NAKED C2_HOOK_FASTCALL ProcessFollowPath(tOpponent_spec* 
             jmp L004afff9
     L004afd44:
             fld dword ptr [edx + 4]
-            fmul dword ptr [gCop_nastiness_bias+0x18]
+            fmul dword ptr [gMatchFloat_0058a5f0]
             add edi, 0x7d0
             mov dword ptr [esp + 0x18], ebx
             mov dword ptr [esp + 0x14], edi
@@ -9791,7 +10158,7 @@ tFollow_path_result C2_NAKED C2_HOOK_FASTCALL ProcessFollowPath(tOpponent_spec* 
             mov dword ptr [ebp + 0x12b8], ebx
             mov dword ptr [esp + 0x18], ebx
             fld dword ptr [eax + 4]
-            fmul dword ptr [gCop_nastiness_bias+0x2c]
+            fmul dword ptr [gMatchFloat_0058a604]
             fld dword ptr [ebp + 0x1254]
             fchs
             fxch st(1)
@@ -9801,7 +10168,7 @@ tFollow_path_result C2_NAKED C2_HOOK_FASTCALL ProcessFollowPath(tOpponent_spec* 
             fild qword ptr [esp + 0x14]
             fld st(1)
             fxch st(1)
-            fmul qword ptr [gCop_nastiness_bias+0x30]
+            fmul qword ptr [gMatchDouble_0058a608]
             fstp dword ptr [esp + 0x10]
             fcomp dword ptr [esp + 0x10]
             fnstsw ax
@@ -9841,7 +10208,7 @@ tFollow_path_result C2_NAKED C2_HOOK_FASTCALL ProcessFollowPath(tOpponent_spec* 
             mov dword ptr [ebp + 0x12c0], ebx
             mov dword ptr [esp + 0x18], ebx
             fld dword ptr [edx + 4]
-            fmul dword ptr [gCop_nastiness_bias+0x38]
+            fmul dword ptr [gMatchFloat_0058a610]
             fld dword ptr [ebp + 0x1254]
             fchs
             fxch st(1)
@@ -9851,7 +10218,7 @@ tFollow_path_result C2_NAKED C2_HOOK_FASTCALL ProcessFollowPath(tOpponent_spec* 
             fild qword ptr [esp + 0x14]
             fld st(1)
             fxch st(1)
-            fmul qword ptr [gCop_nastiness_bias+0x30]
+            fmul qword ptr [gMatchDouble_0058a608]
             fstp dword ptr [esp + 0x10]
             fcomp dword ptr [esp + 0x10]
             fnstsw ax
@@ -9899,10 +10266,10 @@ tFollow_path_result C2_NAKED C2_HOOK_FASTCALL ProcessFollowPath(tOpponent_spec* 
             mov edi, dword ptr [esp + 0x148]
             cmp edi, ebx
             je L004afedf
-            fld dword ptr [gCop_nastiness_bias+0x3c]
+            fld dword ptr [gMatchFloat_0058a614]
             jmp L004afee5
     L004afedf:
-            fld dword ptr [gCop_nastiness_bias+0x28]
+            fld dword ptr [gMatchFloat_0058a600]
     L004afee5:
             cmp dword ptr [esp + 0x14c], ebx
             jne L004afff7
@@ -9932,7 +10299,7 @@ tFollow_path_result C2_NAKED C2_HOOK_FASTCALL ProcessFollowPath(tOpponent_spec* 
         _emit 0x24
             push eax
             push ecx
-            push offset gOpponent_nastyness_frigger+0x1860
+            push offset gMatchFloat_0065bc2c
             call DoNotDprintf_oppoproc
             mov edx, dword ptr [gTime_stamp_for_this_munging]
             add esp, 0x14
@@ -9952,7 +10319,7 @@ tFollow_path_result C2_NAKED C2_HOOK_FASTCALL ProcessFollowPath(tOpponent_spec* 
             mov edx, dword ptr [esi + 8]
             add edx, 0xec
             push edx
-            push offset gOpponent_nastyness_frigger+0x181c
+            push offset gMatchFloat_0065bbe8
             call DoNotDprintf_oppoproc
             add esp, 8
             mov eax, 2
@@ -10003,10 +10370,10 @@ tFollow_path_result C2_NAKED C2_HOOK_FASTCALL ProcessFollowPath(tOpponent_spec* 
             mov eax, dword ptr [ebp + 8]
             fld dword ptr [eax + 0x68]
             fld dword ptr [eax + 0x70]
-            fmul qword ptr [gCop_nastiness_bias+0x20]
+            fmul qword ptr [gMatchDouble_0058a5f8]
             fld dword ptr [esp + 0x58]
             fxch st(2)
-            fmul qword ptr [gCop_nastiness_bias+0x20]
+            fmul qword ptr [gMatchDouble_0058a5f8]
             fxch st(2)
             fsub dword ptr [esp + 0x64]
             fxch st(1)
@@ -10074,7 +10441,7 @@ tFollow_path_result C2_NAKED C2_HOOK_FASTCALL ProcessFollowPath(tOpponent_spec* 
             mov edx, eax
             call CalcSOCs
             fild dword ptr [esp + 0x98]
-            fld dword ptr [gCop_nastiness_bias+0x40]
+            fld dword ptr [gMatchFloat_0058a618]
             mov edx, eax
             fcomp st(1)
             fnstsw ax
@@ -10124,7 +10491,7 @@ tFollow_path_result C2_NAKED C2_HOOK_FASTCALL ProcessFollowPath(tOpponent_spec* 
             fxch st(1)
             fxch st(1)
             fst dword ptr [esp + 0x20]
-            fcomp dword ptr [gFLOAT_0058a620+0x8]
+            fcomp dword ptr [gMatchFloat_0058a628]
             fstp dword ptr [esp + 0x44]
             fnstsw ax
             test ah, 0x41
@@ -10166,12 +10533,12 @@ tFollow_path_result C2_NAKED C2_HOOK_FASTCALL ProcessFollowPath(tOpponent_spec* 
             fld dword ptr [gFLOAT_0058a61c]
     L004b0254:
             fld dword ptr [esp + 0x20]
-            fcomp dword ptr [gFLOAT_0058a620+0x8]
+            fcomp dword ptr [gMatchFloat_0058a628]
             fnstsw ax
             test ah, 0x41
             jne L004b02a7
             fld dword ptr [esp + 0x24]
-            fcomp dword ptr [gFLOAT_0058a620+0x8]
+            fcomp dword ptr [gMatchFloat_0058a628]
             fnstsw ax
             test ah, 0x41
             jne L004b02a7
@@ -10209,7 +10576,7 @@ tFollow_path_result C2_NAKED C2_HOOK_FASTCALL ProcessFollowPath(tOpponent_spec* 
             fld dword ptr [esp + 0x24]
             fxch st(1)
             faddp st(2), st(0)
-            fcomp dword ptr [gFLOAT_0058a620+0x8]
+            fcomp dword ptr [gMatchFloat_0058a628]
             fsqrt
             fst dword ptr [esp + 0x34]
             fsub dword ptr [esi + 0x104]
@@ -10259,7 +10626,7 @@ tFollow_path_result C2_NAKED C2_HOOK_FASTCALL ProcessFollowPath(tOpponent_spec* 
             fstp st(0)
             fld dword ptr [gFLOAT_0058a61c]
             fld dword ptr [esp + 0x24]
-            fcomp dword ptr [gFLOAT_0058a638+0x4]
+            fcomp dword ptr [gMatchFloat_0058a63c]
             mov dword ptr [esi + 0xd4], 0x40c00000
             fnstsw ax
             test ah, 1
@@ -10360,12 +10727,12 @@ tFollow_path_result C2_NAKED C2_HOOK_FASTCALL ProcessFollowPath(tOpponent_spec* 
             fdivp st(1), st(0)
     L004b04b6:
             fld dword ptr [esp + 0x24]
-            fcomp dword ptr [gFLOAT_0058a638+0x8]
+            fcomp dword ptr [gMatchFloat_0058a640]
             fld dword ptr [ebp + 0x1258]
             fnstsw ax
             test ah, 1
             jne L004b04d7
-            fmul dword ptr [gFLOAT_0058a638+0x8]
+            fmul dword ptr [gMatchFloat_0058a640]
             fdiv dword ptr [esp + 0x24]
     L004b04d7:
             fld dword ptr [esp + 0x18]
@@ -10412,14 +10779,14 @@ tFollow_path_result C2_NAKED C2_HOOK_FASTCALL ProcessFollowPath(tOpponent_spec* 
             jmp L004b061b
     L004b0569:
             fld dword ptr [esi + 0xd4]
-            fcomp dword ptr [gFLOAT_0058a644+0x4]
+            fcomp dword ptr [gMatchFloat_0058a648]
             xor edx, edx
             mov dword ptr [esi + 0xc4], edx
             fnstsw ax
             test ah, 0x41
             jne L004b05a6
             fld st(1)
-            fld dword ptr [gFLOAT_0058a644+0x4]
+            fld dword ptr [gMatchFloat_0058a648]
             fsub dword ptr [esi + 0xd4]
             fxch st(1)
             fabs
@@ -10429,12 +10796,12 @@ tFollow_path_result C2_NAKED C2_HOOK_FASTCALL ProcessFollowPath(tOpponent_spec* 
             fstp dword ptr [esi + 0xd4]
     L004b05a6:
             fld dword ptr [esp + 0x24]
-            fcomp dword ptr [gFLOAT_0058a638+0x8]
+            fcomp dword ptr [gMatchFloat_0058a640]
             fld dword ptr [ebp + 0x1258]
             fnstsw ax
             test ah, 1
             jne L004b05c7
-            fmul dword ptr [gFLOAT_0058a638+0x8]
+            fmul dword ptr [gMatchFloat_0058a640]
             fdiv dword ptr [esp + 0x24]
     L004b05c7:
             fxch st(3)
@@ -10497,14 +10864,14 @@ tFollow_path_result C2_NAKED C2_HOOK_FASTCALL ProcessFollowPath(tOpponent_spec* 
             lea eax, [ecx - 0x32]
             mov dword ptr [esp + 0x68], eax
             fild dword ptr [esp + 0x68]
-            fmul dword ptr [gFLOAT_0058a64c+0x4]
+            fmul dword ptr [gMatchFloat_0058a650]
             fsubp st(1), st(0)
             jmp L004b0682
     L004b0677:
             cmp ecx, 0x62
             jl L004b0682
     L004b067c:
-            fsub dword ptr [gFLOAT_0058a64c+0x8]
+            fsub dword ptr [gMatchFloat_0058a654]
     L004b0682:
             mov eax, dword ptr [esp + 0x48]
             cmp eax, 0x32
@@ -10514,14 +10881,14 @@ tFollow_path_result C2_NAKED C2_HOOK_FASTCALL ProcessFollowPath(tOpponent_spec* 
             lea edi, [eax - 0x32]
             mov dword ptr [esp + 0x48], edi
             fild dword ptr [esp + 0x48]
-            fmul dword ptr [gFLOAT_0058a64c+0xc]
+            fmul dword ptr [gMatchFloat_0058a658]
             fsubp st(1), st(0)
             jmp L004b06b0
     L004b06a5:
             cmp eax, 0x62
             jl L004b06b0
     L004b06aa:
-            fsub dword ptr [gFLOAT_0058a64c+0x10]
+            fsub dword ptr [gMatchFloat_0058a65c]
     L004b06b0:
             cmp ecx, 0x63
             jge L004b06ba
@@ -10539,11 +10906,11 @@ tFollow_path_result C2_NAKED C2_HOOK_FASTCALL ProcessFollowPath(tOpponent_spec* 
             fsub dword ptr [esp + 0x10]
             fild qword ptr [esp + 0x14]
             fxch st(2)
-            fmul dword ptr [gFLOAT_0058a638+0x4]
+            fmul dword ptr [gMatchFloat_0058a63c]
             fxch st(1)
             fst dword ptr [esp + 0x20]
             fsub dword ptr [esi + 0xd0]
-            fmul dword ptr [gFLOAT_0058a64c+0x14]
+            fmul dword ptr [gMatchFloat_0058a660]
             fxch st(1)
             fstp dword ptr [esp + 0x10]
             fxch st(1)
@@ -10598,7 +10965,7 @@ tFollow_path_result C2_NAKED C2_HOOK_FASTCALL ProcessFollowPath(tOpponent_spec* 
             fxch st(1)
             fsub dword ptr [ebp + 0x1254]
             fxch st(1)
-            fmul qword ptr [gCop_nastiness_bias+0x30]
+            fmul qword ptr [gMatchDouble_0058a608]
             fld st(1)
             fxch st(1)
             fstp dword ptr [esp + 0x10]
@@ -10666,7 +11033,7 @@ tFollow_path_result C2_NAKED C2_HOOK_FASTCALL ProcessFollowPath(tOpponent_spec* 
             je L004b0b39
             add eax, 0xec
             push eax
-            push offset gOpponent_nastyness_frigger+0x1808
+            push offset gMatchFloat_0065bbd4
             call DoNotDprintf_oppoproc
             fld dword ptr [edi + 4]
             _emit 0xd9
@@ -10776,7 +11143,7 @@ tFollow_path_result C2_NAKED C2_HOOK_FASTCALL ProcessFollowPath(tOpponent_spec* 
             fild qword ptr [esp + 0x14]
             fld dword ptr [esi + 0xdc]
             fxch st(1)
-            fmul qword ptr [gFLOAT_0058a64c+0x1c]
+            fmul qword ptr [gMatchDouble_0058a668]
             fld dword ptr [esi + 0xe0]
             mov eax, dword ptr [esi + 8]
             mov ecx, esi
@@ -10790,7 +11157,7 @@ tFollow_path_result C2_NAKED C2_HOOK_FASTCALL ProcessFollowPath(tOpponent_spec* 
             fxch st(1)
             fsub dword ptr [eax + 0x58]
             fxch st(4)
-            fmul dword ptr [gFLOAT_0058a644+0x4]
+            fmul dword ptr [gMatchFloat_0058a648]
             fxch st(2)
             fstp dword ptr [esp + 0x14]
             fstp dword ptr [esp + 0x18]
@@ -10901,7 +11268,7 @@ tFollow_path_result C2_NAKED C2_HOOK_FASTCALL ProcessFollowPath(tOpponent_spec* 
         _emit 0x07
             fsub dword ptr [ecx + 0x50]
             push edx
-            push offset gOpponent_nastyness_frigger+0x17d8
+            push offset gMatchFloat_0065bba4
             fstp dword ptr [esp + 0x30]
             mov edx, dword ptr [eax + 0x10]
             fld dword ptr [edi + 4]
@@ -10928,7 +11295,7 @@ tFollow_path_result C2_NAKED C2_HOOK_FASTCALL ProcessFollowPath(tOpponent_spec* 
             add esp, 8
             cmp word ptr [esi + 0xe8], bp
             jge L004b0bac
-            mov ecx, offset gOpponent_nastyness_frigger+0x17a8
+            mov ecx, offset gMatchData_0065bb74
             call PDFatalError
     L004b0bac:
             mov dx, word ptr [esi + 0xe8]
@@ -10943,7 +11310,7 @@ tFollow_path_result C2_NAKED C2_HOOK_FASTCALL ProcessFollowPath(tOpponent_spec* 
             call GetOpponentsSectionMaxSpeed
             mov dword ptr [esp + 0x48], eax
             fild dword ptr [esp + 0x48]
-            fmul qword ptr [gFLOAT_0058a670+0x8]
+            fmul qword ptr [gMatchDouble_0058a678]
             fstp dword ptr [esp + 0x10]
             jmp L004b0c79
     L004b0bea:
@@ -10959,18 +11326,18 @@ tFollow_path_result C2_NAKED C2_HOOK_FASTCALL ProcessFollowPath(tOpponent_spec* 
             call GetOpponentsSectionMinSpeed
             mov dword ptr [esp + 0x48], eax
             fild dword ptr [esp + 0x48]
-            fmul qword ptr [gFLOAT_0058a670+0x8]
+            fmul qword ptr [gMatchDouble_0058a678]
             fstp dword ptr [esp + 0x10]
             jmp L004b0c79
     L004b0c22:
             fld dword ptr [esp + 0x48]
             fadd st(0), st(0)
-            fld dword ptr [gFLOAT_0058a670+0x14]
+            fld dword ptr [gMatchFloat_0058a684]
             fcomp st(1)
             fnstsw ax
             test ah, 1
             je L004b0c3f
-            fld dword ptr [gFLOAT_0058a670+0x14]
+            fld dword ptr [gMatchFloat_0058a684]
             jmp L004b0c41
     L004b0c3f:
             fld st(0)
@@ -10979,7 +11346,7 @@ tFollow_path_result C2_NAKED C2_HOOK_FASTCALL ProcessFollowPath(tOpponent_spec* 
             fnstsw ax
             test ah, 0x41
             jne L004b0c6f
-            fld dword ptr [gFLOAT_0058a670+0x14]
+            fld dword ptr [gMatchFloat_0058a684]
             fcomp st(1)
             fnstsw ax
             test ah, 1
@@ -11029,11 +11396,11 @@ tFollow_path_result C2_NAKED C2_HOOK_FASTCALL ProcessFollowPath(tOpponent_spec* 
             mov dword ptr [eax + 0x68], ebp
             mov ecx, dword ptr [esi + 8]
             mov edx, dword ptr [ecx + 8]
-            fmul qword ptr [gFLOAT_0058a64c+0x1c]
+            fmul qword ptr [gMatchDouble_0058a668]
             mov dword ptr [edx + 0x6c], 0x4225999a
             mov eax, dword ptr [esi + 8]
             mov ecx, dword ptr [eax + 8]
-            fmul dword ptr [gFLOAT_0058a644+0x4]
+            fmul dword ptr [gMatchFloat_0058a648]
             mov dword ptr [ecx + 0x70], ebp
             mov eax, dword ptr [esi + 0xf8]
             cmp eax, ebp
@@ -11234,7 +11601,7 @@ tFollow_path_result C2_NAKED C2_HOOK_FASTCALL ProcessFollowPath(tOpponent_spec* 
             add eax, 0xec
             push edx
             push eax
-            push offset gOpponent_nastyness_frigger+0x1768
+            push offset gMatchFloat_0065bb34
             call DoNotDprintf_oppoproc
             mov dx, word ptr [esi + 0xe8]
             add esp, 0x10
@@ -11252,7 +11619,7 @@ tFollow_path_result C2_NAKED C2_HOOK_FASTCALL ProcessFollowPath(tOpponent_spec* 
             add edx, 0xec
             push ecx
             push edx
-            push offset gOpponent_nastyness_frigger+0x172c
+            push offset gMatchFloat_0065baf8
             call DoNotDprintf_oppoproc
             mov dx, word ptr [esi + 0xe8]
             add esp, 0x10
@@ -11312,7 +11679,7 @@ tFollow_path_result C2_NAKED C2_HOOK_FASTCALL ProcessFollowPath(tOpponent_spec* 
             mov ecx, dword ptr [esi + 8]
             add ecx, 0xec
             push ecx
-            push offset gOpponent_nastyness_frigger+0x16ec
+            push offset gMatchFloat_0065bab8
             call DoNotDprintf_oppoproc
             add esp, 8
             mov eax, 1
@@ -11360,7 +11727,7 @@ tFollow_path_result C2_NAKED C2_HOOK_FASTCALL ProcessFollowPath(tOpponent_spec* 
             add edx, 0xec
             push eax
             push edx
-            push offset gOpponent_nastyness_frigger+0x16a8
+            push offset gMatchFloat_0065ba74
             call DoNotDprintf_oppoproc
             mov edi, dword ptr [esi + 0xf0]
             mov dword ptr [esi + 0xbc], ebx
@@ -11383,7 +11750,7 @@ tFollow_path_result C2_NAKED C2_HOOK_FASTCALL ProcessFollowPath(tOpponent_spec* 
             mov eax, dword ptr [esi + 8]
             add eax, 0xec
             push eax
-            push offset gOpponent_nastyness_frigger+0x1668
+            push offset gMatchFloat_0065ba34
             call DoNotDprintf_oppoproc
             mov ebp, dword ptr [ebp + 8]
             add esp, 8
@@ -11543,7 +11910,7 @@ tFollow_path_result C2_NAKED C2_HOOK_FASTCALL ProcessFollowPath(tOpponent_spec* 
             fxch st(1)
             fsub dword ptr [esp + 0x8c]
             fxch st(1)
-            fmul dword ptr [gFLOAT_0058a620+0x4]
+            fmul dword ptr [gMatchFloat_0058a624]
             fxch st(1)
             fmul dword ptr [gFLOAT_0058a620]
             fxch st(1)
@@ -11573,6 +11940,9 @@ tFollow_path_result C2_NAKED C2_HOOK_FASTCALL ProcessFollowPath(tOpponent_spec* 
             call GetOpponentsSectionWidth
             fstp dword ptr [esi + 0x10c]
             jmp L004b0180
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -11669,7 +12039,7 @@ void C2_NAKED C2_HOOK_FASTCALL TopUpRandomRoute(tOpponent_spec* pOpponent_spec, 
             mov esi, ecx
             test edi, edi
             jne L004a93db
-            mov ecx, offset gOpponent_nastyness_frigger+0x1f8
+            mov ecx, offset gMatchFloat_0065a5c4
             call PDEnterDebugger
             test edi, edi
     L004a93db:
@@ -11795,6 +12165,15 @@ void C2_NAKED C2_HOOK_FASTCALL TopUpRandomRoute(tOpponent_spec* pOpponent_spec, 
             pop ebx
             add esp, 0x24
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -11828,7 +12207,7 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessGetNearPlayer(tOpponent_spec* pOpponent_sp
             jne L004ac8ef
             add ecx, 0xec
             push ecx
-            push offset gOpponent_nastyness_frigger+0xde0
+            push offset gMatchFloat_0065b1ac
             call DoNotDprintf_opponent
             add esp, 8
             push 9
@@ -11901,13 +12280,13 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessGetNearPlayer(tOpponent_spec* pOpponent_sp
             mov eax, dword ptr [esi + 8]
             add eax, 0xec
             push eax
-            push offset gOpponent_nastyness_frigger+0xda0
+            push offset gMatchFloat_0065b16c
             jmp L004ac9ad
     L004ac99e:
             mov ecx, dword ptr [esi + 8]
             add ecx, 0xec
             push ecx
-            push offset gOpponent_nastyness_frigger+0xd6c
+            push offset gMatchFloat_0065b138
     L004ac9ad:
             call DoNotDprintf_opponent
             add esp, 8
@@ -11926,6 +12305,16 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessGetNearPlayer(tOpponent_spec* pOpponent_sp
             pop esi
             pop ebp
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -12021,7 +12410,7 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessLevitate(tOpponent_spec* pOpponent_spec, t
             fxch st(1)
             fsqrt
             fstp st(1)
-            fcomp dword ptr [gOppo_pursuit_reverse_acceleration+0x4]
+            fcomp dword ptr [gMatchFloat_0058a528]
             fnstsw ax
             test ah, 1
             je L004ac5f1
@@ -12078,7 +12467,7 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessLevitate(tOpponent_spec* pOpponent_spec, t
     L004ac65a:
             fld dword ptr [ecx + 4]
             fmul dword ptr [gOppo_pursuit_reverse_brake]
-            fld qword ptr [gOppo_pursuit_reverse_acceleration+0xc]
+            fld qword ptr [gMatchDouble_0058a530]
             fxch st(1)
             fstp dword ptr [edx + 0x12c0]
             mov edx, dword ptr [esi + 8]
@@ -12090,7 +12479,7 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessLevitate(tOpponent_spec* pOpponent_spec, t
             mov dword ptr [esp + 0x10], ecx
             fld dword ptr [ebp + 0x74]
             fild qword ptr [esp + 0x10]
-            fmul qword ptr [gOppo_pursuit_reverse_acceleration+0x14]
+            fmul qword ptr [gMatchDouble_0058a538]
             fxch st(1)
             fxch st(2)
             fxch st(1)
@@ -12103,9 +12492,9 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessLevitate(tOpponent_spec* pOpponent_spec, t
             mov edx, dword ptr [esi + 8]
             mov dword ptr [esp + 0x10], eax
             fild qword ptr [esp + 0x10]
-            fld qword ptr [gOppo_pursuit_reverse_acceleration+0xc]
+            fld qword ptr [gMatchDouble_0058a530]
             fxch st(1)
-            fmul qword ptr [gOppo_pursuit_reverse_acceleration+0x14]
+            fmul qword ptr [gMatchDouble_0058a538]
             mov ebp, dword ptr [edx + 8]
             fld dword ptr [ebp + 0x78]
             fxch st(1)
@@ -12121,9 +12510,9 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessLevitate(tOpponent_spec* pOpponent_spec, t
             mov ecx, dword ptr [esi + 8]
             mov dword ptr [esp + 0x10], edx
             fild qword ptr [esp + 0x10]
-            fld qword ptr [gOppo_pursuit_reverse_acceleration+0xc]
+            fld qword ptr [gMatchDouble_0058a530]
             fxch st(1)
-            fmul qword ptr [gOppo_pursuit_reverse_acceleration+0x14]
+            fmul qword ptr [gMatchDouble_0058a538]
             mov ebp, dword ptr [ecx + 8]
             fld dword ptr [ebp + 0x7c]
             fxch st(1)
@@ -12174,21 +12563,21 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessLevitate(tOpponent_spec* pOpponent_spec, t
             mov dword ptr [esp + 0x14], edi
             mov dword ptr [esp + 0x10], edx
             fild qword ptr [esp + 0x10]
-            fmul qword ptr [gOppo_pursuit_reverse_acceleration+0x14]
+            fmul qword ptr [gMatchDouble_0058a538]
             fcom dword ptr [gOppo_pursuit_trail_distance]
             fnstsw ax
             test ah, 1
             je L004ac7e6
             fld st(0)
             fmulp st(1), st(0)
-            fmul dword ptr [gOppo_pursuit_reverse_acceleration+0x1c]
+            fmul dword ptr [gMatchFloat_0058a540]
             jmp L004ac7f8
     L004ac7e6:
             fsub dword ptr [gOppo_pursuit_trail_distance]
-            fmul qword ptr [gOppo_pursuit_reverse_acceleration+0x24]
-            fsub qword ptr [gOppo_pursuit_reverse_acceleration+0x2c]
+            fmul qword ptr [gMatchDouble_0058a548]
+            fsub qword ptr [gMatchDouble_0058a550]
     L004ac7f8:
-            fcom dword ptr [gOppo_pursuit_reverse_acceleration+0x34]
+            fcom dword ptr [gMatchFloat_0058a558]
             fld dword ptr [esi + 0x184]
             mov eax, dword ptr [esi + 8]
             fadd st(0), st(1)
@@ -12211,7 +12600,7 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessLevitate(tOpponent_spec* pOpponent_spec, t
             mov edx, dword ptr [esi + 8]
             add edx, 0xec
             push edx
-            push offset gOpponent_nastyness_frigger+0xd3c
+            push offset gMatchFloat_0065b108
             call DoNotDprintf_opponent
             mov eax, dword ptr [esi + 0x18c]
             add esp, 8
@@ -12233,6 +12622,18 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessLevitate(tOpponent_spec* pOpponent_spec, t
             pop ebx
             add esp, 8
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -12262,7 +12663,7 @@ int C2_NAKED C2_HOOK_FASTCALL RematerialiseOpponent(tOpponent_spec* pOpponent_sp
             fld dword ptr [edi + 0x20]
             fld dword ptr [edi + 0x18]
             fpatan
-            fmul qword ptr ds:[DAT_0058a4a8]
+            fmul qword ptr [DAT_0058a4a8]
             call _ftol
             mov ebx, 0x3ffc
             sub ebx, eax
@@ -12273,7 +12674,7 @@ int C2_NAKED C2_HOOK_FASTCALL RematerialiseOpponent(tOpponent_spec* pOpponent_sp
             mov eax, dword ptr [esp + 0x10]
             add eax, 0xec
             push eax
-            push 0x65a4d8
+            push offset gMatchFloat_0065a4d8
             call DoNotDprintf_opponent
             add esp, 8
             mov eax, 1
@@ -12284,10 +12685,10 @@ int C2_NAKED C2_HOOK_FASTCALL RematerialiseOpponent(tOpponent_spec* pOpponent_sp
             add esp, 0x90
             ret 4
     L004a8814:
-            mov ecx, dword ptr ds:[gRematerialisation_count]
+            mov ecx, dword ptr [gRematerialisation_count]
             push edi
             inc ecx
-            mov dword ptr ds:[gRematerialisation_count], ecx
+            mov dword ptr [gRematerialisation_count], ecx
             lea ecx, [esp + 0x68]
             push ecx
             call BrMatrix34Copy
@@ -12309,28 +12710,28 @@ int C2_NAKED C2_HOOK_FASTCALL RematerialiseOpponent(tOpponent_spec* pOpponent_sp
             or al, 8
             mov dword ptr [esi + 0xb0], eax
     L004a886c:
-            mov dword ptr ds:[gActive_car_list_rebuild_required], 1
+            mov dword ptr [gActive_car_list_rebuild_required], 1
             call RebuildActiveCarList
             jmp L004a8883
     L004a887d:
             mov ebx, dword ptr [esp + 0x54]
             xor ebp, ebp
     L004a8883:
-            mov ecx, dword ptr ds:[gRematerialisation_extra_attempts]
+            mov ecx, dword ptr [gRematerialisation_extra_attempts]
             push ebx
             inc ecx
             push edi
-            mov dword ptr ds:[gRematerialisation_extra_attempts], ecx
+            mov dword ptr [gRematerialisation_extra_attempts], ecx
             mov ecx, dword ptr [esp + 0x20]
             fld dword ptr [edi + 0x24]
             fld dword ptr [edi + 0x28]
             fld dword ptr [edi + 0x2c]
             fxch st(2)
-            fmul qword ptr ds:[DAT_0058a4b0]
+            fmul qword ptr [DAT_0058a4b0]
             fxch st(1)
-            fmul qword ptr ds:[DAT_0058a4b0]
+            fmul qword ptr [DAT_0058a4b0]
             fxch st(2)
-            fmul qword ptr ds:[DAT_0058a4b0]
+            fmul qword ptr [DAT_0058a4b0]
             fld st(1)
             fld st(2)
             fxch st(1)
@@ -12368,7 +12769,7 @@ int C2_NAKED C2_HOOK_FASTCALL RematerialiseOpponent(tOpponent_spec* pOpponent_sp
             mov dword ptr [esp + 0x24], ecx
             lea eax, [esp + 0x1c]
             fld dword ptr [esp + 0x24]
-            fsub dword ptr ds:[DAT_0058a4b8]
+            fsub dword ptr [DAT_0058a4b8]
             lea edx, [esp + 0x38]
             push eax
             mov eax, dword ptr [edi + 0x2c]
@@ -12379,7 +12780,7 @@ int C2_NAKED C2_HOOK_FASTCALL RematerialiseOpponent(tOpponent_spec* pOpponent_sp
             mov dword ptr [esp + 0x30], eax
             call FUN_0041e360
             fld dword ptr [esp + 0x24]
-            fsub dword ptr ds:[DAT_0058a4bc]
+            fsub dword ptr [DAT_0058a4bc]
             lea ecx, [esp + 0x14]
             lea edx, [esp + 0x58]
             push ecx
@@ -12389,7 +12790,7 @@ int C2_NAKED C2_HOOK_FASTCALL RematerialiseOpponent(tOpponent_spec* pOpponent_sp
             fstp dword ptr [esp + 0x2c]
             call FUN_0041e360
             fld dword ptr [esp + 0x14]
-            fcomp dword ptr ds:[gOppo_pursuit_one]
+            fcomp dword ptr [gOppo_pursuit_one]
             fnstsw ax
             test ah, 0x41
             je L004a8a0b
@@ -12400,13 +12801,13 @@ int C2_NAKED C2_HOOK_FASTCALL RematerialiseOpponent(tOpponent_spec* pOpponent_sp
             push eax
             call BrVector3SetFloat
             fld dword ptr [esp + 0x34]
-            fsub dword ptr ds:[DAT_0058a47c]
+            fsub dword ptr [DAT_0058a47c]
             add esp, 0x10
             xor ebx, ebx
             fstp dword ptr [esp + 0x24]
     L004a89ac:
             fld dword ptr [esp + 0x24]
-            fsub dword ptr ds:[DAT_0058a4c0]
+            fsub dword ptr [DAT_0058a4c0]
             lea ecx, [esp + 0x14]
             lea edx, [esp + 0x58]
             push ecx
@@ -12416,7 +12817,7 @@ int C2_NAKED C2_HOOK_FASTCALL RematerialiseOpponent(tOpponent_spec* pOpponent_sp
             fstp dword ptr [esp + 0x2c]
             call FUN_0041e360
             fld dword ptr [esp + 0x14]
-            fcomp dword ptr ds:[gOppo_pursuit_one]
+            fcomp dword ptr [gOppo_pursuit_one]
             fnstsw ax
             test ah, 0x41
             jne L004a89e8
@@ -12429,9 +12830,9 @@ int C2_NAKED C2_HOOK_FASTCALL RematerialiseOpponent(tOpponent_spec* pOpponent_sp
             mov dword ptr [esp + 0x10], ebx
             fild dword ptr [esp + 0x10]
             fxch st(1)
-            fmul dword ptr ds:[DAT_0058a4c4]
+            fmul dword ptr [DAT_0058a4c4]
             fxch st(1)
-            fmul dword ptr ds:[DAT_0058a4c8]
+            fmul dword ptr [DAT_0058a4c8]
             fsubp st(1), st(0)
             fstp dword ptr [esp + 0x14]
     L004a8a0b:
@@ -12452,15 +12853,15 @@ int C2_NAKED C2_HOOK_FASTCALL RematerialiseOpponent(tOpponent_spec* pOpponent_sp
     L004a8a3c:
             fld dword ptr [esp + 0x1c]
             fabs
-            fcomp dword ptr ds:[gOppo_pursuit_one]
+            fcomp dword ptr [gOppo_pursuit_one]
             fnstsw ax
             test ah, 0x41
             je L004a8ae4
             fld dword ptr [esp + 0x1c]
-            fmul dword ptr ds:[DAT_0058a47c]
+            fmul dword ptr [DAT_0058a47c]
             fld dword ptr [edi + 0x20]
             fxch st(1)
-            fsub dword ptr ds:[gOppo_pursuit_minimum_velocity_ratio]
+            fsub dword ptr [gOppo_pursuit_minimum_velocity_ratio]
             fld dword ptr [edi + 0x18]
             fld dword ptr [edi + 0x1c]
             fxch st(2)
@@ -12480,7 +12881,7 @@ int C2_NAKED C2_HOOK_FASTCALL RematerialiseOpponent(tOpponent_spec* pOpponent_sp
         _emit 0xd9
         _emit 0x0c
         _emit 0x00
-            fmul qword ptr ds:[DAT_0058a4a8]
+            fmul qword ptr [DAT_0058a4a8]
             call _ftol
             push eax
             push edi
@@ -12505,7 +12906,7 @@ int C2_NAKED C2_HOOK_FASTCALL RematerialiseOpponent(tOpponent_spec* pOpponent_sp
         _emit 0xd8
         _emit 0x0c
         _emit 0x00
-            fmul qword ptr ds:[DAT_0058a4d0]
+            fmul qword ptr [DAT_0058a4d0]
             call _ftol
             push eax
             push edi
@@ -12534,25 +12935,25 @@ int C2_NAKED C2_HOOK_FASTCALL RematerialiseOpponent(tOpponent_spec* pOpponent_sp
             mov eax, dword ptr [esi + 8]
             add esp, 0xc
             fld dword ptr [eax + 0x4c]
-            fmul dword ptr ds:[DAT_0058a4d8]
+            fmul dword ptr [DAT_0058a4d8]
             fstp dword ptr [eax + 0x4c]
             mov eax, dword ptr [esi + 8]
             fld dword ptr [eax + 0x50]
-            fmul dword ptr ds:[DAT_0058a4d8]
+            fmul dword ptr [DAT_0058a4d8]
             fstp dword ptr [eax + 0x50]
             mov eax, dword ptr [esi + 8]
             fld dword ptr [eax + 0x54]
-            fmul dword ptr ds:[DAT_0058a4d8]
+            fmul dword ptr [DAT_0058a4d8]
             fstp dword ptr [eax + 0x54]
             fld dword ptr [edi + 0x24]
             fld dword ptr [edi + 0x28]
             fld dword ptr [edi + 0x2c]
             fxch st(2)
-            fmul qword ptr ds:[DAT_0058a4e0]
+            fmul qword ptr [DAT_0058a4e0]
             fxch st(1)
-            fmul qword ptr ds:[DAT_0058a4e0]
+            fmul qword ptr [DAT_0058a4e0]
             fxch st(2)
-            fmul qword ptr ds:[DAT_0058a4e0]
+            fmul qword ptr [DAT_0058a4e0]
             fxch st(1)
             fstp dword ptr [edi + 0x24]
             fxch st(1)
@@ -12608,11 +13009,11 @@ int C2_NAKED C2_HOOK_FASTCALL RematerialiseOpponent(tOpponent_spec* pOpponent_sp
             faddp st(1), st(0)
             fsqrt
             fstp st(1)
-            fcom dword ptr ds:[DAT_0058a4e8]
+            fcom dword ptr [DAT_0058a4e8]
             fnstsw ax
             test ah, 0x41
             jne L004a8c3b
-            fdivr qword ptr ds:[DAT_0058a4a0]
+            fdivr qword ptr [DAT_0058a4a0]
             fld dword ptr [ecx + 0x68]
             fmul st(0), st(1)
             fstp dword ptr [ecx + 0x68]
@@ -12638,18 +13039,18 @@ int C2_NAKED C2_HOOK_FASTCALL RematerialiseOpponent(tOpponent_spec* pOpponent_sp
             mov edx, dword ptr [ecx + 8]
             mov dword ptr [edx + 0x70], ebp
     L004a8c56:
-            fld dword ptr ds:[DAT_0058a4ec]
+            fld dword ptr [DAT_0058a4ec]
             fcomp dword ptr [esp + 0xa4]
             fnstsw ax
             test ah, 1
             je L004a8c72
-            fld dword ptr ds:[DAT_0058a4ec]
+            fld dword ptr [DAT_0058a4ec]
             jmp L004a8c79
     L004a8c72:
             fld dword ptr [esp + 0xa4]
     L004a8c79:
             mov eax, dword ptr [esi + 8]
-            fld dword ptr ds:[DAT_0058a4ec]
+            fld dword ptr [DAT_0058a4ec]
             mov ecx, dword ptr [eax + 8]
             fcomp dword ptr [esp + 0xa4]
             fld dword ptr [ecx + 0x68]
@@ -12659,13 +13060,13 @@ int C2_NAKED C2_HOOK_FASTCALL RematerialiseOpponent(tOpponent_spec* pOpponent_sp
             test ah, 1
             fstp st(0)
             je L004a8ca5
-            fld dword ptr ds:[DAT_0058a4ec]
+            fld dword ptr [DAT_0058a4ec]
             jmp L004a8cac
     L004a8ca5:
             fld dword ptr [esp + 0xa4]
     L004a8cac:
             mov ecx, dword ptr [esi + 8]
-            fld dword ptr ds:[DAT_0058a4ec]
+            fld dword ptr [DAT_0058a4ec]
             mov ecx, dword ptr [ecx + 8]
             fcomp dword ptr [esp + 0xa4]
             fld dword ptr [ecx + 0x6c]
@@ -12675,7 +13076,7 @@ int C2_NAKED C2_HOOK_FASTCALL RematerialiseOpponent(tOpponent_spec* pOpponent_sp
             test ah, 1
             fstp st(0)
             je L004a8cd8
-            fld dword ptr ds:[DAT_0058a4ec]
+            fld dword ptr [DAT_0058a4ec]
             jmp L004a8cdf
     L004a8cd8:
             fld dword ptr [esp + 0xa4]
@@ -12734,15 +13135,15 @@ int C2_NAKED C2_HOOK_FASTCALL RematerialiseOpponent(tOpponent_spec* pOpponent_sp
             mov eax, dword ptr [esi + 8]
             add esp, 0xc
             fld dword ptr [eax + 0x4c]
-            fmul dword ptr ds:[DAT_0058a4d8]
+            fmul dword ptr [DAT_0058a4d8]
             fstp dword ptr [eax + 0x4c]
             mov eax, dword ptr [esi + 8]
             fld dword ptr [eax + 0x50]
-            fmul dword ptr ds:[DAT_0058a4d8]
+            fmul dword ptr [DAT_0058a4d8]
             fstp dword ptr [eax + 0x50]
             mov eax, dword ptr [esi + 8]
             fld dword ptr [eax + 0x54]
-            fmul dword ptr ds:[DAT_0058a4d8]
+            fmul dword ptr [DAT_0058a4d8]
             fstp dword ptr [eax + 0x54]
             mov eax, dword ptr [esi + 8]
             mov edx, dword ptr [eax + 8]
@@ -12760,7 +13161,7 @@ int C2_NAKED C2_HOOK_FASTCALL RematerialiseOpponent(tOpponent_spec* pOpponent_sp
             fchs
             fstp dword ptr [eax + 0x78]
             mov ecx, dword ptr [esi + 8]
-            mov eax, dword ptr ds:[gFace_num__car]
+            mov eax, dword ptr [gFace_num__car]
             add eax, -2
             mov edx, dword ptr [ecx + 8]
             mov word ptr [edx + 0x178], ax
@@ -12831,11 +13232,11 @@ int C2_NAKED C2_HOOK_FASTCALL RematerialiseOpponent(tOpponent_spec* pOpponent_sp
             fxch st(1)
             faddp st(1), st(0)
             fsqrt
-            fcom dword ptr ds:[DAT_0058a4e8]
+            fcom dword ptr [DAT_0058a4e8]
             fnstsw ax
             test ah, 0x41
             jne L004a8ef0
-            fdivr qword ptr ds:[DAT_0058a4a0]
+            fdivr qword ptr [DAT_0058a4a0]
             fld st(0)
             fld st(1)
             fxch st(1)
@@ -12850,9 +13251,9 @@ int C2_NAKED C2_HOOK_FASTCALL RematerialiseOpponent(tOpponent_spec* pOpponent_sp
     L004a8ef0:
             fstp st(0)
             fstp st(0)
-            fld dword ptr ds:[gOppo_pursuit_one]
-            fld dword ptr ds:[gOppo_render_zero]
-            fld dword ptr ds:[gOppo_render_zero]
+            fld dword ptr [gOppo_pursuit_one]
+            fld dword ptr [gOppo_render_zero]
+            fld dword ptr [gOppo_render_zero]
     L004a8f06:
             mov eax, ecx
             cdq
@@ -12863,12 +13264,12 @@ int C2_NAKED C2_HOOK_FASTCALL RematerialiseOpponent(tOpponent_spec* pOpponent_sp
             fild dword ptr [esp + 0x10]
             fld st(1)
             fxch st(1)
-            fmul dword ptr ds:[gOppo_pursuit_velocity_scale]
+            fmul dword ptr [gOppo_pursuit_velocity_scale]
             jmp L004a8fbc
     L004a8f28:
-            fld dword ptr ds:[gOppo_render_zero]
+            fld dword ptr [gOppo_render_zero]
             fxch st(1)
-            fld dword ptr ds:[gOppo_render_zero]
+            fld dword ptr [gOppo_render_zero]
             fld dword ptr [esp + 0x44]
             fxch st(2)
             fsub st(0), st(3)
@@ -12887,11 +13288,11 @@ int C2_NAKED C2_HOOK_FASTCALL RematerialiseOpponent(tOpponent_spec* pOpponent_sp
             faddp st(2), st(0)
             faddp st(1), st(0)
             fsqrt
-            fcom dword ptr ds:[DAT_0058a4e8]
+            fcom dword ptr [DAT_0058a4e8]
             fnstsw ax
             test ah, 0x41
             jne L004a8f85
-            fdivr qword ptr ds:[DAT_0058a4a0]
+            fdivr qword ptr [DAT_0058a4a0]
             fld st(0)
             fld st(1)
             fxch st(1)
@@ -12908,9 +13309,9 @@ int C2_NAKED C2_HOOK_FASTCALL RematerialiseOpponent(tOpponent_spec* pOpponent_sp
             fstp st(0)
             fstp st(0)
             fstp st(0)
-            fld dword ptr ds:[gOppo_pursuit_one]
-            fld dword ptr ds:[gOppo_render_zero]
-            fld dword ptr ds:[gOppo_render_zero]
+            fld dword ptr [gOppo_pursuit_one]
+            fld dword ptr [gOppo_render_zero]
+            fld dword ptr [gOppo_render_zero]
     L004a8f9f:
             mov eax, ecx
             cdq
@@ -12921,7 +13322,7 @@ int C2_NAKED C2_HOOK_FASTCALL RematerialiseOpponent(tOpponent_spec* pOpponent_sp
             fild dword ptr [esp + 0x10]
             fld st(1)
             fxch st(1)
-            fmul dword ptr ds:[DAT_0058a4f0]
+            fmul dword ptr [DAT_0058a4f0]
     L004a8fbc:
             fxch st(4)
             fmul st(0), st(4)
@@ -12967,9 +13368,9 @@ int C2_NAKED C2_HOOK_FASTCALL RematerialiseOpponent(tOpponent_spec* pOpponent_sp
             jne L004a887d
             xor ebp, ebp
     L004a9019:
-            mov eax, dword ptr ds:[gRematerialisation_extra_attempts]
+            mov eax, dword ptr [gRematerialisation_extra_attempts]
             dec eax
-            mov dword ptr ds:[gRematerialisation_extra_attempts], eax
+            mov dword ptr [gRematerialisation_extra_attempts], eax
             mov eax, dword ptr [esp + 0x18]
             dec eax
             cmp ebx, ebp
@@ -13010,27 +13411,27 @@ int C2_NAKED C2_HOOK_FASTCALL RematerialiseOpponent(tOpponent_spec* pOpponent_sp
         _emit 0x24
             push eax
             push ecx
-            push 0x65a55c
+            push offset gMatchFloat_0065a55c
             call DoNotDprintf_opponent
             mov eax, dword ptr [esp + 0x54]
             add esp, 0x3c
     L004a9090:
-            mov ecx, dword ptr ds:[gRematerialisation_max_extra_attempts]
+            mov ecx, dword ptr [gRematerialisation_max_extra_attempts]
             cmp eax, ecx
             jle L004a90a2
             mov ecx, eax
-            mov dword ptr ds:[gRematerialisation_max_extra_attempts], ecx
+            mov dword ptr [gRematerialisation_max_extra_attempts], ecx
     L004a90a2:
-            cmp dword ptr ds:[gRematerialisation_extra_attempts], ebp
+            cmp dword ptr [gRematerialisation_extra_attempts], ebp
             je L004a90ca
-            fild dword ptr ds:[gRematerialisation_extra_attempts]
+            fild dword ptr [gRematerialisation_extra_attempts]
             push ecx
             sub esp, 8
-            fidiv dword ptr ds:[gRematerialisation_count]
+            fidiv dword ptr [gRematerialisation_count]
             _emit 0xdd
         _emit 0x1c
         _emit 0x24
-            push 0x65a504
+            push offset gMatchData_0065a504
             call DoNotDprintf_opponent
             add esp, 0x10
     L004a90ca:
@@ -13066,7 +13467,7 @@ int C2_NAKED C2_HOOK_FASTCALL RematerialiseOpponent(tOpponent_spec* pOpponent_sp
             xor edx, edx
             call PipeSingleOppoRenderage
     L004a913c:
-            mov dword ptr ds:[gActive_car_list_rebuild_required], 1
+            mov dword ptr [gActive_car_list_rebuild_required], 1
             call RebuildActiveCarList
             mov ecx, esi
             call TeleportOpponentToNearestSafeLocation
@@ -13087,6 +13488,8 @@ int C2_NAKED C2_HOOK_FASTCALL RematerialiseOpponent(tOpponent_spec* pOpponent_sp
             pop ebx
             add esp, 0x90
             ret 4
+            nop
+            nop
     }
 #endif
 }
@@ -13134,7 +13537,7 @@ int C2_NAKED C2_HOOK_FASTCALL RematerialiseOpponentOnNearestSection(tOpponent_sp
             mov eax, dword ptr [esi + 8]
             add eax, 0xec
             push eax
-            push offset gOpponent_nastyness_frigger+0x10c
+            push offset gMatchFloat_0065a4d8
             call DoNotDprintf_opponent
             add esp, 8
             mov eax, 1
@@ -13214,7 +13617,7 @@ int C2_NAKED C2_HOOK_FASTCALL RematerialiseOpponentOnNearestSection(tOpponent_sp
             fsqrt
             mov dword ptr [edx + 0x12b8], eax
             mov esi, dword ptr [esi + 8]
-            fcomp dword ptr [gOppo_pursuit_one+0x4]
+            fcomp dword ptr [gMatchFloat_0058a484]
             fnstsw ax
             test ah, 1
             je L004a82aa
@@ -13445,7 +13848,7 @@ void C2_NAKED C2_HOOK_FASTCALL CalcReturnToStartPointRoute(tOpponent_spec* pOppo
         _emit 0x1c
         _emit 0x24
             push ecx
-            push offset gOpponent_nastyness_frigger+0xb0c
+            push offset gMatchFloat_0065aed8
             call DoNotDprintf_opponent
             mov ecx, dword ptr [esp + 0x1c]
             add esp, 0x10
@@ -13478,7 +13881,7 @@ void C2_NAKED C2_HOOK_FASTCALL CalcReturnToStartPointRoute(tOpponent_spec* pOppo
             mov edx, dword ptr [ebp + 8]
             add edx, 0xec
             push edx
-            push offset gOpponent_nastyness_frigger+0xac0
+            push offset gMatchFloat_0065ae8c
             call DoNotDprintf_opponent
             mov eax, dword ptr [ebp + 0x7c]
             add esp, 8
@@ -13494,6 +13897,18 @@ void C2_NAKED C2_HOOK_FASTCALL CalcReturnToStartPointRoute(tOpponent_spec* pOppo
             pop ebp
             add esp, 0x70
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -13778,7 +14193,7 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessReturnToStart(tOpponent_spec* pOpponent_sp
             mov eax, dword ptr [esi + 8]
             add eax, 0xec
             push eax
-            push offset gOpponent_nastyness_frigger+0xa74
+            push offset gMatchFloat_0065ae40
             call DoNotDprintf_opponent
             add esp, 8
             mov dword ptr [esi + 0x7c], ebx
@@ -13787,7 +14202,7 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessReturnToStart(tOpponent_spec* pOpponent_sp
             mov ecx, dword ptr [esi + 8]
             add ecx, 0xec
             push ecx
-            push offset gOpponent_nastyness_frigger+0xa34
+            push offset gMatchFloat_0065ae00
             call DoNotDprintf_opponent
             add esp, 8
             mov dword ptr [esi + 0x7c], ebx
@@ -13808,7 +14223,7 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessReturnToStart(tOpponent_spec* pOpponent_sp
             mov eax, dword ptr [esi + 8]
             add eax, 0xec
             push eax
-            push offset gOpponent_nastyness_frigger+0xa00
+            push offset gMatchFloat_0065adcc
             call DoNotDprintf_opponent
             add esp, 8
             lea ecx, [esp + 0x10]
@@ -13839,6 +14254,17 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessReturnToStart(tOpponent_spec* pOpponent_sp
             pop ebx
             add esp, 0x10
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -14054,7 +14480,7 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessCurrentObjective(tOpponent_spec* pOpponent
             mov eax, dword ptr [esi + 8]
             add eax, 0xec
             push eax
-            push 0x65a994
+            push offset gMatchFloat_0065a994
             call DoNotDprintf_opponent
             add esp, 8
             push 4
@@ -14082,21 +14508,21 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessCurrentObjective(tOpponent_spec* pOpponent
             je L004aaa02
             sub esi, 2
             jne L004aad3f
-            dec dword ptr ds:[gNum_of_opponents_getting_near]
+            dec dword ptr [gNum_of_opponents_getting_near]
             pop edi
             pop esi
             pop ebx
             add esp, 0x11c
             ret
     L004aaa02:
-            dec dword ptr ds:[gNum_of_opponents_pursuing]
+            dec dword ptr [gNum_of_opponents_pursuing]
             pop edi
             pop esi
             pop ebx
             add esp, 0x11c
             ret
     L004aaa12:
-            dec dword ptr ds:[gNum_of_opponents_completing_race]
+            dec dword ptr [gNum_of_opponents_completing_race]
             pop edi
             pop esi
             pop ebx
@@ -14106,7 +14532,7 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessCurrentObjective(tOpponent_spec* pOpponent
             mov edx, dword ptr [esi + 8]
             add edx, 0xec
             push edx
-            push 0x65a948
+            push offset gMatchFloat_0065a948
             call DoNotDprintf_opponent
             add esp, 8
     L004aaa39:
@@ -14136,7 +14562,7 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessCurrentObjective(tOpponent_spec* pOpponent
             je L004aab68
             dec edx
             jne L004aad3f
-            mov eax, dword ptr ds:[gTime_stamp_for_this_munging]
+            mov eax, dword ptr [gTime_stamp_for_this_munging]
             mov ecx, dword ptr [esi + 0x190]
             cmp eax, ecx
             jbe L004aaa9b
@@ -14195,7 +14621,7 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessCurrentObjective(tOpponent_spec* pOpponent
             fld dword ptr [eax + 0x78]
             fmul dword ptr [esp + 0x18]
             faddp st(1), st(0)
-            fcomp dword ptr ds:[gOppo_render_zero]
+            fcomp dword ptr [gOppo_render_zero]
             fnstsw ax
             test ah, 1
             jne L004aab40
@@ -14224,13 +14650,13 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessCurrentObjective(tOpponent_spec* pOpponent
             mov edx, dword ptr [esi + 8]
             add edx, 0xec
             push edx
-            push 0x65a918
+            push offset gMatchFloat_0065a918
             call DoNotDprintf_opponent
             add esp, 8
             mov edx, 0x5a
             mov ecx, 0x1e
             call IRandomBetween
-            mov ecx, dword ptr ds:[gTime_stamp_for_this_munging]
+            mov ecx, dword ptr [gTime_stamp_for_this_munging]
             lea eax, [eax + eax*4]
             mov dword ptr [esi + 0x7c], ebx
             lea eax, [eax + eax*4]
@@ -14258,7 +14684,7 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessCurrentObjective(tOpponent_spec* pOpponent
             fld dword ptr [eax + 0x78]
             fmul dword ptr [esp + 0x18]
             faddp st(1), st(0)
-            fcomp dword ptr ds:[gOppo_render_zero]
+            fcomp dword ptr [gOppo_render_zero]
             fnstsw ax
             test ah, 1
             jne L004aabf7
@@ -14282,7 +14708,7 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessCurrentObjective(tOpponent_spec* pOpponent
             lea edx, [esp + 0x28]
             add ecx, 0xec
             push ecx
-            push 0x65a8f8
+            push offset gMatchFloat_0065a8f8
             push edx
             call sprintf
             add esp, 0xc
@@ -14338,7 +14764,7 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessCurrentObjective(tOpponent_spec* pOpponent
             mov esi, dword ptr [esi + 8]
             mov edx, dword ptr [esi + 8]
             fld dword ptr [edx + 4]
-            fmul dword ptr ds:[gOppo_pursuit_reverse_brake]
+            fmul dword ptr [gOppo_pursuit_reverse_brake]
             fstp dword ptr [esi + 0x12c0]
             pop edi
             pop esi
@@ -14348,13 +14774,13 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessCurrentObjective(tOpponent_spec* pOpponent
     L004aacd0:
             mov eax, dword ptr [esi]
             push eax
-            push 0x65a8d0
+            push offset gMatchFloat_0065a8d0
             call DoNotDprintf_opponent
             mov ecx, dword ptr [esi + 8]
             add esp, 8
             add ecx, 0xec
             push ecx
-            push 0x65a894
+            push offset gMatchFloat_0065a894
             call DoNotDprintf_opponent
             add esp, 8
             mov ecx, esi
@@ -14365,7 +14791,7 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessCurrentObjective(tOpponent_spec* pOpponent
             mov esi, dword ptr [esi + 8]
             mov eax, dword ptr [esi + 8]
             fld dword ptr [eax + 4]
-            fmul dword ptr ds:[gOppo_pursuit_reverse_brake]
+            fmul dword ptr [gOppo_pursuit_reverse_brake]
             fstp dword ptr [esi + 0x12c0]
             pop edi
             pop esi
@@ -14774,10 +15200,10 @@ tU16 C2_NAKED C2_HOOK_FASTCALL GetOpponentsSectionStartNode(const tOpponent_spec
             mov eax, dword ptr [ecx + 8]
             add eax, 0xec
             push eax
-            push offset gOpponent_nastyness_frigger+0x1300
+            push offset gMatchFloat_0065b6cc
             call DoNotDprintf_opponent
             add esp, 8
-            mov ecx, offset gOpponent_nastyness_frigger+0x12d4
+            mov ecx, offset gMatchFloat_0065b6a0
             call PDEnterDebugger
             or ax, 0xffff
             pop esi
@@ -14808,15 +15234,27 @@ tU16 C2_NAKED C2_HOOK_FASTCALL GetOpponentsSectionStartNode(const tOpponent_spec
             mov eax, dword ptr [ecx + 8]
             add eax, 0xec
             push eax
-            push offset gOpponent_nastyness_frigger+0x1394
+            push offset gMatchFloat_0065b760
             call DoNotDprintf_opponent
             add esp, 8
-            mov ecx, offset gOpponent_nastyness_frigger+0x1368
+            mov ecx, offset gMatchFloat_0065b734
             call PDEnterDebugger
             or ax, 0xffff
             pop esi
             pop ebx
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -14896,16 +15334,26 @@ C2_NAKED const br_vector3* C2_HOOK_FASTCALL GetOpponentsSectionStartNodePoint(co
             mov edx, dword ptr [ecx + 8]
             add edx, 0xec
             push edx
-            push offset gOpponent_nastyness_frigger+0xa0
+            push offset gMatchFloat_0065a46c
             call DoNotDprintf_opponent
             add esp, 8
-            mov ecx, offset gOpponent_nastyness_frigger+0x70
+            mov ecx, offset gMatchFloat_0065a43c
             call PDEnterDebugger
             xor eax, eax
             pop edi
             pop esi
             pop ebx
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -14978,15 +15426,19 @@ C2_NAKED const br_vector3* C2_HOOK_FASTCALL GetOpponentsSectionFinishNodePoint(c
             mov edx, dword ptr [ecx + 8]
             add edx, 0xec
             push edx
-            push offset gOpponent_nastyness_frigger+0x1430
+            push offset gMatchFloat_0065b7fc
             call DoNotDprintf_opponent
             add esp, 8
-            mov ecx, offset gOpponent_nastyness_frigger+0x13fc
+            mov ecx, offset gMatchFloat_0065b7c8
             call PDEnterDebugger
             xor eax, eax
             pop edi
             pop esi
             ret
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -15106,7 +15558,7 @@ section_v.v[0] = finish->v[0] - start->v[0];
             mov eax, dword ptr [edi + 8]
             add eax, 0xec
             push eax
-            push offset gOpponent_nastyness_frigger+0x10c
+            push offset gMatchFloat_0065a4d8
             call DoNotDprintf_opponent
             add esp, 8
             mov eax, 1
@@ -15153,10 +15605,10 @@ section_v.v[0] = finish->v[0] - start->v[0];
             mov edx, dword ptr [edi + 8]
             add edx, 0xec
             push edx
-            push offset gOpponent_nastyness_frigger+0xa0
+            push offset gMatchFloat_0065a46c
             call DoNotDprintf_opponent
             add esp, 8
-            mov ecx, offset gOpponent_nastyness_frigger+0x70
+            mov ecx, offset gMatchFloat_0065a43c
             call PDEnterDebugger
             xor esi, esi
     L004a7fef:
@@ -15597,7 +16049,7 @@ void C2_NAKED C2_HOOK_FASTCALL NewCalcGetNearPlayerRoute(tOpponent_spec* pOppone
             mov cx, word ptr [ebp + 0x155c]
             cmp cx, si
             jge L004aca84
-            mov ecx, offset gOpponent_nastyness_frigger+0xe50
+            mov ecx, offset gMatchFloat_0065b21c
             call PDEnterDebugger
             pop edi
             pop esi
@@ -15631,7 +16083,7 @@ void C2_NAKED C2_HOOK_FASTCALL NewCalcGetNearPlayerRoute(tOpponent_spec* pOppone
             mov edx, eax
             cmp dx, si
             jge L004acae2
-            mov ecx, offset gOpponent_nastyness_frigger+0xe24
+            mov ecx, offset gMatchFloat_0065b1f0
             call PDEnterDebugger
             pop edi
             pop esi

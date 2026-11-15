@@ -104,6 +104,64 @@ extern int gNbPixelBits;
 extern int gNoCutscenes;
 extern int gSound_override;
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gData_00589274[];
+extern char gData_00589278[];
+extern char gData_0058927c[];
+extern char gData_00589280[];
+extern char gData_00589284[];
+extern char gData_00589288[];
+extern char gData_0058928c[];
+extern char gData_00589290[];
+extern char gData_00589294[];
+extern char gData_00589298[];
+extern char gData_0058929c[];
+extern char gData_005892a0[];
+extern char gData_005892a4[];
+extern char gData_0058ff80[];
+extern char gFloat_00589b4c[];
+extern char gFloat_0058fe0c[];
+extern char gFloat_0058fe20[];
+extern char gFloat_0058fe40[];
+extern char gFloat_0058fe90[];
+extern char gFloat_0058fec4[];
+extern char gFloat_0058fedc[];
+extern char gFloat_0058fef8[];
+extern char gFloat_0058ff14[];
+extern char gFloat_0058ff54[];
+extern char gString_0058fe88[];
+extern char gString_0058fea8[];
+extern char gString_0058feb8[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchData_00589274[];
+extern char gMatchData_00589278[];
+extern char gMatchData_0058927c[];
+extern char gMatchData_00589280[];
+extern char gMatchData_00589284[];
+extern char gMatchData_00589288[];
+extern char gMatchData_0058928c[];
+extern char gMatchData_00589290[];
+extern char gMatchData_00589294[];
+extern char gMatchData_00589298[];
+extern char gMatchData_0058929c[];
+extern char gMatchData_005892a0[];
+extern char gMatchData_005892a4[];
+extern char gMatchData_0058ff80[];
+extern char gMatchFloat_00589b4c[];
+extern char gMatchFloat_0058fe0c[];
+extern char gMatchFloat_0058fe20[];
+extern char gMatchFloat_0058fe40[];
+extern char gMatchFloat_0058fe90[];
+extern char gMatchFloat_0058fec4[];
+extern char gMatchFloat_0058fedc[];
+extern char gMatchFloat_0058fef8[];
+extern char gMatchFloat_0058ff14[];
+extern char gMatchFloat_0058ff54[];
+extern char gMatchString_0058fe88[];
+extern char gMatchString_0058fea8[];
+extern char gMatchString_0058feb8[];
+#endif
 // FUNCTION: CARMA2_HW 0x0043e750
 void C2_HOOK_FASTCALL DoSCILogo(void) {
 }
@@ -463,7 +521,7 @@ void C2_NAKED C2_HOOK_FASTCALL PlaySmackerFile(const char* pSmack_name) {
 #else
     __asm {
             sub esp, 0x12c
-            mov eax, dword ptr ds:[gSound_override]
+            mov eax, dword ptr [gSound_override]
             push ebx
             push ebp
             push esi
@@ -476,9 +534,9 @@ void C2_NAKED C2_HOOK_FASTCALL PlaySmackerFile(const char* pSmack_name) {
             mov dword ptr [esp + 0x28], edi
             mov dword ptr [esp + 0x24], edi
             jne L0043f2da
-            cmp dword ptr ds:[gNoCutscenes], edi
+            cmp dword ptr [gNoCutscenes], edi
             jne L0043f2da
-            mov ecx, dword ptr ds:[gBack_screen]
+            mov ecx, dword ptr [gBack_screen]
             xor eax, eax
             mov al, byte ptr [ecx + 0x2c]
             sub eax, 3
@@ -487,7 +545,7 @@ void C2_NAKED C2_HOOK_FASTCALL PlaySmackerFile(const char* pSmack_name) {
             je L0043e7e4
             dec eax
             je L0043e7d2
-            mov ecx, 0x58ff80
+            mov ecx, offset gMatchData_0058ff80
             call PDEnterDebugger
             pop edi
             pop esi
@@ -504,26 +562,26 @@ void C2_NAKED C2_HOOK_FASTCALL PlaySmackerFile(const char* pSmack_name) {
             mov dword ptr [esp + 0x10], 0x80000002
             jmp L0043e807
     L0043e7f6:
-            mov edx, dword ptr ds:[gCurrent_palette]
+            mov edx, dword ptr [gCurrent_palette]
             mov dword ptr [esp + 0x1c], edi
             mov eax, dword ptr [edx + 8]
             mov dword ptr [esp + 0x30], eax
     L0043e807:
-            cmp dword ptr ds:[gSmackerBuffer], edi
+            cmp dword ptr [gSmackerBuffer], edi
             jne L0043e826
             push 0xfd
             push 0xfa00
             call BrMemAllocate
             add esp, 8
-            mov dword ptr ds:[gSmackerBuffer], eax
+            mov dword ptr [gSmackerBuffer], eax
     L0043e826:
             call StopMusic
             call FadePaletteDown
             call ClearEntireScreen
             push 1
-            call dword ptr ds:[0x589278]
+            call dword ptr [gMatchData_00589278]
             push edi
-            call dword ptr ds:[0x58927c]
+            call dword ptr [gMatchData_0058927c]
             mov edx, offset gApplication_path
             lea ecx, [esp + 0x3c]
             push 0x58ff74
@@ -534,9 +592,9 @@ void C2_NAKED C2_HOOK_FASTCALL PlaySmackerFile(const char* pSmack_name) {
             call PathCat
             lea ecx, [esp + 0x3c]
             push ecx
-            push 0x58ff54
+            push offset gMatchFloat_0058ff54
             call dr_dprintf
-            mov ebx, dword ptr ds:[0x589280]
+            mov ebx, dword ptr [gMatchData_00589280]
             add esp, 8
             lea edx, [esp + 0x3c]
             push 0x200
@@ -556,7 +614,7 @@ void C2_NAKED C2_HOOK_FASTCALL PlaySmackerFile(const char* pSmack_name) {
             cmp ebp, edi
             mov dword ptr [esp + 0x18], ebp
             jne L0043e9cc
-            push 0x58ff14
+            push offset gMatchFloat_0058ff14
             call dr_dprintf
             add esp, 4
             lea ecx, [esp + 0x3c]
@@ -570,7 +628,7 @@ void C2_NAKED C2_HOOK_FASTCALL PlaySmackerFile(const char* pSmack_name) {
             not ecx
             dec ecx
             je L0043e91d
-            mov edi, dword ptr ds:[gDir_separator]
+            mov edi, dword ptr [gDir_separator]
             mov cl, byte ptr [esp + ecx + 0x3b]
             cmp cl, byte ptr [edi]
             je L0043e91d
@@ -623,7 +681,7 @@ void C2_NAKED C2_HOOK_FASTCALL PlaySmackerFile(const char* pSmack_name) {
             call PathCat
             lea ecx, [esp + 0x3c]
             push ecx
-            push 0x58fef8
+            push offset gMatchFloat_0058fef8
             call dr_dprintf
             add esp, 8
             lea ecx, [esp + 0x3c]
@@ -648,26 +706,26 @@ void C2_NAKED C2_HOOK_FASTCALL PlaySmackerFile(const char* pSmack_name) {
             mov dword ptr [esp + 0x18], ebp
             jmp L0043e9cc
     L0043e9bf:
-            push 0x58fedc
+            push offset gMatchFloat_0058fedc
             call dr_dprintf
             add esp, 4
     L0043e9cc:
             test ebp, ebp
             je L0043f2c1
     L0043e9d4:
-            push 0x58fec4
+            push offset gMatchFloat_0058fec4
             call dr_dprintf
             add esp, 4
             call PDGetTotalTime
             mov dword ptr [esp + 0x34], eax
-            mov eax, dword ptr ds:[gNbPixelBits]
+            mov eax, dword ptr [gNbPixelBits]
             cmp eax, 0x10
             jne L0043f057
             push 0
             push 1
             call BrActorAllocate
             add esp, 8
-            mov dword ptr ds:[gSmackerActor], eax
+            mov dword ptr [gSmackerActor], eax
             mov edx, 1
             mov cl, 7
             push 0
@@ -680,32 +738,32 @@ void C2_NAKED C2_HOOK_FASTCALL PlaySmackerFile(const char* pSmack_name) {
             push 0
             push 0
             push 0x100
-            mov dword ptr ds:[gSmackerCurrentPalette], eax
+            mov dword ptr [gSmackerCurrentPalette], eax
             call DRPixelmapAllocate
-            mov ecx, dword ptr ds:[gSmackerCurrentPalette]
-            mov dword ptr ds:[gSmackerBackPalette], eax
+            mov ecx, dword ptr [gSmackerCurrentPalette]
+            mov dword ptr [gSmackerBackPalette], eax
             push ecx
             call BrMapAdd
             add esp, 4
             push 0x1e
             push 0x3c
-            push 0x58feb8
+            push offset gMatchString_0058feb8
             call BrModelAllocate
             mov esi, eax
             add esp, 0xc
             test esi, esi
             jne L0043eaa8
-            mov ecx, 0x58fea8
+            mov ecx, offset gMatchString_0058fea8
             call PDEnterDebugger
-            mov edx, dword ptr ds:[gSmackerActor]
+            mov edx, dword ptr [gSmackerActor]
             push edx
             call BrActorFree
-            mov eax, dword ptr ds:[gSmackerCurrentPalette]
+            mov eax, dword ptr [gSmackerCurrentPalette]
             add esp, 4
-            mov dword ptr ds:[gSmackerActor], esi
+            mov dword ptr [gSmackerActor], esi
             push eax
             call BrMapRemove
-            mov ecx, dword ptr ds:[gSmackerCurrentPalette]
+            mov ecx, dword ptr [gSmackerCurrentPalette]
             add esp, 4
             push ecx
             call BrPixelmapFree
@@ -716,7 +774,7 @@ void C2_NAKED C2_HOOK_FASTCALL PlaySmackerFile(const char* pSmack_name) {
             mov ebp, 0x20000
             mov ebx, 0x10000
     L0043eab7:
-            push 0x58fe90
+            push offset gMatchFloat_0058fe90
             call BrMaterialAllocate
             add esp, 4
             mov dword ptr [edi], eax
@@ -732,7 +790,7 @@ void C2_NAKED C2_HOOK_FASTCALL PlaySmackerFile(const char* pSmack_name) {
             add esp, 0x14
             mov dword ptr [edx + 0x40], eax
             mov eax, dword ptr [edi]
-            mov edx, dword ptr ds:[gSmackerCurrentPalette]
+            mov edx, dword ptr [gSmackerCurrentPalette]
             mov ecx, dword ptr [eax + 0x40]
             mov dword ptr [ecx + 0x10], edx
             mov eax, dword ptr [edi]
@@ -884,34 +942,34 @@ void C2_NAKED C2_HOOK_FASTCALL PlaySmackerFile(const char* pSmack_name) {
             jl L0043eb56
             push esi
             call BrModelAdd
-            mov ecx, dword ptr ds:[gSmackerActor]
-            mov dword ptr ds:[gSmackerModel], esi
+            mov ecx, dword ptr [gSmackerActor]
+            mov dword ptr [gSmackerModel], esi
             add esp, 4
             mov dword ptr [ecx + 0x18], esi
-            mov edx, dword ptr ds:[gSmackerActor]
-            mov eax, dword ptr ds:[g2d_camera]
+            mov edx, dword ptr [gSmackerActor]
+            mov eax, dword ptr [g2d_camera]
             push edx
             push eax
             call BrActorAdd
             add esp, 8
     L0043ed3b:
-            mov eax, dword ptr ds:[gSmackerActor]
+            mov eax, dword ptr [gSmackerActor]
             test eax, eax
             je L0043f211
-            mov ecx, dword ptr ds:[gHWnd]
+            mov ecx, dword ptr [gHWnd]
             push 0xc8
             push 0x140
             push 0xc8
             push 0x140
             push 0x80
             push ecx
-            call dword ptr ds:[0x589284]
+            call dword ptr [gMatchData_00589284]
             test eax, eax
             jne L0043ed7c
-            mov ecx, 0x58fe88
+            mov ecx, offset gMatchString_0058fe88
             call PDEnterDebugger
     L0043ed7c:
-            mov edx, dword ptr ds:[gSmackerBuffer]
+            mov edx, dword ptr [gSmackerBuffer]
             mov esi, dword ptr [esp + 0x18]
             push 0
             push edx
@@ -920,7 +978,7 @@ void C2_NAKED C2_HOOK_FASTCALL PlaySmackerFile(const char* pSmack_name) {
             push 0
             push 0
             push esi
-            call dword ptr ds:[0x589288]
+            call dword ptr [gMatchData_00589288]
             mov ecx, dword ptr [esi + 0xc]
             mov eax, 1
             cmp ecx, eax
@@ -933,16 +991,16 @@ void C2_NAKED C2_HOOK_FASTCALL PlaySmackerFile(const char* pSmack_name) {
             mov eax, dword ptr [esi + 0x68]
             test eax, eax
             je L0043ee8e
-            mov eax, dword ptr ds:[gSmackerCurrentPalette]
+            mov eax, dword ptr [gSmackerCurrentPalette]
             push eax
             call BrMapRemove
-            mov eax, dword ptr ds:[gSmackerBackPalette]
-            mov ecx, dword ptr ds:[gSmackerCurrentPalette]
-            mov dword ptr ds:[gSmackerPrevBackPalette], eax
-            mov dword ptr ds:[gSmackerCurrentPalette], eax
+            mov eax, dword ptr [gSmackerBackPalette]
+            mov ecx, dword ptr [gSmackerCurrentPalette]
+            mov dword ptr [gSmackerPrevBackPalette], eax
+            mov dword ptr [gSmackerCurrentPalette], eax
             add esp, 4
             xor eax, eax
-            mov dword ptr ds:[gSmackerBackPalette], ecx
+            mov dword ptr [gSmackerBackPalette], ecx
             add esi, 0x6d
     L0043edf8:
             xor ecx, ecx
@@ -955,21 +1013,21 @@ void C2_NAKED C2_HOOK_FASTCALL PlaySmackerFile(const char* pSmack_name) {
             jne L0043ee10
             mov ecx, 0x40404
     L0043ee10:
-            mov edx, dword ptr ds:[gSmackerCurrentPalette]
+            mov edx, dword ptr [gSmackerCurrentPalette]
             add eax, 4
             add esi, 3
             cmp eax, 0x400
             mov edx, dword ptr [edx + 8]
             mov dword ptr [edx + eax - 4], ecx
             jl L0043edf8
-            mov eax, dword ptr ds:[gSmackerCurrentPalette]
+            mov eax, dword ptr [gSmackerCurrentPalette]
             push eax
             call BrMapAdd
             add esp, 4
             mov esi, offset gSmackMaterials
     L0043ee3d:
             mov ecx, dword ptr [esi]
-            mov eax, dword ptr ds:[gSmackerCurrentPalette]
+            mov eax, dword ptr [gSmackerCurrentPalette]
             push 0xfff
             mov edx, dword ptr [ecx + 0x40]
             mov dword ptr [edx + 0x10], eax
@@ -996,8 +1054,8 @@ void C2_NAKED C2_HOOK_FASTCALL PlaySmackerFile(const char* pSmack_name) {
     L0043ee8e:
             mov ecx, dword ptr [esp + 0x18]
             push ecx
-            call dword ptr ds:[0x58928c]
-            mov edx, dword ptr ds:[gDepth_buffer]
+            call dword ptr [gMatchData_0058928c]
+            mov edx, dword ptr [gDepth_buffer]
             push -1
             push edx
             call BrPixelmapFill
@@ -1009,7 +1067,7 @@ void C2_NAKED C2_HOOK_FASTCALL PlaySmackerFile(const char* pSmack_name) {
             mov dword ptr [esp + 0x10], 5
             mov dword ptr [esp + 0x20], eax
     L0043eec7:
-            mov ecx, dword ptr ds:[gSmackerBuffer]
+            mov ecx, dword ptr [gSmackerBuffer]
             mov edx, dword ptr [esp + 0x20]
             mov eax, dword ptr [ebp]
             add edx, ecx
@@ -1049,11 +1107,11 @@ void C2_NAKED C2_HOOK_FASTCALL PlaySmackerFile(const char* pSmack_name) {
             cmp ebp, offset gSmackerBackPalette
             mov dword ptr [esp + 0x1c], ecx
             jl L0043eeb7
-            mov edx, dword ptr ds:[gDepth_buffer]
-            mov eax, dword ptr ds:[gBack_screen]
+            mov edx, dword ptr [gDepth_buffer]
+            mov eax, dword ptr [gBack_screen]
             push edx
             push eax
-            mov eax, dword ptr ds:[g2d_camera]
+            mov eax, dword ptr [g2d_camera]
             push eax
             push eax
             call BrZbSceneRender
@@ -1067,9 +1125,9 @@ void C2_NAKED C2_HOOK_FASTCALL PlaySmackerFile(const char* pSmack_name) {
             cmp ebp, dword ptr [edi + 0xc]
             je L0043ef8e
             push edi
-            call dword ptr ds:[0x589274]
+            call dword ptr [gMatchData_00589274]
     L0043ef8e:
-            mov ebx, dword ptr ds:[0x589290]
+            mov ebx, dword ptr [gMatchData_00589290]
     L0043ef94:
             call AnyKeyDown
             mov esi, eax
@@ -1093,7 +1151,7 @@ void C2_NAKED C2_HOOK_FASTCALL PlaySmackerFile(const char* pSmack_name) {
             mov dword ptr [esp + 0x14], ebp
             jbe L0043edb2
     L0043efca:
-            mov eax, dword ptr ds:[gSmackerActor]
+            mov eax, dword ptr [gSmackerActor]
             test eax, eax
             je L0043f211
             mov esi, offset gSmackMaterials
@@ -1119,25 +1177,25 @@ void C2_NAKED C2_HOOK_FASTCALL PlaySmackerFile(const char* pSmack_name) {
             add esp, 4
             cmp esi, offset gSmackerBackPalette
             jl L0043efde
-            mov edx, dword ptr ds:[gSmackerModel]
+            mov edx, dword ptr [gSmackerModel]
             push edx
             call BrModelRemove
-            mov eax, dword ptr ds:[gSmackerActor]
+            mov eax, dword ptr [gSmackerActor]
             add esp, 4
             push eax
             call BrActorRemove
-            mov ecx, dword ptr ds:[gSmackerModel]
+            mov ecx, dword ptr [gSmackerModel]
             add esp, 4
             push ecx
             call BrModelFree
-            mov edx, dword ptr ds:[gSmackerActor]
+            mov edx, dword ptr [gSmackerActor]
             add esp, 4
             push edx
             call BrActorFree
             add esp, 4
             jmp L0043f211
     L0043f057:
-            mov eax, dword ptr ds:[gBack_screen]
+            mov eax, dword ptr [gBack_screen]
             mov cl, byte ptr [eax + 0x2c]
             cmp cl, 5
             je L0043f069
@@ -1146,11 +1204,11 @@ void C2_NAKED C2_HOOK_FASTCALL PlaySmackerFile(const char* pSmack_name) {
     L0043f069:
             mov eax, dword ptr [esp + 0x10]
             push eax
-            call dword ptr ds:[0x589294]
+            call dword ptr [gMatchData_00589294]
             test eax, eax
             mov dword ptr [esp + 0x2c], eax
             je L0043f22a
-            mov eax, dword ptr ds:[gBack_screen]
+            mov eax, dword ptr [gBack_screen]
             mov ebp, dword ptr [esp + 0x18]
     L0043f089:
             mov edx, dword ptr [ebp + 0xc]
@@ -1159,10 +1217,10 @@ void C2_NAKED C2_HOOK_FASTCALL PlaySmackerFile(const char* pSmack_name) {
             mov dword ptr [esp + 0x14], ecx
             jb L0043f211
             mov edi, dword ptr [esp + 0x18]
-            mov ebp, dword ptr ds:[0x589288]
+            mov ebp, dword ptr [gMatchData_00589288]
             jmp L0043f0ae
     L0043f0a9:
-            mov eax, dword ptr ds:[gBack_screen]
+            mov eax, dword ptr [gBack_screen]
     L0043f0ae:
             mov esi, dword ptr [esp + 0x24]
             mov cl, byte ptr [eax + 0x2c]
@@ -1183,7 +1241,7 @@ void C2_NAKED C2_HOOK_FASTCALL PlaySmackerFile(const char* pSmack_name) {
             push edx
             jmp L0043f0ed
     L0043f0db:
-            mov eax, dword ptr ds:[gSmackerBuffer]
+            mov eax, dword ptr [gSmackerBuffer]
             push 0
             push eax
             push 0xc8
@@ -1197,7 +1255,7 @@ void C2_NAKED C2_HOOK_FASTCALL PlaySmackerFile(const char* pSmack_name) {
             xor ebx, ebx
             test eax, eax
             je L0043f162
-            mov ecx, dword ptr ds:[gBack_screen]
+            mov ecx, dword ptr [gBack_screen]
             mov edx, dword ptr [esp + 0x28]
             inc edx
             mov ebx, 1
@@ -1223,7 +1281,7 @@ void C2_NAKED C2_HOOK_FASTCALL PlaySmackerFile(const char* pSmack_name) {
             add esi, 4
             dec ebp
             jne L0043f128
-            mov ebp, dword ptr ds:[0x589288]
+            mov ebp, dword ptr [gMatchData_00589288]
             jmp L0043f162
     L0043f14c:
             mov edx, dword ptr [edi + 0x370]
@@ -1232,18 +1290,18 @@ void C2_NAKED C2_HOOK_FASTCALL PlaySmackerFile(const char* pSmack_name) {
             push edx
             push eax
             push ecx
-            call dword ptr ds:[0x589298]
+            call dword ptr [gMatchData_00589298]
     L0043f162:
             push edi
-            call dword ptr ds:[0x58928c]
-            mov eax, dword ptr ds:[gBack_screen]
+            call dword ptr [gMatchData_0058928c]
+            mov eax, dword ptr [gBack_screen]
             mov cl, byte ptr [eax + 0x2c]
             cmp cl, 5
             je L0043f17b
             cmp cl, 4
             jne L0043f1ad
     L0043f17b:
-            mov edx, dword ptr ds:[gSmackerBuffer]
+            mov edx, dword ptr [gSmackerBuffer]
             push 0xc8
             movsx ecx, word ptr [eax + 0x28]
             push 0x140
@@ -1258,18 +1316,18 @@ void C2_NAKED C2_HOOK_FASTCALL PlaySmackerFile(const char* pSmack_name) {
             push ecx
             push edx
             push eax
-            call dword ptr ds:[0x58929c]
+            call dword ptr [gMatchData_0058929c]
     L0043f1ad:
             mov ecx, dword ptr [esp + 0x14]
             mov eax, dword ptr [edi + 0xc]
             cmp ecx, eax
             je L0043f1bf
             push edi
-            call dword ptr ds:[0x589274]
+            call dword ptr [gMatchData_00589274]
     L0043f1bf:
             test ebx, ebx
             je L0043f1ce
-            mov ecx, dword ptr ds:[gCurrent_palette]
+            mov ecx, dword ptr [gCurrent_palette]
             call DRSetPalette
     L0043f1ce:
             xor ecx, ecx
@@ -1277,7 +1335,7 @@ void C2_NAKED C2_HOOK_FASTCALL PlaySmackerFile(const char* pSmack_name) {
             xor ecx, ecx
             call PDServiceSystem
             call PDGetTotalTime
-            mov ebx, dword ptr ds:[0x589290]
+            mov ebx, dword ptr [gMatchData_00589290]
     L0043f1e7:
             call AnyKeyDown
             mov esi, eax
@@ -1302,13 +1360,13 @@ void C2_NAKED C2_HOOK_FASTCALL PlaySmackerFile(const char* pSmack_name) {
             test eax, eax
             je L0043f22a
             push eax
-            call dword ptr ds:[0x5892a0]
+            call dword ptr [gMatchData_005892a0]
     L0043f22a:
             call PDGetTotalTime
             mov edx, dword ptr [esp + 0x18]
             mov esi, eax
             push edx
-            call dword ptr ds:[0x5892a4]
+            call dword ptr [gMatchData_005892a4]
             mov ecx, esi
             sub esp, 8
             mov eax, dword ptr [esp + 0x3c]
@@ -1327,11 +1385,11 @@ void C2_NAKED C2_HOOK_FASTCALL PlaySmackerFile(const char* pSmack_name) {
             mov ecx, eax
             lea eax, [esi + esi*4]
             lea eax, [eax + eax*4]
-            fmul dword ptr ds:[0x589b4c]
+            fmul dword ptr [gMatchFloat_00589b4c]
             fstp qword ptr [esp + 8]
             fild dword ptr [esp + 0x38]
             fdiv st(0), st(1)
-            fmul dword ptr ds:[0x589b4c]
+            fmul dword ptr [gMatchFloat_00589b4c]
             _emit 0xdd
         _emit 0x1c
         _emit 0x24
@@ -1342,7 +1400,7 @@ void C2_NAKED C2_HOOK_FASTCALL PlaySmackerFile(const char* pSmack_name) {
             sub edx, ecx
             push edx
             push eax
-            push 0x58fe40
+            push offset gMatchFloat_0058fe40
             fstp st(0)
             call dr_dprintf
             add esp, 0x20
@@ -1357,7 +1415,7 @@ void C2_NAKED C2_HOOK_FASTCALL PlaySmackerFile(const char* pSmack_name) {
     L0043f2c1:
             mov ecx, dword ptr [esp + 0x20]
             push ecx
-            push 0x58fe20
+            push offset gMatchFloat_0058fe20
             call dr_dprintf
             add esp, 8
             xor ecx, ecx
@@ -1370,17 +1428,17 @@ void C2_NAKED C2_HOOK_FASTCALL PlaySmackerFile(const char* pSmack_name) {
             add esp, 0x12c
             ret
     L0043f2e5:
-            mov ecx, 0x58fe0c
+            mov ecx, offset gMatchFloat_0058fe0c
             call PDEnterDebugger
-            mov ecx, dword ptr ds:[gSmackerActor]
+            mov ecx, dword ptr [gSmackerActor]
             push ecx
             call BrActorFree
-            mov edx, dword ptr ds:[gSmackerCurrentPalette]
+            mov edx, dword ptr [gSmackerCurrentPalette]
             add esp, 4
-            mov dword ptr ds:[gSmackerActor], 0
+            mov dword ptr [gSmackerActor], 0
             push edx
             call BrMapRemove
-            mov eax, dword ptr ds:[gSmackerCurrentPalette]
+            mov eax, dword ptr [gSmackerCurrentPalette]
             add esp, 4
             push eax
             call BrPixelmapFree

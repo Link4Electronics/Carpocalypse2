@@ -1163,6 +1163,124 @@ extern tPed_form* C2_HOOK_FASTCALL SetUpCharacterForm(const char* pName);
 extern void C2_HOOK_FASTCALL StartPedRunning(tPedestrian* pPed, tU32 pTime, int pArg3);
 extern void __cdecl _chkstk();
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gData_0065e5d4[];
+extern char gData_0069fda4[];
+extern char gDouble_00589370[];
+extern char gDouble_00589378[];
+extern char gDouble_005893a0[];
+extern char gDouble_005893a8[];
+extern char gDouble_0058aa68[];
+extern char gDouble_0058aa88[];
+extern char gDouble_0058ab38[];
+extern char gDouble_0058ab40[];
+extern char gDouble_0058ab48[];
+extern char gDouble_0058ab58[];
+extern char gDouble_0058ab60[];
+extern char gDouble_0058ab68[];
+extern char gDouble_0058ab70[];
+extern char gDouble_0058ab78[];
+extern char gFloat_00589360[];
+extern char gFloat_00589364[];
+extern char gFloat_00589368[];
+extern char gFloat_00589380[];
+extern char gFloat_00589384[];
+extern char gFloat_00589388[];
+extern char gFloat_0058938c[];
+extern char gFloat_00589390[];
+extern char gFloat_00589394[];
+extern char gFloat_00589398[];
+extern char gFloat_0058939c[];
+extern char gFloat_005893b0[];
+extern char gFloat_005893b4[];
+extern char gFloat_0058a9c0[];
+extern char gFloat_0058a9c4[];
+extern char gFloat_0058a9f8[];
+extern char gFloat_0058aa64[];
+extern char gFloat_0058aa70[];
+extern char gFloat_0058aa74[];
+extern char gFloat_0058aa80[];
+extern char gFloat_0058aa84[];
+extern char gFloat_0058aa90[];
+extern char gFloat_0058aaa4[];
+extern char gFloat_0058ab50[];
+extern char gFloat_0058ab80[];
+extern char gFloat_0058ab88[];
+extern char gFloat_0058ab8c[];
+extern char gFloat_0065e670[];
+extern char gFloat_0065e6dc[];
+extern char gString_0058f424[];
+extern char gString_0058f434[];
+extern char gString_0058f444[];
+extern char gString_0058f44c[];
+extern char gString_0058f454[];
+extern char gString_0058f460[];
+extern char gString_00591218[];
+extern char gString_00591224[];
+extern char gString_0065e634[];
+extern char gString_0065e63c[];
+extern char gString_0065e65c[];
+extern char gString_0065e698[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchData_0065e5d4[];
+extern char gMatchData_0069fda4[];
+extern char gMatchDouble_00589370[];
+extern char gMatchDouble_00589378[];
+extern char gMatchDouble_005893a0[];
+extern char gMatchDouble_005893a8[];
+extern char gMatchDouble_0058aa68[];
+extern char gMatchDouble_0058aa88[];
+extern char gMatchDouble_0058ab38[];
+extern char gMatchDouble_0058ab40[];
+extern char gMatchDouble_0058ab48[];
+extern char gMatchDouble_0058ab58[];
+extern char gMatchDouble_0058ab60[];
+extern char gMatchDouble_0058ab68[];
+extern char gMatchDouble_0058ab70[];
+extern char gMatchDouble_0058ab78[];
+extern char gMatchFloat_00589360[];
+extern char gMatchFloat_00589364[];
+extern char gMatchFloat_00589368[];
+extern char gMatchFloat_00589380[];
+extern char gMatchFloat_00589384[];
+extern char gMatchFloat_00589388[];
+extern char gMatchFloat_0058938c[];
+extern char gMatchFloat_00589390[];
+extern char gMatchFloat_00589394[];
+extern char gMatchFloat_00589398[];
+extern char gMatchFloat_0058939c[];
+extern char gMatchFloat_005893b0[];
+extern char gMatchFloat_005893b4[];
+extern char gMatchFloat_0058a9c0[];
+extern char gMatchFloat_0058a9c4[];
+extern char gMatchFloat_0058a9f8[];
+extern char gMatchFloat_0058aa64[];
+extern char gMatchFloat_0058aa70[];
+extern char gMatchFloat_0058aa74[];
+extern char gMatchFloat_0058aa80[];
+extern char gMatchFloat_0058aa84[];
+extern char gMatchFloat_0058aa90[];
+extern char gMatchFloat_0058aaa4[];
+extern char gMatchFloat_0058ab50[];
+extern char gMatchFloat_0058ab80[];
+extern char gMatchFloat_0058ab88[];
+extern char gMatchFloat_0058ab8c[];
+extern char gMatchFloat_0065e670[];
+extern char gMatchFloat_0065e6dc[];
+extern char gMatchString_0058f424[];
+extern char gMatchString_0058f434[];
+extern char gMatchString_0058f444[];
+extern char gMatchString_0058f44c[];
+extern char gMatchString_0058f454[];
+extern char gMatchString_0058f460[];
+extern char gMatchString_00591218[];
+extern char gMatchString_00591224[];
+extern char gMatchString_0065e634[];
+extern char gMatchString_0065e63c[];
+extern char gMatchString_0065e65c[];
+extern char gMatchString_0065e698[];
+#endif
 // FUNCTION: CARMA2_HW 0x004d2c40
 int C2_HOOK_FASTCALL GetPedCount(void) {
     return gPed_count;
@@ -1275,7 +1393,7 @@ void C2_NAKED C2_HOOK_FASTCALL DRVector3SafeCross(br_vector3* pDest, const br_ve
             _emit 0xd8
         _emit 0x08
             fxch st(2)
-            fcomp dword ptr [gFloat_0058935c+0x4]
+            fcomp dword ptr [gMatchFloat_00589360]
             fxch st(1)
             fsubp st(1), st(0)
             fnstsw ax
@@ -1285,13 +1403,13 @@ void C2_NAKED C2_HOOK_FASTCALL DRVector3SafeCross(br_vector3* pDest, const br_ve
             je L0040414d
             fld dword ptr [ecx + 4]
             fabs
-            fcomp dword ptr [gFloat_0058935c+0x4]
+            fcomp dword ptr [gMatchFloat_00589360]
             fnstsw ax
             test ah, 1
             je L0040414d
             fld dword ptr [esp + 4]
             fabs
-            fcomp dword ptr [gFloat_0058935c+0x4]
+            fcomp dword ptr [gMatchFloat_00589360]
             fnstsw ax
             test ah, 1
             je L0040414d
@@ -1780,7 +1898,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReadPedGiblets(FILE* pFile) {
             call PathCat
             lea edx, [esp + 0x128]
             lea ecx, [esp + 0x128]
-            push offset gPow2_word_array+0x5c
+            push offset gMatchString_0065e634
             call PathCat
             lea edx, [esp + 0x128]
             mov ecx, offset gMisc_storage_space
@@ -1871,8 +1989,8 @@ void C2_NAKED C2_HOOK_FASTCALL ReadPedGiblets(FILE* pFile) {
             cmp ecx, eax
             jne L004cb361
             fld dword ptr [esp + 0x10]
-            fmul dword ptr [gConst_replay_rate_zero+0x38]
-            fmul dword ptr [gConst_replay_rate_zero+0x3c]
+            fmul dword ptr [gMatchFloat_0058a9c0]
+            fmul dword ptr [gMatchFloat_0058a9c4]
             fstp dword ptr [esp + 0x10]
     L004cb361:
             mov ecx, dword ptr [esp + 0x10]
@@ -1930,7 +2048,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReadPedGiblets(FILE* pFile) {
             mov edx, offset gPed_large_blood_cloud
             mov ecx, esi
             call ReadExplosion
-            push offset gSwap_depth_effect_type+0x94
+            push offset gMatchString_00591224
             call BrMaterialAllocate
             add esp, 4
             mov dword ptr [gPed_slick_material], eax
@@ -1967,11 +2085,11 @@ void C2_NAKED C2_HOOK_FASTCALL ReadPedGiblets(FILE* pFile) {
             push eax
             call BrMatrix23Identity
             add esp, 4
-            push offset gOil_pixie_names+0x14
+            push 0x65a3ac
             call BrTableFind
             mov ecx, dword ptr [gPed_slick_material]
             add esp, 4
-            push offset gSwap_depth_effect_type+0x94
+            push offset gMatchString_00591224
             mov dword ptr [ecx + 0x48], eax
             call BrMapFind
             mov edx, dword ptr [gPed_slick_material]
@@ -1986,7 +2104,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReadPedGiblets(FILE* pFile) {
             push eax
             call BrMaterialUpdate
             add esp, 8
-            push offset gSwap_depth_effect_type+0x88
+            push offset gMatchString_00591218
             call BrMaterialFind
             add esp, 4
             mov edx, offset gPed_slick
@@ -2077,6 +2195,13 @@ void C2_NAKED C2_HOOK_FASTCALL ReadPedGiblets(FILE* pFile) {
             pop ebx
             add esp, 0x218
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -2395,7 +2520,7 @@ void C2_NAKED C2_HOOK_FASTCALL InitNapalmNolts(void) {
             push eax
             call BrModelAdd
             add esp, 4
-            push offset gPow2_word_array+0x64
+            push offset gMatchString_0065e63c
             call BrMaterialAllocate
             mov dword ptr [edi], eax
             mov edx, dword ptr [eax + 0x20]
@@ -2431,7 +2556,7 @@ void C2_NAKED C2_HOOK_FASTCALL InitNapalmNolts(void) {
             add edi, 4
             add esp, 4
             add esi, 4
-            cmp edi, offset gBurning_ped_materials+0x1c
+            cmp edi, offset gMatchData_0069fda4
             jl L004cb642
             mov ebx, offset gNapalm_bolts+0x4
     L004cb86c:
@@ -2469,6 +2594,16 @@ void C2_NAKED C2_HOOK_FASTCALL InitNapalmNolts(void) {
             pop ebp
             pop ebx
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -3298,6 +3433,20 @@ int C2_NAKED C2_HOOK_FASTCALL MorphCharacterBonePositions(tPed_character_instanc
             pop ebp
             add esp, 0xbc
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -3358,7 +3507,8 @@ void C2_NAKED C2_HOOK_FASTCALL SetBoner(tPed_character_instance* pPed, br_matrix
             fld dword ptr [eax + 8]
             fld dword ptr [esi + 0xc]
             fld dword ptr [esi + 0x18]
-            fld dword ptr [eax]
+            _emit 0xd9
+        _emit 0x00
             fxch st(4)
             fchs
             fxch st(3)
@@ -3369,7 +3519,8 @@ void C2_NAKED C2_HOOK_FASTCALL SetBoner(tPed_character_instance* pPed, br_matrix
             fmulp st(2), st(0)
             fxch st(2)
             fchs
-            fmul dword ptr [esi]
+            _emit 0xd8
+        _emit 0x0e
             fxch st(1)
             faddp st(2), st(0)
             fld dword ptr [esi + 0x1c]
@@ -3383,7 +3534,8 @@ void C2_NAKED C2_HOOK_FASTCALL SetBoner(tPed_character_instance* pPed, br_matrix
             fld dword ptr [eax + 8]
             fchs
             fmulp st(2), st(0)
-            fld dword ptr [eax]
+            _emit 0xd9
+        _emit 0x00
             fxch st(1)
             fchs
             fmulp st(3), st(0)
@@ -3399,7 +3551,8 @@ void C2_NAKED C2_HOOK_FASTCALL SetBoner(tPed_character_instance* pPed, br_matrix
             fstp dword ptr [esi + 0x28]
             fld dword ptr [eax + 4]
             fld dword ptr [eax + 8]
-            fld dword ptr [eax]
+            _emit 0xd9
+        _emit 0x00
             fxch st(2)
             fchs
             fxch st(1)
@@ -3425,11 +3578,13 @@ void C2_NAKED C2_HOOK_FASTCALL SetBoner(tPed_character_instance* pPed, br_matrix
             fld dword ptr [eax + 0x18]
             fld dword ptr [ecx + 4]
             fld dword ptr [ecx + 8]
-            fld dword ptr [ecx]
+            _emit 0xd9
+        _emit 0x01
             fxch st(2)
             fmulp st(4), st(0)
             fmulp st(2), st(0)
-            fmul dword ptr [eax]
+            _emit 0xd8
+        _emit 0x08
             fxch st(1)
             faddp st(2), st(0)
             faddp st(1), st(0)
@@ -3444,7 +3599,8 @@ void C2_NAKED C2_HOOK_FASTCALL SetBoner(tPed_character_instance* pPed, br_matrix
             fmulp st(3), st(0)
             fmul dword ptr [ecx + 4]
             fxch st(1)
-            fmul dword ptr [ecx]
+            _emit 0xd8
+        _emit 0x09
             fxch st(1)
             faddp st(2), st(0)
             faddp st(1), st(0)
@@ -3459,7 +3615,8 @@ void C2_NAKED C2_HOOK_FASTCALL SetBoner(tPed_character_instance* pPed, br_matrix
             fmulp st(3), st(0)
             fmul dword ptr [ecx + 4]
             fxch st(1)
-            fmul dword ptr [ecx]
+            _emit 0xd8
+        _emit 0x09
             fxch st(1)
             faddp st(2), st(0)
             faddp st(1), st(0)
@@ -3488,18 +3645,22 @@ void C2_NAKED C2_HOOK_FASTCALL SetBoner(tPed_character_instance* pPed, br_matrix
             fxch st(1)
             faddp st(2), st(0)
             fld dword ptr [edx + 8]
-            fld dword ptr [ecx]
+            _emit 0xd9
+        _emit 0x01
             fchs
-            fmul dword ptr [esi]
+            _emit 0xd8
+        _emit 0x0e
             faddp st(3), st(0)
-            fld dword ptr [edx]
+            _emit 0xd9
+        _emit 0x02
             fxch st(2)
             fmulp st(5), st(0)
             fmulp st(3), st(0)
             fxch st(2)
             faddp st(3), st(0)
             fxch st(1)
-            fmul dword ptr [eax]
+            _emit 0xd8
+        _emit 0x08
             fld dword ptr [esi + 0x1c]
             fxch st(1)
             faddp st(3), st(0)
@@ -3519,12 +3680,14 @@ void C2_NAKED C2_HOOK_FASTCALL SetBoner(tPed_character_instance* pPed, br_matrix
             fmul dword ptr [edx + 4]
             faddp st(2), st(0)
             fld dword ptr [eax + 4]
-            fmul dword ptr [edx]
+            _emit 0xd8
+        _emit 0x0a
             faddp st(2), st(0)
             fxch st(2)
             fchs
             fmulp st(3), st(0)
-            fld dword ptr [ecx]
+            _emit 0xd9
+        _emit 0x01
             fxch st(2)
             fchs
             fmulp st(5), st(0)
@@ -3554,7 +3717,8 @@ void C2_NAKED C2_HOOK_FASTCALL SetBoner(tPed_character_instance* pPed, br_matrix
             faddp st(2), st(0)
             fld dword ptr [edx + 4]
             fld dword ptr [esi + 8]
-            fld dword ptr [ecx]
+            _emit 0xd9
+        _emit 0x01
             fchs
             fmulp st(1), st(0)
             faddp st(3), st(0)
@@ -3565,7 +3729,8 @@ void C2_NAKED C2_HOOK_FASTCALL SetBoner(tPed_character_instance* pPed, br_matrix
             fxch st(2)
             faddp st(3), st(0)
             fxch st(1)
-            fmul dword ptr [edx]
+            _emit 0xd8
+        _emit 0x0a
             faddp st(2), st(0)
             fxch st(1)
             faddp st(1), st(0)
@@ -3885,7 +4050,9 @@ void C2_NAKED C2_HOOK_FASTCALL SetCharacterBonePositions(tPed_character_instance
             fld dword ptr [esp + 0x3c]
             fld dword ptr [esp + 0x40]
             fxch st(2)
-            fstp dword ptr [ebp]
+            _emit 0xd9
+        _emit 0x5d
+        _emit 0x00
             fsub dword ptr [esp + 0x48]
             fstp dword ptr [edi + 0x28]
             fsub dword ptr [esp + 0x4c]
@@ -3894,7 +4061,9 @@ void C2_NAKED C2_HOOK_FASTCALL SetCharacterBonePositions(tPed_character_instance
     L00407de4:
             fld dword ptr [esp + 0x44]
             fadd dword ptr [esp + 0x38]
-            fstp dword ptr [ebp]
+            _emit 0xd9
+        _emit 0x5d
+        _emit 0x00
             fld dword ptr [esp + 0x48]
             fadd dword ptr [esp + 0x3c]
             fstp dword ptr [edi + 0x28]
@@ -4661,11 +4830,11 @@ int C2_NAKED C2_HOOK_FASTCALL SetCharacterMove(tPed_character_instance* pPed, in
             mov dword ptr [esp + 0x6c], eax
             mov dword ptr [ecx], 0
             mov edx, dword ptr [esi + 0xbc]
-            fmul qword ptr [gFloat_0058935c+0x44]
+            fmul qword ptr [gMatchDouble_005893a0]
             fdivp st(1), st(0)
             fimul dword ptr [esp + 0x6c]
-            fmul qword ptr [gFloat_0058935c+0x4c]
-            fdivr qword ptr [gFloat_0058935c+0x14]
+            fmul qword ptr [gMatchDouble_005893a8]
+            fdivr qword ptr [gMatchDouble_00589370]
             fstp dword ptr [edx + 4]
             mov dword ptr [esi + 0x24], 0
             xor edx, edx
@@ -4760,6 +4929,15 @@ int C2_NAKED C2_HOOK_FASTCALL SetCharacterMove(tPed_character_instance* pPed, in
             pop ebx
             add esp, 0x54
             ret 0x10
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -4974,7 +5152,7 @@ void C2_NAKED C2_HOOK_FASTCALL SetPedMove(tPedestrian* pPed, int pMove_action, i
             jg L004cbe7c
             push esi
             lea ecx, [esp + 0x3c]
-            push offset gPed_flags_0058f2e4+0x134
+            push 0x58f418
             push ecx
             call sprintf
             mov edx, dword ptr [edi]
@@ -5005,7 +5183,7 @@ void C2_NAKED C2_HOOK_FASTCALL SetPedMove(tPedestrian* pPed, int pMove_action, i
             jl L004cbec9
             push esi
             lea eax, [esp + 0x3c]
-            push offset gPed_flags_0058f2e4+0x134
+            push 0x58f418
             push eax
             call sprintf
             mov ecx, dword ptr [edi]
@@ -5191,7 +5369,7 @@ void C2_NAKED C2_HOOK_FASTCALL OrthogonalVector(br_vector3* pDest, const br_vect
             _emit 0xd8
         _emit 0x08
             fxch st(2)
-            fcomp dword ptr [gFloat_0058935c+0x4]
+            fcomp dword ptr [gMatchFloat_00589360]
             fxch st(1)
             fsubp st(1), st(0)
             fnstsw ax
@@ -5201,13 +5379,13 @@ void C2_NAKED C2_HOOK_FASTCALL OrthogonalVector(br_vector3* pDest, const br_vect
             je L00404281
             fld dword ptr [ecx + 4]
             fabs
-            fcomp dword ptr [gFloat_0058935c+0x4]
+            fcomp dword ptr [gMatchFloat_00589360]
             fnstsw ax
             test ah, 1
             je L00404281
             fld dword ptr [esp + 4]
             fabs
-            fcomp dword ptr [gFloat_0058935c+0x4]
+            fcomp dword ptr [gMatchFloat_00589360]
             fnstsw ax
             test ah, 1
             je L00404281
@@ -5274,6 +5452,18 @@ void C2_NAKED C2_HOOK_FASTCALL OrthogonalVector(br_vector3* pDest, const br_vect
             fstp dword ptr [ecx + 8]
     L00404281:
             ret 4
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -5402,11 +5592,11 @@ void C2_NAKED C2_HOOK_FASTCALL SetCharacterDirection(tPed_character_instance* pP
             faddp st(1), st(0)
             fsqrt
             fstp st(1)
-            fcom dword ptr [gFloat_0058935c+0xc]
+            fcom dword ptr [gMatchFloat_00589368]
             fnstsw ax
             test ah, 0x41
             jne L0040a7ea
-            fdivr qword ptr [gFloat_0058935c+0x14]
+            fdivr qword ptr [gMatchDouble_00589370]
             _emit 0xd9
         _emit 0x02
             fmul st(0), st(1)
@@ -5504,11 +5694,11 @@ void C2_NAKED C2_HOOK_FASTCALL SetCharacterDirection(tPed_character_instance* pP
             faddp st(1), st(0)
             fsqrt
             fstp st(1)
-            fcom dword ptr [gFloat_0058935c+0xc]
+            fcom dword ptr [gMatchFloat_00589368]
             fnstsw ax
             test ah, 0x41
             jne L0040a933
-            fdivr qword ptr [gFloat_0058935c+0x14]
+            fdivr qword ptr [gMatchDouble_00589370]
             fld dword ptr [ebx + 4]
             fld dword ptr [ebx + 8]
             _emit 0xd9
@@ -5559,11 +5749,11 @@ void C2_NAKED C2_HOOK_FASTCALL SetCharacterDirection(tPed_character_instance* pP
             faddp st(1), st(0)
             fsqrt
             fstp st(1)
-            fcom dword ptr [gFloat_0058935c+0xc]
+            fcom dword ptr [gMatchFloat_00589368]
             fnstsw ax
             test ah, 0x41
             jne L0040a9d0
-            fdivr qword ptr [gFloat_0058935c+0x14]
+            fdivr qword ptr [gMatchDouble_00589370]
             fld dword ptr [ecx + 4]
             fld dword ptr [ecx + 8]
             _emit 0xd9
@@ -5648,11 +5838,11 @@ void C2_NAKED C2_HOOK_FASTCALL SetCharacterDirection(tPed_character_instance* pP
             fmul st(0), st(2)
             faddp st(1), st(0)
             fsqrt
-            fcom dword ptr [gFloat_0058935c+0xc]
+            fcom dword ptr [gMatchFloat_00589368]
             fnstsw ax
             test ah, 0x41
             jne L0040aac6
-            fdivr qword ptr [gFloat_0058935c+0x14]
+            fdivr qword ptr [gMatchDouble_00589370]
             fld st(0)
             fld st(1)
             fxch st(1)
@@ -5698,11 +5888,11 @@ void C2_NAKED C2_HOOK_FASTCALL SetCharacterDirection(tPed_character_instance* pP
             fxch st(1)
             faddp st(1), st(0)
             fsqrt
-            fcom dword ptr [gFloat_0058935c+0xc]
+            fcom dword ptr [gMatchFloat_00589368]
             fnstsw ax
             test ah, 0x41
             jne L0040ab67
-            fdivr qword ptr [gFloat_0058935c+0x14]
+            fdivr qword ptr [gMatchDouble_00589370]
             fld st(0)
             fld st(1)
             fxch st(1)
@@ -5736,11 +5926,11 @@ void C2_NAKED C2_HOOK_FASTCALL SetCharacterDirection(tPed_character_instance* pP
             fxch st(1)
             faddp st(1), st(0)
             fsqrt
-            fcom dword ptr [gFloat_0058935c+0xc]
+            fcom dword ptr [gMatchFloat_00589368]
             fnstsw ax
             test ah, 0x41
             jne L0040abe2
-            fdivr qword ptr [gFloat_0058935c+0x14]
+            fdivr qword ptr [gMatchDouble_00589370]
             fld st(0)
             fld st(1)
             fxch st(1)
@@ -5792,11 +5982,11 @@ void C2_NAKED C2_HOOK_FASTCALL SetCharacterDirection(tPed_character_instance* pP
             fxch st(1)
             faddp st(1), st(0)
             fsqrt
-            fcom dword ptr [gFloat_0058935c+0xc]
+            fcom dword ptr [gMatchFloat_00589368]
             fnstsw ax
             test ah, 0x41
             jne L0040ac97
-            fdivr qword ptr [gFloat_0058935c+0x14]
+            fdivr qword ptr [gMatchDouble_00589370]
             fld st(0)
             fld st(1)
             fxch st(1)
@@ -5834,11 +6024,11 @@ void C2_NAKED C2_HOOK_FASTCALL SetCharacterDirection(tPed_character_instance* pP
             mov dword ptr [esp + 0x18], ecx
             faddp st(1), st(0)
             fsqrt
-            fcom dword ptr [gFloat_0058935c+0xc]
+            fcom dword ptr [gMatchFloat_00589368]
             fnstsw ax
             test ah, 0x41
             jne L0040ad20
-            fdivr qword ptr [gFloat_0058935c+0x14]
+            fdivr qword ptr [gMatchDouble_00589370]
             mov dword ptr [esp + 0x34], 0
             fld st(0)
             fmul dword ptr [esp + 0x50]
@@ -5895,11 +6085,11 @@ void C2_NAKED C2_HOOK_FASTCALL SetCharacterDirection(tPed_character_instance* pP
             fxch st(1)
             faddp st(1), st(0)
             fsqrt
-            fcom dword ptr [gFloat_0058935c+0xc]
+            fcom dword ptr [gMatchFloat_00589368]
             fnstsw ax
             test ah, 0x41
             jne L0040adfb
-            fdivr qword ptr [gFloat_0058935c+0x14]
+            fdivr qword ptr [gMatchDouble_00589370]
             fld st(0)
             fld st(1)
             fxch st(1)
@@ -5965,6 +6155,16 @@ void C2_NAKED C2_HOOK_FASTCALL SetCharacterDirection(tPed_character_instance* pP
             pop ebx
             add esp, 0x140
             ret 4
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -6592,8 +6792,8 @@ void C2_NAKED C2_HOOK_FASTCALL SpawnPedsOnFace(br_face *pFace, br_model *pModel)
             fmul dword ptr [esp + 0x48]
             fsubp st(1), st(0)
             fabs
-            fmul dword ptr [gPed_kill_relative_speed_ratio+0x8]
-            fmul qword ptr [gPed_smear_position_tolerance+0x14]
+            fmul dword ptr [gMatchFloat_0058a9f8]
+            fmul qword ptr [gMatchDouble_0058ab48]
             fld dword ptr [ebx + 0xc]
             fcomp dword ptr [gConst_replay_rate_zero]
             fnstsw ax
@@ -6605,7 +6805,7 @@ void C2_NAKED C2_HOOK_FASTCALL SpawnPedsOnFace(br_face *pFace, br_model *pModel)
             jmp L004d2e49
     L004d2e3d:
             fmul dword ptr [ebx + 0xc]
-            fmul dword ptr [gPed_smear_position_tolerance+0x1c]
+            fmul dword ptr [gMatchFloat_0058ab50]
             fsubr dword ptr [ebx + 0x10]
     L004d2e49:
             fstp dword ptr [esp + 0x2c]
@@ -6790,7 +6990,7 @@ void C2_NAKED C2_HOOK_FASTCALL SpawnPedsOnFace(br_face *pFace, br_model *pModel)
             lea edx, [esp + 0x64]
             lea eax, [esp + 0xd4]
             push edx
-            push offset gPow2_word_array+0xc0
+            push offset gMatchString_0065e698
             push eax
             call sprintf
             add esp, 0xc
@@ -6818,7 +7018,7 @@ void C2_NAKED C2_HOOK_FASTCALL SpawnPedsOnFace(br_face *pFace, br_model *pModel)
             mov eax, ecx
             mov esi, edi
             mov edi, edx
-            push offset gPed_flags_0058f2e4+0x168
+            push offset gMatchString_0058f44c
             shr ecx, 2
             rep movsd
             mov ecx, eax
@@ -7021,6 +7221,13 @@ void C2_NAKED C2_HOOK_FASTCALL SpawnPedsOnFace(br_face *pFace, br_model *pModel)
             pop ebx
             add esp, 0xe4
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -7326,7 +7533,7 @@ void C2_NAKED C2_HOOK_FASTCALL RenderElectroBastardRays(br_pixelmap* pRender_scr
             fld dword ptr [ecx + 0x44]
             fsub dword ptr [ecx + 0x38]
             mov dword ptr [esp + 0x88], 0
-            fmul dword ptr [gFLOAT_0058ab84+0x4]
+            fmul dword ptr [gMatchFloat_0058ab88]
             fstp dword ptr [esp + 0x84]
             mov eax, dword ptr [eax + 0x10]
             add eax, 0x2c
@@ -7481,12 +7688,12 @@ void C2_NAKED C2_HOOK_FASTCALL RenderElectroBastardRays(br_pixelmap* pRender_scr
             lea ecx, [esp + 0x20]
             call DrawLine3D
             fld dword ptr [esp + 0x10]
-            fsub dword ptr [gFLOAT_0058ab84+0x8]
+            fsub dword ptr [gMatchFloat_0058ab8c]
             mov eax, dword ptr [esp + 0x14]
             mov ecx, dword ptr [esp + 0x18]
             mov edx, dword ptr [esp + 0x1c]
             mov dword ptr [esp + 0x4c], eax
-            fsub dword ptr [gFLOAT_0058ab84+0x8]
+            fsub dword ptr [gMatchFloat_0058ab8c]
             mov dword ptr [esp + 0x50], ecx
             mov dword ptr [esp + 0x54], edx
             fst dword ptr [esp + 0x10]
@@ -8188,7 +8395,7 @@ void C2_NAKED C2_HOOK_FASTCALL ScalePedPersonality(tPed_personality* pPersonalit
             fadd dword ptr [eax + 8]
             fadd dword ptr [eax + 4]
             fmul dword ptr [ebx + 0x60]
-            fmul dword ptr [gFloat_0058935c+0x54]
+            fmul dword ptr [gMatchFloat_005893b0]
             fstp dword ptr [ebx + 0x60]
     L0040bed6:
             pop edi
@@ -8814,7 +9021,7 @@ void C2_NAKED C2_HOOK_FASTCALL ScalePedForm(tPed_form* pForm, int pIndex, br_sca
             add esi, 0x50
             mov ecx, esi
             call FindYVerticallyBelow2
-            fcom dword ptr [gFloat_0058935c+0x58]
+            fcom dword ptr [gMatchFloat_005893b4]
             fnstsw ax
             test ah, 0x41
             jne L0040c3f4
@@ -9528,7 +9735,7 @@ void C2_NAKED C2_HOOK_FASTCALL MungeNapalm(void) {
             sub eax, esi
             mov dword ptr [esp + 0x14], eax
             fild dword ptr [esp + 0x14]
-            fmul dword ptr [gPed_repulse_y_epsilon+0x8]
+            fmul dword ptr [gMatchFloat_0058aa80]
             _emit 0xd8
         _emit 0x6d
         _emit 0x00
@@ -9545,7 +9752,7 @@ void C2_NAKED C2_HOOK_FASTCALL MungeNapalm(void) {
             lea edx, [ebp - 0x2c]
             xor esi, esi
             mov dword ptr [esp + 0x18], esi
-            fmul dword ptr [gPed_repulse_y_epsilon+0xc]
+            fmul dword ptr [gMatchFloat_0058aa84]
             _emit 0xd9
         _emit 0x45
         _emit 0x00
@@ -9924,7 +10131,7 @@ void C2_NAKED C2_HOOK_FASTCALL MungeNapalm(void) {
             jmp L004cee85
     L004cede0:
             fild dword ptr [esp + 0x18]
-            fsub qword ptr [gPed_repulse_y_epsilon+0x10]
+            fsub qword ptr [gMatchDouble_0058aa88]
             call _ftol
             mov ecx, dword ptr [esp + 0x10]
             mov dword ptr [esp + 0x18], eax
@@ -9949,13 +10156,13 @@ void C2_NAKED C2_HOOK_FASTCALL MungeNapalm(void) {
             lea ecx, [ecx + ecx*2]
             lea eax, [ebp + edx*4 - 0x30]
             fld dword ptr [ebp + ecx*4 - 0x30]
-            fmul qword ptr [gPed_repulse_y_epsilon+0x10]
+            fmul qword ptr [gMatchDouble_0058aa88]
             fld dword ptr [eax + 0x34]
-            fmul qword ptr [gPed_repulse_y_epsilon+0x10]
+            fmul qword ptr [gMatchDouble_0058aa88]
             fstp dword ptr [esp + 0x60]
             fld dword ptr [eax + 0x2c]
             mov ecx, dword ptr [ebx - 4]
-            fmul qword ptr [gPed_repulse_y_epsilon+0x10]
+            fmul qword ptr [gMatchDouble_0058aa88]
             fsubr dword ptr [ecx + 0x50]
             fstp dword ptr [edi + 0x50]
             mov edx, dword ptr [ebx - 4]
@@ -9993,7 +10200,7 @@ void C2_NAKED C2_HOOK_FASTCALL MungeNapalm(void) {
             _emit 0xd8
         _emit 0x0f
             mov dword ptr [esp + 0x24], ecx
-            fmul dword ptr [gPed_repulse_y_epsilon+0x18]
+            fmul dword ptr [gMatchFloat_0058aa90]
             _emit 0xd9
         _emit 0x1c
         _emit 0x24
@@ -10001,7 +10208,7 @@ void C2_NAKED C2_HOOK_FASTCALL MungeNapalm(void) {
             push ecx
             _emit 0xd8
         _emit 0x0f
-            fmul dword ptr [gPed_repulse_y_epsilon+0x18]
+            fmul dword ptr [gMatchFloat_0058aa90]
             _emit 0xd9
         _emit 0x1c
         _emit 0x24
@@ -10028,7 +10235,7 @@ void C2_NAKED C2_HOOK_FASTCALL MungeNapalm(void) {
             add esp, 8
             add ebx, 4
             add eax, 0xc
-            cmp edi, offset gFlamed_ped_flame_scales+0x1c
+            cmp edi, offset gMatchData_0065e5d4
             mov dword ptr [esp + 0x10], edi
             mov dword ptr [esp + 0x14], eax
             jl L004cedc2
@@ -12067,7 +12274,7 @@ void C2_NAKED C2_HOOK_FASTCALL MungePedestrians(void) {
             fxch st(2)
             faddp st(2), st(0)
             fxch st(1)
-            fcomp qword ptr [gPed_smear_position_tolerance+0x24]
+            fcomp qword ptr [gMatchDouble_0058ab58]
             fnstsw ax
             test ah, 1
             fstp st(0)
@@ -12137,7 +12344,7 @@ void C2_NAKED C2_HOOK_FASTCALL MungePedestrians(void) {
             fld dword ptr [esp + 0x18]
             mov edx, dword ptr [eax]
             fld dword ptr [edx + 0x50]
-            fsub qword ptr [gPed_smear_position_tolerance+0x2c]
+            fsub qword ptr [gMatchDouble_0058ab60]
             fcompp
             fnstsw ax
             test ah, 1
@@ -12174,7 +12381,7 @@ void C2_NAKED C2_HOOK_FASTCALL MungePedestrians(void) {
             mov edx, dword ptr [ecx]
             push edx
             push ebp
-            push offset gPow2_word_array+0x104
+            push offset gMatchFloat_0065e6dc
             call dr_dprintf
             mov eax, dword ptr [ebp + 0xc]
             add esp, 0xc
@@ -12270,7 +12477,7 @@ void C2_NAKED C2_HOOK_FASTCALL MungePedestrians(void) {
             faddp st(2), st(0)
             fmul dword ptr [ecx + 0xc]
             faddp st(1), st(0)
-            fcomp qword ptr [gPed_smear_position_tolerance+0x34]
+            fcomp qword ptr [gMatchDouble_0058ab68]
             fnstsw ax
             test ah, 1
             je L004d42ee
@@ -12777,7 +12984,7 @@ void C2_NAKED C2_HOOK_FASTCALL MungePedestrians(void) {
         _emit 0x09
             faddp st(1), st(0)
             fabs
-            fcomp qword ptr [gPed_smear_position_tolerance+0x3c]
+            fcomp qword ptr [gMatchDouble_0058ab70]
             fnstsw ax
             test ah, 0x41
             jne L004d498d
@@ -13039,7 +13246,7 @@ void C2_NAKED C2_HOOK_FASTCALL MungePedestrians(void) {
             fstp dword ptr [esp + 0x20]
             fsqrt
             fst dword ptr [esp + 0x18]
-            fdivr dword ptr [gPedProximity_max_float+0x4]
+            fdivr dword ptr [gMatchFloat_0058aaa4]
             fmul dword ptr [esi + 0x74]
             fld dword ptr [esp + 0x20]
             fmul dword ptr [esp + 0x20]
@@ -13058,7 +13265,7 @@ void C2_NAKED C2_HOOK_FASTCALL MungePedestrians(void) {
             fxch st(1)
             fsqrt
             fst dword ptr [esp + 0x18]
-            fdivr dword ptr [gPedProximity_max_float+0x4]
+            fdivr dword ptr [gMatchFloat_0058aaa4]
             fxch st(2)
             fmulp st(2), st(0)
             fst dword ptr [esp + 0x1c]
@@ -13077,7 +13284,7 @@ void C2_NAKED C2_HOOK_FASTCALL MungePedestrians(void) {
             fadd dword ptr [esp + 0x28]
             fsqrt
             fstp st(1)
-            fdivr dword ptr [gPedProximity_max_float+0x4]
+            fdivr dword ptr [gMatchFloat_0058aaa4]
             fmul dword ptr [esi + 0x7c]
             fstp dword ptr [esi + 0x7c]
     L004d4d52:
@@ -13355,7 +13562,12 @@ void C2_NAKED C2_HOOK_FASTCALL MungePedestrians(void) {
             cmp dword ptr [ebp + 0x10], 6
             jne L004d50de
             mov eax, dword ptr [esp + 0x14]
-            mov edx, dword ptr [gLimbs_actor+0x4]
+            _emit 0x8b
+        _emit 0x15
+        _emit 0x28
+        _emit 0x04
+        _emit 0x6a
+        _emit 0x00
             sub eax, edx
             cmp eax, 0x12c
             jbe L004d50de
@@ -13364,7 +13576,12 @@ void C2_NAKED C2_HOOK_FASTCALL MungePedestrians(void) {
             test eax, eax
             je L004d50de
             mov ecx, dword ptr [esp + 0x14]
-            mov dword ptr [gLimbs_actor+0x4], ecx
+            _emit 0x89
+        _emit 0x0d
+        _emit 0x28
+        _emit 0x04
+        _emit 0x6a
+        _emit 0x00
             mov ecx, dword ptr [ebp]
             test byte ptr [ecx + 0x14], 1
             je L004d50b7
@@ -13409,7 +13626,7 @@ void C2_NAKED C2_HOOK_FASTCALL MungePedestrians(void) {
             mov dword ptr [esp + 0x84], eax
             mov dword ptr [esp + 0x88], ebx
             fild qword ptr [esp + 0x84]
-            fmul qword ptr [gPed_smear_position_tolerance+0x44]
+            fmul qword ptr [gMatchDouble_0058ab78]
             call _ftol
             mov dword ptr [esi + 0x84], eax
             mov eax, dword ptr [ebp + 0xc]
@@ -13649,7 +13866,7 @@ void C2_NAKED C2_HOOK_FASTCALL MungePedestrians(void) {
             fxch st(2)
             faddp st(2), st(0)
             fxch st(1)
-            fcomp dword ptr [gPed_smear_position_tolerance+0x4c]
+            fcomp dword ptr [gMatchFloat_0058ab80]
             fnstsw ax
             test ah, 1
             fstp st(0)
@@ -13907,6 +14124,19 @@ void C2_NAKED C2_HOOK_FASTCALL MungePedestrians(void) {
             mov dword ptr [gCount_changed_points], eax
             pop ebp
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -14137,10 +14367,10 @@ undefined4 C2_NAKED C2_HOOK_FASTCALL CBPassiveCollision(tPed_character_instance*
     L004cdd35:
             fld st(0)
             fdiv dword ptr [gPed_max_survivable_impact]
-            fmul dword ptr [gPed_mutant_tail_impact_multiplier+0x4]
+            fmul dword ptr [gMatchFloat_0058aa64]
     L004cdd43:
             fstp dword ptr [esp + 0x28]
-            fcomp qword ptr [gPed_mutant_tail_impact_multiplier+0x8]
+            fcomp qword ptr [gMatchDouble_0058aa68]
             fnstsw ax
             test ah, 1
             mov eax, 0x5b
@@ -14159,7 +14389,7 @@ undefined4 C2_NAKED C2_HOOK_FASTCALL CBPassiveCollision(tPed_character_instance*
             fld dword ptr [esp + 0x28]
             test al, al
             jg L004cddbb
-            fcomp dword ptr [gPed_mutant_tail_impact_multiplier+0x10]
+            fcomp dword ptr [gMatchFloat_0058aa70]
             push ebp
             push 0
             mov edx, 2
@@ -14181,7 +14411,7 @@ undefined4 C2_NAKED C2_HOOK_FASTCALL CBPassiveCollision(tPed_character_instance*
             call SetPedMove
             jmp L004cdddb
     L004cddbb:
-            fcomp dword ptr [gPed_mutant_tail_impact_multiplier+0x14]
+            fcomp dword ptr [gMatchFloat_0058aa74]
             push ebp
             push 0
             fnstsw ax
@@ -14256,6 +14486,19 @@ undefined4 C2_NAKED C2_HOOK_FASTCALL CBPassiveCollision(tPed_character_instance*
             pop esi
             add esp, 0x18
             ret 4
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -14553,6 +14796,21 @@ int C2_NAKED C2_HOOK_FASTCALL FUN_004cd9e0(tPedestrian* pPed, int pBoneIndex) {
             pop ebx
             add esp, 0x24
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -15283,7 +15541,7 @@ finished:
 #else
     __asm {
             sub esp, 0x4c
-            mov eax, dword ptr ds:[gPed_676914]
+            mov eax, dword ptr [gPed_676914]
             push ebx
             push ebp
             push esi
@@ -15293,7 +15551,7 @@ finished:
             mov dword ptr [esp + 0x20], edi
             mov ebx, ecx
             jne L004d1bfc
-            mov eax, dword ptr ds:[gPipe_halted_ped_status]
+            mov eax, dword ptr [gPipe_halted_ped_status]
             test eax, eax
             je L004d1097
             mov al, byte ptr [ebx + 5]
@@ -15352,7 +15610,7 @@ finished:
             mov dword ptr [esp + 0x40], ecx
             jmp L004d113e
     L004d10ed:
-            fld dword ptr ds:[gConst_replay_rate_zero]
+            fld dword ptr [gConst_replay_rate_zero]
             xor eax, eax
             xor edx, edx
             mov ax, word ptr [edi + 0x174]
@@ -15361,7 +15619,7 @@ finished:
             jge L004d113e
             lea ecx, [eax + eax*4]
             shl ecx, 4
-            add ecx, 0x744858
+            add ecx, offset gFace_list__car+0x38
             sub edx, eax
     L004d1117:
             _emit 0xd8
@@ -15384,7 +15642,7 @@ finished:
             jne L004d1117
     L004d113e:
             fld dword ptr [ebx + 0x9c]
-            fcomp qword ptr ds:[gDOUBLE_0058aad0]
+            fcomp qword ptr [gDOUBLE_0058aad0]
             fnstsw ax
             test ah, 0x41
             jne L004d116d
@@ -15410,10 +15668,10 @@ finished:
             jne L004d11b0
             mov edi, dword ptr [edi]
             fld dword ptr [edi + 0x2c]
-            fmul dword ptr ds:[gFLOAT_0058a9c8]
+            fmul dword ptr [gFLOAT_0058a9c8]
             fstp dword ptr [esp + 0x2c]
             fld dword ptr [edi + 0x30]
-            fmul dword ptr ds:[gFLOAT_0058a9c8]
+            fmul dword ptr [gFLOAT_0058a9c8]
             fstp dword ptr [esp + 0x30]
             fld dword ptr [edi + 0x34]
             jmp L004d120a
@@ -15430,24 +15688,24 @@ finished:
             jne L004d11eb
             mov edi, dword ptr [edi]
             fld dword ptr [edi + 0x38]
-            fmul dword ptr ds:[gFLOAT_0058a9c8]
+            fmul dword ptr [gFLOAT_0058a9c8]
             fstp dword ptr [esp + 0x2c]
             fld dword ptr [edi + 0x3c]
-            fmul dword ptr ds:[gFLOAT_0058a9c8]
+            fmul dword ptr [gFLOAT_0058a9c8]
             fstp dword ptr [esp + 0x30]
             fld dword ptr [edi + 0x40]
             jmp L004d120a
     L004d11eb:
             mov edi, dword ptr [edi]
             fld dword ptr [edi + 0x44]
-            fmul dword ptr ds:[gFLOAT_0058a9c8]
+            fmul dword ptr [gFLOAT_0058a9c8]
             fstp dword ptr [esp + 0x2c]
             fld dword ptr [edi + 0x48]
-            fmul dword ptr ds:[gFLOAT_0058a9c8]
+            fmul dword ptr [gFLOAT_0058a9c8]
             fstp dword ptr [esp + 0x30]
             fld dword ptr [edi + 0x4c]
     L004d120a:
-            fmul dword ptr ds:[gFLOAT_0058a9c8]
+            fmul dword ptr [gFLOAT_0058a9c8]
             fstp dword ptr [esp + 0x34]
             fld dword ptr [esp + 0x3c]
             fld dword ptr [esp + 0x38]
@@ -15458,7 +15716,7 @@ finished:
             fxch st(2)
             fmul dword ptr [esp + 0x34]
             fxch st(3)
-            fcomp dword ptr ds:[gConst_replay_rate_zero]
+            fcomp dword ptr [gConst_replay_rate_zero]
             fxch st(1)
             faddp st(1), st(0)
             fxch st(1)
@@ -15469,7 +15727,7 @@ finished:
             jne L004d1265
             fld dword ptr [esp + 0x1c]
             fabs
-            fcomp qword ptr ds:[gDOUBLE_0058aad8]
+            fcomp qword ptr [gDOUBLE_0058aad8]
             fnstsw ax
             test ah, 1
             je L004d1265
@@ -15593,9 +15851,9 @@ finished:
             call PercentageChance
             test eax, eax
             je L004d13d4
-            fld dword ptr ds:[gPed_tumble_factor]
+            fld dword ptr [gPed_tumble_factor]
             fchs
-            fstp dword ptr ds:[gPed_tumble_factor]
+            fstp dword ptr [gPed_tumble_factor]
     L004d13d4:
             push 0
             push 0
@@ -15603,18 +15861,18 @@ finished:
             mov ecx, esi
             call MakePedNoise
             fld dword ptr [esp + 0x2c]
-            fmul dword ptr ds:[gPed_tumble_factor]
+            fmul dword ptr [gPed_tumble_factor]
             mov edi, dword ptr [esp + 0x20]
             push 0
             lea edx, [esp + 0x48]
             push 0x3fb1eb85
             fstp dword ptr [esp + 0x4c]
             fld dword ptr [esp + 0x38]
-            fmul dword ptr ds:[gPed_tumble_factor]
+            fmul dword ptr [gPed_tumble_factor]
             mov ecx, edi
             fstp dword ptr [esp + 0x50]
             fld dword ptr [esp + 0x3c]
-            fmul dword ptr ds:[gPed_tumble_factor]
+            fmul dword ptr [gPed_tumble_factor]
             fstp dword ptr [esp + 0x54]
             call ApplyNonCarTumble
             mov esi, dword ptr [esi + 0xc]
@@ -15794,11 +16052,11 @@ finished:
             mov eax, dword ptr [esp + 0x18]
             test eax, eax
             je L004d1791
-            mov eax, dword ptr ds:[gPeds_suicidal]
+            mov eax, dword ptr [gPeds_suicidal]
             test eax, eax
             je L004d1791
     L004d1640:
-            mov eax, dword ptr ds:[gImmortal_peds]
+            mov eax, dword ptr [gImmortal_peds]
             test eax, eax
             jne L004d1791
             push 0
@@ -15885,15 +16143,15 @@ finished:
             mov ecx, esi
             call SetPedMove
     L004d174d:
-            fld dword ptr ds:[gMutant_speed]
-            fcomp dword ptr ds:[gConst_replay_rate_zero]
+            fld dword ptr [gMutant_speed]
+            fcomp dword ptr [gConst_replay_rate_zero]
             push ebp
             push 0
             push 0
             fnstsw ax
             test ah, 0x40
             jne L004d1780
-            fld dword ptr ds:[gMutant_speed]
+            fld dword ptr [gMutant_speed]
             push ecx
             mov ecx, dword ptr [esi]
             fchs
@@ -15911,10 +16169,10 @@ finished:
             jmp L004d1b73
     L004d1791:
             mov eax, dword ptr [ebx + 0xc]
-            mov ecx, dword ptr ds:[gPed_flags_0058f2e4]
+            mov ecx, dword ptr [gPed_flags_0058f2e4]
             test ecx, eax
             je L004d18d5
-            test dword ptr ds:[0x58f2ec], eax
+            test dword ptr [gPed_flags_0058f2e4+0x8], eax
             je L004d18d5
             mov al, byte ptr [esi + 4]
             push 5
@@ -16000,7 +16258,7 @@ finished:
             jne L004d1b73
             or al, 4
             mov word ptr [esi + 0x2e], ax
-            mov ecx, dword ptr ds:[0x75bba0]
+            mov ecx, dword ptr [gProgram_state+0x20]
             mov ecx, dword ptr [ecx*4 + gPed_points]
             call EarnCredits
             mov ecx, 4
@@ -16021,7 +16279,7 @@ finished:
             jne L004d191a
             or al, 4
             mov word ptr [ecx + 0x2e], ax
-            mov eax, dword ptr ds:[0x75bba0]
+            mov eax, dword ptr [gProgram_state+0x20]
             mov ecx, dword ptr [eax*4 + gPed_points]
             call EarnCredits
             mov ecx, 4
@@ -16039,10 +16297,10 @@ finished:
             mov ecx, dword ptr [esi]
             mov dword ptr [esi + 0x10], 0
             mov eax, dword ptr [ecx + 0xc]
-            mov ecx, dword ptr ds:[gPed_flags_0058f2e4]
+            mov ecx, dword ptr [gPed_flags_0058f2e4]
             test ecx, eax
             jne L004d199b
-            test dword ptr ds:[0x58f2ec], eax
+            test dword ptr [gPed_flags_0058f2e4+0x8], eax
             jne L004d199b
             mov eax, dword ptr [esi + 0xc]
             test eax, eax
@@ -16075,7 +16333,7 @@ finished:
             jmp L004d1a85
     L004d19b8:
             fld dword ptr [esp + 0x1c]
-            fcomp dword ptr ds:[gConst_replay_rate_zero]
+            fcomp dword ptr [gConst_replay_rate_zero]
             fnstsw ax
             test ah, 0x41
             jne L004d19d4
@@ -16097,14 +16355,14 @@ finished:
             mov ecx, 0xc
             sub ecx, eax
             fld dword ptr [edx + 0x8c]
-            fmul dword ptr ds:[gFLOAT_0058a9c8]
+            fmul dword ptr [gFLOAT_0058a9c8]
             lea eax, [ecx + ecx*2]
             fstp dword ptr [esp + 0x2c]
             fld dword ptr [ebx + eax*4]
-            fmul dword ptr ds:[gFLOAT_0058a9c8]
+            fmul dword ptr [gFLOAT_0058a9c8]
             fstp dword ptr [esp + 0x30]
             fld dword ptr [edx + 0x94]
-            fmul dword ptr ds:[gFLOAT_0058a9c8]
+            fmul dword ptr [gFLOAT_0058a9c8]
             fstp dword ptr [esp + 0x34]
             jmp L004d1a4c
     L004d1a24:
@@ -16126,7 +16384,7 @@ finished:
             call SetPedXZDirection
             mov edx, 0x50
             fld dword ptr [esp + 0x1c]
-            fcomp dword ptr ds:[gConst_replay_rate_zero]
+            fcomp dword ptr [gConst_replay_rate_zero]
             fnstsw ax
             test ah, 0x41
             je L004d1a75
@@ -16149,15 +16407,15 @@ finished:
             call PedScanForObjects
             jmp L004d1b73
     L004d1a9e:
-            fld dword ptr ds:[gMutant_speed]
-            fcomp dword ptr ds:[gConst_replay_rate_zero]
+            fld dword ptr [gMutant_speed]
+            fcomp dword ptr [gConst_replay_rate_zero]
             push ebp
             push 0
             push 0
             fnstsw ax
             test ah, 0x40
             jne L004d1ac4
-            fld dword ptr ds:[gMutant_speed]
+            fld dword ptr [gMutant_speed]
             push ecx
             fchs
             _emit 0xd9
@@ -16199,12 +16457,12 @@ finished:
     L004d1b18:
             mov edx, dword ptr [eax + 0x258]
             fld dword ptr [edx + 0x88]
-            fcomp dword ptr ds:[gFLOAT_0058a9d8]
+            fcomp dword ptr [gFLOAT_0058a9d8]
             fnstsw ax
             test ah, 1
             jne L004d1b73
     L004d1b31:
-            mov eax, dword ptr ds:[gPed_676914]
+            mov eax, dword ptr [gPed_676914]
             test eax, eax
             jne L004d1b73
             mov ecx, 0x4b
@@ -16214,7 +16472,7 @@ finished:
             mov ax, word ptr [esi + 8]
             test al, 0x10
             jne L004d1b73
-            mov ecx, dword ptr ds:[gGoreLevel]
+            mov ecx, dword ptr [gGoreLevel]
             test ecx, ecx
             jle L004d1b73
             mov ecx, dword ptr [esi]
@@ -16516,7 +16774,7 @@ void C2_NAKED C2_HOOK_FASTCALL CBMovedByPhysics(tPed_character_instance* pCharac
             push 0x3f19999a
             call FRandomBetween
             fld dword ptr [esp + 0x10]
-            fdivr qword ptr [gPed_smear_position_tolerance+0x4]
+            fdivr qword ptr [gMatchDouble_0058ab38]
             fmulp st(1), st(0)
             call _ftol
             cmp eax, 0x14
@@ -16662,7 +16920,7 @@ void C2_NAKED C2_HOOK_FASTCALL CBMovedByPhysics(tPed_character_instance* pCharac
             test ah, 0x41
             je L004d2bea
             fld dword ptr [esi + 0x6c]
-            fcomp qword ptr [gPed_smear_position_tolerance+0xc]
+            fcomp qword ptr [gMatchDouble_0058ab40]
             fnstsw ax
             test ah, 0x41
             jne L004d2bea
@@ -16705,6 +16963,21 @@ void C2_NAKED C2_HOOK_FASTCALL CBMovedByPhysics(tPed_character_instance* pCharac
             pop ebx
             pop ecx
             ret 4
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -16873,18 +17146,18 @@ int C2_NAKED C2_HOOK_FASTCALL CBMoveCompleted(tPed_character_instance* pCharacte
             mov ecx, dword ptr [edx + 0x9c]
             call DRS3StopSound
     L004cbfa6:
-            mov eax, dword ptr ds:[gPeds_suicidal]
+            mov eax, dword ptr [gPeds_suicidal]
             test eax, eax
             jne L004cbff7
             fld dword ptr [ebp + 0xc0]
             fld dword ptr [ebp + 0xc4]
             fld dword ptr [ebp + 0xc8]
             fxch st(2)
-            fmul dword ptr ds:[gFLOAT_0058a9c8]
+            fmul dword ptr [gFLOAT_0058a9c8]
             fxch st(1)
-            fmul dword ptr ds:[gFLOAT_0058a9c8]
+            fmul dword ptr [gFLOAT_0058a9c8]
             fxch st(2)
-            fmul dword ptr ds:[gFLOAT_0058a9c8]
+            fmul dword ptr [gFLOAT_0058a9c8]
             fxch st(1)
             fstp dword ptr [esp + 0x10]
             fxch st(1)
@@ -16897,11 +17170,11 @@ int C2_NAKED C2_HOOK_FASTCALL CBMoveCompleted(tPed_character_instance* pCharacte
             call SetPedXZDirection
     L004cbff7:
             mov eax, dword ptr [esi]
-            mov ecx, dword ptr ds:[gPed_flags_0058f2e4]
+            mov ecx, dword ptr [gPed_flags_0058f2e4]
             mov eax, dword ptr [eax + 0xc]
             test ecx, eax
             jne L004cc047
-            test dword ptr ds:[0x58f2ec], eax
+            test dword ptr [gPed_flags_0058f2e4+0x8], eax
             jne L004cc047
             mov eax, dword ptr [esi + 0xc]
             test eax, eax
@@ -16928,10 +17201,10 @@ int C2_NAKED C2_HOOK_FASTCALL CBMoveCompleted(tPed_character_instance* pCharacte
             jmp L004cc1e9
             mov ecx, dword ptr [esi]
             mov eax, dword ptr [ecx + 0xc]
-            mov ecx, dword ptr ds:[gPed_flags_0058f2e4]
+            mov ecx, dword ptr [gPed_flags_0058f2e4]
             test ecx, eax
             jne L004cc0aa
-            test dword ptr ds:[0x58f2ec], eax
+            test dword ptr [gPed_flags_0058f2e4+0x8], eax
             jne L004cc0aa
             mov eax, dword ptr [esi + 0xc]
             test eax, eax
@@ -17038,10 +17311,10 @@ int C2_NAKED C2_HOOK_FASTCALL CBMoveCompleted(tPed_character_instance* pCharacte
             mov ecx, esi
             call DoPostElectricution
             jmp L004cc1f0
-            mov eax, dword ptr ds:[gBlind_pedestrians]
+            mov eax, dword ptr [gBlind_pedestrians]
             test eax, eax
             jne L004cc1db
-            mov eax, dword ptr ds:[gPed_valium_left]
+            mov eax, dword ptr [gPed_valium_left]
             test eax, eax
             jne L004cc1db
             push 0
@@ -17401,7 +17674,7 @@ C2_NAKED FILE* C2_HOOK_FASTCALL BonerOpenRemaps(const char* pFile_name) {
             call PathCat
             lea edx, [esp + 4]
             lea ecx, [esp + 4]
-            push offset gPow2_word_array+0x84
+            push offset gMatchString_0065e65c
             call PathCat
             lea edx, [esp + 4]
             lea ecx, [esp + 4]
@@ -17413,6 +17686,19 @@ C2_NAKED FILE* C2_HOOK_FASTCALL BonerOpenRemaps(const char* pFile_name) {
             pop esi
             add esp, 0x100
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -17551,7 +17837,7 @@ C2_NAKED FILE* C2_HOOK_FASTCALL BonerOpenMoves(const char* pName) {
             call PathCat
             lea edx, [esp + 4]
             lea ecx, [esp + 4]
-            push offset gPow2_word_array+0x74
+            push 0x65e64c
             call PathCat
             lea edx, [esp + 4]
             lea ecx, [esp + 4]
@@ -17563,6 +17849,19 @@ C2_NAKED FILE* C2_HOOK_FASTCALL BonerOpenMoves(const char* pName) {
             pop esi
             add esp, 0x100
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -17959,21 +18258,21 @@ C2_NAKED tPed_move* C2_HOOK_FASTCALL ReadMove(const char* pName, tPed_form* pFor
             fxch st(4)
             fst dword ptr [esp + 0x10]
             fxch st(2)
-            fmul dword ptr [gFloat_0058935c+0x8]
+            fmul dword ptr [gMatchFloat_00589364]
             fxch st(3)
             fchs
             fxch st(1)
-            fmul dword ptr [gFloat_0058935c+0x8]
+            fmul dword ptr [gMatchFloat_00589364]
             fxch st(1)
             fst dword ptr [esp + 0x60]
             mov ecx, dword ptr [esp + 0x48]
             mov dword ptr [esp + 0x54], eax
             fxch st(4)
-            fmul dword ptr [gFloat_0058935c+0x8]
+            fmul dword ptr [gMatchFloat_00589364]
             fxch st(3)
             fstp dword ptr [esp + 0x48]
             fxch st(1)
-            fmul dword ptr [gFloat_0058935c+0x8]
+            fmul dword ptr [gMatchFloat_00589364]
             fld dword ptr [esp + 0x6c]
             fxch st(2)
             fstp dword ptr [esp + 0x54]
@@ -18191,11 +18490,11 @@ C2_NAKED tPed_move* C2_HOOK_FASTCALL ReadMove(const char* pName, tPed_form* pFor
             jne L00404e07
             fld dword ptr [esp + 0x24]
             fsqrt
-            fcom dword ptr [gFloat_0058935c+0xc]
+            fcom dword ptr [gMatchFloat_00589368]
             fnstsw ax
             test ah, 0x41
             jne L00404d8a
-            fdivr qword ptr [gFloat_0058935c+0x14]
+            fdivr qword ptr [gMatchDouble_00589370]
             fld st(0)
             fld st(1)
             fxch st(1)
@@ -18396,6 +18695,12 @@ C2_NAKED tPed_move* C2_HOOK_FASTCALL ReadMove(const char* pName, tPed_form* pFor
     L00404f56:
             add esp, 0x10
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -19069,11 +19374,11 @@ C2_NAKED tPed_form* C2_HOOK_FASTCALL SetUpCharacterForm(const char* pName) {
     L004052f6:
             mov ecx, dword ptr [esp + 0x10]
             call GetAScalar
-            fmul qword ptr ds:[0x589378]
+            fmul qword ptr [gMatchDouble_00589378]
             fld dword ptr [esp + 0x4c]
             fxch st(1)
             fst dword ptr [esp + 0x48]
-            fcomp dword ptr ds:[gFloat_00589358]
+            fcomp dword ptr [gFloat_00589358]
             fadd dword ptr [esp + 0x48]
             fnstsw ax
             test ah, 0x40
@@ -19136,7 +19441,7 @@ C2_NAKED tPed_form* C2_HOOK_FASTCALL SetUpCharacterForm(const char* pName) {
             lea edx, [ebp - 0xc]
             call DRVector3SafeCross
             fld dword ptr [esp + 0x14]
-            fmul dword ptr ds:[0x589380]
+            fmul dword ptr [gMatchFloat_00589380]
             push ebp
             call _ftol
             lea edx, [esp + 0x1e8]
@@ -19283,11 +19588,11 @@ C2_NAKED tPed_form* C2_HOOK_FASTCALL SetUpCharacterForm(const char* pName) {
             fxch st(1)
             fsqrt
             fstp st(1)
-            fcom dword ptr ds:[0x589368]
+            fcom dword ptr [gMatchFloat_00589368]
             fnstsw ax
             test ah, 0x41
             jne L004055b1
-            fdivr qword ptr ds:[0x589370]
+            fdivr qword ptr [gMatchDouble_00589370]
             xor ecx, ecx
             _emit 0xd9
         _emit 0x06
@@ -19331,11 +19636,11 @@ C2_NAKED tPed_form* C2_HOOK_FASTCALL SetUpCharacterForm(const char* pName) {
             fxch st(1)
             fsqrt
             fstp st(1)
-            fcom dword ptr ds:[0x589368]
+            fcom dword ptr [gMatchFloat_00589368]
             fnstsw ax
             test ah, 0x41
             jne L00405623
-            fdivr qword ptr ds:[0x589370]
+            fdivr qword ptr [gMatchDouble_00589370]
             _emit 0xd9
         _emit 0x45
         _emit 0x00
@@ -19487,9 +19792,9 @@ C2_NAKED tPed_form* C2_HOOK_FASTCALL SetUpCharacterForm(const char* pName) {
             fstp st(0)
             fld dword ptr [edi + 0x40]
             fld dword ptr [edi + 0x3c]
-            fmul dword ptr ds:[0x58f2c0]
+            fmul dword ptr [g_Ped_y_unit_vector+0x8]
             fxch st(1)
-            fmul dword ptr ds:[0x58f2bc]
+            fmul dword ptr [g_Ped_y_unit_vector+0x4]
             fld dword ptr [edi + 0x40]
             _emit 0xd9
         _emit 0x06
@@ -19498,31 +19803,31 @@ C2_NAKED tPed_form* C2_HOOK_FASTCALL SetUpCharacterForm(const char* pName) {
             fxch st(2)
             fstp dword ptr [edi + 0x20]
             fxch st(1)
-            fmul dword ptr ds:[g_Ped_y_unit_vector]
+            fmul dword ptr [g_Ped_y_unit_vector]
             _emit 0xd9
         _emit 0x06
             fxch st(2)
-            fmul dword ptr ds:[0x58f2c0]
+            fmul dword ptr [g_Ped_y_unit_vector+0x8]
             fld dword ptr [edi + 0x3c]
             fxch st(1)
             fsubp st(2), st(0)
             fxch st(1)
             fstp dword ptr [edi + 0x24]
             fxch st(1)
-            fmul dword ptr ds:[0x58f2bc]
+            fmul dword ptr [g_Ped_y_unit_vector+0x4]
             fld dword ptr [edi + 0x3c]
             fxch st(2)
-            fmul dword ptr ds:[g_Ped_y_unit_vector]
+            fmul dword ptr [g_Ped_y_unit_vector]
             fld dword ptr [edi + 0x40]
             fxch st(1)
             fsubp st(2), st(0)
             fxch st(1)
             fstp dword ptr [edi + 0x28]
             fxch st(1)
-            fmul dword ptr ds:[0x58f2d0]
+            fmul dword ptr [g_Ped_z_unit_vector+0x8]
             fld dword ptr [edi + 0x40]
             fxch st(2)
-            fmul dword ptr ds:[0x58f2cc]
+            fmul dword ptr [g_Ped_z_unit_vector+0x4]
             _emit 0xd9
         _emit 0x06
             fxch st(1)
@@ -19530,20 +19835,20 @@ C2_NAKED tPed_form* C2_HOOK_FASTCALL SetUpCharacterForm(const char* pName) {
             fxch st(1)
             fstp dword ptr [edi + 0x2c]
             fxch st(1)
-            fmul dword ptr ds:[g_Ped_z_unit_vector]
+            fmul dword ptr [g_Ped_z_unit_vector]
             _emit 0xd9
         _emit 0x06
             fxch st(2)
-            fmul dword ptr ds:[0x58f2d0]
+            fmul dword ptr [g_Ped_z_unit_vector+0x8]
             fld dword ptr [edi + 0x3c]
             fxch st(1)
             fsubp st(2), st(0)
             fxch st(1)
             fstp dword ptr [edi + 0x30]
             fxch st(1)
-            fmul dword ptr ds:[0x58f2cc]
+            fmul dword ptr [g_Ped_z_unit_vector+0x4]
             fxch st(1)
-            fmul dword ptr ds:[g_Ped_z_unit_vector]
+            fmul dword ptr [g_Ped_z_unit_vector]
             fsubp st(1), st(0)
             fstp dword ptr [edi + 0x34]
             jmp L004059d2
@@ -19563,9 +19868,9 @@ C2_NAKED tPed_form* C2_HOOK_FASTCALL SetUpCharacterForm(const char* pName) {
             jne L0040591e
             fld dword ptr [edi + 0x40]
             fld dword ptr [edi + 0x3c]
-            fmul dword ptr ds:[0x58f2b0]
+            fmul dword ptr [g_Ped_x_unit_vector+0x8]
             fxch st(1)
-            fmul dword ptr ds:[0x58f2ac]
+            fmul dword ptr [g_Ped_x_unit_vector+0x4]
             fld dword ptr [edi + 0x40]
             _emit 0xd9
         _emit 0x06
@@ -19574,31 +19879,31 @@ C2_NAKED tPed_form* C2_HOOK_FASTCALL SetUpCharacterForm(const char* pName) {
             fxch st(2)
             fstp dword ptr [edi + 0x20]
             fxch st(1)
-            fmul dword ptr ds:[g_Ped_x_unit_vector]
+            fmul dword ptr [g_Ped_x_unit_vector]
             _emit 0xd9
         _emit 0x06
             fxch st(2)
-            fmul dword ptr ds:[0x58f2b0]
+            fmul dword ptr [g_Ped_x_unit_vector+0x8]
             fld dword ptr [edi + 0x3c]
             fxch st(1)
             fsubp st(2), st(0)
             fxch st(1)
             fstp dword ptr [edi + 0x24]
             fxch st(1)
-            fmul dword ptr ds:[0x58f2ac]
+            fmul dword ptr [g_Ped_x_unit_vector+0x4]
             fld dword ptr [edi + 0x3c]
             fxch st(2)
-            fmul dword ptr ds:[g_Ped_x_unit_vector]
+            fmul dword ptr [g_Ped_x_unit_vector]
             fld dword ptr [edi + 0x40]
             fxch st(1)
             fsubp st(2), st(0)
             fxch st(1)
             fstp dword ptr [edi + 0x28]
             fxch st(1)
-            fmul dword ptr ds:[0x58f2d0]
+            fmul dword ptr [g_Ped_z_unit_vector+0x8]
             fld dword ptr [edi + 0x40]
             fxch st(2)
-            fmul dword ptr ds:[0x58f2cc]
+            fmul dword ptr [g_Ped_z_unit_vector+0x4]
             _emit 0xd9
         _emit 0x06
             fxch st(1)
@@ -19606,29 +19911,29 @@ C2_NAKED tPed_form* C2_HOOK_FASTCALL SetUpCharacterForm(const char* pName) {
             fxch st(1)
             fstp dword ptr [edi + 0x2c]
             fxch st(1)
-            fmul dword ptr ds:[g_Ped_z_unit_vector]
+            fmul dword ptr [g_Ped_z_unit_vector]
             _emit 0xd9
         _emit 0x06
             fxch st(2)
-            fmul dword ptr ds:[0x58f2d0]
+            fmul dword ptr [g_Ped_z_unit_vector+0x8]
             fld dword ptr [edi + 0x3c]
             fxch st(1)
             fsubp st(2), st(0)
             fxch st(1)
             fstp dword ptr [edi + 0x30]
             fxch st(1)
-            fmul dword ptr ds:[0x58f2cc]
+            fmul dword ptr [g_Ped_z_unit_vector+0x4]
             fxch st(1)
-            fmul dword ptr ds:[g_Ped_z_unit_vector]
+            fmul dword ptr [g_Ped_z_unit_vector]
             fsubp st(1), st(0)
             fstp dword ptr [edi + 0x34]
             jmp L004059d2
     L0040591e:
             fld dword ptr [edi + 0x40]
             fld dword ptr [edi + 0x3c]
-            fmul dword ptr ds:[0x58f2b0]
+            fmul dword ptr [g_Ped_x_unit_vector+0x8]
             fxch st(1)
-            fmul dword ptr ds:[0x58f2ac]
+            fmul dword ptr [g_Ped_x_unit_vector+0x4]
             fld dword ptr [edi + 0x40]
             _emit 0xd9
         _emit 0x06
@@ -19637,31 +19942,31 @@ C2_NAKED tPed_form* C2_HOOK_FASTCALL SetUpCharacterForm(const char* pName) {
             fxch st(2)
             fstp dword ptr [edi + 0x20]
             fxch st(1)
-            fmul dword ptr ds:[g_Ped_x_unit_vector]
+            fmul dword ptr [g_Ped_x_unit_vector]
             _emit 0xd9
         _emit 0x06
             fxch st(2)
-            fmul dword ptr ds:[0x58f2b0]
+            fmul dword ptr [g_Ped_x_unit_vector+0x8]
             fld dword ptr [edi + 0x3c]
             fxch st(1)
             fsubp st(2), st(0)
             fxch st(1)
             fstp dword ptr [edi + 0x24]
             fxch st(1)
-            fmul dword ptr ds:[0x58f2ac]
+            fmul dword ptr [g_Ped_x_unit_vector+0x4]
             fld dword ptr [edi + 0x3c]
             fxch st(2)
-            fmul dword ptr ds:[g_Ped_x_unit_vector]
+            fmul dword ptr [g_Ped_x_unit_vector]
             fld dword ptr [edi + 0x40]
             fxch st(1)
             fsubp st(2), st(0)
             fxch st(1)
             fstp dword ptr [edi + 0x28]
             fxch st(1)
-            fmul dword ptr ds:[0x58f2c0]
+            fmul dword ptr [g_Ped_y_unit_vector+0x8]
             fld dword ptr [edi + 0x40]
             fxch st(2)
-            fmul dword ptr ds:[0x58f2bc]
+            fmul dword ptr [g_Ped_y_unit_vector+0x4]
             _emit 0xd9
         _emit 0x06
             fxch st(1)
@@ -19669,20 +19974,20 @@ C2_NAKED tPed_form* C2_HOOK_FASTCALL SetUpCharacterForm(const char* pName) {
             fxch st(1)
             fstp dword ptr [edi + 0x2c]
             fxch st(1)
-            fmul dword ptr ds:[g_Ped_y_unit_vector]
+            fmul dword ptr [g_Ped_y_unit_vector]
             _emit 0xd9
         _emit 0x06
             fxch st(2)
-            fmul dword ptr ds:[0x58f2c0]
+            fmul dword ptr [g_Ped_y_unit_vector+0x8]
             fld dword ptr [edi + 0x3c]
             fxch st(1)
             fsubp st(2), st(0)
             fxch st(1)
             fstp dword ptr [edi + 0x30]
             fxch st(1)
-            fmul dword ptr ds:[0x58f2bc]
+            fmul dword ptr [g_Ped_y_unit_vector+0x4]
             fxch st(1)
-            fmul dword ptr ds:[g_Ped_y_unit_vector]
+            fmul dword ptr [g_Ped_y_unit_vector]
             fsubp st(1), st(0)
             fstp dword ptr [edi + 0x34]
             jmp L004059d2
@@ -19918,7 +20223,7 @@ C2_NAKED tPed_form* C2_HOOK_FASTCALL SetUpCharacterForm(const char* pName) {
             mov ecx, ebx
             call GetALineAndDontArgue
             lea esi, [esp + 0xe4]
-            mov eax, 0x58f434
+            mov eax, offset gMatchString_0058f434
     L00405c7c:
             mov dl, byte ptr [eax]
             mov cl, dl
@@ -19943,7 +20248,7 @@ C2_NAKED tPed_form* C2_HOOK_FASTCALL SetUpCharacterForm(const char* pName) {
     L00405ca5:
             test eax, eax
             je L00405cbb
-            push 0x58f434
+            push offset gMatchString_0058f434
             push 0x8f
             call FatalError
             add esp, 8
@@ -19953,7 +20258,7 @@ C2_NAKED tPed_form* C2_HOOK_FASTCALL SetUpCharacterForm(const char* pName) {
             lea edx, [esp + 0xe4]
             mov ecx, ebx
             call GetALineAndDontArgue
-            mov esi, 0x58f424
+            mov esi, offset gMatchString_0058f424
             lea eax, [esp + 0xe4]
     L00405cd9:
             mov dl, byte ptr [eax]
@@ -20056,11 +20361,11 @@ C2_NAKED tPed_form* C2_HOOK_FASTCALL SetUpCharacterForm(const char* pName) {
             faddp st(1), st(0)
             fsqrt
             fstp st(1)
-            fcom dword ptr ds:[0x589368]
+            fcom dword ptr [gMatchFloat_00589368]
             fnstsw ax
             test ah, 0x41
             jne L00405e68
-            fdivr qword ptr ds:[0x589370]
+            fdivr qword ptr [gMatchDouble_00589370]
             xor eax, eax
             xor edx, edx
             _emit 0xd9
@@ -20130,12 +20435,12 @@ C2_NAKED tPed_form* C2_HOOK_FASTCALL SetUpCharacterForm(const char* pName) {
     L00405ee3:
             cmp esi, edi
             jne L00405ef9
-            push 0x58f424
+            push offset gMatchString_0058f424
             push 0x8f
             call FatalError
             add esp, 8
     L00405ef9:
-            mov edx, dword ptr ds:[gPed_67697c]
+            mov edx, dword ptr [gPed_67697c]
             mov eax, dword ptr [edx + 0x14]
             cmp eax, edi
             je L00405f0c
@@ -20385,21 +20690,21 @@ C2_NAKED tPed_form* C2_HOOK_FASTCALL SetUpCharacterForm(const char* pName) {
             fxch st(4)
             fst dword ptr [esp + 0x20]
             fxch st(2)
-            fmul dword ptr ds:[0x589364]
+            fmul dword ptr [gMatchFloat_00589364]
             fxch st(3)
             fchs
             fxch st(1)
-            fmul dword ptr ds:[0x589364]
+            fmul dword ptr [gMatchFloat_00589364]
             fxch st(1)
             fst dword ptr [esp + 0xa0]
             mov ecx, dword ptr [esp + 0x88]
             mov dword ptr [esp + 0x94], eax
             fxch st(4)
-            fmul dword ptr ds:[0x589364]
+            fmul dword ptr [gMatchFloat_00589364]
             fxch st(3)
             fstp dword ptr [esp + 0x88]
             fxch st(1)
-            fmul dword ptr ds:[0x589364]
+            fmul dword ptr [gMatchFloat_00589364]
             fld dword ptr [esp + 0xac]
             fxch st(2)
             fstp dword ptr [esp + 0x94]
@@ -20621,7 +20926,7 @@ C2_NAKED tPed_form* C2_HOOK_FASTCALL SetUpCharacterForm(const char* pName) {
             fxch st(1)
             faddp st(1), st(0)
             fst dword ptr [esp + 0x1c]
-            fcomp dword ptr ds:[gFloat_00589358]
+            fcomp dword ptr [gFloat_00589358]
             fnstsw ax
             test ah, 0x40
             jne L004065df
@@ -20629,11 +20934,11 @@ C2_NAKED tPed_form* C2_HOOK_FASTCALL SetUpCharacterForm(const char* pName) {
             jne L004065df
             fld dword ptr [esp + 0x1c]
             fsqrt
-            fcom dword ptr ds:[0x589368]
+            fcom dword ptr [gMatchFloat_00589368]
             fnstsw ax
             test ah, 0x41
             jne L00406563
-            fdivr qword ptr ds:[0x589370]
+            fdivr qword ptr [gMatchDouble_00589370]
             fld st(0)
             fld st(1)
             fxch st(1)
@@ -20672,7 +20977,7 @@ C2_NAKED tPed_form* C2_HOOK_FASTCALL SetUpCharacterForm(const char* pName) {
             fxch st(1)
             faddp st(2), st(0)
             faddp st(1), st(0)
-            fcomp dword ptr ds:[gFloat_00589358]
+            fcomp dword ptr [gFloat_00589358]
             fnstsw ax
             test ah, 0x40
             fstp st(0)
@@ -20711,7 +21016,7 @@ C2_NAKED tPed_form* C2_HOOK_FASTCALL SetUpCharacterForm(const char* pName) {
             fxch st(1)
             faddp st(2), st(0)
             faddp st(1), st(0)
-            fcomp dword ptr ds:[gFloat_00589358]
+            fcomp dword ptr [gFloat_00589358]
             fnstsw ax
             test ah, 0x40
             fstp st(0)
@@ -21353,7 +21658,7 @@ C2_NAKED tPed_personality* C2_HOOK_FASTCALL ReadPersonality(const char* pName) {
             mov ecx, esi
             call GetALineAndDontArgue
             lea esi, [esp + 0x8c]
-            mov eax, offset gPed_flags_0058f2e4+0x124
+            mov eax, 0x58f408
     L00406bc0:
             mov dl, byte ptr [eax]
             mov bl, byte ptr [esi]
@@ -21380,7 +21685,7 @@ C2_NAKED tPed_personality* C2_HOOK_FASTCALL ReadPersonality(const char* pName) {
     L00406bed:
             test eax, eax
             je L00406c03
-            push offset gPed_flags_0058f2e4+0x124
+            push 0x58f408
             push 0x8f
             call FatalError
             add esp, 8
@@ -21453,7 +21758,7 @@ C2_NAKED tPed_personality* C2_HOOK_FASTCALL ReadPersonality(const char* pName) {
             mov ecx, dword ptr [esp + 0x10]
             lea edx, [esp + 0x8c]
             call GetALineAndDontArgue
-            mov edx, offset gPed_flags_0058f2e4+0x17c
+            mov edx, offset gMatchString_0058f460
             lea ecx, [esp + 0x8c]
             call DRStricmp
             test eax, eax
@@ -21488,7 +21793,7 @@ C2_NAKED tPed_personality* C2_HOOK_FASTCALL ReadPersonality(const char* pName) {
             xor esi, esi
     L00406d1c:
             mov ecx, dword ptr [esp + 0x18]
-            mov edx, offset gPed_flags_0058f2e4+0x17c
+            mov edx, offset gMatchString_0058f460
             mov dword ptr [esp + 0x20], esi
             call DRStricmp
             test eax, eax
@@ -21606,7 +21911,7 @@ C2_NAKED tPed_personality* C2_HOOK_FASTCALL ReadPersonality(const char* pName) {
     L00406e7c:
             mov ecx, dword ptr [esp + 0x30]
             mov eax, dword ptr [esp + 0x20]
-            push offset gPed_flags_0058f2e4+0x178
+            push 0x58f45c
             mov edx, dword ptr [ecx + 0x2c]
             or ecx, 0xffffffff
             add eax, edx
@@ -21640,7 +21945,7 @@ C2_NAKED tPed_personality* C2_HOOK_FASTCALL ReadPersonality(const char* pName) {
             dec ecx
             push edx
             add ecx, esi
-            push offset gPed_flags_0058f2e4+0x170
+            push offset gMatchString_0058f454
             push ecx
             call sprintf
             xor eax, eax
@@ -21687,7 +21992,7 @@ C2_NAKED tPed_personality* C2_HOOK_FASTCALL ReadPersonality(const char* pName) {
             repne scasb
             not ecx
             sub edi, ecx
-            push offset gPed_flags_0058f2e4+0x178
+            push 0x58f45c
             mov eax, ecx
             mov esi, edi
             mov edi, edx
@@ -21710,7 +22015,7 @@ C2_NAKED tPed_personality* C2_HOOK_FASTCALL ReadPersonality(const char* pName) {
             dec ecx
             push edx
             add ecx, esi
-            push offset gPed_flags_0058f2e4+0x168
+            push offset gMatchString_0058f44c
             push ecx
             call sprintf
             mov eax, dword ptr [ebx + 0xc]
@@ -21959,7 +22264,7 @@ C2_NAKED tPed_personality* C2_HOOK_FASTCALL ReadPersonality(const char* pName) {
             lea edx, [esp + 0x8c]
             call GetALineAndDontArgue
             lea esi, [esp + 0x8c]
-            mov eax, offset gPed_flags_0058f2e4+0x114
+            mov eax, 0x58f3f8
     L00407285:
             mov dl, byte ptr [eax]
             mov bl, byte ptr [esi]
@@ -21986,7 +22291,7 @@ C2_NAKED tPed_personality* C2_HOOK_FASTCALL ReadPersonality(const char* pName) {
     L004072b2:
             test eax, eax
             je L004072c8
-            push offset gPed_flags_0058f2e4+0x114
+            push 0x58f3f8
             push 0x8f
             call FatalError
             add esp, 8
@@ -21995,7 +22300,7 @@ C2_NAKED tPed_personality* C2_HOOK_FASTCALL ReadPersonality(const char* pName) {
             mov ecx, edi
             call GetALineAndDontArgue
             lea esi, [esp + 0x8c]
-            mov eax, offset gPed_flags_0058f2e4+0x150
+            mov eax, offset gMatchString_0058f434
     L004072e2:
             mov dl, byte ptr [eax]
             mov bl, byte ptr [esi]
@@ -22022,7 +22327,7 @@ C2_NAKED tPed_personality* C2_HOOK_FASTCALL ReadPersonality(const char* pName) {
     L0040730f:
             test eax, eax
             je L00407325
-            push offset gPed_flags_0058f2e4+0x150
+            push offset gMatchString_0058f434
             push 0x8f
             call FatalError
             add esp, 8
@@ -22073,7 +22378,7 @@ C2_NAKED tPed_personality* C2_HOOK_FASTCALL ReadPersonality(const char* pName) {
             mov ecx, ebx
             call GetALineAndDontArgue
             lea esi, [esp + 0x8c]
-            mov eax, offset gPed_flags_0058f2e4+0x150
+            mov eax, offset gMatchString_0058f434
     L004073bb:
             mov dl, byte ptr [eax]
             mov cl, dl
@@ -22098,7 +22403,7 @@ C2_NAKED tPed_personality* C2_HOOK_FASTCALL ReadPersonality(const char* pName) {
     L004073e4:
             test eax, eax
             je L004073fa
-            push offset gPed_flags_0058f2e4+0x150
+            push offset gMatchString_0058f434
             push 0x8f
             call FatalError
             add esp, 8
@@ -22106,7 +22411,7 @@ C2_NAKED tPed_personality* C2_HOOK_FASTCALL ReadPersonality(const char* pName) {
             lea edx, [esp + 0x8c]
             mov ecx, ebx
             call GetALineAndDontArgue
-            mov esi, offset gPed_flags_0058f2e4+0x140
+            mov esi, offset gMatchString_0058f424
             lea eax, [esp + 0x8c]
     L00407414:
             mov dl, byte ptr [eax]
@@ -22138,13 +22443,13 @@ C2_NAKED tPed_personality* C2_HOOK_FASTCALL ReadPersonality(const char* pName) {
             mov dword ptr [esp + 0x14], esi
             jne L00407513
             lea edx, [esp + 0x8c]
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push edx
             call strtok
             add esp, 8
             lea ecx, [esp + 0x40]
             push ecx
-            push offset gPed_flags_0058f2e4+0x134
+            push 0x58f418
             push eax
             call sscanf
             mov ecx, dword ptr [ebp + 0x28]
@@ -22192,7 +22497,7 @@ C2_NAKED tPed_personality* C2_HOOK_FASTCALL ReadPersonality(const char* pName) {
             lea eax, [esp + 0x8c]
             push edx
             push ebp
-            push offset gPed_flags_0058f2e4+0x160
+            push offset gMatchString_0058f444
             push eax
             call sprintf
             add esp, 0x10
@@ -22491,6 +22796,13 @@ C2_NAKED tPed_personality* C2_HOOK_FASTCALL ReadPersonality(const char* pName) {
     L004077dd:
             mov eax, dword ptr [edx*4 + gPed_forms]
             jmp L00406b6f
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -23158,15 +23470,15 @@ void C2_NAKED C2_HOOK_FASTCALL MakeCharacterPhysicsSetup(tPhysics_object* obj, b
             fld dword ptr [esp + 0x14]
             fadd dword ptr [esp + 0x10]
             fld dword ptr [esp + 0x10]
-            fmul dword ptr [gFloat_0058935c+0x2c]
+            fmul dword ptr [gMatchFloat_00589388]
             fxch st(1)
             fadd dword ptr [esp + 0x18]
             fld dword ptr [esp + 0x14]
-            fmul dword ptr [gFloat_0058935c+0x2c]
+            fmul dword ptr [gMatchFloat_00589388]
             fxch st(1)
-            fmul dword ptr [gFloat_0058935c+0x28]
+            fmul dword ptr [gMatchFloat_00589384]
             fld dword ptr [esp + 0x18]
-            fmul dword ptr [gFloat_0058935c+0x2c]
+            fmul dword ptr [gMatchFloat_00589388]
             fxch st(1)
             fstp dword ptr [edx + 0x38]
             mov eax, dword ptr [ebp + 0x20]
@@ -23220,7 +23532,7 @@ void C2_NAKED C2_HOOK_FASTCALL MakeCharacterPhysicsSetup(tPhysics_object* obj, b
             mov dword ptr [eax + 0x14], ecx
             jmp L00408b27
     L004088e0:
-            fld dword ptr [gFloat_0058935c+0x8]
+            fld dword ptr [gMatchFloat_00589364]
             or esi, 0xffffffff
             xor ecx, ecx
             lea edx, [esp + 0x44]
@@ -23258,13 +23570,13 @@ void C2_NAKED C2_HOOK_FASTCALL MakeCharacterPhysicsSetup(tPhysics_object* obj, b
             mov dword ptr [esp + eax + 0x38], esi
             lea eax, [ecx*4]
             mov ecx, dword ptr [esp + 0x5c]
-            fmul dword ptr [gFloat_0058935c+0x30]
+            fmul dword ptr [gMatchFloat_0058938c]
             fst dword ptr [esp + eax + 0x2c]
             fstp dword ptr [esp + eax + 0x38]
             fld dword ptr [ebx + edx*4]
             fadd dword ptr [ebx + edx*4 + 0xc]
             lea eax, [edx*4]
-            fmul dword ptr [gFloat_0058935c+0x30]
+            fmul dword ptr [gMatchFloat_0058938c]
             fst dword ptr [esp + eax + 0x2c]
             fstp dword ptr [esp + eax + 0x38]
             mov eax, dword ptr [esp + 0x58]
@@ -23469,31 +23781,31 @@ void C2_NAKED C2_HOOK_FASTCALL MakeCharacterPhysicsSetup(tPhysics_object* obj, b
             fxch st(5)
             fmulp st(2), st(0)
             fxch st(1)
-            fmul dword ptr [gFloat_0058935c+0x34]
+            fmul dword ptr [gMatchFloat_00589390]
             fxch st(1)
             fmul dword ptr [ebp + 4]
             mov eax, dword ptr [esp + 0x54]
             test eax, eax
-            fmul dword ptr [gFloat_0058935c+0x34]
+            fmul dword ptr [gMatchFloat_00589390]
             fxch st(1)
             fstp dword ptr [ebp + 0x10]
             fxch st(3)
             fmulp st(2), st(0)
             fxch st(2)
             fstp dword ptr [ebp + 0xc]
-            fmul dword ptr [gFloat_0058935c+0x34]
+            fmul dword ptr [gMatchFloat_00589390]
             fstp dword ptr [ebp + 8]
             fstp st(0)
             je L00408c18
             fld dword ptr [esp + 0x10]
-            fmul dword ptr [gFloat_0058935c+0x2c]
+            fmul dword ptr [gMatchFloat_00589388]
             fld dword ptr [esp + 0x14]
-            fmul dword ptr [gFloat_0058935c+0x2c]
+            fmul dword ptr [gMatchFloat_00589388]
             fxch st(1)
             _emit 0xd8
         _emit 0x2b
             fld dword ptr [esp + 0x18]
-            fmul dword ptr [gFloat_0058935c+0x2c]
+            fmul dword ptr [gMatchFloat_00589388]
             fxch st(1)
             fstp dword ptr [ebp + 0x14]
             fxch st(1)
@@ -23508,6 +23820,20 @@ void C2_NAKED C2_HOOK_FASTCALL MakeCharacterPhysicsSetup(tPhysics_object* obj, b
             pop ebx
             add esp, 0x40
             ret 0xc
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -23899,7 +24225,7 @@ int C2_NAKED C2_HOOK_FASTCALL MakeCharacterCollideworthy2(tPed_character_instanc
             mov dword ptr [esp + 0x20], 1
             mov eax, dword ptr [edx + edi*4]
             fld dword ptr [eax + 8]
-            fmul dword ptr [gFloat_0058935c+0x38]
+            fmul dword ptr [gMatchFloat_00589394]
             fstp dword ptr [esp + 0x28]
     L00408e68:
             mov edx, dword ptr [esp + 0x10]
@@ -24090,6 +24416,17 @@ int C2_NAKED C2_HOOK_FASTCALL MakeCharacterCollideworthy2(tPed_character_instanc
             pop ebx
             add esp, 0x1c
             ret 8
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -24480,6 +24817,17 @@ void C2_NAKED C2_HOOK_FASTCALL DoPostElectricution(tPedestrian* pPed, tU32 pTime
             pop ebp
             pop ebx
             ret 8
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -26291,7 +26639,8 @@ void C2_NAKED C2_HOOK_FASTCALL SetCharacterPosition(tPed_character_instance* pCh
             cmp ecx, 1
             jne L0040b163
             fld dword ptr [edi + 8]
-            fld dword ptr [edi]
+            _emit 0xd9
+        _emit 0x07
             movsx ecx, dl
             fstp dword ptr [esp + 0x1c]
             mov edx, dword ptr [eax + 0x30]
@@ -26306,7 +26655,8 @@ void C2_NAKED C2_HOOK_FASTCALL SetCharacterPosition(tPed_character_instance* pCh
             mov ecx, edi
             call FindYVerticallyBelow2
             movsx ecx, byte ptr [esi + 7]
-            fld dword ptr [edi]
+            _emit 0xd9
+        _emit 0x07
             fld dword ptr [edi + 8]
             mov eax, dword ptr [esi]
             lea ecx, [ecx + ecx*2]
@@ -26365,7 +26715,8 @@ void C2_NAKED C2_HOOK_FASTCALL SetCharacterPosition(tPed_character_instance* pCh
             fld dword ptr [eax - 4]
             fadd dword ptr [esp + 0x10]
             fxch st(2)
-            fadd dword ptr [eax]
+            _emit 0xd8
+        _emit 0x00
             fxch st(1)
             faddp st(3), st(0)
             fxch st(1)
@@ -26703,7 +27054,7 @@ void C2_NAKED C2_HOOK_FASTCALL SetPedXZDirection(tPedestrian* pPed, br_vector3* 
             test ah, 0x41
             jne L004cc47d
             fstp st(0)
-            fld dword ptr [gPed_kill_relative_speed_ratio+0x8]
+            fld dword ptr [gMatchFloat_0058a9f8]
     L004cc47d:
             mov eax, dword ptr [esp + 0x38]
             mov dword ptr [esp + 0x14], ebp
@@ -26876,6 +27227,7 @@ void C2_NAKED C2_HOOK_FASTCALL SetPedXZDirection(tPedestrian* pPed, br_vector3* 
             pop ebx
             add esp, 0x20
             ret 8
+            nop
     }
 #endif
 }
@@ -29470,15 +29822,15 @@ calm_down:
             push 0x3f99999a
             push 0x3f4ccccd
             call SRandomBetween
-            fmul qword ptr ds:[gPed_scan_distance_scale]
+            fmul qword ptr [gPed_scan_distance_scale]
             fstp dword ptr [esp + 0x20]
             call PHILGetFirstObject
             mov ecx, eax
-            mov eax, dword ptr ds:[0x75cefc]
+            mov eax, dword ptr [gProgram_state+0x137c]
             test eax, 0x8000000
             mov dword ptr [esp + 0x14], 0x7f7fffff
             je L004cf065
-            mov edi, dword ptr ds:[0x75bc34]
+            mov edi, dword ptr [gProgram_state+0xb4]
             mov edx, dword ptr [edi]
             fld dword ptr [edx + 0x50]
             fsub dword ptr [esi + 0x1c]
@@ -29488,7 +29840,7 @@ calm_down:
             fabs
             fxch st(1)
             fxch st(1)
-            fcomp dword ptr ds:[gPed_kill_motion_speed_threshold]
+            fcomp dword ptr [gPed_kill_motion_speed_threshold]
             fld dword ptr [edx + 0x58]
             fsub dword ptr [esi + 0x24]
             fnstsw ax
@@ -29496,13 +29848,13 @@ calm_down:
             test ah, 1
             je L004cf063
             fabs
-            fcomp dword ptr ds:[gPed_kill_motion_speed_threshold]
+            fcomp dword ptr [gPed_kill_motion_speed_threshold]
             fnstsw ax
             test ah, 1
             je L004cf065
             fld dword ptr [esp + 0x2c]
             fabs
-            fcomp dword ptr ds:[gPed_kill_motion_speed_threshold]
+            fcomp dword ptr [gPed_kill_motion_speed_threshold]
             fnstsw ax
             test ah, 1
             je L004cf065
@@ -29546,7 +29898,7 @@ calm_down:
             fxch st(1)
             fld dword ptr [edi + 0x58]
             fxch st(2)
-            fcomp dword ptr ds:[gPed_kill_motion_speed_threshold]
+            fcomp dword ptr [gPed_kill_motion_speed_threshold]
             fxch st(1)
             fsub dword ptr [esi + 0x24]
             fxch st(1)
@@ -29557,17 +29909,17 @@ calm_down:
             je L004cf327
             fld dword ptr [esp + 0x28]
             fabs
-            fcomp dword ptr ds:[gPed_kill_motion_speed_threshold]
+            fcomp dword ptr [gPed_kill_motion_speed_threshold]
             fnstsw ax
             test ah, 1
             je L004cf327
             fld dword ptr [esp + 0x2c]
             fabs
-            fcomp dword ptr ds:[gPed_kill_motion_speed_threshold]
+            fcomp dword ptr [gPed_kill_motion_speed_threshold]
             fnstsw ax
             test ah, 1
             je L004cf327
-            mov eax, dword ptr ds:[gPeds_suicidal]
+            mov eax, dword ptr [gPeds_suicidal]
             test eax, eax
             je L004cf1a8
             fld dword ptr [esp + 0x28]
@@ -29581,7 +29933,7 @@ calm_down:
             fxch st(2)
             faddp st(1), st(0)
             fxch st(1)
-            mov eax, dword ptr ds:[gEthereal_pedestrians]
+            mov eax, dword ptr [gEthereal_pedestrians]
             faddp st(1), st(0)
             test eax, eax
             fstp dword ptr [esp + 0x10]
@@ -29623,13 +29975,13 @@ calm_down:
             fsub dword ptr [ebx + 8]
             fxch st(1)
             fst dword ptr [esp + 0x30]
-            fcomp dword ptr ds:[gConst_replay_rate_zero]
+            fcomp dword ptr [gConst_replay_rate_zero]
             fstp dword ptr [esp + 0x38]
             fnstsw ax
             test ah, 0x40
             je L004cf211
             fld dword ptr [esp + 0x38]
-            fcomp dword ptr ds:[gConst_replay_rate_zero]
+            fcomp dword ptr [gConst_replay_rate_zero]
             fnstsw ax
             test ah, 0x40
             je L004cf211
@@ -29640,18 +29992,18 @@ calm_down:
             cmp dword ptr [edx + 0xc], 5
             jle L004cf327
             fld dword ptr [edx + 0x170c]
-            fcomp dword ptr ds:[gConst_replay_rate_zero]
+            fcomp dword ptr [gConst_replay_rate_zero]
             fnstsw ax
             test ah, 0x40
             jne L004cf327
     L004cf211:
             fld dword ptr [esp + 0x30]
-            fcomp dword ptr ds:[gConst_replay_rate_zero]
+            fcomp dword ptr [gConst_replay_rate_zero]
             fnstsw ax
             test ah, 0x40
             je L004cf24d
             fld dword ptr [esp + 0x38]
-            fcomp dword ptr ds:[gConst_replay_rate_zero]
+            fcomp dword ptr [gConst_replay_rate_zero]
             fnstsw ax
             test ah, 0x40
             je L004cf24d
@@ -29687,7 +30039,7 @@ calm_down:
             fstp dword ptr [esp + 0x10]
             fstp st(0)
     L004cf28b:
-            mov eax, dword ptr ds:[gEthereal_pedestrians]
+            mov eax, dword ptr [gEthereal_pedestrians]
             test eax, eax
             jne L004cf2c0
             test edx, edx
@@ -29728,7 +30080,7 @@ calm_down:
             fxch st(1)
             fdivp st(1), st(0)
             fchs
-            fcom dword ptr ds:[gConst_replay_rate_zero]
+            fcom dword ptr [gConst_replay_rate_zero]
             fnstsw ax
             test ah, 1
             jne L004cf325
@@ -29888,24 +30240,24 @@ calm_down:
             xor edx, esi
             push edx
             call srand
-            mov eax, dword ptr ds:[gPeds_suicidal]
+            mov eax, dword ptr [gPeds_suicidal]
             add esp, 4
             test eax, eax
             je L004cf34a
             fld dword ptr [esp + 0x14]
-            fcomp dword ptr ds:[gPedProximity_max_float]
+            fcomp dword ptr [gPedProximity_max_float]
             fnstsw ax
             test ah, 0x40
             jne L004cf34a
     L004cf4ef:
-            mov eax, dword ptr ds:[gBlind_pedestrians]
+            mov eax, dword ptr [gBlind_pedestrians]
             test eax, eax
             jne L004cf501
-            mov eax, dword ptr ds:[gPed_valium_left]
+            mov eax, dword ptr [gPed_valium_left]
             test eax, eax
             je L004cf511
     L004cf501:
-            test dword ptr ds:[0x75cefc], 0x8000000
+            test dword ptr [gProgram_state+0x137c], 0x8000000
             je L004cf34a
     L004cf511:
             mov edx, dword ptr [esi + 0xc]
@@ -29914,14 +30266,14 @@ calm_down:
             je L004cf537
             fld dword ptr [esp + 0x14]
             fdiv dword ptr [edx + 0xbc]
-            fcomp qword ptr ds:[gPed_medium_blood_cloud_force_threshold]
+            fcomp qword ptr [gPed_medium_blood_cloud_force_threshold]
             fnstsw ax
             test ah, 1
             je L004cf34a
     L004cf537:
             or cl, 4
             mov byte ptr [edx + 0x18], cl
-            mov eax, dword ptr ds:[gPeds_suicidal]
+            mov eax, dword ptr [gPeds_suicidal]
             test eax, eax
             je L004cf592
             fld dword ptr [esp + 0x3c]
@@ -29994,11 +30346,11 @@ calm_down:
             faddp st(2), st(0)
             faddp st(1), st(0)
             fsqrt
-            fcom dword ptr ds:[gPed_direction_length_epsilon]
+            fcom dword ptr [gPed_direction_length_epsilon]
             fnstsw ax
             test ah, 0x41
             jne L004cf63d
-            fdivr qword ptr ds:[gPed_kill_min_height]
+            fdivr qword ptr [gPed_kill_min_height]
             fld st(0)
             fld st(1)
             fxch st(1)
@@ -30061,14 +30413,14 @@ calm_down:
             fxch st(2)
             faddp st(2), st(0)
             fxch st(1)
-            fcomp qword ptr ds:[gPed_kill_min_height]
+            fcomp qword ptr [gPed_kill_min_height]
             fnstsw ax
             test ah, 0x41
             fstp st(0)
             je L004cf6fd
-            test dword ptr ds:[0x75cefc], 0x8000000
+            test dword ptr [gProgram_state+0x137c], 0x8000000
             je L004cf460
-            cmp edi, dword ptr ds:[0x75bc34]
+            cmp edi, dword ptr [gProgram_state+0xb4]
             jne L004cf460
     L004cf6fd:
             mov eax, dword ptr [esi + 0x10]
@@ -30079,14 +30431,14 @@ calm_down:
             push 0
             lea edx, [esp + 0x50]
             fld dword ptr [eax + 0xa4]
-            fmul dword ptr ds:[gFLOAT_0058a9c8]
+            fmul dword ptr [gFLOAT_0058a9c8]
             mov ecx, esi
             fstp dword ptr [esp + 0x50]
             fld dword ptr [eax + 0xa8]
-            fmul dword ptr ds:[gFLOAT_0058a9c8]
+            fmul dword ptr [gFLOAT_0058a9c8]
             fstp dword ptr [esp + 0x54]
             fld dword ptr [eax + 0xac]
-            fmul dword ptr ds:[gFLOAT_0058a9c8]
+            fmul dword ptr [gFLOAT_0058a9c8]
             fstp dword ptr [esp + 0x58]
             call SetPedXZDirection
             xor edx, edx
@@ -30108,7 +30460,7 @@ calm_down:
             mov edx, 7
             xor ecx, ecx
             call IRandomBetween
-            mov edx, dword ptr [eax*4 + 0x65e468]
+            mov edx, dword ptr [eax*4 + gPed_move_fsm+0xc78]
             mov ecx, esi
             call SetPedMove
             mov edx, 6
@@ -30215,7 +30567,7 @@ calm_down:
             mov edx, 8
             xor ecx, ecx
             call IRandomBetween
-            mov edi, dword ptr [eax*4 + 0x65e488]
+            mov edi, dword ptr [eax*4 + gPed_move_fsm+0xc98]
             test edi, edi
             jge L004cf8c8
             neg edi
@@ -30235,15 +30587,15 @@ calm_down:
             push ebp
             push 0
             fld dword ptr [eax + 0xa4]
-            fmul dword ptr ds:[gFLOAT_0058a9c8]
+            fmul dword ptr [gFLOAT_0058a9c8]
             lea edx, [esp + 0x50]
             mov ecx, esi
             fstp dword ptr [esp + 0x50]
             fld dword ptr [eax + 0xa8]
-            fmul dword ptr ds:[gFLOAT_0058a9c8]
+            fmul dword ptr [gFLOAT_0058a9c8]
             fstp dword ptr [esp + 0x54]
             fld dword ptr [eax + 0xac]
-            fmul dword ptr ds:[gFLOAT_0058a9c8]
+            fmul dword ptr [gFLOAT_0058a9c8]
             fstp dword ptr [esp + 0x58]
             call SetPedXZDirection
             xor edx, edx
@@ -30298,7 +30650,7 @@ calm_down:
             mov edx, 7
             xor ecx, ecx
             call IRandomBetween
-            mov edx, dword ptr [eax*4 + 0x65e468]
+            mov edx, dword ptr [eax*4 + gPed_move_fsm+0xc78]
             mov ecx, esi
             call SetPedMove
             mov edx, 6
@@ -30707,20 +31059,20 @@ void C2_NAKED C2_HOOK_FASTCALL MungeCharacterAnimation(tPed_character_instance* 
             movsx edx, ax
             mov dword ptr [esp + 0x10], edx
             fidiv dword ptr [esp + 0x10]
-            fcom dword ptr [gFloat_0058935c+0x3c]
+            fcom dword ptr [gMatchFloat_00589398]
             fnstsw ax
             test ah, 0x41
             jne L00409db8
             fstp st(0)
-            fld dword ptr [gFloat_0058935c+0x3c]
+            fld dword ptr [gMatchFloat_00589398]
             jmp L00409dcd
     L00409db8:
-            fcom dword ptr [gFloat_0058935c+0x40]
+            fcom dword ptr [gMatchFloat_0058939c]
             fnstsw ax
             test ah, 1
             je L00409dcd
             fstp st(0)
-            fld dword ptr [gFloat_0058935c+0x40]
+            fld dword ptr [gMatchFloat_0058939c]
     L00409dcd:
             movsx eax, word ptr [esi + 0x1c]
             fadd dword ptr [esi + 0x18]
@@ -30913,7 +31265,7 @@ void C2_NAKED C2_HOOK_FASTCALL MungeCharacterAnimation(tPed_character_instance* 
             fmulp st(3), st(0)
             fld dword ptr [esi + 0xdc]
             fxch st(3)
-            fmul qword ptr [gFloat_0058935c+0x1c]
+            fmul qword ptr [gMatchDouble_00589378]
             fxch st(1)
             fstp dword ptr [esi + 0xe0]
             fld dword ptr [esi + 0xe0]
@@ -32654,7 +33006,8 @@ static tPhysics_object* C2_HOOK_FASTCALL GetRootObjectInline(tPed_character_inst
 }
 
 // FUNCTION: CARMA2_HW 0x004091e0
-int C2_HOOK_FASTCALL MakeCharacterPhysicworthy(tPed_character_instance* pCharacter) {
+int C2_NAKED C2_HOOK_FASTCALL MakeCharacterPhysicworthy(tPed_character_instance* pCharacter) {
+#ifndef CARPOCALYPSE2_MATCHING
     tPhysics_object* obj;
     tPhysics_object* child;
     br_vector3* velocity;
@@ -32690,6 +33043,137 @@ int C2_HOOK_FASTCALL MakeCharacterPhysicworthy(tPed_character_instance* pCharact
     PHILSetObjectProperty(obj, 5, 0);
     pCharacter->field_0x14 |= 4;
     return 0;
+#else
+    __asm {
+            push ebx
+            push ebp
+            mov ebp, ecx
+            push esi
+            push edi
+            mov eax, dword ptr [ebp + 0x14]
+            test al, 4
+            je L004091f7
+            mov eax, 0x17
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            ret
+    L004091f7:
+            test eax, eax
+            jne L00409205
+            mov eax, 0x15
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            ret
+    L00409205:
+            test al, 1
+            je L0040921c
+            mov ecx, dword ptr [ebp]
+            movsx eax, byte ptr [ebp + 5]
+            mov edx, dword ptr [ecx + 0x28]
+            mov ecx, dword ptr [edx + 0x38]
+            mov edi, dword ptr [ecx + eax*8 + 4]
+            jmp L00409253
+    L0040921c:
+            mov edx, dword ptr [ebp]
+            movsx eax, byte ptr [ebp + 5]
+            mov ecx, dword ptr [edx + 0x28]
+            mov edx, dword ptr [ecx + 0x34]
+            lea esi, [edx + eax*8]
+            xor edx, edx
+            mov dl, byte ptr [ecx + 0x29]
+            xor eax, eax
+            test edx, edx
+            jle L00409251
+            mov esi, dword ptr [esi + 4]
+            mov ecx, esi
+    L0040923c:
+            mov edi, dword ptr [ecx]
+            mov ebx, dword ptr [edi + 0x20]
+            test ebx, ebx
+            jne L004092ee
+            inc eax
+            add ecx, 4
+            cmp eax, edx
+            jl L0040923c
+    L00409251:
+            xor edi, edi
+    L00409253:
+            lea ebx, [ebp + 0xd8]
+            mov byte ptr [edi + 0xec], 0
+            test ebx, ebx
+            je L00409292
+            mov eax, dword ptr [ebx]
+            mov esi, dword ptr [edi + 0x224]
+            mov dword ptr [edi + 0x68], eax
+            mov ecx, dword ptr [ebx + 4]
+            mov dword ptr [edi + 0x6c], ecx
+            mov edx, dword ptr [ebx + 8]
+            test esi, esi
+            mov dword ptr [edi + 0x70], edx
+            je L00409292
+    L0040927f:
+            mov edx, ebx
+            mov ecx, esi
+            call SetObjectV
+            mov esi, dword ptr [esi + 0x220]
+            test esi, esi
+            jne L0040927f
+    L00409292:
+            push 1
+            push 0
+            xor edx, edx
+            mov ecx, edi
+            call PHILMakeObjectActive
+            mov byte ptr [edi + 0xed], 1
+            push 0x3ff00000
+            push 0
+            push 0
+            push edi
+            call PHILSetObjectProperty
+            add esp, 0x10
+            push 0
+            push 3
+            push edi
+            call PHILSetObjectProperty
+            add esp, 0xc
+            push 0
+            push 4
+            push edi
+            call PHILSetObjectProperty
+            add esp, 0xc
+            push 0
+            push 5
+            push edi
+            call PHILSetObjectProperty
+            mov eax, dword ptr [ebp + 0x14]
+            add esp, 0xc
+            or al, 4
+            pop edi
+            mov dword ptr [ebp + 0x14], eax
+            pop esi
+            pop ebp
+            xor eax, eax
+            pop ebx
+            ret
+    L004092ee:
+            mov edi, dword ptr [esi + eax*4]
+            jmp L00409253
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // MakeEmBleed
@@ -33390,7 +33874,7 @@ void C2_NAKED C2_HOOK_FASTCALL FUN_004d2320(tPhysics_object* pObject1, tPhysics_
             mov ecx, dword ptr [esi + 0xc]
             test ecx, ecx
             jne L004d267b
-            push offset gPow2_word_array+0x98
+            push offset gMatchFloat_0065e670
             call dr_dprintf
             add esp, 4
             pop edi
@@ -33634,6 +34118,14 @@ void C2_NAKED C2_HOOK_FASTCALL FUN_004d2320(tPhysics_object* pObject1, tPhysics_
             pop ebx
             add esp, 8
             ret 0xc
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }

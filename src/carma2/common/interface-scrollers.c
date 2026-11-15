@@ -218,6 +218,15 @@ void C2_NAKED C2_HOOK_FASTCALL UpdateScrollPositions(tFrontend_spec* pFrontend) 
             pop ebx
             pop ecx
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }

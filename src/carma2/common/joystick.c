@@ -162,6 +162,24 @@ extern void C2_HOOK_FASTCALL StringTransformToLower(char* pStr);
 extern int gCancel_recover;
 extern int gDisable_sound;
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gData_00596400[];
+extern char gData_0074d098[];
+extern char gString_00596404[];
+extern char gString_0059640c[];
+extern char gString_00596414[];
+extern char gString_00596448[];
+extern char gString_00596458[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchData_00596400[];
+extern char gMatchData_0074d098[];
+extern char gMatchString_00596404[];
+extern char gMatchString_0059640c[];
+extern char gMatchString_00596414[];
+extern char gMatchString_00596448[];
+extern char gMatchString_00596458[];
+#endif
 // FUNCTION: CARMA2_HW 0x0045b7e0
 int C2_HOOK_FASTCALL FindJoystickPreferences(FILE* pF, const char* pJoystick_name) {
     fpos_t position;
@@ -1653,14 +1671,14 @@ munge:
             jne L0045b6eb
             push ebx
             lea ecx, [esp + 0x1c]
-            push offset gUNK_00596310+0x148
+            push offset gMatchString_00596458
             push ecx
             jmp L0045b73d
     L0045b6eb:
             push ebx
             lea edx, [esp + 0x1c]
             test ebp, ebp
-            push offset gCancel_recover+0xbc
+            push 0x59101c
             push edx
             je L0045b73d
             call sprintf
@@ -1678,7 +1696,7 @@ munge:
             push esi
             push ebx
             lea ecx, [esp + 0x20]
-            push offset gUNK_00596310+0x138
+            push offset gMatchString_00596448
             push ecx
             call sprintf
             add esp, 0x10
@@ -1701,13 +1719,13 @@ munge:
             jmp L0045b761
     L0045b755:
             mov ecx, dword ptr [edi]
-            mov edx, offset gDisable_sound+0x8
+            mov edx, 0x676920
             call ChangeHeadupText
     L0045b761:
             mov edx, dword ptr [esp + 0x10]
             add edi, 4
             inc edx
-            cmp edi, offset gRace_head_ups+0x58
+            cmp edi, offset gMatchData_0074d098
             mov dword ptr [esp + 0x10], edx
             mov dword ptr [esp + 0x14], edi
             jl L0045b694
@@ -1718,6 +1736,17 @@ munge:
             pop ebx
             add esp, 0x58
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -1887,21 +1916,21 @@ int C2_NAKED C2_HOOK_FASTCALL FUN_0045a7f0(char* pFilename, int* pArg2) {
             lea ecx, [esp + 0x10]
             call DRstrlwr
             lea ecx, [esp + 0x10]
-            push 0x596414
+            push offset gMatchString_00596414
             push ecx
             call strstr
             add esp, 8
             test eax, eax
             jne L0045a90a
             lea edx, [esp + 0x10]
-            push 0x59640c
+            push offset gMatchString_0059640c
             push edx
             call strstr
             add esp, 8
             test eax, eax
             jne L0045a90a
             lea eax, [esp + 0x10]
-            push 0x596404
+            push offset gMatchString_00596404
             push eax
             call strstr
             add esp, 8
@@ -1914,7 +1943,7 @@ int C2_NAKED C2_HOOK_FASTCALL FUN_0045a7f0(char* pFilename, int* pArg2) {
             add esp, 8
             test eax, eax
             jne L0045a8c3
-            mov esi, 0x596400
+            mov esi, offset gMatchData_00596400
             mov eax, ebx
     L0045a892:
             mov dl, byte ptr [eax]

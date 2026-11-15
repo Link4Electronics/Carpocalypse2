@@ -526,6 +526,14 @@ extern br_size_t C2_HOOK_CDECL BrStrLen();
 extern int C2_HOOK_CDECL BrStrNCmp();
 extern int C2_HOOK_CDECL BrStrNICmp();
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gString_0066ac40[];
+extern char gString_0066ac44[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchString_0066ac40[];
+extern char gMatchString_0066ac44[];
+#endif
 // FUNCTION: CARMA2_HW 0x0052f030
 void C2_HOOK_CDECL BrTokenBegin(void) {
     int i;
@@ -634,7 +642,7 @@ br_token C2_NAKED C2_HOOK_CDECL BrTokenCreate(const char* identifier, br_token t
     L0052f0e2:
             add esi, 0xc
             inc edi
-            cmp esi, offset tokenTypes+0x1c4
+            cmp esi, offset gMatchString_0066ac44
             jb L0052f0c5
     L0052f0ee:
             mov ecx, dword ptr [fw+0x438]
@@ -684,7 +692,7 @@ br_token C2_NAKED C2_HOOK_CDECL BrTokenCreate(const char* identifier, br_token t
             je L0052f178
             add eax, 0xc
             inc edi
-            cmp eax, offset tokenTypes+0x1c0
+            cmp eax, offset gMatchString_0066ac40
             jb L0052f169
     L0052f178:
             cmp edi, 0x25

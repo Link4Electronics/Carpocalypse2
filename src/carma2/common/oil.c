@@ -66,6 +66,30 @@ extern int C2_HOOK_FASTCALL PointInSpill(br_vector3* pV, int pSpill);
 #ifdef CARPOCALYPSE2_MATCHING
 extern br_scalar gMinimum_yness_before_knackerisation;
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gData_0058a450[];
+extern char gDouble_0058a438[];
+extern char gDouble_0058a448[];
+extern char gFloat_0058a430[];
+extern char gFloat_0058a440[];
+extern char gFloat_0058a444[];
+extern char gFloat_0058a458[];
+extern char gFloat_0058a45c[];
+extern char gFloat_0058a460[];
+extern char gFloat_0058a468[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchData_0058a450[];
+extern char gMatchDouble_0058a438[];
+extern char gMatchDouble_0058a448[];
+extern char gMatchFloat_0058a430[];
+extern char gMatchFloat_0058a440[];
+extern char gMatchFloat_0058a444[];
+extern char gMatchFloat_0058a458[];
+extern char gMatchFloat_0058a45c[];
+extern char gMatchFloat_0058a460[];
+extern char gMatchFloat_0058a468[];
+#endif
 // FUNCTION: CARMA2_HW 0x004a6c50
 void C2_NAKED C2_HOOK_FASTCALL ResetOilSpills(void) {
 #ifndef CARPOCALYPSE2_MATCHING
@@ -573,19 +597,19 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessOilSpills(tU32 pFrame_period) {
             mov ebp, dword ptr [eax + 8]
             fld dword ptr [ebp + 0x68]
             fabs
-            fcomp dword ptr [gFLOAT_0058a420+0x10]
+            fcomp dword ptr [gMatchFloat_0058a430]
             fnstsw ax
             test ah, bl
             je L004a729c
             fld dword ptr [ebp + 0x6c]
             fabs
-            fcomp dword ptr [gFLOAT_0058a420+0x10]
+            fcomp dword ptr [gMatchFloat_0058a430]
             fnstsw ax
             test ah, bl
             je L004a729c
             fld dword ptr [ebp + 0x70]
             fabs
-            fcomp dword ptr [gFLOAT_0058a420+0x10]
+            fcomp dword ptr [gMatchFloat_0058a430]
             fnstsw ax
             test ah, bl
             je L004a729c
@@ -618,7 +642,7 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessOilSpills(tU32 pFrame_period) {
             fchs
             fst dword ptr [esp + 0x64]
             fld dword ptr [ecx + 0x38]
-            fsub qword ptr [gFLOAT_0058a420+0x18]
+            fsub qword ptr [gMatchDouble_0058a438]
             fld dword ptr [esi + 0xc]
             fld dword ptr [esi + 0xc]
             fxch st(2)
@@ -651,7 +675,7 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessOilSpills(tU32 pFrame_period) {
             mov dword ptr [esp + 0x40], edx
             mov dword ptr [esp + 0x54], eax
             fld dword ptr [ecx + 0x54]
-            fsub dword ptr [gFLOAT_0058a420+0x20]
+            fsub dword ptr [gMatchFloat_0058a440]
             fxch st(1)
             fsub dword ptr [esp + 0x74]
             fxch st(1)
@@ -661,11 +685,11 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessOilSpills(tU32 pFrame_period) {
             fmul dword ptr [esp + 0x2c]
             mov dword ptr [esp + 0x5c], ecx
             fsqrt
-            fcom dword ptr [gFLOAT_0058a420+0x24]
+            fcom dword ptr [gMatchFloat_0058a444]
             fnstsw ax
             test ah, 0x41
             jne L004a700d
-            fdivr qword ptr [gFLOAT_0058a420+0x28]
+            fdivr qword ptr [gMatchDouble_0058a448]
             mov dword ptr [esp + 0x38], 0
             mov eax, dword ptr [esp + 0x38]
             mov ecx, eax
@@ -704,7 +728,7 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessOilSpills(tU32 pFrame_period) {
             lea edx, [esp + 0x64]
             call CheckSingleFace
             fld dword ptr [esp + 0x44]
-            fcomp dword ptr [gFLOAT_0058a420+0x38]
+            fcomp dword ptr [gMatchFloat_0058a458]
             fnstsw ax
             test ah, 1
             je L004a70f6
@@ -762,7 +786,7 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessOilSpills(tU32 pFrame_period) {
             test ebx, ebx
             je L004a728a
             fld dword ptr [esp + 0x1c]
-            fcomp dword ptr [gFLOAT_0058a420+0x3c]
+            fcomp dword ptr [gMatchFloat_0058a45c]
             fnstsw ax
             test ah, 1
             jne L004a728a
@@ -787,7 +811,7 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessOilSpills(tU32 pFrame_period) {
             fxch st(1)
             faddp st(1), st(0)
             lea edx, [ebp - 4]
-            fcom dword ptr [gFLOAT_0058a420+0x40]
+            fcom dword ptr [gMatchFloat_0058a460]
             fnstsw ax
             test ah, 1
             je L004a719a
@@ -931,7 +955,7 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessOilSpills(tU32 pFrame_period) {
             faddp st(1), st(0)
             fxch st(1)
             faddp st(1), st(0)
-            fcomp dword ptr [gFloat_0058a464+0x4]
+            fcomp dword ptr [gMatchFloat_0058a468]
             fstp st(0)
             fnstsw ax
             fstp st(0)
@@ -1061,6 +1085,13 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessOilSpills(tU32 pFrame_period) {
             pop ebx
             add esp, 0x3b4
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -1170,7 +1201,7 @@ void C2_NAKED C2_HOOK_FASTCALL GetOilFrictionFactors(tCar_spec* pCar, br_scalar*
             fld dword ptr [edi - 4]
             mov ecx, dword ptr [edi - 8]
             fst dword ptr [esp + 0x20]
-            fcomp dword ptr [gFLOAT_0058a420+0x30]
+            fcomp dword ptr [gMatchData_0058a450]
             mov dword ptr [esp + 0x1c], ecx
             fnstsw ax
             test ah, 0x40
@@ -1304,7 +1335,7 @@ void C2_NAKED C2_HOOK_FASTCALL GetOilFrictionFactors(tCar_spec* pCar, br_scalar*
             mov edx, dword ptr [esp + 0x24]
     L004a774a:
             fld dword ptr [esi + 0x16d4]
-            fcomp dword ptr [gFLOAT_0058a420+0x30]
+            fcomp dword ptr [gMatchData_0058a450]
             fnstsw ax
             test ah, 0x40
             jne L004a7765
@@ -1312,7 +1343,7 @@ void C2_NAKED C2_HOOK_FASTCALL GetOilFrictionFactors(tCar_spec* pCar, br_scalar*
             mov dword ptr [edx], eax
     L004a7765:
             fld dword ptr [esi + 0x16d8]
-            fcomp dword ptr [gFLOAT_0058a420+0x30]
+            fcomp dword ptr [gMatchData_0058a450]
             fnstsw ax
             test ah, 0x40
             jne L004a7784
@@ -1321,7 +1352,7 @@ void C2_NAKED C2_HOOK_FASTCALL GetOilFrictionFactors(tCar_spec* pCar, br_scalar*
             mov dword ptr [edx], ecx
     L004a7784:
             fld dword ptr [esi + 0x16cc]
-            fcomp dword ptr [gFLOAT_0058a420+0x30]
+            fcomp dword ptr [gMatchData_0058a450]
             fnstsw ax
             test ah, 0x40
             jne L004a77a3
@@ -1330,7 +1361,7 @@ void C2_NAKED C2_HOOK_FASTCALL GetOilFrictionFactors(tCar_spec* pCar, br_scalar*
             mov dword ptr [ecx], eax
     L004a77a3:
             fld dword ptr [esi + 0x16d0]
-            fcomp dword ptr [gFLOAT_0058a420+0x30]
+            fcomp dword ptr [gMatchData_0058a450]
             fnstsw ax
             test ah, 0x40
             jne L004a77c2
@@ -1344,6 +1375,10 @@ void C2_NAKED C2_HOOK_FASTCALL GetOilFrictionFactors(tCar_spec* pCar, br_scalar*
             pop ebx
             add esp, 0x24
             ret 0xc
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -1443,6 +1478,11 @@ int C2_NAKED C2_HOOK_FASTCALL PointInSpill(br_vector3* pPoint, int pIndex) {
             xor eax, eax
             pop ecx
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }

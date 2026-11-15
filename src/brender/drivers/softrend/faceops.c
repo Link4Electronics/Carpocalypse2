@@ -15,6 +15,24 @@ extern char rendererStateStoredTemplateEntries[];
 extern static_cache_soft scache;
 extern void C2_HOOK_STDCALL triangleSubdivideOnScreen(int depth, brp_block* block, brp_vertex* v0, brp_vertex* v1, brp_vertex* v2, br_uint_16* fp_vertices, br_uint_16* fp_edges);
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gData_006707cc[];
+extern char gData_006707d8[];
+extern char gData_006707f8[];
+extern char gDouble_0058c918[];
+extern char gFloat_0058c908[];
+extern char gFloat_0058c90c[];
+extern char gFloat_0058c910[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchData_006707cc[];
+extern char gMatchData_006707d8[];
+extern char gMatchData_006707f8[];
+extern char gMatchDouble_0058c918[];
+extern char gMatchFloat_0058c908[];
+extern char gMatchFloat_0058c90c[];
+extern char gMatchFloat_0058c910[];
+#endif
 // FUNCTION: CARMA2_HW 0x00545120
 void C2_HOOK_CDECL OpTriangleClip(brp_block* block, brp_vertex* v0, brp_vertex* v1, brp_vertex* v2, br_uint_16* fp_vertices, br_uint_16* fp_edges) {
     brp_vertex clip_in[3];
@@ -157,7 +175,7 @@ void C2_NAKED C2_HOOK_CDECL OpTriangleMappingWrapFix(brp_block* block, brp_verte
 #else
     __asm {
             sub esp, 0xd4
-            mov eax, dword ptr ds:[0x79f9d8]
+            mov eax, dword ptr [rend+0x58]
             push ebx
             mov ebx, dword ptr [esp + 0xe4]
             push ebp
@@ -169,7 +187,7 @@ void C2_NAKED C2_HOOK_CDECL OpTriangleMappingWrapFix(brp_block* block, brp_verte
             fsub dword ptr [ebp + 0x20]
             fxch st(1)
             fst dword ptr [esp + 0x10]
-            fmul dword ptr ds:[0x58c908]
+            fmul dword ptr [gMatchFloat_0058c908]
             fxch st(1)
             fst dword ptr [esp + 0x14]
             fxch st(1)
@@ -594,11 +612,12 @@ void C2_NAKED C2_HOOK_STDCALL SubdivideSetThreshold(br_int_32 subdivide_toleranc
 #else
     __asm {
             fild dword ptr [esp + 4]
-            fmul dword ptr ds:[0x58c90c]
-            fsub dword ptr ds:[0x58c910]
-            fdivr qword ptr ds:[0x58c918]
-            fstp dword ptr ds:[0x79f9e0]
+            fmul dword ptr [gMatchFloat_0058c90c]
+            fsub dword ptr [gMatchFloat_0058c910]
+            fdivr qword ptr [gMatchDouble_0058c918]
+            fstp dword ptr [rend+0x60]
             ret 4
+            nop
     }
 #endif
 }
@@ -659,13 +678,13 @@ br_boolean C2_NAKED C2_HOOK_CDECL subdivideCheck(brp_vertex* v0, brp_vertex* v1,
             cmp ecx, ebx
             rcl edx, 1
             fld dword ptr [rend+0x60]
-            mov eax, dword ptr [edx*4 + rendererStateStoredTemplateEntries+0x148]
-            mov ebx, dword ptr [edx*4 + rendererStateStoredTemplateEntries+0x13c]
+            mov eax, dword ptr [edx*4 + gMatchData_006707d8]
+            mov ebx, dword ptr [edx*4 + gMatchData_006707cc]
             mov eax, dword ptr ss:[eax + ebp + 8]
             mov ebx, dword ptr ss:[ebx + ebp + 8]
             fmul dword ptr [eax + 0xc]
-            fstp dword ptr [rendererStateStoredTemplateEntries+0x168]
-            mov eax, dword ptr [rendererStateStoredTemplateEntries+0x168]
+            fstp dword ptr [gMatchData_006707f8]
+            mov eax, dword ptr [gMatchData_006707f8]
             mov ebx, dword ptr [ebx + 0xc]
             and eax, 0x7fffffff
             and ebx, 0x7fffffff

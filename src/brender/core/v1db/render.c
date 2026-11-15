@@ -31,6 +31,16 @@ extern void C2_HOOK_CDECL BrMatrix34Identity();
 extern void C2_HOOK_CDECL BrMatrix34PostTransform();
 extern br_uint_8 _CombineTransforms[7][7];
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gFloat_0058b7d8[];
+extern char gFloat_00663398[];
+extern char gString_00663390[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchFloat_0058b7d8[];
+extern char gMatchFloat_00663398[];
+extern char gMatchString_00663390[];
+#endif
 // FUNCTION: CARMA2_HW 0x00521890
 void C2_NAKED C2_HOOK_CDECL BrDbModelRender(br_actor* actor, br_model* model, br_material* material, void* render_data, br_uint_8 style, int on_screen, int use_custom) {
 #ifndef CARPOCALYPSE2_MATCHING
@@ -176,10 +186,10 @@ void C2_NAKED C2_HOOK_CDECL BrDbModelRender(br_actor* actor, br_model* model, br
             mov eax, dword ptr [esi + 4]
             cmp eax, edi
             jne L00521933
-            mov eax, offset gZlib_filesystem+0x1d0
+            mov eax, offset gMatchString_00663390
     L00521933:
             push eax
-            push offset gZlib_filesystem+0x1d8
+            push offset gMatchFloat_00663398
             call BrFailure
             add esp, 8
     L00521941:
@@ -414,6 +424,13 @@ void C2_NAKED C2_HOOK_CDECL BrDbModelRender(br_actor* actor, br_model* model, br
             pop ebx
             add esp, 0x60
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -975,7 +992,7 @@ void C2_NAKED C2_HOOK_CDECL BrZbSceneRenderBegin(br_actor* world, br_actor* came
             add ecx, edx
             mov dword ptr [esp + 0xc], ecx
             fild dword ptr [esp + 0xc]
-            fsub dword ptr [IID_IDirectInputDevice2A+0x440]
+            fsub dword ptr [gMatchFloat_0058b7d8]
             fstp dword ptr [v1db+0x4ec]
             mov cx, word ptr [eax + 0x34]
             shr cx, 1
@@ -988,7 +1005,7 @@ void C2_NAKED C2_HOOK_CDECL BrZbSceneRenderBegin(br_actor* world, br_actor* came
             and edx, 0xffff
             mov dword ptr [esp + 0xc], edx
             fild dword ptr [esp + 0xc]
-            fsub dword ptr [IID_IDirectInputDevice2A+0x440]
+            fsub dword ptr [gMatchFloat_0058b7d8]
             fstp dword ptr [v1db+0x4f0]
             mov cx, word ptr [eax + 0x36]
             shr cx, 1
@@ -1034,6 +1051,12 @@ void C2_NAKED C2_HOOK_CDECL BrZbSceneRenderBegin(br_actor* world, br_actor* came
             pop edi
             pop esi
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -1175,7 +1198,7 @@ void C2_NAKED C2_HOOK_CDECL BrZbSceneRender(br_actor* world, br_actor* camera, b
             add ecx, edi
             mov dword ptr [esp + 0x14], ecx
             fild dword ptr [esp + 0x14]
-            fsub dword ptr [IID_IDirectInputDevice2A+0x440]
+            fsub dword ptr [gMatchFloat_0058b7d8]
             fstp dword ptr [v1db+0x4ec]
             mov cx, word ptr [eax + 0x34]
             shr cx, 1
@@ -1188,7 +1211,7 @@ void C2_NAKED C2_HOOK_CDECL BrZbSceneRender(br_actor* world, br_actor* camera, b
             and ecx, 0xffff
             mov dword ptr [esp + 0x14], ecx
             fild dword ptr [esp + 0x14]
-            fsub dword ptr [IID_IDirectInputDevice2A+0x440]
+            fsub dword ptr [gMatchFloat_0058b7d8]
             fstp dword ptr [v1db+0x4f0]
             mov cx, word ptr [eax + 0x36]
             shr cx, 1
@@ -1372,7 +1395,7 @@ void C2_NAKED C2_HOOK_CDECL BrZsSceneRenderBegin(br_actor* world, br_actor* came
             add ecx, edx
             mov dword ptr [esp + 0xc], ecx
             fild dword ptr [esp + 0xc]
-            fsub dword ptr [IID_IDirectInputDevice2A+0x440]
+            fsub dword ptr [gMatchFloat_0058b7d8]
             fstp dword ptr [v1db+0x4ec]
             mov cx, word ptr [eax + 0x34]
             shr cx, 1
@@ -1385,7 +1408,7 @@ void C2_NAKED C2_HOOK_CDECL BrZsSceneRenderBegin(br_actor* world, br_actor* came
             and edx, 0xffff
             mov dword ptr [esp + 0xc], edx
             fild dword ptr [esp + 0xc]
-            fsub dword ptr [IID_IDirectInputDevice2A+0x440]
+            fsub dword ptr [gMatchFloat_0058b7d8]
             fstp dword ptr [v1db+0x4f0]
             mov cx, word ptr [eax + 0x36]
             shr cx, 1
@@ -1462,6 +1485,15 @@ void C2_NAKED C2_HOOK_CDECL BrZsSceneRenderBegin(br_actor* world, br_actor* came
             pop edi
             pop esi
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -1626,7 +1658,7 @@ void C2_NAKED C2_HOOK_CDECL BrZsSceneRender(br_actor* world, br_actor* camera, b
             add esp, 0x14
             cmp eax, esi
             jne L00522c39
-            push offset gZlib_filesystem+0x220
+            push 0x6633e0
             call BrFailure
             add esp, 4
     L00522c39:
@@ -1742,7 +1774,7 @@ void C2_NAKED C2_HOOK_CDECL BrZbsSceneRenderBegin(br_actor* world, br_actor* cam
             add ecx, edx
             mov dword ptr [esp + 0xc], ecx
             fild dword ptr [esp + 0xc]
-            fsub dword ptr [IID_IDirectInputDevice2A+0x440]
+            fsub dword ptr [gMatchFloat_0058b7d8]
             fstp dword ptr [v1db+0x4ec]
             mov cx, word ptr [eax + 0x34]
             shr cx, 1
@@ -1755,7 +1787,7 @@ void C2_NAKED C2_HOOK_CDECL BrZbsSceneRenderBegin(br_actor* world, br_actor* cam
             and edx, 0xffff
             mov dword ptr [esp + 0xc], edx
             fild dword ptr [esp + 0xc]
-            fsub dword ptr [IID_IDirectInputDevice2A+0x440]
+            fsub dword ptr [gMatchFloat_0058b7d8]
             fstp dword ptr [v1db+0x4f0]
             mov cx, word ptr [eax + 0x36]
             shr cx, 1
@@ -1842,6 +1874,16 @@ void C2_NAKED C2_HOOK_CDECL BrZbsSceneRenderBegin(br_actor* world, br_actor* cam
             pop edi
             pop esi
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -2008,7 +2050,7 @@ void C2_NAKED C2_HOOK_CDECL BrZbsSceneRender(br_actor* world, br_actor* camera, 
             add esp, 0x14
             cmp eax, esi
             jne L00522ffe
-            push offset gZlib_filesystem+0x244
+            push 0x663404
             call BrFailure
             add esp, 4
     L00522ffe:

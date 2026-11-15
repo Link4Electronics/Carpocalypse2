@@ -272,6 +272,41 @@ extern int gDev_initial_race;
 extern char* gMisc_strings[300];
 extern br_pixelmap* gPalette_source;
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gData_0058a250[];
+extern char gData_00657a3c[];
+extern char gData_0074d024[];
+extern char gData_0074d3ac[];
+extern char gData_0074d544[];
+extern char gData_0075b92c[];
+extern char gData_0075ba4c[];
+extern char gData_00761c8c[];
+extern char gData_00761d2c[];
+extern char gData_0079ec14[];
+extern char gDouble_0058a258[];
+extern char gFile_mode_rb[];
+extern char gFloat_0058a228[];
+extern char gString_00657a34[];
+extern char gString_00657a4c[];
+extern char gString_00657d10[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchData_0058a250[];
+extern char gMatchData_00657a3c[];
+extern char gMatchData_0074d024[];
+extern char gMatchData_0074d3ac[];
+extern char gMatchData_0074d544[];
+extern char gMatchData_0075b92c[];
+extern char gMatchData_0075ba4c[];
+extern char gMatchData_00761c8c[];
+extern char gMatchData_00761d2c[];
+extern char gMatchData_0079ec14[];
+extern char gMatchDouble_0058a258[];
+extern char gMatchFloat_0058a228[];
+extern char gMatchString_00657a34[];
+extern char gMatchString_00657a4c[];
+extern char gMatchString_00657d10[];
+#endif
 // FUNCTION: CARMA2_HW 0x00486e10
 void C2_HOOK_FASTCALL LoadInRegistees(void) {
 
@@ -602,13 +637,13 @@ void C2_NAKED C2_HOOK_FASTCALL LoadGeneralParameters(void) {
             push ebx
             push esi
             push edi
-            push offset gNet_avail_names+0x4a4
+            push 0x6579fc
             call PathCat
             lea edx, [esp + 0x21c]
             lea ecx, [esp + 0x21c]
-            push offset gNet_avail_names+0x4f4
+            push offset gMatchString_00657a4c
             call PathCat
-            mov edx, offset gCancel_recover+0x1a4
+            mov edx, offset gFile_mode_rb
             lea ecx, [esp + 0x21c]
             call PFfopen
             test eax, eax
@@ -719,11 +754,11 @@ void C2_NAKED C2_HOOK_FASTCALL LoadGeneralParameters(void) {
             cmp edx, ecx
             jb L00487039
     L0048705b:
-            push offset gNet_avail_names+0x4e8
+            push 0x657a40
             mov edx, offset gApplication_path
             lea ecx, [esp + 0x220]
             call PathCat
-            mov edx, offset gNext_crush_actor_id+0x180
+            mov edx, 0x58f9e0
             lea ecx, [esp + 0x21c]
             call DRfopen
             test eax, eax
@@ -738,7 +773,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadGeneralParameters(void) {
             call GetAnInt
             mov ecx, dword ptr [gTempFile]
             mov dword ptr [gDisableTiffConversion], eax
-            mov eax, dword ptr [gNet_avail_names+0x4e4]
+            mov eax, dword ptr [gMatchData_00657a3c]
             lea edx, [esp + 0x1c]
             mov dword ptr [esp + 0xc], eax
             call GetALineAndDontArgue
@@ -754,14 +789,14 @@ void C2_NAKED C2_HOOK_FASTCALL LoadGeneralParameters(void) {
             push ecx
             push edx
             lea eax, [esp + eax + 0x24]
-            push offset gNet_avail_names+0x4dc
+            push offset gMatchString_00657a34
             push eax
             call sscanf
             add esp, 0x10
             test eax, eax
             jne L0048710b
             lea ecx, [esp + 0x1c]
-            push offset gNet_avail_names+0x4e8
+            push 0x657a40
             push ecx
             push 0xb2
             call FatalError
@@ -782,7 +817,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadGeneralParameters(void) {
             mov dword ptr [esp + 0x14], ecx
             push eax
             lea ecx, [esp + ecx + 0x20]
-            push offset gMini_map_glowing_line_animation_indices+0x7dc
+            push 0x65718c
             push ecx
             call sscanf
             add esp, 0xc
@@ -807,7 +842,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadGeneralParameters(void) {
             fstp dword ptr [gCamera_angle]
             call GetAnInt
             mov ecx, dword ptr [gTempFile]
-            mov dword ptr [gHeadup_images+0xb4], eax
+            mov dword ptr [gMatchData_0079ec14], eax
             call GetAnInt
             mov ecx, dword ptr [gTempFile]
             mov edx, offset gCredits_per_rank
@@ -902,18 +937,18 @@ void C2_NAKED C2_HOOK_FASTCALL LoadGeneralParameters(void) {
             lea edx, [esp + 0x1c]
             call GetALineAndDontArgue
             lea edx, [esp + 0x1c]
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push edx
             call strtok
             add esp, 8
             mov esi, offset gInitial_APO+0xc
     L004873ac:
             push esi
-            push offset gPed_flags_0058f2e4+0x134
+            push 0x58f418
             push eax
             call sscanf
             add esp, 0xc
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push 0
             call strtok
             add esi, 4
@@ -929,18 +964,18 @@ void C2_NAKED C2_HOOK_FASTCALL LoadGeneralParameters(void) {
             lea edx, [esp + 0x1c]
             call GetALineAndDontArgue
             lea eax, [esp + 0x1c]
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push eax
             call strtok
             add esp, 8
             mov esi, offset gInitial_APO+0x38
     L00487415:
             push esi
-            push offset gPed_flags_0058f2e4+0x134
+            push 0x58f418
             push eax
             call sscanf
             add esp, 0xc
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push 0
             call strtok
             add esi, 4
@@ -956,23 +991,23 @@ void C2_NAKED C2_HOOK_FASTCALL LoadGeneralParameters(void) {
             lea edx, [esp + 0x1c]
             call GetALineAndDontArgue
             lea ecx, [esp + 0x1c]
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push ecx
             call strtok
             add esp, 8
             mov esi, offset gInitial_APO+0x64
     L0048747e:
             push esi
-            push offset gPed_flags_0058f2e4+0x134
+            push 0x58f418
             push eax
             call sscanf
             add esp, 0xc
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push 0
             call strtok
             add esi, 4
             add esp, 8
-            cmp esi, offset gInitial_APO+0x84
+            cmp esi, offset gMatchData_0074d544
             jl L0048747e
             mov ecx, dword ptr [gTempFile]
             push offset gInitial_APO_potential+0x8
@@ -983,18 +1018,18 @@ void C2_NAKED C2_HOOK_FASTCALL LoadGeneralParameters(void) {
             lea edx, [esp + 0x1c]
             call GetALineAndDontArgue
             lea edx, [esp + 0x1c]
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push edx
             call strtok
             add esp, 8
             mov esi, offset gInitial_APO_potential+0xc
     L004874e7:
             push esi
-            push offset gPed_flags_0058f2e4+0x134
+            push 0x58f418
             push eax
             call sscanf
             add esp, 0xc
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push 0
             call strtok
             add esi, 4
@@ -1010,18 +1045,18 @@ void C2_NAKED C2_HOOK_FASTCALL LoadGeneralParameters(void) {
             lea edx, [esp + 0x1c]
             call GetALineAndDontArgue
             lea eax, [esp + 0x1c]
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push eax
             call strtok
             add esp, 8
             mov esi, offset gInitial_APO_potential+0x38
     L00487550:
             push esi
-            push offset gPed_flags_0058f2e4+0x134
+            push 0x58f418
             push eax
             call sscanf
             add esp, 0xc
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push 0
             call strtok
             add esi, 4
@@ -1037,18 +1072,18 @@ void C2_NAKED C2_HOOK_FASTCALL LoadGeneralParameters(void) {
             lea edx, [esp + 0x1c]
             call GetALineAndDontArgue
             lea ecx, [esp + 0x1c]
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push ecx
             call strtok
             add esp, 8
             mov esi, offset gInitial_APO_potential+0x64
     L004875b9:
             push esi
-            push offset gPed_flags_0058f2e4+0x134
+            push 0x58f418
             push eax
             call sscanf
             add esp, 0xc
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push 0
             call strtok
             add esi, 4
@@ -1064,18 +1099,18 @@ void C2_NAKED C2_HOOK_FASTCALL LoadGeneralParameters(void) {
             lea edx, [esp + 0x1c]
             call GetALineAndDontArgue
             lea edx, [esp + 0x1c]
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push edx
             call strtok
             add esp, 8
             mov esi, offset gMax_APO+0xc
     L00487622:
             push esi
-            push offset gPed_flags_0058f2e4+0x134
+            push 0x58f418
             push eax
             call sscanf
             add esp, 0xc
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push 0
             call strtok
             add esi, 4
@@ -1091,18 +1126,18 @@ void C2_NAKED C2_HOOK_FASTCALL LoadGeneralParameters(void) {
             lea edx, [esp + 0x1c]
             call GetALineAndDontArgue
             lea eax, [esp + 0x1c]
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push eax
             call strtok
             add esp, 8
             mov esi, offset gMax_APO+0x38
     L0048768b:
             push esi
-            push offset gPed_flags_0058f2e4+0x134
+            push 0x58f418
             push eax
             call sscanf
             add esp, 0xc
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push 0
             call strtok
             add esi, 4
@@ -1118,23 +1153,23 @@ void C2_NAKED C2_HOOK_FASTCALL LoadGeneralParameters(void) {
             lea edx, [esp + 0x1c]
             call GetALineAndDontArgue
             lea ecx, [esp + 0x1c]
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push ecx
             call strtok
             add esp, 8
             mov esi, offset gMax_APO+0x64
     L004876f4:
             push esi
-            push offset gPed_flags_0058f2e4+0x134
+            push 0x58f418
             push eax
             call sscanf
             add esp, 0xc
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push 0
             call strtok
             add esi, 4
             add esp, 8
-            cmp esi, offset gMax_APO+0x84
+            cmp esi, offset gMatchData_0074d024
             jl L004876f4
             mov ecx, dword ptr [gTempFile]
             push offset gCost_APO+0x8
@@ -1145,18 +1180,18 @@ void C2_NAKED C2_HOOK_FASTCALL LoadGeneralParameters(void) {
             lea edx, [esp + 0x1c]
             call GetALineAndDontArgue
             lea edx, [esp + 0x1c]
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push edx
             call strtok
             add esp, 8
             mov esi, offset gCost_APO+0xc
     L0048775d:
             push esi
-            push offset gPed_flags_0058f2e4+0x134
+            push 0x58f418
             push eax
             call sscanf
             add esp, 0xc
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push 0
             call strtok
             add esi, 4
@@ -1172,23 +1207,23 @@ void C2_NAKED C2_HOOK_FASTCALL LoadGeneralParameters(void) {
             lea edx, [esp + 0x1c]
             call GetALineAndDontArgue
             lea eax, [esp + 0x1c]
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push eax
             call strtok
             add esp, 8
             mov esi, offset gTrade_in_value_APO+0xc
     L004877c6:
             push esi
-            push offset gPed_flags_0058f2e4+0x134
+            push 0x58f418
             push eax
             call sscanf
             add esp, 0xc
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push 0
             call strtok
             add esi, 4
             add esp, 8
-            cmp esi, offset gTrade_in_value_APO+0x2c
+            cmp esi, offset gMatchData_0075b92c
             jl L004877c6
             mov ecx, dword ptr [gTempFile]
             push offset gSubstitution_value_APO+0x8
@@ -1199,23 +1234,23 @@ void C2_NAKED C2_HOOK_FASTCALL LoadGeneralParameters(void) {
             lea edx, [esp + 0x1c]
             call GetALineAndDontArgue
             lea ecx, [esp + 0x1c]
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push ecx
             call strtok
             add esp, 8
             mov esi, offset gSubstitution_value_APO+0xc
     L0048782f:
             push esi
-            push offset gPed_flags_0058f2e4+0x134
+            push 0x58f418
             push eax
             call sscanf
             add esp, 0xc
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push 0
             call strtok
             add esi, 4
             add esp, 8
-            cmp esi, offset gSubstitution_value_APO+0x2c
+            cmp esi, offset gMatchData_0074d3ac
             jl L0048782f
             mov ecx, dword ptr [gTempFile]
             push offset gPotential_substitution_value_APO+0x8
@@ -1226,23 +1261,23 @@ void C2_NAKED C2_HOOK_FASTCALL LoadGeneralParameters(void) {
             lea edx, [esp + 0x1c]
             call GetALineAndDontArgue
             lea edx, [esp + 0x1c]
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push edx
             call strtok
             add esp, 8
             mov esi, offset gPotential_substitution_value_APO+0xc
     L00487898:
             push esi
-            push offset gPed_flags_0058f2e4+0x134
+            push 0x58f418
             push eax
             call sscanf
             add esp, 0xc
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push 0
             call strtok
             add esi, 4
             add esp, 8
-            cmp esi, offset gPotential_substitution_value_APO+0x2c
+            cmp esi, offset gMatchData_00761c8c
             jl L00487898
             mov ecx, dword ptr [gTempFile]
             call GetAScalar
@@ -1297,18 +1332,18 @@ void C2_NAKED C2_HOOK_FASTCALL LoadGeneralParameters(void) {
             lea edx, [esp + 0x11c]
             call GetALineAndDontArgue
             lea eax, [esp + 0x11c]
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push eax
             call strtok
             add esp, 8
             mov esi, offset gNet_starting_money
     L004879b2:
             push esi
-            push offset gPed_flags_0058f2e4+0x134
+            push 0x58f418
             push eax
             call sscanf
             add esp, 0xc
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push 0
             call strtok
             add esi, 4
@@ -1324,23 +1359,23 @@ void C2_NAKED C2_HOOK_FASTCALL LoadGeneralParameters(void) {
             lea edx, [esp + 0x1c]
             call GetALineAndDontArgue
             lea ecx, [esp + 0x1c]
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push ecx
             call strtok
             add esp, 8
             mov esi, offset gRepair_cost+0xc
     L00487a1b:
             push esi
-            push offset gMini_map_glowing_line_animation_indices+0x7dc
+            push 0x65718c
             push eax
             call sscanf
             add esp, 0xc
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push 0
             call strtok
             add esi, 4
             add esp, 8
-            cmp esi, offset gRepair_cost+0x2c
+            cmp esi, offset gMatchData_00761d2c
             jl L00487a1b
             mov ecx, dword ptr [gTempFile]
             push offset gRecovery_cost+0x8
@@ -1351,18 +1386,18 @@ void C2_NAKED C2_HOOK_FASTCALL LoadGeneralParameters(void) {
             lea edx, [esp + 0x1c]
             call GetALineAndDontArgue
             lea edx, [esp + 0x1c]
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push edx
             call strtok
             add esp, 8
             mov esi, offset gRecovery_cost+0xc
     L00487a84:
             push esi
-            push offset gMini_map_glowing_line_animation_indices+0x7dc
+            push 0x65718c
             push eax
             call sscanf
             add esp, 0xc
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push 0
             call strtok
             add esi, 4
@@ -1378,23 +1413,23 @@ void C2_NAKED C2_HOOK_FASTCALL LoadGeneralParameters(void) {
             lea edx, [esp + 0x1c]
             call GetALineAndDontArgue
             lea eax, [esp + 0x1c]
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push eax
             call strtok
             add esp, 8
             mov esi, offset gCar_softness+0xc
     L00487aed:
             push esi
-            push offset gMini_map_glowing_line_animation_indices+0x7dc
+            push 0x65718c
             push eax
             call sscanf
             add esp, 0xc
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push 0
             call strtok
             add esi, 4
             add esp, 8
-            cmp esi, offset gCar_softness+0x2c
+            cmp esi, offset gMatchData_0075ba4c
             jl L00487aed
             mov ecx, dword ptr [gTempFile]
             push offset gCar_car_damage_multiplier+0x8
@@ -1405,18 +1440,18 @@ void C2_NAKED C2_HOOK_FASTCALL LoadGeneralParameters(void) {
             lea edx, [esp + 0x1c]
             call GetALineAndDontArgue
             lea ecx, [esp + 0x1c]
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push ecx
             call strtok
             add esp, 8
             mov esi, offset gCar_car_damage_multiplier+0xc
     L00487b56:
             push esi
-            push offset gMini_map_glowing_line_animation_indices+0x7dc
+            push 0x65718c
             push eax
             call sscanf
             add esp, 0xc
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push 0
             call strtok
             add esi, 4
@@ -1427,18 +1462,18 @@ void C2_NAKED C2_HOOK_FASTCALL LoadGeneralParameters(void) {
             lea edx, [esp + 0x11c]
             call GetALineAndDontArgue
             lea edx, [esp + 0x11c]
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push edx
             call strtok
             add esp, 8
             mov esi, offset gNet_score_targets
     L00487bab:
             push esi
-            push offset gPed_flags_0058f2e4+0x134
+            push 0x58f418
             push eax
             call sscanf
             add esp, 0xc
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push 0
             call strtok
             add esi, 4
@@ -1506,7 +1541,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadGeneralParameters(void) {
             fild dword ptr [esp + 0xc]
     L00487ccc:
             fld dword ptr [esi + gRecovery_cost]
-            fmul dword ptr [gDouble_0058a068+0x1c0]
+            fmul dword ptr [gMatchFloat_0058a228]
             fdivr st(0), st(1)
             call _ftol
             mov dword ptr [esi + gAuto_increase_credits_dt], eax
@@ -1518,7 +1553,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadGeneralParameters(void) {
             fstp st(0)
             call GetALineAndDontArgue
             lea eax, [esp + 0x11c]
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push eax
             call strtok
             add esp, 8
@@ -1526,7 +1561,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadGeneralParameters(void) {
     L00487d18:
             lea ecx, [esp + 0x18]
             push ecx
-            push offset gPed_flags_0058f2e4+0x134
+            push 0x58f418
             push eax
             call sscanf
             mov eax, dword ptr [esp + 0x24]
@@ -1538,10 +1573,10 @@ void C2_NAKED C2_HOOK_FASTCALL LoadGeneralParameters(void) {
             mov dword ptr [esp + 0xc], edx
             fild dword ptr [esp + 0xc]
             fld dword ptr [esi + gRecovery_cost+0xc]
-            fmul dword ptr [gDouble_0058a068+0x1c0]
+            fmul dword ptr [gMatchFloat_0058a228]
             fdivp st(1), st(0)
             call _ftol
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push 0
             mov dword ptr [esi + gNet_auto_increase_credits_dt], eax
             call strtok
@@ -1860,7 +1895,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadRaces(tRace_list_spec* pRace_list, int* pCoun
 #else
     __asm {
             sub esp, 0x304
-            mov eax, dword ptr ds:[gApplicationDataTwtMounted]
+            mov eax, dword ptr [gApplicationDataTwtMounted]
             push ebx
             push ebp
             push esi
@@ -1878,7 +1913,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadRaces(tRace_list_spec* pRace_list, int* pCoun
             mov eax, dword ptr [esp + 0x318]
             mov edx, offset gApplication_path
             inc eax
-            mov dword ptr ds:[gCurrent_race_file_index], eax
+            mov dword ptr [gCurrent_race_file_index], eax
             mov ecx, dword ptr [eax*4 + gRaces_file_names]
             push ecx
             lea ecx, [esp + 0x118]
@@ -1896,7 +1931,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadRaces(tRace_list_spec* pRace_list, int* pCoun
             mov ecx, ebx
             call GetAnInt
             mov ecx, ebx
-            mov dword ptr ds:[gDev_initial_race], esi
+            mov dword ptr [gDev_initial_race], esi
             call GetAScalar
             fstp dword ptr [esp + 0x28]
             mov ecx, ebx
@@ -1918,7 +1953,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadRaces(tRace_list_spec* pRace_list, int* pCoun
             mov ecx, ebx
             call GetAScalar
             fstp dword ptr [esp + 0x38]
-            mov dword ptr ds:[gCountRaceGroups], esi
+            mov dword ptr [gCountRaceGroups], esi
             mov dword ptr [esp + 0x10], esi
             add ebp, 0x40
     L0048c29a:
@@ -2042,7 +2077,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadRaces(tRace_list_spec* pRace_list, int* pCoun
             test eax, eax
             mov dword ptr [ebp + 0x150], eax
             je L0048c3f7
-            inc dword ptr ds:[gCountRaceGroups]
+            inc dword ptr [gCountRaceGroups]
     L0048c3f7:
             mov ecx, ebx
             call GetAnInt
@@ -2142,7 +2177,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadRaces(tRace_list_spec* pRace_list, int* pCoun
             mov ecx, ebx
             mov edx, esi
             call GetALineAndDontArgue
-            mov edx, 0x657d10
+            mov edx, offset gMatchString_00657d10
             mov ecx, esi
             call DRStricmp
             test eax, eax
@@ -2174,14 +2209,14 @@ void C2_NAKED C2_HOOK_FASTCALL LoadRaces(tRace_list_spec* pRace_list, int* pCoun
             mov ecx, ebx
             mov dword ptr [esi], edx
             call PFfclose
-            mov eax, dword ptr ds:[gRace_groups]
+            mov eax, dword ptr [gRace_groups]
             test eax, eax
             je L0048c5cc
             push eax
             call BrMemFree
             add esp, 4
     L0048c5cc:
-            mov eax, dword ptr ds:[gCountRaceGroups]
+            mov eax, dword ptr [gCountRaceGroups]
             test eax, eax
             jne L0048c5da
             mov eax, 1
@@ -2193,7 +2228,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadRaces(tRace_list_spec* pRace_list, int* pCoun
             call BrMemAllocate
             mov ebx, dword ptr [esp + 0x28]
             mov edi, eax
-            mov dword ptr ds:[gRace_groups], eax
+            mov dword ptr [gRace_groups], eax
             add esp, 8
             mov dword ptr [edi], 0
             mov dword ptr [edi + 4], ebx
@@ -2209,7 +2244,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadRaces(tRace_list_spec* pRace_list, int* pCoun
             mov esi, dword ptr [esp + 0x1c]
     L0048c629:
             fld dword ptr [ebx - 0x14]
-            fcomp dword ptr ds:[0x58a250]
+            fcomp dword ptr [gMatchData_0058a250]
             fnstsw ax
             test ah, 0x41
             je L0048c662
@@ -2217,7 +2252,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadRaces(tRace_list_spec* pRace_list, int* pCoun
             fild dword ptr [esp + 0x10]
             fld dword ptr [esp + 0x38]
             fxch st(2)
-            fsub qword ptr ds:[0x58a258]
+            fsub qword ptr [gMatchDouble_0058a258]
             fxch st(2)
             fsub dword ptr [esp + 0x2c]
             fxch st(2)
@@ -2235,7 +2270,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadRaces(tRace_list_spec* pRace_list, int* pCoun
             fild dword ptr [esp + 0x10]
             fld dword ptr [esp + 0x44]
             fxch st(2)
-            fsub qword ptr ds:[0x58a258]
+            fsub qword ptr [gMatchDouble_0058a258]
             fxch st(2)
             fsub dword ptr [esp + 0x28]
             fxch st(2)
@@ -2263,7 +2298,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadRaces(tRace_list_spec* pRace_list, int* pCoun
             fild dword ptr [esp + 0x10]
             fld dword ptr [esp + 0x40]
             fxch st(2)
-            fsub qword ptr ds:[0x58a258]
+            fsub qword ptr [gMatchDouble_0058a258]
             fld dword ptr [esp + 0x48]
             fxch st(3)
             fsub dword ptr [esp + 0x34]
@@ -2296,7 +2331,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadRaces(tRace_list_spec* pRace_list, int* pCoun
             fild dword ptr [esp + 0x24]
             fld st(2)
             fxch st(2)
-            fsub qword ptr ds:[0x58a258]
+            fsub qword ptr [gMatchDouble_0058a258]
             fdivp st(1), st(0)
             fxch st(1)
             fmulp st(1), st(0)
@@ -2338,13 +2373,13 @@ void C2_NAKED C2_HOOK_FASTCALL LoadRaces(tRace_list_spec* pRace_list, int* pCoun
             je L0048c7cd
             lea eax, [ebx - 0x194]
             mov dword ptr [edi + 8], eax
-            mov edx, dword ptr ds:[gRace_groups]
+            mov edx, dword ptr [gRace_groups]
             add edi, 0xc
             mov eax, 0x2aaaaaab
             mov ecx, edi
             sub ecx, edx
             imul ecx
-            mov eax, dword ptr ds:[gCountRaceGroups]
+            mov eax, dword ptr [gCountRaceGroups]
             sar edx, 1
             mov ecx, edx
             shr ecx, 0x1f
@@ -2369,10 +2404,10 @@ void C2_NAKED C2_HOOK_FASTCALL LoadRaces(tRace_list_spec* pRace_list, int* pCoun
             mov dword ptr [esp + 0x14], eax
             jl L0048c625
     L0048c7f6:
-            mov eax, dword ptr ds:[gApplicationDataTwtMounted]
-            mov ecx, dword ptr ds:[gRace_groups]
+            mov eax, dword ptr [gApplicationDataTwtMounted]
+            mov ecx, dword ptr [gRace_groups]
             test eax, eax
-            mov dword ptr ds:[gCurrent_race_group], ecx
+            mov dword ptr [gCurrent_race_group], ecx
             jne L0048c814
             mov ecx, dword ptr [esp + 0x3c]
             call ClosePackFileAndSetTiffLoading
@@ -2408,6 +2443,22 @@ void C2_NAKED C2_HOOK_FASTCALL LoadRaces(tRace_list_spec* pRace_list, int* pCoun
             _emit 0xc4
             _emit 0x48
             _emit 0x00
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0xc3
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
             _emit 0x90
             _emit 0x90
             _emit 0x90
@@ -2568,14 +2619,14 @@ void C2_NAKED C2_HOOK_FASTCALL LoadMiscStrings(void) {
             push esi
             push edi
             jne L0048cfdd
-            mov eax, offset gNet_avail_names+0x848
+            mov eax, 0x657da0
             mov dword ptr [gPedTextTxtPath], eax
     L0048cfdd:
             push eax
             mov edx, offset gApplication_path
             lea ecx, [esp + 0x114]
             call PathCat
-            mov edx, offset gNext_crush_actor_id+0x180
+            mov edx, 0x58f9e0
             lea ecx, [esp + 0x110]
             call DRfopen
             mov ebp, eax
@@ -2663,6 +2714,19 @@ void C2_NAKED C2_HOOK_FASTCALL LoadMiscStrings(void) {
             pop ebx
             add esp, 0x200
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }

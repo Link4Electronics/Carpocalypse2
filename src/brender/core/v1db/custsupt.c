@@ -27,6 +27,19 @@ extern void C2_HOOK_CDECL BrMatrix4Mul34();
 extern char IID_IDirectInputDevice2A[];
 extern br_v1db_state v1db;
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gData_0058b7f8[];
+extern char gDouble_0058b808[];
+extern char gDouble_0058b830[];
+extern char gFloat_0058b828[];
+extern char gFloat_0058b82c[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchDouble_0058b808[];
+extern char gMatchDouble_0058b830[];
+extern char gMatchFloat_0058b828[];
+extern char gMatchFloat_0058b82c[];
+#endif
 // FUNCTION: CARMA2_HW 0x00540560
 void C2_HOOK_CDECL BrSetScreenZOffset(br_uint_32 pOffset) {
 
@@ -218,7 +231,7 @@ br_uint_32 C2_NAKED C2_HOOK_CDECL BrOriginToScreenXYZO(br_vector3* screen) {
             fadd dword ptr [v1db+0x4f0]
             fstp dword ptr [eax + 4]
             fld dword ptr [v1db+0x58]
-            fmul qword ptr [IID_IDirectInputDevice2A+0x470]
+            fmul qword ptr [gMatchDouble_0058b808]
             fld dword ptr [gScreenZOffset]
             fld dword ptr [v1db+0x5c]
             fdivp st(2), st(0)
@@ -230,6 +243,9 @@ br_uint_32 C2_NAKED C2_HOOK_CDECL BrOriginToScreenXYZO(br_vector3* screen) {
             pop esi
             add esp, 0x74
             ret
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -375,7 +391,7 @@ br_uint_32 C2_NAKED C2_HOOK_CDECL BrPointToScreenXYZO(br_vector3* screen, const 
             mov eax, dword ptr [esp + 0x8c]
             fadd dword ptr [v1db+0x4ec]
             fxch st(2)
-            fmul qword ptr [IID_IDirectInputDevice2A+0x470]
+            fmul qword ptr [gMatchDouble_0058b808]
             fxch st(2)
             _emit 0xd9
         _emit 0x18
@@ -395,6 +411,14 @@ br_uint_32 C2_NAKED C2_HOOK_CDECL BrPointToScreenXYZO(br_vector3* screen, const 
             pop esi
             add esp, 0x84
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -556,7 +580,7 @@ void C2_NAKED C2_HOOK_CDECL BrPointToScreenXYZOMany(br_vector3* screens, br_uint
             fdiv dword ptr [esp + 0x20]
             fadd dword ptr [v1db+0x4ec]
             fxch st(2)
-            fmul qword ptr [IID_IDirectInputDevice2A+0x470]
+            fmul qword ptr [gMatchDouble_0058b808]
             fxch st(2)
             _emit 0xd9
         _emit 0x1b
@@ -586,6 +610,21 @@ void C2_NAKED C2_HOOK_CDECL BrPointToScreenXYZOMany(br_vector3* screens, br_uint
             pop ebx
             add esp, 0x84
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -652,7 +691,7 @@ br_scalar C2_NAKED C2_HOOK_CDECL BrZsScreenZToDepth(br_scalar sz, br_camera* cam
             mov dword ptr [esp + 0xc], ecx
             fld dword ptr [esp + 0xc]
             fld dword ptr [esp + 8]
-            fmul dword ptr ds:[0x58b828]
+            fmul dword ptr [gMatchFloat_0058b828]
             fxch st(1)
             fsub st(0), st(2)
             fld dword ptr [esp + 0xc]
@@ -662,12 +701,17 @@ br_scalar C2_NAKED C2_HOOK_CDECL BrZsScreenZToDepth(br_scalar sz, br_camera* cam
             fadd st(0), st(2)
             fld dword ptr [esp + 8]
             fxch st(2)
-            fmul dword ptr ds:[0x58b82c]
+            fmul dword ptr [gMatchFloat_0058b82c]
             fxch st(2)
-            fcomp dword ptr ds:[0x58b818]
+            _emit 0xd8
+        _emit 0x1d
+        _emit 0x18
+        _emit 0xb8
+        _emit 0x58
+        _emit 0x00
             faddp st(1), st(0)
             fnstsw ax
-            fmul dword ptr ds:[0x58b828]
+            fmul dword ptr [gMatchFloat_0058b828]
             test ah, 0x41
             _emit 0xd9
         _emit 0x5c
@@ -676,7 +720,12 @@ br_scalar C2_NAKED C2_HOOK_CDECL BrZsScreenZToDepth(br_scalar sz, br_camera* cam
             jne L00527391
             fstp st(0)
             fld dword ptr [esp + 8]
-            fcomp dword ptr ds:[0x58b81c]
+            _emit 0xd8
+        _emit 0x1d
+        _emit 0x1c
+        _emit 0xb8
+        _emit 0x58
+        _emit 0x00
             fnstsw ax
             test ah, 1
             jne L0052738d
@@ -691,6 +740,19 @@ br_scalar C2_NAKED C2_HOOK_CDECL BrZsScreenZToDepth(br_scalar sz, br_camera* cam
     L00527391:
             pop ecx
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -725,7 +787,12 @@ br_scalar C2_NAKED C2_HOOK_CDECL BrScreenZToCamera(br_actor* camera, br_scalar s
             mov eax, dword ptr [esp + 8]
             fld dword ptr [esp + 0xc]
             mov ecx, dword ptr [eax + 0x5c]
-            fcomp dword ptr ds:[0x58b818]
+            _emit 0xd8
+        _emit 0x1d
+        _emit 0x18
+        _emit 0xb8
+        _emit 0x58
+        _emit 0x00
             mov eax, dword ptr [ecx + 0xc]
             mov edx, dword ptr [ecx + 8]
             mov dword ptr [esp + 8], eax
@@ -742,7 +809,12 @@ br_scalar C2_NAKED C2_HOOK_CDECL BrScreenZToCamera(br_actor* camera, br_scalar s
             ret
     L005273cf:
             fld dword ptr [esp + 0xc]
-            fcomp dword ptr ds:[0x58b81c]
+            _emit 0xd8
+        _emit 0x1d
+        _emit 0x1c
+        _emit 0xb8
+        _emit 0x58
+        _emit 0x00
             fnstsw ax
             test ah, 1
             jne L005273e8
@@ -757,7 +829,12 @@ br_scalar C2_NAKED C2_HOOK_CDECL BrScreenZToCamera(br_actor* camera, br_scalar s
             je L0052743b
             dec eax
             je L005273fd
-            fld dword ptr ds:[0x58b800]
+            _emit 0xd9
+        _emit 0x05
+        _emit 0x00
+        _emit 0xb8
+        _emit 0x58
+        _emit 0x00
             pop ecx
             ret
     L005273fd:
@@ -768,7 +845,7 @@ br_scalar C2_NAKED C2_HOOK_CDECL BrScreenZToCamera(br_actor* camera, br_scalar s
         _emit 0x24
         _emit 0x00
             fxch st(1)
-            fmul dword ptr ds:[0x58b828]
+            fmul dword ptr [gMatchFloat_0058b828]
             fld dword ptr [esp + 8]
             fxch st(1)
             fmulp st(2), st(0)
@@ -778,7 +855,7 @@ br_scalar C2_NAKED C2_HOOK_CDECL BrScreenZToCamera(br_actor* camera, br_scalar s
         _emit 0x00
             fld dword ptr [esp + 8]
             fxch st(2)
-            fmul dword ptr ds:[0x58b82c]
+            fmul dword ptr [gMatchFloat_0058b82c]
             fxch st(2)
             _emit 0xd8
         _emit 0x4c
@@ -798,10 +875,10 @@ br_scalar C2_NAKED C2_HOOK_CDECL BrScreenZToCamera(br_actor* camera, br_scalar s
         _emit 0x00
             fsub dword ptr [esp + 8]
             fld dword ptr [esp + 0xc]
-            fmul dword ptr ds:[0x58b828]
+            fmul dword ptr [gMatchFloat_0058b828]
             fld dword ptr [esp + 8]
             fxch st(2)
-            fmul dword ptr ds:[0x58b828]
+            fmul dword ptr [gMatchFloat_0058b828]
             fxch st(2)
             _emit 0xd8
         _emit 0x44
@@ -810,12 +887,21 @@ br_scalar C2_NAKED C2_HOOK_CDECL BrScreenZToCamera(br_actor* camera, br_scalar s
             fxch st(1)
             fmulp st(2), st(0)
             fxch st(1)
-            fmul dword ptr ds:[0x58b82c]
+            fmul dword ptr [gMatchFloat_0058b82c]
             fxch st(1)
-            fmul dword ptr ds:[0x58b828]
+            fmul dword ptr [gMatchFloat_0058b828]
             fsubp st(1), st(0)
             pop ecx
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -905,7 +991,7 @@ void C2_NAKED C2_HOOK_CDECL BrScreenXYZToCamera(br_vector3* point, br_actor* cam
             mov dword ptr [esp + 0x1c], eax
             mov eax, dword ptr [esp + 0xc]
             fild dword ptr [esp + 0x1c]
-            fmul qword ptr [IID_IDirectInputDevice2A+0x498]
+            fmul qword ptr [gMatchDouble_0058b830]
             fld dword ptr [esp + 0x10]
             fxch st(2)
             fmul st(0), st(3)
@@ -947,7 +1033,7 @@ void C2_NAKED C2_HOOK_CDECL BrScreenXYZToCamera(br_vector3* point, br_actor* cam
             mov eax, dword ptr [esp + 0xc]
             fchs
             fxch st(1)
-            fmul dword ptr [IID_IDirectInputDevice2A+0x490]
+            fmul dword ptr [gMatchFloat_0058b828]
             _emit 0xd9
         _emit 0x18
             fld dword ptr [esi + 0x18]
@@ -955,7 +1041,7 @@ void C2_NAKED C2_HOOK_CDECL BrScreenXYZToCamera(br_vector3* point, br_actor* cam
             fmulp st(1), st(0)
             fld dword ptr [esp + 0x10]
             fxch st(1)
-            fmul dword ptr [IID_IDirectInputDevice2A+0x490]
+            fmul dword ptr [gMatchFloat_0058b828]
             fxch st(1)
             fstp dword ptr [eax + 8]
             fstp dword ptr [eax + 4]

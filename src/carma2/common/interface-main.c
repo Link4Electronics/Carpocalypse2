@@ -196,6 +196,14 @@ extern int gNumber_of_races;
 extern tOpponent* gOpponents;
 extern int gTyping;
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gString_0058fd6c[];
+extern char gString_0065574c[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchString_0058fd6c[];
+extern char gMatchString_0065574c[];
+#endif
 // FUNCTION: CARMA2_HW 0x00576c00
 int C2_NAKED C2_HOOK_CDECL sub_576c00(int pValue, int pDivisor) {
 #ifndef CARPOCALYPSE2_MATCHING
@@ -359,7 +367,7 @@ int C2_NAKED C2_HOOK_FASTCALL MainMenuInfunc(tFrontend_spec* pFrontend) {
             call IString_Get
             lea edx, [esp + 0x20]
             push eax
-            push offset gNext_crush_actor_id+0x50c
+            push offset gMatchString_0058fd6c
             push edx
             call sprintf
             lea edi, [esp + 0x2c]
@@ -931,7 +939,7 @@ int C2_NAKED C2_HOOK_FASTCALL FRONTEND_MainMenuHandler(tFrontend_spec* pFrontend
             mov edx, dword ptr [gBack_screen]
             xor ecx, ecx
             mov cx, word ptr [edx + 0x36]
-            mov edx, offset gFrontend_QUIT+0xb95c
+            mov edx, offset gMatchString_0065574c
             sub ecx, eax
             sub ecx, 4
             push ecx
@@ -940,7 +948,7 @@ int C2_NAKED C2_HOOK_FASTCALL FRONTEND_MainMenuHandler(tFrontend_spec* pFrontend
             mov edx, dword ptr [gBack_screen]
             xor ecx, ecx
             mov cx, word ptr [edx + 0x34]
-            mov edx, offset gFrontend_QUIT+0xb95c
+            mov edx, offset gMatchString_0065574c
             sub ecx, eax
             sub ecx, 4
             push ecx
@@ -1006,7 +1014,7 @@ int C2_NAKED C2_HOOK_FASTCALL FRONTEND_MainMenuHandler(tFrontend_spec* pFrontend
             je L0046a2a3
             push 0x1f
             lea eax, [esp + 0x16]
-            push offset gFlic_bunch+0x10f8
+            push 0x59ad08
             push eax
             call sprintf
             mov ecx, dword ptr [ebx]
@@ -1629,6 +1637,13 @@ int C2_NAKED C2_HOOK_FASTCALL FRONTEND_MainMenuHandler(tFrontend_spec* pFrontend
             pop ebx
             add esp, 0x18
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -1829,7 +1844,7 @@ int C2_NAKED C2_HOOK_FASTCALL MainMenuSelectRace(tFrontend_spec* pFrontend) {
             call IString_Get
             lea edx, [esp + 0x18]
             push eax
-            push offset gNext_crush_actor_id+0x50c
+            push offset gMatchString_0058fd6c
             push edx
             call sprintf
             lea edi, [esp + 0x24]

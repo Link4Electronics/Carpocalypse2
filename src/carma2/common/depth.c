@@ -172,6 +172,60 @@ extern tU32 C2_HOOK_FASTCALL PDGetTotalTime(void);
 extern void __cdecl _CIfmod();
 extern void __cdecl _CIpow();
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gData_00589cc0[];
+extern char gDouble_00589ca8[];
+extern char gDouble_00589cb0[];
+extern char gDouble_00589cb8[];
+extern char gDouble_00589cd0[];
+extern char gDouble_00589cd8[];
+extern char gDouble_00589ce0[];
+extern char gDouble_00589cf0[];
+extern char gDouble_00589d10[];
+extern char gFloat_00589cc4[];
+extern char gFloat_00589cc8[];
+extern char gFloat_00589ce8[];
+extern char gFloat_00589cec[];
+extern char gFloat_00589cf8[];
+extern char gFloat_00589d00[];
+extern char gFloat_00589d04[];
+extern char gFloat_00589d08[];
+extern char gFloat_00589d0c[];
+extern char gString_00591218[];
+extern char gString_00591224[];
+extern char gString_00591230[];
+extern char gString_0059123c[];
+extern char gString_00591248[];
+extern char gString_00591254[];
+extern char gString_0059125c[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchData_00589cc0[];
+extern char gMatchDouble_00589ca8[];
+extern char gMatchDouble_00589cb0[];
+extern char gMatchDouble_00589cb8[];
+extern char gMatchDouble_00589cd0[];
+extern char gMatchDouble_00589cd8[];
+extern char gMatchDouble_00589ce0[];
+extern char gMatchDouble_00589cf0[];
+extern char gMatchDouble_00589d10[];
+extern char gMatchFloat_00589cc4[];
+extern char gMatchFloat_00589cc8[];
+extern char gMatchFloat_00589ce8[];
+extern char gMatchFloat_00589cec[];
+extern char gMatchFloat_00589cf8[];
+extern char gMatchFloat_00589d00[];
+extern char gMatchFloat_00589d04[];
+extern char gMatchFloat_00589d08[];
+extern char gMatchFloat_00589d0c[];
+extern char gMatchString_00591218[];
+extern char gMatchString_00591224[];
+extern char gMatchString_00591230[];
+extern char gMatchString_0059123c[];
+extern char gMatchString_00591248[];
+extern char gMatchString_00591254[];
+extern char gMatchString_0059125c[];
+#endif
 // FUNCTION: CARMA2_HW 0x00413f10
 intptr_t C2_HOOK_CDECL SwitchCarModel(br_actor* pActor, void* pData) {
     if (pActor->user != NULL) {
@@ -426,7 +480,7 @@ void C2_NAKED C2_HOOK_FAKE_THISCALL DoHorizon(br_pixelmap* pRender_buffer, undef
             mov dword ptr [esp + 0x18], edi
             mov bp, word ptr [esi + 0x34]
             mov dword ptr [esp + 0x1c], 0
-            fmul qword ptr [gFloat_00589c40+0x90]
+            fmul qword ptr [gMatchDouble_00589cd0]
             fld dword ptr [eax + 0x10]
             mov dword ptr [esp + 0x14], ebp
             fld st(1)
@@ -446,20 +500,20 @@ void C2_NAKED C2_HOOK_FAKE_THISCALL DoHorizon(br_pixelmap* pRender_buffer, undef
             fstp dword ptr [esp + 0x24]
             fxch st(1)
             fmul dword ptr [esp + 0x24]
-            fld qword ptr [gFloat_00589c40+0x78]
+            fld qword ptr [gMatchDouble_00589cb8]
             fxch st(2)
             fdivp st(1), st(0)
             fxch st(1)
             fpatan
-            fmul qword ptr [gFloat_00589c40+0x98]
+            fmul qword ptr [gMatchDouble_00589cd8]
             call _ftol
             shl eax, 1
             and eax, 0xffff
             mov dword ptr [esp + 0x18], eax
             fild dword ptr [esp + 0x18]
-            fmul qword ptr [gFloat_00589c40+0xa0]
-            fdivr dword ptr [gFloat_00589c40+0x84]
-            fsub dword ptr [gFloat_00589c40+0xa8]
+            fmul qword ptr [gMatchDouble_00589ce0]
+            fdivr dword ptr [gMatchFloat_00589cc4]
+            fsub dword ptr [gMatchFloat_00589ce8]
             call _ftol
             mov ecx, dword ptr [esp + 0x28]
             fld dword ptr [ecx + 0x18]
@@ -470,7 +524,7 @@ void C2_NAKED C2_HOOK_FAKE_THISCALL DoHorizon(br_pixelmap* pRender_buffer, undef
             idiv ecx
             fpatan
             mov dword ptr [esp + 0x18], eax
-            fmul qword ptr [gFloat_00589c40+0x98]
+            fmul qword ptr [gMatchDouble_00589cd8]
             call _ftol
             mov dx, ax
             mov eax, dword ptr [esp + 0x18]
@@ -480,9 +534,9 @@ void C2_NAKED C2_HOOK_FAKE_THISCALL DoHorizon(br_pixelmap* pRender_buffer, undef
             mov dword ptr [esp + 0x18], edx
             fild dword ptr [esp + 0x14]
             fild dword ptr [esp + 0x18]
-            fmul qword ptr [gFloat_00589c40+0xa0]
+            fmul qword ptr [gMatchDouble_00589ce0]
             fxch st(1)
-            fmul qword ptr [gFloat_00589c40+0xa0]
+            fmul qword ptr [gMatchDouble_00589ce0]
             fst dword ptr [esp + 0x18]
             fdivp st(1), st(0)
             fchs
@@ -527,7 +581,7 @@ void C2_NAKED C2_HOOK_FAKE_THISCALL DoHorizon(br_pixelmap* pRender_buffer, undef
             fdiv dword ptr [esp + 0x10]
             fild dword ptr [esp + 0x18]
             fmulp st(1), st(0)
-            fmul dword ptr [gFloat_00589c40+0xac]
+            fmul dword ptr [gMatchFloat_00589cec]
             call _ftol
             xor edx, edx
             mov ecx, eax
@@ -639,6 +693,15 @@ void C2_NAKED C2_HOOK_FAKE_THISCALL DoHorizon(br_pixelmap* pRender_buffer, undef
             pop ebx
             add esp, 0x10
             ret 8
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -750,9 +813,9 @@ void C2_NAKED C2_HOOK_FASTCALL MungeSkyModel(br_actor* pCamera, br_model* pModel
             mov dword ptr [esp + 0x1c], eax
             fild dword ptr [esp + 0x1c]
             fld dword ptr [edi + 0xc]
-            fsub dword ptr [gFloat_00589c40+0x84]
+            fsub dword ptr [gMatchFloat_00589cc4]
             fxch st(1)
-            fmul qword ptr [gFloat_00589c40+0x90]
+            fmul qword ptr [gMatchDouble_00589cd0]
             fxch st(1)
             fstp dword ptr [esp + 0x14]
             fld dword ptr [edi + 0x10]
@@ -786,7 +849,7 @@ void C2_NAKED C2_HOOK_FASTCALL MungeSkyModel(br_actor* pCamera, br_model* pModel
             fxch st(1)
             fxch st(2)
             fpatan
-            fmul qword ptr [gFloat_00589c40+0x98]
+            fmul qword ptr [gMatchDouble_00589cd8]
             call _ftol
             mov cx, word ptr [gSky_image_width]
             mov ebp, eax
@@ -799,10 +862,10 @@ void C2_NAKED C2_HOOK_FASTCALL MungeSkyModel(br_actor* pCamera, br_model* pModel
             mov dword ptr [esp + 0x1c], eax
             mov dword ptr [esp + 0x10], edx
             fild dword ptr [esp + 0x1c]
-            fld qword ptr [gFloat_00589c40+0xb0]
+            fld qword ptr [gMatchDouble_00589cf0]
             fcos
             fxch st(1)
-            fmul qword ptr [gFloat_00589c40+0x90]
+            fmul qword ptr [gMatchDouble_00589cd0]
             fild dword ptr [esp + 0x10]
             fxch st(2)
             fstp dword ptr [esp + 0x1c]
@@ -814,7 +877,7 @@ void C2_NAKED C2_HOOK_FASTCALL MungeSkyModel(br_actor* pCamera, br_model* pModel
             fsin
             fld dword ptr [esp + 0x1c]
             fxch st(4)
-            fmul qword ptr [gFloat_00589c40+0x90]
+            fmul qword ptr [gMatchDouble_00589cd0]
             fxch st(2)
             fst dword ptr [esp + 0x1c]
             fxch st(4)
@@ -823,7 +886,7 @@ void C2_NAKED C2_HOOK_FASTCALL MungeSkyModel(br_actor* pCamera, br_model* pModel
             fxch st(2)
             fst dword ptr [esp + 0x1c]
             fxch st(4)
-            fsub dword ptr [gFloat_00589c40+0xb8]
+            fsub dword ptr [gMatchFloat_00589cf8]
             fxch st(1)
             fst dword ptr [esp + 0x1c]
             fxch st(4)
@@ -844,11 +907,11 @@ void C2_NAKED C2_HOOK_FASTCALL MungeSkyModel(br_actor* pCamera, br_model* pModel
             fstp dword ptr [gSky_width]
             fstp dword ptr [gSky_height]
             fld dword ptr [edi + 0xc]
-            fmul dword ptr [gFloat_00589c40+0xc0]
+            fmul dword ptr [gMatchFloat_00589d00]
             fxch st(2)
-            fmul dword ptr [gFloat_00589c40+0xac]
+            fmul dword ptr [gMatchFloat_00589cec]
             fxch st(2)
-            fmul dword ptr [gFloat_00589c40+0xc4]
+            fmul dword ptr [gMatchFloat_00589d04]
             fdiv dword ptr [gSky_width]
             fstp st(1)
             fld st(0)
@@ -857,18 +920,18 @@ void C2_NAKED C2_HOOK_FASTCALL MungeSkyModel(br_actor* pCamera, br_model* pModel
             fild dword ptr [esp + 0x10]
             fxch st(1)
             fsub st(0), st(1)
-            fcomp dword ptr [gFloat_00589c40+0xac]
+            fcomp dword ptr [gMatchFloat_00589cec]
             fnstsw ax
             test ah, 0x41
             jne L00445fad
-            fsub dword ptr [gFloat_00589c40+0xb8]
+            fsub dword ptr [gMatchFloat_00589cf8]
     L00445fad:
-            fmul dword ptr [gFloat_00589c40+0xc8]
+            fmul dword ptr [gMatchFloat_00589d08]
             fmul dword ptr [gSky_width]
             fstp dword ptr [gSky_x_multiplier]
             fld dword ptr [edi + 0xc]
-            fmul dword ptr [gFloat_00589c40+0xc0]
-            fmul dword ptr [gFloat_00589c40+0xc4]
+            fmul dword ptr [gMatchFloat_00589d00]
+            fmul dword ptr [gMatchFloat_00589d04]
             fdiv dword ptr [gSky_height]
             fld st(0)
             call _ftol
@@ -876,13 +939,13 @@ void C2_NAKED C2_HOOK_FASTCALL MungeSkyModel(br_actor* pCamera, br_model* pModel
             fild dword ptr [esp + 0x10]
             fxch st(1)
             fsub st(0), st(1)
-            fcomp dword ptr [gFloat_00589c40+0xac]
+            fcomp dword ptr [gMatchFloat_00589cec]
             fnstsw ax
             test ah, 0x41
             jne L00445ffa
-            fsub dword ptr [gFloat_00589c40+0xb8]
+            fsub dword ptr [gMatchFloat_00589cf8]
     L00445ffa:
-            fmul dword ptr [gFloat_00589c40+0xc8]
+            fmul dword ptr [gMatchFloat_00589d08]
             xor cl, cl
             xor eax, eax
             fmul dword ptr [gSky_height]
@@ -957,7 +1020,7 @@ void C2_NAKED C2_HOOK_FASTCALL MungeSkyModel(br_actor* pCamera, br_model* pModel
             jl L004460bf
             fstp st(0)
             fld dword ptr [esp + 0x18]
-            fmul dword ptr [gFloat_00589c40+0xa8]
+            fmul dword ptr [gMatchFloat_00589ce8]
             mov cl, 1
             mov eax, 1
     L004460f0:
@@ -972,7 +1035,7 @@ void C2_NAKED C2_HOOK_FASTCALL MungeSkyModel(br_actor* pCamera, br_model* pModel
             jl L004460f0
             fstp st(0)
             fld dword ptr [esp + 0x18]
-            fmul dword ptr [gFloat_00589c40+0xac]
+            fmul dword ptr [gMatchFloat_00589cec]
             mov cl, 2
             mov eax, 2
     L00446121:
@@ -1024,7 +1087,7 @@ void C2_NAKED C2_HOOK_FASTCALL MungeSkyModel(br_actor* pCamera, br_model* pModel
             fild dword ptr [esp + 0x18]
             and eax, 0xff
             add cl, 4
-            fmul qword ptr [gFloat_00589c40+0x90]
+            fmul qword ptr [gMatchDouble_00589cd0]
             lea eax, [eax + eax*4]
             shl eax, 3
             fld st(0)
@@ -1064,7 +1127,7 @@ void C2_NAKED C2_HOOK_FASTCALL MungeSkyModel(br_actor* pCamera, br_model* pModel
             fild dword ptr [esp + 0x1c]
             lea eax, [eax + eax*4]
             shl eax, 3
-            fmul qword ptr [gFloat_00589c40+0x90]
+            fmul qword ptr [gMatchDouble_00589cd0]
             cmp cl, 0x50
             fld st(0)
             fsin
@@ -1098,7 +1161,7 @@ void C2_NAKED C2_HOOK_FASTCALL MungeSkyModel(br_actor* pCamera, br_model* pModel
             mov dword ptr [esp + 0x1c], eax
             lea eax, [ecx + ecx*4]
             mov ecx, dword ptr [esp + 0x1c]
-            fmul qword ptr [gFloat_00589c40+0x90]
+            fmul qword ptr [gMatchDouble_00589cd0]
             shl eax, 3
             inc bl
             cmp dl, 0x54
@@ -1305,9 +1368,9 @@ void C2_NAKED C2_HOOK_FASTCALL DepthEffectSky(br_pixelmap* pRender_buffer, br_pi
             fld dword ptr [ebx + 0x18]
             fld dword ptr [ebx + 0x20]
             fpatan
-            fmul qword ptr ds:[0x589cd8]
+            fmul qword ptr [gMatchDouble_00589cd8]
             call _ftol
-            mov ecx, dword ptr ds:[0x75bbcc]
+            mov ecx, dword ptr [gProgram_state+0x4c]
             mov edi, eax
             test ecx, ecx
             jne L00445cfa
@@ -1365,7 +1428,7 @@ void C2_NAKED C2_HOOK_FASTCALL DepthEffectSky(br_pixelmap* pRender_buffer, br_pi
             mov dword ptr [edx + 0x24], eax
             mov ecx, dword ptr [gHorizon_material]
             add esp, 8
-            fmul qword ptr ds:[0x589ce0]
+            fmul qword ptr [gMatchDouble_00589ce0]
             mov dword ptr [ecx + 0x28], 0
             mov edx, dword ptr [gHorizon_material]
             push 0x7fff
@@ -1377,7 +1440,7 @@ void C2_NAKED C2_HOOK_FASTCALL DepthEffectSky(br_pixelmap* pRender_buffer, br_pi
             mov dword ptr [esp + 0x18], edx
             mov eax, dword ptr [gHorizon_material]
             fild dword ptr [esp + 0x18]
-            fmul qword ptr ds:[0x589ce0]
+            fmul qword ptr [gMatchDouble_00589ce0]
             fxch st(1)
             fxch st(1)
             fdivp st(1), st(0)
@@ -1470,123 +1533,213 @@ void C2_NAKED C2_HOOK_FASTCALL DoWobbleCamera(br_actor* pCamera) {
             push esi
             mov esi, ecx
             call GetTotalTime
-            fld qword ptr ds:[0x589d10]
+            fld qword ptr [gMatchDouble_00589d10]
             mov dword ptr [esp + 4], eax
             mov dword ptr [esp + 8], 0
             fild qword ptr [esp + 4]
             fst dword ptr [esp + 4]
-            fdiv dword ptr ds:[0x5911ac]
-            fmul dword ptr ds:[0x589d0c]
+            _emit 0xd8
+        _emit 0x35
+        _emit 0xac
+        _emit 0x11
+        _emit 0x59
+        _emit 0x00
+            fmul dword ptr [gMatchFloat_00589d0c]
             fxch st(1)
             call _CIfmod
             call _ftol
             mov ecx, eax
             call FastScalarSin
-            fmul dword ptr ds:[0x591194]
+            _emit 0xd8
+        _emit 0x0d
+        _emit 0x94
+        _emit 0x11
+        _emit 0x59
+        _emit 0x00
             fld dword ptr [esp + 4]
-            fld qword ptr ds:[0x589d10]
+            fld qword ptr [gMatchDouble_00589d10]
             fxch st(2)
             fadd dword ptr [esi + 0x2c]
             fstp dword ptr [esi + 0x2c]
-            fdiv dword ptr ds:[0x5911b0]
-            fmul dword ptr ds:[0x589d0c]
+            _emit 0xd8
+        _emit 0x35
+        _emit 0xb0
+        _emit 0x11
+        _emit 0x59
+        _emit 0x00
+            fmul dword ptr [gMatchFloat_00589d0c]
             fxch st(1)
             call _CIfmod
             call _ftol
             mov ecx, eax
             call FastScalarSin
-            fmul dword ptr ds:[0x591198]
+            _emit 0xd8
+        _emit 0x0d
+        _emit 0x98
+        _emit 0x11
+        _emit 0x59
+        _emit 0x00
             fld dword ptr [esp + 4]
-            fld qword ptr ds:[0x589d10]
+            fld qword ptr [gMatchDouble_00589d10]
             fxch st(2)
             fadd dword ptr [esi + 0x30]
             fstp dword ptr [esi + 0x30]
-            fdiv dword ptr ds:[0x5911b4]
-            fmul dword ptr ds:[0x589d0c]
+            _emit 0xd8
+        _emit 0x35
+        _emit 0xb4
+        _emit 0x11
+        _emit 0x59
+        _emit 0x00
+            fmul dword ptr [gMatchFloat_00589d0c]
             fxch st(1)
             call _CIfmod
             call _ftol
             mov ecx, eax
             call FastScalarSin
-            fmul dword ptr ds:[0x59119c]
+            _emit 0xd8
+        _emit 0x0d
+        _emit 0x9c
+        _emit 0x11
+        _emit 0x59
+        _emit 0x00
             fld dword ptr [esp + 4]
-            fld qword ptr ds:[0x589d10]
+            fld qword ptr [gMatchDouble_00589d10]
             fxch st(2)
             fadd dword ptr [esi + 0x34]
             fstp dword ptr [esi + 0x34]
-            fdiv dword ptr ds:[0x5911b8]
-            fmul dword ptr ds:[0x589d0c]
+            _emit 0xd8
+        _emit 0x35
+        _emit 0xb8
+        _emit 0x11
+        _emit 0x59
+        _emit 0x00
+            fmul dword ptr [gMatchFloat_00589d0c]
             fxch st(1)
             call _CIfmod
             call _ftol
             mov ecx, eax
             call FastScalarSin
-            fmul dword ptr ds:[0x5911a0]
+            _emit 0xd8
+        _emit 0x0d
+        _emit 0xa0
+        _emit 0x11
+        _emit 0x59
+        _emit 0x00
             fld dword ptr [esp + 4]
-            fld qword ptr ds:[0x589d10]
+            fld qword ptr [gMatchDouble_00589d10]
             fxch st(2)
             fadd dword ptr [esi + 0x38]
             fstp dword ptr [esi + 0x38]
-            fdiv dword ptr ds:[0x5911bc]
-            fmul dword ptr ds:[0x589d0c]
+            _emit 0xd8
+        _emit 0x35
+        _emit 0xbc
+        _emit 0x11
+        _emit 0x59
+        _emit 0x00
+            fmul dword ptr [gMatchFloat_00589d0c]
             fxch st(1)
             call _CIfmod
             call _ftol
             mov ecx, eax
             call FastScalarSin
-            fmul dword ptr ds:[0x5911a4]
+            _emit 0xd8
+        _emit 0x0d
+        _emit 0xa4
+        _emit 0x11
+        _emit 0x59
+        _emit 0x00
             fld dword ptr [esp + 4]
-            fld qword ptr ds:[0x589d10]
+            fld qword ptr [gMatchDouble_00589d10]
             fxch st(2)
             fadd dword ptr [esi + 0x3c]
             fstp dword ptr [esi + 0x3c]
-            fdiv dword ptr ds:[0x5911c0]
-            fmul dword ptr ds:[0x589d0c]
+            _emit 0xd8
+        _emit 0x35
+        _emit 0xc0
+        _emit 0x11
+        _emit 0x59
+        _emit 0x00
+            fmul dword ptr [gMatchFloat_00589d0c]
             fxch st(1)
             call _CIfmod
             call _ftol
             mov ecx, eax
             call FastScalarSin
-            fmul dword ptr ds:[0x5911a8]
+            _emit 0xd8
+        _emit 0x0d
+        _emit 0xa8
+        _emit 0x11
+        _emit 0x59
+        _emit 0x00
             fld dword ptr [esp + 4]
-            fld qword ptr ds:[0x589d10]
+            fld qword ptr [gMatchDouble_00589d10]
             fxch st(2)
             fadd dword ptr [esi + 0x40]
             fstp dword ptr [esi + 0x40]
-            fdiv dword ptr ds:[0x5911c4]
-            fmul dword ptr ds:[0x589d0c]
+            _emit 0xd8
+        _emit 0x35
+        _emit 0xc4
+        _emit 0x11
+        _emit 0x59
+        _emit 0x00
+            fmul dword ptr [gMatchFloat_00589d0c]
             fxch st(1)
             call _CIfmod
             call _ftol
             mov ecx, eax
             call FastScalarSin
-            fmul dword ptr ds:[0x67c4e4]
+            _emit 0xd8
+        _emit 0x0d
+        _emit 0xe4
+        _emit 0xc4
+        _emit 0x67
+        _emit 0x00
             fld dword ptr [esp + 4]
-            fld qword ptr ds:[0x589d10]
+            fld qword ptr [gMatchDouble_00589d10]
             fxch st(2)
             fadd dword ptr [esi + 0x44]
             fstp dword ptr [esi + 0x44]
-            fdiv dword ptr ds:[0x5911c8]
-            fmul dword ptr ds:[0x589d0c]
+            _emit 0xd8
+        _emit 0x35
+        _emit 0xc8
+        _emit 0x11
+        _emit 0x59
+        _emit 0x00
+            fmul dword ptr [gMatchFloat_00589d0c]
             fxch st(1)
             call _CIfmod
             call _ftol
             mov ecx, eax
             call FastScalarSin
-            fmul dword ptr ds:[0x67c4e8]
+            _emit 0xd8
+        _emit 0x0d
+        _emit 0xe8
+        _emit 0xc4
+        _emit 0x67
+        _emit 0x00
             fld dword ptr [esp + 4]
-            fld qword ptr ds:[0x589d10]
+            fld qword ptr [gMatchDouble_00589d10]
             fxch st(2)
             fadd dword ptr [esi + 0x48]
             fstp dword ptr [esi + 0x48]
-            fdiv dword ptr ds:[0x5911cc]
-            fmul dword ptr ds:[0x589d0c]
+            _emit 0xd8
+        _emit 0x35
+        _emit 0xcc
+        _emit 0x11
+        _emit 0x59
+        _emit 0x00
+            fmul dword ptr [gMatchFloat_00589d0c]
             fxch st(1)
             call _CIfmod
             call _ftol
             mov ecx, eax
             call FastScalarSin
-            fmul dword ptr ds:[0x67c4ec]
+            _emit 0xd8
+        _emit 0x0d
+        _emit 0xec
+        _emit 0xc4
+        _emit 0x67
+        _emit 0x00
             fadd dword ptr [esi + 0x4c]
             fstp dword ptr [esi + 0x4c]
             pop esi
@@ -1691,122 +1844,212 @@ void C2_NAKED C2_HOOK_FASTCALL DoSpecialCameraEffect(br_actor* pCamera, br_matri
             mov ecx, dword ptr [gHud_tinted2]
             call TurnTintedPolyOn
             call PDGetTotalTime
-            fld qword ptr ds:[0x589d10]
+            fld qword ptr [gMatchDouble_00589d10]
             mov dword ptr [esp + 8], eax
             fild dword ptr [esp + 8]
             fst dword ptr [esp + 8]
-            fdiv dword ptr ds:[0x5911f4]
-            fmul dword ptr ds:[0x589d0c]
+            _emit 0xd8
+        _emit 0x35
+        _emit 0xf4
+        _emit 0x11
+        _emit 0x59
+        _emit 0x00
+            fmul dword ptr [gMatchFloat_00589d0c]
             fxch st(1)
             call _CIfmod
             call _ftol
             mov ecx, eax
             call FastScalarSin
-            fmul dword ptr ds:[0x5911d0]
+            _emit 0xd8
+        _emit 0x0d
+        _emit 0xd0
+        _emit 0x11
+        _emit 0x59
+        _emit 0x00
             fld dword ptr [esp + 8]
-            fld qword ptr ds:[0x589d10]
+            fld qword ptr [gMatchDouble_00589d10]
             fxch st(2)
             fadd dword ptr [esi + 0x2c]
             fstp dword ptr [esi + 0x2c]
-            fdiv dword ptr ds:[0x5911f8]
-            fmul dword ptr ds:[0x589d0c]
+            _emit 0xd8
+        _emit 0x35
+        _emit 0xf8
+        _emit 0x11
+        _emit 0x59
+        _emit 0x00
+            fmul dword ptr [gMatchFloat_00589d0c]
             fxch st(1)
             call _CIfmod
             call _ftol
             mov ecx, eax
             call FastScalarSin
-            fmul dword ptr ds:[0x5911d4]
+            _emit 0xd8
+        _emit 0x0d
+        _emit 0xd4
+        _emit 0x11
+        _emit 0x59
+        _emit 0x00
             fld dword ptr [esp + 8]
-            fld qword ptr ds:[0x589d10]
+            fld qword ptr [gMatchDouble_00589d10]
             fxch st(2)
             fadd dword ptr [esi + 0x30]
             fstp dword ptr [esi + 0x30]
-            fdiv dword ptr ds:[0x5911fc]
-            fmul dword ptr ds:[0x589d0c]
+            _emit 0xd8
+        _emit 0x35
+        _emit 0xfc
+        _emit 0x11
+        _emit 0x59
+        _emit 0x00
+            fmul dword ptr [gMatchFloat_00589d0c]
             fxch st(1)
             call _CIfmod
             call _ftol
             mov ecx, eax
             call FastScalarSin
-            fmul dword ptr ds:[0x5911d8]
+            _emit 0xd8
+        _emit 0x0d
+        _emit 0xd8
+        _emit 0x11
+        _emit 0x59
+        _emit 0x00
             fld dword ptr [esp + 8]
-            fld qword ptr ds:[0x589d10]
+            fld qword ptr [gMatchDouble_00589d10]
             fxch st(2)
             fadd dword ptr [esi + 0x34]
             fstp dword ptr [esi + 0x34]
-            fdiv dword ptr ds:[0x591200]
-            fmul dword ptr ds:[0x589d0c]
+            _emit 0xd8
+        _emit 0x35
+        _emit 0x00
+        _emit 0x12
+        _emit 0x59
+        _emit 0x00
+            fmul dword ptr [gMatchFloat_00589d0c]
             fxch st(1)
             call _CIfmod
             call _ftol
             mov ecx, eax
             call FastScalarSin
-            fmul dword ptr ds:[0x5911dc]
+            _emit 0xd8
+        _emit 0x0d
+        _emit 0xdc
+        _emit 0x11
+        _emit 0x59
+        _emit 0x00
             fld dword ptr [esp + 8]
-            fld qword ptr ds:[0x589d10]
+            fld qword ptr [gMatchDouble_00589d10]
             fxch st(2)
             fadd dword ptr [esi + 0x38]
             fstp dword ptr [esi + 0x38]
-            fdiv dword ptr ds:[0x591204]
-            fmul dword ptr ds:[0x589d0c]
+            _emit 0xd8
+        _emit 0x35
+        _emit 0x04
+        _emit 0x12
+        _emit 0x59
+        _emit 0x00
+            fmul dword ptr [gMatchFloat_00589d0c]
             fxch st(1)
             call _CIfmod
             call _ftol
             mov ecx, eax
             call FastScalarSin
-            fmul dword ptr ds:[0x5911e0]
+            _emit 0xd8
+        _emit 0x0d
+        _emit 0xe0
+        _emit 0x11
+        _emit 0x59
+        _emit 0x00
             fld dword ptr [esp + 8]
-            fld qword ptr ds:[0x589d10]
+            fld qword ptr [gMatchDouble_00589d10]
             fxch st(2)
             fadd dword ptr [esi + 0x3c]
             fstp dword ptr [esi + 0x3c]
-            fdiv dword ptr ds:[0x591208]
-            fmul dword ptr ds:[0x589d0c]
+            _emit 0xd8
+        _emit 0x35
+        _emit 0x08
+        _emit 0x12
+        _emit 0x59
+        _emit 0x00
+            fmul dword ptr [gMatchFloat_00589d0c]
             fxch st(1)
             call _CIfmod
             call _ftol
             mov ecx, eax
             call FastScalarSin
-            fmul dword ptr ds:[0x5911e4]
+            _emit 0xd8
+        _emit 0x0d
+        _emit 0xe4
+        _emit 0x11
+        _emit 0x59
+        _emit 0x00
             fld dword ptr [esp + 8]
-            fld qword ptr ds:[0x589d10]
+            fld qword ptr [gMatchDouble_00589d10]
             fxch st(2)
             fadd dword ptr [esi + 0x40]
             fstp dword ptr [esi + 0x40]
-            fdiv dword ptr ds:[0x59120c]
-            fmul dword ptr ds:[0x589d0c]
+            _emit 0xd8
+        _emit 0x35
+        _emit 0x0c
+        _emit 0x12
+        _emit 0x59
+        _emit 0x00
+            fmul dword ptr [gMatchFloat_00589d0c]
             fxch st(1)
             call _CIfmod
             call _ftol
             mov ecx, eax
             call FastScalarSin
-            fmul dword ptr ds:[0x5911e8]
+            _emit 0xd8
+        _emit 0x0d
+        _emit 0xe8
+        _emit 0x11
+        _emit 0x59
+        _emit 0x00
             fld dword ptr [esp + 8]
-            fld qword ptr ds:[0x589d10]
+            fld qword ptr [gMatchDouble_00589d10]
             fxch st(2)
             fadd dword ptr [esi + 0x44]
             fstp dword ptr [esi + 0x44]
-            fdiv dword ptr ds:[0x591210]
-            fmul dword ptr ds:[0x589d0c]
+            _emit 0xd8
+        _emit 0x35
+        _emit 0x10
+        _emit 0x12
+        _emit 0x59
+        _emit 0x00
+            fmul dword ptr [gMatchFloat_00589d0c]
             fxch st(1)
             call _CIfmod
             call _ftol
             mov ecx, eax
             call FastScalarSin
-            fmul dword ptr ds:[0x5911ec]
+            _emit 0xd8
+        _emit 0x0d
+        _emit 0xec
+        _emit 0x11
+        _emit 0x59
+        _emit 0x00
             fld dword ptr [esp + 8]
-            fld qword ptr ds:[0x589d10]
+            fld qword ptr [gMatchDouble_00589d10]
             fxch st(2)
             fadd dword ptr [esi + 0x48]
             fstp dword ptr [esi + 0x48]
-            fdiv dword ptr ds:[0x591214]
-            fmul dword ptr ds:[0x589d0c]
+            _emit 0xd8
+        _emit 0x35
+        _emit 0x14
+        _emit 0x12
+        _emit 0x59
+        _emit 0x00
+            fmul dword ptr [gMatchFloat_00589d0c]
             fxch st(1)
             call _CIfmod
             call _ftol
             mov ecx, eax
             call FastScalarSin
-            fmul dword ptr ds:[0x5911f0]
+            _emit 0xd8
+        _emit 0x0d
+        _emit 0xf0
+        _emit 0x11
+        _emit 0x59
+        _emit 0x00
             fadd dword ptr [esi + 0x4c]
             fstp dword ptr [esi + 0x4c]
             jmp L0044662f
@@ -1842,7 +2085,7 @@ void C2_NAKED C2_HOOK_FASTCALL DoSpecialCameraEffect(br_actor* pCamera, br_matri
     L004465d2:
             xor eax, eax
     L004465d4:
-            mov ecx, dword ptr ds:[0x75d778]
+            mov ecx, dword ptr [gProgram_state+0x1bf8]
             xor edx, edx
             test ecx, ecx
             setne dl
@@ -1851,9 +2094,9 @@ void C2_NAKED C2_HOOK_FASTCALL DoSpecialCameraEffect(br_actor* pCamera, br_matri
             mov eax, dword ptr [gSwap_sky_texture]
             mov dword ptr [gSwap_sky_texture], ecx
             mov ecx, dword ptr [gHorizon_material]
-            mov dword ptr ds:[0x75d778], eax
+            mov dword ptr [gProgram_state+0x1bf8], eax
             test ecx, ecx
-            mov dword ptr ds:[0x75d75c], eax
+            mov dword ptr [gProgram_state+0x1bdc], eax
             je L0044662f
             test eax, eax
             je L0044662f
@@ -1957,34 +2200,34 @@ void C2_NAKED C2_HOOK_FASTCALL FogAccordingToGPSCDE(br_material* pMaterial) {
 #else
     __asm {
             sub esp, 8
-            mov edx, dword ptr ds:[0x75d760]
+            mov edx, dword ptr [gProgram_state+0x1be0]
             push ebx
             push ebp
             push esi
             mov esi, ecx
-            mov eax, dword ptr ds:[0x75d764]
-            mov ecx, dword ptr ds:[0x75d768]
-            mov ebx, dword ptr ds:[0x75d770]
-            mov ebp, dword ptr ds:[0x75d774]
+            mov eax, dword ptr [gProgram_state+0x1be4]
+            mov ecx, dword ptr [gProgram_state+0x1be8]
+            mov ebx, dword ptr [gProgram_state+0x1bf0]
+            mov ebp, dword ptr [gProgram_state+0x1bf4]
             mov dword ptr [esp + 0xc], ecx
             lea ecx, [edx + 1]
             push edi
-            mov edi, dword ptr ds:[0x75d76c]
+            mov edi, dword ptr [gProgram_state+0x1bec]
             cmp ecx, 3
             ja L00445310
             jmp dword ptr [ecx*4 + 0x445328]
             and dword ptr [esi + 0x20], 0xfff7ffff
             jmp L00445310
-            fld qword ptr ds:[0x589ca8]
+            fld qword ptr [gMatchDouble_00589ca8]
             neg eax
             mov dword ptr [esp + 0x14], eax
             fild dword ptr [esp + 0x14]
-            fmul qword ptr ds:[0x589cb0]
+            fmul qword ptr [gMatchDouble_00589cb0]
             call _CIpow
             fmul dword ptr [gCamera_yon]
-            fld qword ptr ds:[0x589ca8]
+            fld qword ptr [gMatchDouble_00589ca8]
             fild dword ptr [esp + 0x10]
-            fmul qword ptr ds:[0x589cb0]
+            fmul qword ptr [gMatchDouble_00589cb0]
             fxch st(2)
             fst dword ptr [esp + 0x14]
             fstp dword ptr [esi + 0x5c]
@@ -1997,16 +2240,16 @@ void C2_NAKED C2_HOOK_FASTCALL FogAccordingToGPSCDE(br_material* pMaterial) {
             fstp dword ptr [esi + 0x60]
             mov dword ptr [esi + 0x20], eax
             jmp L00445310
-            fld qword ptr ds:[0x589ca8]
+            fld qword ptr [gMatchDouble_00589ca8]
             neg eax
             mov dword ptr [esp + 0x14], eax
             fild dword ptr [esp + 0x14]
-            fmul qword ptr ds:[0x589cb0]
+            fmul qword ptr [gMatchDouble_00589cb0]
             call _CIpow
             fmul dword ptr [gCamera_yon]
-            fld qword ptr ds:[0x589ca8]
+            fld qword ptr [gMatchDouble_00589ca8]
             fild dword ptr [esp + 0x10]
-            fmul qword ptr ds:[0x589cb0]
+            fmul qword ptr [gMatchDouble_00589cb0]
             fxch st(2)
             fst dword ptr [esp + 0x14]
             fstp dword ptr [esi + 0x5c]
@@ -2019,16 +2262,16 @@ void C2_NAKED C2_HOOK_FASTCALL FogAccordingToGPSCDE(br_material* pMaterial) {
             fstp dword ptr [esi + 0x60]
             mov dword ptr [esi + 0x20], eax
             jmp L00445310
-            fld qword ptr ds:[0x589ca8]
+            fld qword ptr [gMatchDouble_00589ca8]
             neg eax
             mov dword ptr [esp + 0x14], eax
             fild dword ptr [esp + 0x14]
-            fmul qword ptr ds:[0x589cb0]
+            fmul qword ptr [gMatchDouble_00589cb0]
             call _CIpow
             fmul dword ptr [gCamera_yon]
-            fld qword ptr ds:[0x589ca8]
+            fld qword ptr [gMatchDouble_00589ca8]
             fild dword ptr [esp + 0x10]
-            fmul qword ptr ds:[0x589cb0]
+            fmul qword ptr [gMatchDouble_00589cb0]
             fxch st(2)
             fst dword ptr [esp + 0x14]
             fstp dword ptr [esi + 0x5c]
@@ -2186,15 +2429,15 @@ void C2_NAKED C2_HOOK_FASTCALL MungeSkyVs(br_model* pModel, br_material* pMateri
             add edx, -2
             fild dword ptr [esp + 0x10]
             mov dword ptr [esp + 0x10], edx
-            fdivr qword ptr [gFloat_00589c40+0x78]
+            fdivr qword ptr [gMatchDouble_00589cb8]
             jmp L00445550
     L00445540:
-            fld dword ptr [gFloat_00589c40+0x80]
+            fld dword ptr [gMatchData_00589cc0]
             xor edx, edx
             mov dx, word ptr [eax + 0x36]
             mov dword ptr [esp + 0x10], edx
     L00445550:
-            fld dword ptr [gFloat_00589c40+0x84]
+            fld dword ptr [gMatchFloat_00589cc4]
             fsub st(0), st(1)
             xor eax, eax
             mov edx, 0xc
@@ -2235,7 +2478,7 @@ void C2_NAKED C2_HOOK_FASTCALL MungeSkyVs(br_model* pModel, br_material* pMateri
             mov edi, dword ptr [ecx + 8]
             lea esi, [eax + eax*4]
             mov ebx, 3
-            fmul dword ptr [gFloat_00589c40+0x88]
+            fmul dword ptr [gMatchFloat_00589cc8]
             shl esi, 3
             inc eax
             fidiv dword ptr [esp + 0x14]
@@ -2265,6 +2508,18 @@ void C2_NAKED C2_HOOK_FASTCALL MungeSkyVs(br_model* pModel, br_material* pMateri
             pop edi
             add esp, 0xc
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -2397,7 +2652,7 @@ void C2_NAKED C2_HOOK_FASTCALL InstantDepthChange(tDepth_effect_type pType, br_p
             cmp ebp, eax
             jl L00445438
     L00445484:
-            push offset gSwap_depth_effect_type+0x94
+            push offset gMatchString_00591224
             call BrMaterialFind
             add esp, 4
             test eax, eax
@@ -2405,7 +2660,7 @@ void C2_NAKED C2_HOOK_FASTCALL InstantDepthChange(tDepth_effect_type pType, br_p
             mov ecx, eax
             call FogAccordingToGPSCDE
     L0044549c:
-            push offset gSwap_depth_effect_type+0x88
+            push offset gMatchString_00591218
             call BrMaterialFind
             add esp, 4
             test eax, eax
@@ -2438,6 +2693,14 @@ void C2_NAKED C2_HOOK_FASTCALL InstantDepthChange(tDepth_effect_type pType, br_p
             pop ebp
             pop ebx
             ret 0x18
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -2574,7 +2837,7 @@ void C2_NAKED C2_HOOK_FASTCALL InitDepthEffects(void) {
     __asm {
             sub esp, 0xc
             mov edx, offset gDepth_shade_table
-            mov ecx, offset gSwap_depth_effect_type+0xcc
+            mov ecx, offset gMatchString_0059125c
             push ebx
             push ebp
             push esi
@@ -2582,19 +2845,19 @@ void C2_NAKED C2_HOOK_FASTCALL InitDepthEffects(void) {
             push offset gDepth_shade_table_power
             call LoadDepthTable
             mov edx, offset gFog_shade_table
-            mov ecx, offset gSwap_depth_effect_type+0xc4
+            mov ecx, offset gMatchString_00591254
             push offset gFog_shade_table_power
             call LoadDepthTable
             mov edx, offset gAcid_shade_table
-            mov ecx, offset gSwap_depth_effect_type+0xb8
+            mov ecx, offset gMatchString_00591248
             push offset gAcid_shade_table_power
             call LoadDepthTable
             mov edx, offset gWater_shade_table
-            mov ecx, offset gSwap_depth_effect_type+0xac
+            mov ecx, offset gMatchString_0059123c
             push offset gWater_shade_table_power
             call LoadDepthTable
             call GenerateSmokeShades
-            push offset gSwap_depth_effect_type+0xa0
+            push offset gMatchString_00591230
             call BrMaterialFind
             add esp, 4
             mov dword ptr [gHorizon_material], eax
@@ -2733,6 +2996,21 @@ void C2_NAKED C2_HOOK_FASTCALL InitDepthEffects(void) {
             pop ebx
             add esp, 0xc
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }

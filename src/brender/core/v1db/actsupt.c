@@ -27,6 +27,32 @@ extern void C2_HOOK_CDECL BrMatrix34Scale();
 extern void C2_HOOK_CDECL BrMatrix4Copy34();
 extern void C2_HOOK_CDECL BrMatrix4Perspective();
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gData_0058b764[];
+extern char gDouble_0058b758[];
+extern char gDouble_0058b768[];
+extern char gFloat_0058b760[];
+extern char gFloat_0058b774[];
+extern char gFloat_00663204[];
+extern char gFloat_00663224[];
+extern char gFloat_00663244[];
+extern char gFloat_00663270[];
+extern char gFloat_00663290[];
+extern char gFloat_006632b0[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchData_0058b764[];
+extern char gMatchDouble_0058b758[];
+extern char gMatchDouble_0058b768[];
+extern char gMatchFloat_0058b760[];
+extern char gMatchFloat_0058b774[];
+extern char gMatchFloat_00663204[];
+extern char gMatchFloat_00663224[];
+extern char gMatchFloat_00663244[];
+extern char gMatchFloat_00663270[];
+extern char gMatchFloat_00663290[];
+extern char gMatchFloat_006632b0[];
+#endif
 // FUNCTION: CARMA2_HW 0x0051ded0
 br_uint_32 C2_HOOK_CDECL BrActorEnum(br_actor* parent, br_actor_enum_cbfn* callback, void* arg) {
     br_actor* a;
@@ -401,7 +427,7 @@ void C2_NAKED C2_HOOK_STDCALL Matrix4PerspectiveNew(br_matrix4* mat, br_angle fi
             fld dword ptr [esp + 0x14]
             fsub dword ptr [esp + 0x10]
             fxch st(1)
-            fmul qword ptr [IID_IDirectInputDevice2A+0x3c0]
+            fmul qword ptr [gMatchDouble_0058b758]
             fld dword ptr [esp + 0x14]
             fmul dword ptr [esp + 0x10]
             fld st(1)
@@ -436,7 +462,7 @@ void C2_NAKED C2_HOOK_STDCALL Matrix4PerspectiveNew(br_matrix4* mat, br_angle fi
             fxch st(3)
             fdiv dword ptr [esp + 8]
             fxch st(1)
-            fmul dword ptr [IID_IDirectInputDevice2A+0x3c8]
+            fmul dword ptr [gMatchFloat_0058b760]
             fld dword ptr [esp + 0x18]
             fld dword ptr [esp + 0x1c]
             fld dword ptr [esp + 0x14]
@@ -457,6 +483,8 @@ void C2_NAKED C2_HOOK_STDCALL Matrix4PerspectiveNew(br_matrix4* mat, br_angle fi
             fstp dword ptr [eax + 0x24]
             fstp st(0)
             ret 0x1c
+            nop
+            nop
     }
 #endif
 }
@@ -538,8 +566,8 @@ br_token C2_NAKED C2_HOOK_STDCALL CameraToScreenMatrix4(br_matrix4* mat, br_acto
             cmp eax, 4
             ja L0051e7a6
             jmp dword ptr [eax*4 + 0x51e7b0]
-            mov ecx, dword ptr ds:[0x79f4c8]
-            mov edx, dword ptr ds:[0x79f4c4]
+            mov ecx, dword ptr [v1db+0x4e8]
+            mov edx, dword ptr [v1db+0x4e4]
             fld dword ptr [esi + 0xc]
             push ecx
             push edx
@@ -594,20 +622,20 @@ br_token C2_NAKED C2_HOOK_STDCALL CameraToScreenMatrix4(br_matrix4* mat, br_acto
             add esp, 0x30
             ret 8
             fld dword ptr [esi + 0x14]
-            fcomp dword ptr ds:[0x58b764]
+            fcomp dword ptr [gMatchData_0058b764]
             fnstsw ax
             test ah, 0x40
             je L0051e5dc
-            push 0x663204
+            push offset gMatchFloat_00663204
             call BrFailure
             add esp, 4
     L0051e5dc:
             fld dword ptr [esi + 0x18]
-            fcomp dword ptr ds:[0x58b764]
+            fcomp dword ptr [gMatchData_0058b764]
             fnstsw ax
             test ah, 0x40
             je L0051e5f9
-            push 0x663224
+            push offset gMatchFloat_00663224
             call BrFailure
             add esp, 4
     L0051e5f9:
@@ -616,7 +644,7 @@ br_token C2_NAKED C2_HOOK_STDCALL CameraToScreenMatrix4(br_matrix4* mat, br_acto
             fnstsw ax
             test ah, 0x41
             je L0051e613
-            push 0x663244
+            push offset gMatchFloat_00663244
             call BrFailure
             add esp, 4
     L0051e613:
@@ -626,15 +654,15 @@ br_token C2_NAKED C2_HOOK_STDCALL CameraToScreenMatrix4(br_matrix4* mat, br_acto
             fld dword ptr [esi + 0x14]
             fld dword ptr [esi + 0x18]
             fxch st(3)
-            fdivr qword ptr ds:[0x58b768]
+            fdivr qword ptr [gMatchDouble_0058b768]
             fxch st(3)
             push ecx
             lea eax, [esp + 8]
-            fdivr qword ptr ds:[0x58b768]
+            fdivr qword ptr [gMatchDouble_0058b768]
             fxch st(1)
             fmulp st(2), st(0)
             fxch st(1)
-            fdivr qword ptr ds:[0x58b768]
+            fdivr qword ptr [gMatchDouble_0058b768]
             fxch st(2)
             fadd st(0), st(0)
             fxch st(1)
@@ -664,7 +692,7 @@ br_token C2_NAKED C2_HOOK_STDCALL CameraToScreenMatrix4(br_matrix4* mat, br_acto
             fadd dword ptr [esi + 0xc]
             add esp, 0x10
             lea ecx, [esp + 4]
-            fmul dword ptr ds:[0x58b774]
+            fmul dword ptr [gMatchFloat_0058b774]
             push ecx
             _emit 0xd9
         _emit 0x1c
@@ -673,8 +701,8 @@ br_token C2_NAKED C2_HOOK_STDCALL CameraToScreenMatrix4(br_matrix4* mat, br_acto
             push 0
             push ecx
             call BrMatrix34PreTranslate
-            mov edx, dword ptr ds:[0x79f4c8]
-            mov eax, dword ptr ds:[0x79f4c4]
+            mov edx, dword ptr [v1db+0x4e8]
+            mov eax, dword ptr [v1db+0x4e4]
             add esp, 0x10
             lea ecx, [esp + 4]
             push 0
@@ -694,20 +722,20 @@ br_token C2_NAKED C2_HOOK_STDCALL CameraToScreenMatrix4(br_matrix4* mat, br_acto
             add esp, 0x30
             ret 8
             fld dword ptr [esi + 0x14]
-            fcomp dword ptr ds:[0x58b764]
+            fcomp dword ptr [gMatchData_0058b764]
             fnstsw ax
             test ah, 0x40
             je L0051e6eb
-            push 0x663270
+            push offset gMatchFloat_00663270
             call BrFailure
             add esp, 4
     L0051e6eb:
             fld dword ptr [esi + 0x18]
-            fcomp dword ptr ds:[0x58b764]
+            fcomp dword ptr [gMatchData_0058b764]
             fnstsw ax
             test ah, 0x40
             je L0051e708
-            push 0x663290
+            push offset gMatchFloat_00663290
             call BrFailure
             add esp, 4
     L0051e708:
@@ -716,7 +744,7 @@ br_token C2_NAKED C2_HOOK_STDCALL CameraToScreenMatrix4(br_matrix4* mat, br_acto
             fnstsw ax
             test ah, 0x41
             je L0051e722
-            push 0x6632b0
+            push offset gMatchFloat_006632b0
             call BrFailure
             add esp, 4
     L0051e722:
@@ -725,13 +753,13 @@ br_token C2_NAKED C2_HOOK_STDCALL CameraToScreenMatrix4(br_matrix4* mat, br_acto
             fld dword ptr [esi + 0x18]
             fld dword ptr [esi + 0x14]
             fxch st(2)
-            fdivr qword ptr ds:[0x58b768]
+            fdivr qword ptr [gMatchDouble_0058b768]
             fxch st(1)
             push ecx
             lea ecx, [esp + 8]
-            fdivr qword ptr ds:[0x58b768]
+            fdivr qword ptr [gMatchDouble_0058b768]
             fxch st(2)
-            fdivr qword ptr ds:[0x58b768]
+            fdivr qword ptr [gMatchDouble_0058b768]
             fld st(1)
             fxch st(3)
             fst dword ptr [esp + 0x40]

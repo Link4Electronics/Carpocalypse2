@@ -701,6 +701,78 @@ extern tFrontend_spec gFrontend_NEWGAME;
 extern tFrontend_spec gFrontend_OPTIONS;
 extern tFrontend_spec gFrontend_WRECKS;
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gData_0060493c[];
+extern char gData_00686eb0[];
+extern char gData_00688704[];
+extern char gData_00688708[];
+extern char gData_0068870c[];
+extern char gData_00688710[];
+extern char gDouble_0058a078[];
+extern char gDouble_0058a080[];
+extern char gDouble_0058a088[];
+extern char gDouble_0058a0c8[];
+extern char gDouble_0058a0d0[];
+extern char gDouble_0058a0e0[];
+extern char gDouble_0058a0e8[];
+extern char gFloat_0058a100[];
+extern char gFloat_006557ec[];
+extern char gFloat_00655818[];
+extern char gFloat_00655854[];
+extern char gFloat_00655920[];
+extern char gFloat_00655938[];
+extern char gFloat_00655954[];
+extern char gFloat_00655984[];
+extern char gFloat_006559b4[];
+extern char gFloat_00655ad8[];
+extern char gString_0058fd6c[];
+extern char gString_0059b0a4[];
+extern char gString_006557c8[];
+extern char gString_006557d0[];
+extern char gString_006557e0[];
+extern char gString_00655848[];
+extern char gString_00655974[];
+extern char gString_006559a4[];
+extern char gString_00655a94[];
+extern char gString_00655aa4[];
+extern char gString_00655aac[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchData_0060493c[];
+extern char gMatchData_00686eb0[];
+extern char gMatchData_00688704[];
+extern char gMatchData_00688708[];
+extern char gMatchData_0068870c[];
+extern char gMatchData_00688710[];
+extern char gMatchDouble_0058a078[];
+extern char gMatchDouble_0058a080[];
+extern char gMatchDouble_0058a088[];
+extern char gMatchDouble_0058a0c8[];
+extern char gMatchDouble_0058a0d0[];
+extern char gMatchDouble_0058a0e0[];
+extern char gMatchDouble_0058a0e8[];
+extern char gMatchFloat_0058a100[];
+extern char gMatchFloat_006557ec[];
+extern char gMatchFloat_00655818[];
+extern char gMatchFloat_00655854[];
+extern char gMatchFloat_00655920[];
+extern char gMatchFloat_00655938[];
+extern char gMatchFloat_00655954[];
+extern char gMatchFloat_00655984[];
+extern char gMatchFloat_006559b4[];
+extern char gMatchFloat_00655ad8[];
+extern char gMatchString_0058fd6c[];
+extern char gMatchString_0059b0a4[];
+extern char gMatchString_006557c8[];
+extern char gMatchString_006557d0[];
+extern char gMatchString_006557e0[];
+extern char gMatchString_00655848[];
+extern char gMatchString_00655974[];
+extern char gMatchString_006559a4[];
+extern char gMatchString_00655a94[];
+extern char gMatchString_00655aa4[];
+extern char gMatchString_00655aac[];
+#endif
 // FUNCTION: CARMA2_HW 0x00466450
 int C2_HOOK_FASTCALL temp(tFrontend_spec* pFrontend) {
     return 0;
@@ -932,11 +1004,15 @@ void C2_NAKED C2_HOOK_FASTCALL FUN_00466460(br_actor* pActor, int pX, int pY) {
     L004665ff:
             push ecx
             lea ebp, [esi + 0x2c]
-            fstp dword ptr [esp]
+            _emit 0xd9
+        _emit 0x1c
+        _emit 0x24
             fld qword ptr [esp + 0x1c]
             fmul qword ptr [gDouble_0058a068]
             push ecx
-            fstp dword ptr [esp]
+            _emit 0xd9
+        _emit 0x1c
+        _emit 0x24
             push 0
             push ebp
             call BrMatrix34Translate
@@ -1377,7 +1453,7 @@ C2_NAKED br_pixelmap* C2_HOOK_FASTCALL GetThisFuckingPixelmapPleaseMrTwatter(con
             push edi
             mov edi, edx
             mov esi, ecx
-            push offset gDRFont_to_polyfont_mapping+0x304
+            push offset gMatchString_0059b0a4
             mov edx, esi
             lea ecx, [esp + 0x10]
             xor ebp, ebp
@@ -1470,6 +1546,8 @@ C2_NAKED br_pixelmap* C2_HOOK_FASTCALL GetThisFuckingPixelmapPleaseMrTwatter(con
             pop ebp
             add esp, 0x10a0
             ret
+            nop
+            nop
     }
 #endif
 }
@@ -1715,7 +1793,7 @@ void C2_NAKED C2_HOOK_FASTCALL RefreshRacesScroller(tFrontend_spec* pFrontend) {
             call IString_Get
             lea edx, [esp + 0x20]
             push eax
-            push offset gNext_crush_actor_id+0x50c
+            push offset gMatchString_0058fd6c
             push edx
             call sprintf
             lea edi, [esp + 0x2c]
@@ -2083,11 +2161,11 @@ void C2_NAKED C2_HOOK_FASTCALL FRONTEND_CreateMenuButton(tFrontend_brender_item*
             mov dword ptr [esi], eax
             push 2
             push 4
-            push offset gFrontend_QUIT+0xb9f0
+            push offset gMatchString_006557e0
             call BrModelAllocate
             add esp, 0xc
             mov dword ptr [esi + 4], eax
-            push offset gFrontend_QUIT+0xb9e0
+            push offset gMatchString_006557d0
             call BrMaterialAllocate
             mov ecx, dword ptr [esi + 4]
             add esp, 4
@@ -2191,7 +2269,7 @@ void C2_NAKED C2_HOOK_FASTCALL FRONTEND_CreateMenuButton(tFrontend_brender_item*
             mov dword ptr [edx + 0x18], eax
             mov ecx, dword ptr [esi]
             mov edx, dword ptr [esi + 8]
-            push offset gFrontend_QUIT+0xb9d8
+            push offset gMatchString_006557c8
             mov dword ptr [ecx + 0x1c], edx
             mov eax, dword ptr [esi]
             push eax
@@ -2372,6 +2450,14 @@ void C2_NAKED C2_HOOK_FASTCALL FRONTEND_CreateMenuButton(tFrontend_brender_item*
             pop ebp
             pop ecx
             ret 0x18
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -2491,7 +2577,7 @@ int C2_NAKED C2_HOOK_FASTCALL FRONTEND_CreateMenu(tFrontend_spec* pFrontend_spec
             push edi
             push esi
             lea eax, [esp + 0x118]
-            push 0x655854
+            push offset gMatchFloat_00655854
             push eax
             mov dword ptr [esp + 0x1c], esi
             call sprintf
@@ -2530,7 +2616,7 @@ int C2_NAKED C2_HOOK_FASTCALL FRONTEND_CreateMenu(tFrontend_spec* pFrontend_spec
             call PathCat
             lea edx, [esp + 0x14]
             lea ecx, [esp + 0x14]
-            push 0x655848
+            push offset gMatchString_00655848
             call PathCat
             mov edi, ebx
             or ecx, 0xffffffff
@@ -2591,7 +2677,7 @@ int C2_NAKED C2_HOOK_FASTCALL FRONTEND_CreateMenu(tFrontend_spec* pFrontend_spec
             call PathCat
             lea edx, [esp + 0x14]
             lea ecx, [esp + 0x14]
-            push 0x655848
+            push offset gMatchString_00655848
             call PathCat
             mov edi, ebx
             or ecx, 0xffffffff
@@ -2636,7 +2722,7 @@ int C2_NAKED C2_HOOK_FASTCALL FRONTEND_CreateMenu(tFrontend_spec* pFrontend_spec
             jne L0046cb8b
     L0046cb7c:
             push 0
-            push 0x655818
+            push offset gMatchFloat_00655818
             call BrFailure
             add esp, 8
     L0046cb8b:
@@ -2710,7 +2796,7 @@ int C2_NAKED C2_HOOK_FASTCALL FRONTEND_CreateMenu(tFrontend_spec* pFrontend_spec
             push 0
             push 0
             push 0
-            mov ecx, 0x68834c
+            mov ecx, offset gFrontend_brender_items+0x1104
             mov dword ptr [gFrontend_time_last_input], eax
             call FRONTEND_CreateMenuButton
             mov edx, dword ptr [gMouse_in_use]
@@ -2719,7 +2805,7 @@ int C2_NAKED C2_HOOK_FASTCALL FRONTEND_CreateMenu(tFrontend_spec* pFrontend_spec
             sbb edx, edx
             push esi
             and edx, 0x63
-            push 0x6557ec
+            push offset gMatchFloat_006557ec
             push eax
             mov dword ptr [gFrontend_selected_item_index], edx
             call sprintf
@@ -2987,8 +3073,8 @@ void C2_NAKED C2_HOOK_FASTCALL ScrollCredits(void) {
             sub eax, dword ptr [gCredits_scroll_start]
             mov dword ptr [esp + 8], eax
             fild dword ptr [esp + 8]
-            fmul qword ptr [gDouble_0058a068+0x60]
-            fsubr qword ptr [gDouble_0058a068+0x68]
+            fmul qword ptr [gMatchDouble_0058a0c8]
+            fsubr qword ptr [gMatchDouble_0058a0d0]
             call _ftol
             mov esi, eax
             mov eax, dword ptr [gCredits_line_count]
@@ -3050,7 +3136,7 @@ void C2_NAKED C2_HOOK_FASTCALL ScrollCredits(void) {
             sub eax, dword ptr [gCredits_scroll_start]
             mov dword ptr [esp + 8], eax
             fild dword ptr [esp + 8]
-            fmul qword ptr [gDouble_0058a068+0x60]
+            fmul qword ptr [gMatchDouble_0058a0c8]
             fild dword ptr [gCredits_total_height]
             fcompp
             fnstsw ax
@@ -3633,7 +3719,11 @@ int C2_NAKED C2_HOOK_FASTCALL LoadGameUpdateFunc(tFrontend_spec* pFrontend) {
             jle L00470236
             lea edi, [esp + 0x44]
     L004701e6:
-            mov eax, dword ptr [gQuickTime_call_component_with_storage+0x5a0]
+            _emit 0xa1
+        _emit 0x5c
+        _emit 0x3c
+        _emit 0x67
+        _emit 0x00
             mov bl, byte ptr [esp + esi + 0x34]
             cmp eax, 1
             jle L0047020b
@@ -3645,7 +3735,11 @@ int C2_NAKED C2_HOOK_FASTCALL LoadGameUpdateFunc(tFrontend_spec* pFrontend) {
             add esp, 8
             jmp L0047021c
     L0047020b:
-            mov eax, dword ptr [gQuickTime_call_component_with_storage+0x394]
+            _emit 0xa1
+        _emit 0x50
+        _emit 0x3a
+        _emit 0x67
+        _emit 0x00
             movsx edx, bl
             mov ax, word ptr [eax + edx*2]
             and eax, 0x107
@@ -3754,7 +3848,7 @@ int C2_NAKED C2_HOOK_FASTCALL LoadGameUpdateFunc(tFrontend_spec* pFrontend) {
             shr eax, 0x1f
             lea ecx, [edx + eax + 1]
             push ecx
-            push offset gFrontend_QUIT+0xbcbc
+            push offset gMatchString_00655aac
             jmp L004703bc
     L00470340:
             mov eax, dword ptr [ebp + 0x30c]
@@ -3776,7 +3870,7 @@ int C2_NAKED C2_HOOK_FASTCALL LoadGameUpdateFunc(tFrontend_spec* pFrontend) {
             lea edx, [esp + 0x44]
             push ecx
             push 0x1f
-            push offset gFrontend_QUIT+0xbcb4
+            push offset gMatchString_00655aa4
             push edx
             call sprintf
             add esp, 0x10
@@ -3794,7 +3888,7 @@ int C2_NAKED C2_HOOK_FASTCALL LoadGameUpdateFunc(tFrontend_spec* pFrontend) {
             shr eax, 0x1f
             lea ecx, [edx + eax + 1]
             push ecx
-            push offset gFrontend_QUIT+0xbcb0
+            push 0x655aa0
     L004703bc:
             lea edx, [esp + 0x4c]
             push edx
@@ -3997,7 +4091,7 @@ int C2_NAKED C2_HOOK_FASTCALL LoadGameUpdateFunc(tFrontend_spec* pFrontend) {
             push edx
             push eax
             mov eax, dword ptr [esp + 0x2c]
-            push offset gFrontend_QUIT+0xbca4
+            push offset gMatchString_00655a94
             add eax, 0x15b1
             push eax
             call sprintf
@@ -4614,7 +4708,7 @@ void C2_NAKED C2_HOOK_FASTCALL DisplayJoystickSettings(tFrontend_spec *pFrontend
             mov ecx, eax
             shl ecx, 3
             sub ecx, eax
-            cmp edx, offset gFrontend_controls_indices+0x3c
+            cmp edx, offset gMatchData_0060493c
             lea ecx, [ecx + ecx*2]
             lea eax, [eax + ecx*2]
             mov dword ptr [esi + eax*8], edi
@@ -4652,7 +4746,7 @@ void C2_NAKED C2_HOOK_FASTCALL DisplayJoystickSettings(tFrontend_spec *pFrontend
             mov ecx, eax
             shl ecx, 3
             sub ecx, eax
-            cmp edx, offset gFrontend_controls_indices+0x3c
+            cmp edx, offset gMatchData_0060493c
             lea ecx, [ecx + ecx*2]
             lea eax, [eax + ecx*2]
             mov dword ptr [esi + eax*8], ebx
@@ -4680,7 +4774,7 @@ void C2_NAKED C2_HOOK_FASTCALL DisplayJoystickSettings(tFrontend_spec *pFrontend
             call GetJoystickFBBGain
             mov dword ptr [esp + 0x10], eax
             fild dword ptr [esp + 0x10]
-            fmul qword ptr [gDouble_0058a068+0x80]
+            fmul qword ptr [gMatchDouble_0058a0e8]
             fstp dword ptr [gControls_slider_3+0x10]
             call PDIsJoystickDPadEnabled
             test eax, eax
@@ -4706,6 +4800,9 @@ void C2_NAKED C2_HOOK_FASTCALL DisplayJoystickSettings(tFrontend_spec *pFrontend
             pop ebx
             pop ecx
             ret
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -4890,24 +4987,24 @@ void C2_NAKED C2_HOOK_FASTCALL FRONTEND_Setup(tFrontendMenuType pType) {
             push esi
             mov esi, ecx
             push edi
-            mov edx, 0x6559b4
+            mov edx, offset gMatchFloat_006559b4
             xor ecx, ecx
             mov dword ptr [esp + 0x18], esi
             call PrintMemoryDump
-            mov ecx, dword ptr ds:[0x75bba8]
+            mov ecx, dword ptr [gProgram_state+0x28]
             call LoadInterfaceStuff
-            mov eax, dword ptr ds:[gFrontend_stuff_not_loaded]
+            mov eax, dword ptr [gFrontend_stuff_not_loaded]
             test eax, eax
             je L0046d6ff
             call IString_Load
             call InitPolyFonts
-            mov esi, 0x686854
+            mov esi, offset gFrontend_images+0x4
     L0046d203:
             mov ecx, 0x655754
             call LoadPixelmap
             mov dword ptr [esi], eax
             add esi, 4
-            cmp esi, 0x686870
+            cmp esi, offset gFrontend_images+0x20
             jl L0046d203
             push 0x6556f0
             mov edx, offset gApplication_path
@@ -4915,7 +5012,7 @@ void C2_NAKED C2_HOOK_FASTCALL FRONTEND_Setup(tFrontendMenuType pType) {
             call PathCat
             lea edx, [esp + 0x1c]
             lea ecx, [esp + 0x1c]
-            push 0x6559a4
+            push offset gMatchString_006559a4
             call PathCat
             mov edx, 0x58f9e0
             lea ecx, [esp + 0x1c]
@@ -4931,7 +5028,7 @@ void C2_NAKED C2_HOOK_FASTCALL FRONTEND_Setup(tFrontendMenuType pType) {
             call GetAnInt
             test eax, eax
             jle L0046d2f5
-            mov ebx, 0x686870
+            mov ebx, offset gFrontend_images+0x20
             mov dword ptr [esp + 0x10], eax
     L0046d278:
             lea edx, [esp + 0x11c]
@@ -4980,7 +5077,7 @@ void C2_NAKED C2_HOOK_FASTCALL FRONTEND_Setup(tFrontendMenuType pType) {
             mov dword ptr [esp + 0x10], eax
             jne L0046d278
     L0046d2f5:
-            mov edx, 0x655984
+            mov edx, offset gMatchFloat_00655984
             xor ecx, ecx
             call PrintMemoryDump
             call FRONTEND_Setup2D
@@ -4990,7 +5087,7 @@ void C2_NAKED C2_HOOK_FASTCALL FRONTEND_Setup(tFrontendMenuType pType) {
             call PathCat
             lea edx, [esp + 0x11c]
             lea ecx, [esp + 0x1c]
-            push 0x655974
+            push offset gMatchString_00655974
             call PathCat
             mov edx, 0x58f9e0
             lea ecx, [esp + 0x1c]
@@ -5060,17 +5157,17 @@ void C2_NAKED C2_HOOK_FASTCALL FRONTEND_Setup(tFrontendMenuType pType) {
             lea eax, [esp + 0x1c]
             push eax
             call BrModelLoad
-            mov ecx, dword ptr ds:[gFrontend_backdrop_actors]
+            mov ecx, dword ptr [gFrontend_backdrop_actors]
             add esp, 4
             mov dword ptr [ecx + 0x18], eax
-            mov edx, dword ptr ds:[gFrontend_backdrop_actors]
+            mov edx, dword ptr [gFrontend_backdrop_actors]
             mov eax, dword ptr [edx + 0x18]
             or word ptr [eax + 0x20], bp
-            mov eax, dword ptr ds:[gFrontend_backdrop_actors]
+            mov eax, dword ptr [gFrontend_backdrop_actors]
             mov ecx, dword ptr [eax + 0x18]
             push ecx
             call BrModelAdd
-            mov edx, dword ptr ds:[gFrontend_backdrop_actors]
+            mov edx, dword ptr [gFrontend_backdrop_actors]
             add esp, 4
             add edx, 0x2c
             push 0xc0200000
@@ -5078,7 +5175,7 @@ void C2_NAKED C2_HOOK_FASTCALL FRONTEND_Setup(tFrontendMenuType pType) {
             push 0x43960000
             push edx
             call BrMatrix34Translate
-            mov eax, dword ptr ds:[gFrontend_backdrop_actors]
+            mov eax, dword ptr [gFrontend_backdrop_actors]
             add esp, 0x10
             add eax, 0x2c
             push 0x3f800000
@@ -5086,7 +5183,7 @@ void C2_NAKED C2_HOOK_FASTCALL FRONTEND_Setup(tFrontendMenuType pType) {
             push 0x3fa00000
             push eax
             call BrMatrix34PreScale
-            mov ecx, dword ptr ds:[gFrontend_backdrop_actors]
+            mov ecx, dword ptr [gFrontend_backdrop_actors]
             add esp, 0x10
             mov byte ptr [ecx + 0x20], 4
     L0046d486:
@@ -5148,17 +5245,17 @@ void C2_NAKED C2_HOOK_FASTCALL FRONTEND_Setup(tFrontendMenuType pType) {
             lea eax, [esp + 0x1c]
             push eax
             call BrModelLoad
-            mov ecx, dword ptr ds:[0x687034]
+            mov ecx, dword ptr [gFrontend_backdrop_actors+0x4]
             add esp, 4
             mov dword ptr [ecx + 0x18], eax
-            mov edx, dword ptr ds:[0x687034]
+            mov edx, dword ptr [gFrontend_backdrop_actors+0x4]
             mov eax, dword ptr [edx + 0x18]
             or word ptr [eax + 0x20], bp
-            mov eax, dword ptr ds:[0x687034]
+            mov eax, dword ptr [gFrontend_backdrop_actors+0x4]
             mov ecx, dword ptr [eax + 0x18]
             push ecx
             call BrModelAdd
-            mov edx, dword ptr ds:[0x687034]
+            mov edx, dword ptr [gFrontend_backdrop_actors+0x4]
             add esp, 4
             add edx, 0x2c
             push 0xc0200000
@@ -5166,7 +5263,7 @@ void C2_NAKED C2_HOOK_FASTCALL FRONTEND_Setup(tFrontendMenuType pType) {
             push 0x43960000
             push edx
             call BrMatrix34Translate
-            mov eax, dword ptr ds:[0x687034]
+            mov eax, dword ptr [gFrontend_backdrop_actors+0x4]
             add esp, 0x10
             add eax, 0x2c
             push 0x3f800000
@@ -5174,7 +5271,7 @@ void C2_NAKED C2_HOOK_FASTCALL FRONTEND_Setup(tFrontendMenuType pType) {
             push 0x3fa00000
             push eax
             call BrMatrix34PreScale
-            mov ecx, dword ptr ds:[0x687034]
+            mov ecx, dword ptr [gFrontend_backdrop_actors+0x4]
             add esp, 0x10
             mov byte ptr [ecx + 0x20], 4
     L0046d5ac:
@@ -5239,17 +5336,17 @@ void C2_NAKED C2_HOOK_FASTCALL FRONTEND_Setup(tFrontendMenuType pType) {
             lea eax, [esp + 0x1c]
             push eax
             call BrModelLoad
-            mov ecx, dword ptr ds:[0x687038]
+            mov ecx, dword ptr [gFrontend_backdrop_actors+0x8]
             add esp, 4
             mov dword ptr [ecx + 0x18], eax
-            mov edx, dword ptr ds:[0x687038]
+            mov edx, dword ptr [gFrontend_backdrop_actors+0x8]
             mov eax, dword ptr [edx + 0x18]
             or word ptr [eax + 0x20], bp
-            mov eax, dword ptr ds:[0x687038]
+            mov eax, dword ptr [gFrontend_backdrop_actors+0x8]
             mov ecx, dword ptr [eax + 0x18]
             push ecx
             call BrModelAdd
-            mov edx, dword ptr ds:[0x687038]
+            mov edx, dword ptr [gFrontend_backdrop_actors+0x8]
             add esp, 4
             add edx, 0x2c
             push 0xc0200000
@@ -5257,7 +5354,7 @@ void C2_NAKED C2_HOOK_FASTCALL FRONTEND_Setup(tFrontendMenuType pType) {
             push 0x43960000
             push edx
             call BrMatrix34Translate
-            mov eax, dword ptr ds:[0x687038]
+            mov eax, dword ptr [gFrontend_backdrop_actors+0x8]
             add esp, 0x10
             add eax, 0x2c
             push 0x3f800000
@@ -5265,7 +5362,7 @@ void C2_NAKED C2_HOOK_FASTCALL FRONTEND_Setup(tFrontendMenuType pType) {
             push 0x3fa00000
             push eax
             call BrMatrix34PreScale
-            mov ecx, dword ptr ds:[0x687038]
+            mov ecx, dword ptr [gFrontend_backdrop_actors+0x8]
             add esp, 0x10
             mov byte ptr [ecx + 0x20], 4
     L0046d6d8:
@@ -5274,88 +5371,88 @@ void C2_NAKED C2_HOOK_FASTCALL FRONTEND_Setup(tFrontendMenuType pType) {
             cmp ebx, eax
             jl L0046d5d4
     L0046d6e5:
-            mov edx, 0x655954
+            mov edx, offset gMatchFloat_00655954
             xor ecx, ecx
             call PrintMemoryDump
             mov esi, dword ptr [esp + 0x18]
-            mov dword ptr ds:[gFrontend_stuff_not_loaded], 0
+            mov dword ptr [gFrontend_stuff_not_loaded], 0
     L0046d6ff:
             cmp esi, 6
             ja L0046d7aa
             jmp dword ptr [esi*4 + 0x46d890]
             mov ecx, offset gFrontend_MAIN
             call FRONTEND_CreateMenu
-            mov dword ptr ds:[gCurrent_frontend_spec], 0x5a80f0
+            mov dword ptr [gCurrent_frontend_spec], 0x5a80f0
             jmp L0046d7aa
             mov ecx, offset gFrontend_OPTIONS
             call FRONTEND_CreateMenu
-            mov dword ptr ds:[gCurrent_frontend_spec], 0x632c60
+            mov dword ptr [gCurrent_frontend_spec], 0x632c60
             jmp L0046d7aa
             mov ecx, offset gFrontend_WRECKS
             call FRONTEND_CreateMenu
-            mov dword ptr ds:[gCurrent_frontend_spec], 0x5f8e68
+            mov dword ptr [gCurrent_frontend_spec], 0x5f8e68
             jmp L0046d7aa
             mov ecx, offset gFrontend_NETSYNC
             call FRONTEND_CreateMenu
-            mov dword ptr ds:[gCurrent_frontend_spec], 0x61bad0
+            mov dword ptr [gCurrent_frontend_spec], 0x61bad0
             jmp L0046d7aa
             mov ecx, offset gFrontend_NETWORK_SUMMARY
             call FRONTEND_CreateMenu
-            mov dword ptr ds:[gCurrent_frontend_spec], 0x627398
+            mov dword ptr [gCurrent_frontend_spec], 0x627398
             jmp L0046d7aa
             mov ecx, offset gFrontend_CREDITS
             call FRONTEND_CreateMenu
-            mov dword ptr ds:[gCurrent_frontend_spec], 0x5cab48
+            mov dword ptr [gCurrent_frontend_spec], 0x5cab48
             jmp L0046d7aa
             mov ecx, offset gFrontend_NEWGAME
             call FRONTEND_CreateMenu
-            mov dword ptr ds:[gCurrent_frontend_spec], 0x5bf280
+            mov dword ptr [gCurrent_frontend_spec], 0x5bf280
     L0046d7aa:
-            mov edx, 0x655938
+            mov edx, offset gMatchFloat_00655938
             xor ecx, ecx
             call PrintMemoryDump
-            mov edx, dword ptr ds:[gCurrent_frontend_spec]
+            mov edx, dword ptr [gCurrent_frontend_spec]
             mov dword ptr [edx + 0x114], 0
-            mov eax, dword ptr ds:[gFrontend_A_models]
-            mov dword ptr ds:[gFrontend_A_model_from], eax
-            mov eax, dword ptr ds:[gCurrent_frontend_spec]
+            mov eax, dword ptr [gFrontend_A_models]
+            mov dword ptr [gFrontend_A_model_from], eax
+            mov eax, dword ptr [gCurrent_frontend_spec]
             mov ecx, dword ptr [eax + 0x124]
             shl ecx, 4
             mov edx, dword ptr [ecx + gFrontend_A_models]
-            mov dword ptr ds:[gFrontend_A_model_to], edx
+            mov dword ptr [gFrontend_A_model_to], edx
             mov ecx, dword ptr [eax + 0x124]
-            mov edx, dword ptr ds:[gFrontend_B_models]
+            mov edx, dword ptr [gFrontend_B_models]
             neg ecx
             sbb ecx, ecx
-            mov dword ptr ds:[gFrontend_B_model_from], edx
+            mov dword ptr [gFrontend_B_model_from], edx
             and ecx, 3
             add ecx, -2
-            mov dword ptr ds:[gFrontend_backdrop0_opacity_mode], ecx
+            mov dword ptr [gFrontend_backdrop0_opacity_mode], ecx
             mov ecx, dword ptr [eax + 0x128]
             shl ecx, 4
             mov edx, dword ptr [ecx + gFrontend_B_models]
-            mov dword ptr ds:[gFrontend_B_model_to], edx
+            mov dword ptr [gFrontend_B_model_to], edx
             mov ecx, dword ptr [eax + 0x128]
-            mov edx, dword ptr ds:[gFrontend_C_models]
+            mov edx, dword ptr [gFrontend_C_models]
             neg ecx
             sbb ecx, ecx
-            mov dword ptr ds:[gFrontend_C_model_from], edx
+            mov dword ptr [gFrontend_C_model_from], edx
             and ecx, 3
             add ecx, -2
-            mov dword ptr ds:[gFrontend_backdrop1_opacity_mode], ecx
+            mov dword ptr [gFrontend_backdrop1_opacity_mode], ecx
             mov ecx, dword ptr [eax + 0x12c]
             shl ecx, 4
             mov edx, dword ptr [ecx + gFrontend_C_models]
-            mov dword ptr ds:[gFrontend_C_model_to], edx
+            mov dword ptr [gFrontend_C_model_to], edx
             mov eax, dword ptr [eax + 0x12c]
             neg eax
             sbb eax, eax
-            mov edx, 0x655920
+            mov edx, offset gMatchFloat_00655920
             and eax, 3
             xor ecx, ecx
             add eax, -2
-            mov dword ptr ds:[gFrontend_interpolate_steps_left], 0x10
-            mov dword ptr ds:[gFrontend_backdrop2_opacity_mode], eax
+            mov dword ptr [gFrontend_interpolate_steps_left], 0x10
+            mov dword ptr [gFrontend_backdrop2_opacity_mode], eax
             call PrintMemoryDump
             pop edi
             pop esi
@@ -7401,7 +7498,12 @@ int C2_NAKED C2_HOOK_FASTCALL Generic_MenuHandler(tFrontend_spec* pFrontend) {
             lea ecx, [ecx + eax*2]
             mov dword ptr [ebp + ecx*8 + 0x400], edx
             fld dword ptr [esi + 0x10]
-            fcomp dword ptr [gDouble_0058a068+0x30]
+            _emit 0xd8
+        _emit 0x1d
+        _emit 0x98
+        _emit 0xa0
+        _emit 0x58
+        _emit 0x00
             fnstsw ax
             test ah, 1
             je L00470dfc
@@ -7409,7 +7511,7 @@ int C2_NAKED C2_HOOK_FASTCALL Generic_MenuHandler(tFrontend_spec* pFrontend) {
             jmp L00470e13
     L00470dfc:
             fld dword ptr [esi + 0x10]
-            fcomp qword ptr [gDouble_0058a068+0x78]
+            fcomp qword ptr [gMatchDouble_0058a0e0]
             fnstsw ax
             test ah, 0x41
             jne L00470e13
@@ -8570,6 +8672,13 @@ int C2_NAKED C2_HOOK_FASTCALL Generic_MenuHandler(tFrontend_spec* pFrontend) {
     L00471b90:
             mov dword ptr [esp + 0x1c], eax
             jmp L004712c0
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -8887,11 +8996,11 @@ void C2_NAKED C2_HOOK_FASTCALL FRONTEND_DrawMenu(tFrontend_spec* pFrontend) {
             test eax, eax
             mov eax, dword ptr [esi - 0x3d]
             je L0046e1f3
-            fmul qword ptr [gDouble_0058a068+0x10]
-            fsubr qword ptr [gDouble_0058a068+0x18]
+            fmul qword ptr [gMatchDouble_0058a078]
+            fsubr qword ptr [gMatchDouble_0058a080]
             jmp L0046e1f9
     L0046e1f3:
-            fmul qword ptr [gDouble_0058a068+0x20]
+            fmul qword ptr [gMatchDouble_0058a088]
     L0046e1f9:
             mov edx, dword ptr [esi - 0x35]
             sub esp, 8
@@ -9008,9 +9117,14 @@ void C2_NAKED C2_HOOK_FASTCALL FRONTEND_DrawMenu(tFrontend_spec* pFrontend) {
             mov ebx, dword ptr [gFrontend_selected_item_index]
     L0046e30a:
             fld qword ptr [gFrontend_throb_factor]
-            fmul qword ptr [gDouble_0058a068+0x10]
-            fsubr qword ptr [gDouble_0058a068+0x18]
-            fmul qword ptr [gDouble_0058a068+0x28]
+            fmul qword ptr [gMatchDouble_0058a078]
+            fsubr qword ptr [gMatchDouble_0058a080]
+            _emit 0xdc
+        _emit 0x0d
+        _emit 0x90
+        _emit 0xa0
+        _emit 0x58
+        _emit 0x00
             call _ftol
             lea edx, [ebx + ebx*4]
             push 0x7fff
@@ -9082,7 +9196,12 @@ void C2_NAKED C2_HOOK_FASTCALL FRONTEND_DrawMenu(tFrontend_spec* pFrontend) {
             mov dword ptr [esp + 0x14], eax
             fild dword ptr [esp + 0x14]
     L0046e402:
-            fmul qword ptr [gDouble_0058a068+0x8]
+            _emit 0xdc
+        _emit 0x0d
+        _emit 0x70
+        _emit 0xa0
+        _emit 0x58
+        _emit 0x00
             fstp qword ptr [gFrontend_throb_factor]
             call PossibleService
             mov eax, dword ptr [gCount_connected_items_indices]
@@ -9116,6 +9235,18 @@ void C2_NAKED C2_HOOK_FASTCALL FRONTEND_DrawMenu(tFrontend_spec* pFrontend) {
             mov esp, ebp
             pop ebp
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -9629,12 +9760,12 @@ int C2_NAKED C2_HOOK_FASTCALL Controls_Infunc(tFrontend_spec* pFrontend) {
             call EdgeTriggerModeOn
             mov edx, offset gApplication_path
             lea ecx, [esp + 0x118]
-            push offset gFrontend_QUIT+0xbcd8
+            push 0x655ac8
             mov dword ptr [gCurrent_frontend_scrollbars], edi
             mov dword ptr [gConnected_items], edi
             mov dword ptr [gPTR_00686508], edi
             call PathCat
-            mov edx, offset gNext_crush_actor_id+0x180
+            mov edx, 0x58f9e0
             lea ecx, [esp + 0x118]
             call DRfopen
             mov ebx, eax
@@ -9721,7 +9852,7 @@ int C2_NAKED C2_HOOK_FASTCALL Controls_Infunc(tFrontend_spec* pFrontend) {
             mov dword ptr [esp + 0x10], eax
             mov ebp, offset gBackup_key_mappings
     L00472763:
-            push offset gFrontend_QUIT+0xbcc8
+            push 0x655ab8
             mov edx, offset gApplication_path
             lea ecx, [esp + 0x1c]
             mov dword ptr [gKey_map_index], ebx
@@ -9736,7 +9867,7 @@ int C2_NAKED C2_HOOK_FASTCALL Controls_Infunc(tFrontend_spec* pFrontend) {
             not ecx
             dec ecx
             mov byte ptr [ecx + eax], dl
-            mov edx, offset gNext_crush_actor_id+0x180
+            mov edx, 0x58f9e0
             lea ecx, [esp + 0x18]
             call DRfopen
             mov esi, eax
@@ -9749,12 +9880,12 @@ int C2_NAKED C2_HOOK_FASTCALL Controls_Infunc(tFrontend_spec* pFrontend) {
             mov edi, offset gKey_mapping
     L004727bd:
             push edi
-            push offset gPed_flags_0058f2e4+0x134
+            push 0x58f418
             push esi
             call fscanf
             add edi, 4
             add esp, 0xc
-            cmp edi, offset gKey_mapping+0x134
+            cmp edi, 0x74b714
             jl L004727bd
             mov ecx, esi
             call PFfclose
@@ -9763,7 +9894,7 @@ int C2_NAKED C2_HOOK_FASTCALL Controls_Infunc(tFrontend_spec* pFrontend) {
             mov ecx, 0x4d
             mov esi, offset gKey_mapping
             inc ebx
-            cmp ebp, offset gBackup_key_mappings+0x4d0
+            cmp ebp, offset gMatchData_00686eb0
             rep movsd
             jl L00472763
             mov eax, dword ptr [gOrig_key_map_index]
@@ -9780,15 +9911,15 @@ int C2_NAKED C2_HOOK_FASTCALL Controls_Infunc(tFrontend_spec* pFrontend) {
             mov dword ptr [gOrig_joystick_index], ecx
             mov dword ptr [gJoystick_index], edi
             call GetJoystickX
-            fstp dword ptr [gOrig_joystick_index+0x4]
+            fstp dword ptr [gMatchData_00688704]
             call GetJoystickY
-            fstp dword ptr [gOrig_joystick_index+0x8]
+            fstp dword ptr [gMatchData_00688708]
             call GetJoystickFBBGain
-            mov dword ptr [gOrig_joystick_index+0xc], eax
+            mov dword ptr [gMatchData_0068870c], eax
             call PDIsJoystickDPadEnabled
             mov edx, dword ptr [gOrig_joystick_index]
             mov esi, dword ptr [esp + 0x14]
-            mov dword ptr [gOrig_joystick_index+0x10], eax
+            mov dword ptr [gMatchData_00688710], eax
             mov eax, dword ptr [gKey_map_index]
             add eax, 0x27
             mov dword ptr [gJoystick_index], edx
@@ -9842,6 +9973,15 @@ int C2_NAKED C2_HOOK_FASTCALL Controls_Infunc(tFrontend_spec* pFrontend) {
             pop ebx
             add esp, 0x208
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -10188,7 +10328,7 @@ int C2_NAKED C2_HOOK_FASTCALL Controls_SlotActivated(tFrontend_spec* pFrontend) 
             mov ecx, dword ptr [eax]
             fild dword ptr [esi + 0x14c]
             fadd st(0), st(1)
-            fsub dword ptr [gDouble_0058a068+0x98]
+            fsub dword ptr [gMatchFloat_0058a100]
             fchs
             fstp dword ptr [ecx + 0x54]
             mov eax, dword ptr [eax]
@@ -10347,6 +10487,18 @@ int C2_NAKED C2_HOOK_FASTCALL Controls_SlotActivated(tFrontend_spec* pFrontend) 
             pop ebx
             add esp, 0xc
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -10521,7 +10673,7 @@ int C2_NAKED C2_HOOK_FASTCALL Controls_Ok(tFrontend_spec* pFrontend) {
             cmp esi, -1
             mov dword ptr [gFrontend_selected_item_index], esi
             jne L00472ea0
-            mov ecx, offset gFrontend_QUIT+0xbce8
+            mov ecx, offset gMatchFloat_00655ad8
             call PDFatalError
             xor eax, eax
             pop edi
@@ -10544,6 +10696,21 @@ int C2_NAKED C2_HOOK_FASTCALL Controls_Ok(tFrontend_spec* pFrontend) {
             pop esi
             pop ebx
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }

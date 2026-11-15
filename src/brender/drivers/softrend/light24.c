@@ -10,6 +10,30 @@ extern rend_block_soft rend;
 extern char rendererStateStoredDispatch[];
 extern static_cache_soft scache;
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gDouble_0058c948[];
+extern char gFloat_0058c938[];
+extern char gFloat_0058c93c[];
+extern char gFloat_0058c940[];
+extern char gFloat_0058c950[];
+extern char gFloat_0058c958[];
+extern char gFloat_0058c95c[];
+extern char gFloat_0058c960[];
+extern char gFloat_0058c968[];
+extern char gFloat_0058c96c[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchDouble_0058c948[];
+extern char gMatchFloat_0058c938[];
+extern char gMatchFloat_0058c93c[];
+extern char gMatchFloat_0058c940[];
+extern char gMatchFloat_0058c950[];
+extern char gMatchFloat_0058c958[];
+extern char gMatchFloat_0058c95c[];
+extern char gMatchFloat_0058c960[];
+extern char gMatchFloat_0058c968[];
+extern char gMatchFloat_0058c96c[];
+#endif
 // FUNCTION: CARMA2_HW 0x00548c10
 void C2_HOOK_CDECL SurfaceColourZero(br_soft_renderer* self, br_vector3* p, br_vector2* map, br_vector3* n, br_colour colour, br_scalar* comp) {
 
@@ -44,7 +68,7 @@ void C2_NAKED C2_HOOK_CDECL SurfaceColourUnlit(br_soft_renderer* self, br_vector
             shr edx, 8
             and edx, 0xff
             and ecx, 0xff
-            fmul dword ptr [rendererStateStoredDispatch+0xa0]
+            fmul dword ptr [gMatchFloat_0058c938]
             mov dword ptr [esp + 8], edx
             mov edx, dword ptr [esp + 0x28]
             fmul dword ptr [eax + 0x610]
@@ -52,7 +76,7 @@ void C2_NAKED C2_HOOK_CDECL SurfaceColourUnlit(br_soft_renderer* self, br_vector
             fxch st(1)
             fadd dword ptr [eax + 0x5d0]
             fxch st(1)
-            fmul dword ptr [rendererStateStoredDispatch+0xa0]
+            fmul dword ptr [gMatchFloat_0058c938]
             fxch st(1)
             fstp dword ptr [edx + 0x2c]
             fmul dword ptr [eax + 0x614]
@@ -62,7 +86,7 @@ void C2_NAKED C2_HOOK_CDECL SurfaceColourUnlit(br_soft_renderer* self, br_vector
             fxch st(1)
             fadd dword ptr [eax + 0x5d4]
             fxch st(1)
-            fmul dword ptr [rendererStateStoredDispatch+0xa0]
+            fmul dword ptr [gMatchFloat_0058c938]
             fxch st(1)
             fstp dword ptr [edx + 0x30]
             fmul dword ptr [eax + 0x618]
@@ -70,6 +94,13 @@ void C2_NAKED C2_HOOK_CDECL SurfaceColourUnlit(br_soft_renderer* self, br_vector
             fstp dword ptr [edx + 0x34]
             add esp, 0x10
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -134,13 +165,13 @@ void C2_NAKED C2_HOOK_CDECL SurfaceColourLit(br_soft_renderer* self, br_vector3*
             mov dword ptr [esp + 0xc], eax
             mov ebx, dword ptr [esp + 0x44]
             push esi
-            fmul dword ptr [rendererStateStoredDispatch+0xa4]
+            fmul dword ptr [gMatchFloat_0058c93c]
             fild qword ptr [esp + 0xc]
             push edi
             mov edi, dword ptr [esp + 0x38]
             mov ecx, ebp
             mov dword ptr [esp + 0x14], eax
-            fmul dword ptr [rendererStateStoredDispatch+0xa4]
+            fmul dword ptr [gMatchFloat_0058c93c]
             fxch st(1)
             fmul dword ptr [edi + 0x2c]
             and ecx, 0xff
@@ -151,7 +182,7 @@ void C2_NAKED C2_HOOK_CDECL SurfaceColourLit(br_soft_renderer* self, br_vector3*
             mov dword ptr [esp + 0x10], ecx
             mov esi, offset scache+0x118
             fild qword ptr [esp + 0x10]
-            fmul dword ptr [rendererStateStoredDispatch+0xa4]
+            fmul dword ptr [gMatchFloat_0058c93c]
             fxch st(1)
             fmulp st(2), st(0)
             fxch st(1)
@@ -211,11 +242,11 @@ void C2_NAKED C2_HOOK_CDECL SurfaceColourLit(br_soft_renderer* self, br_vector3*
             fmul dword ptr [esp + 0x18]
             faddp st(1), st(0)
             fsqrt
-            fcom dword ptr [rendererStateStoredDispatch+0xa8]
+            fcom dword ptr [gMatchFloat_0058c940]
             fnstsw ax
             test ah, 0x41
             jne L00548e64
-            fdivr qword ptr [rendererStateStoredDispatch+0xb0]
+            fdivr qword ptr [gMatchDouble_0058c948]
             fld st(0)
             fld st(1)
             fxch st(1)
@@ -262,17 +293,22 @@ void C2_NAKED C2_HOOK_CDECL SurfaceColourLit(br_soft_renderer* self, br_vector3*
             jl L00548ead
     L00548ed4:
             fld dword ptr [ebx + 0x2c]
-            fcomp dword ptr [rendererStateStoredDispatch+0xb8]
+            fcomp dword ptr [gMatchFloat_0058c950]
             fnstsw ax
             test ah, 1
             jne L00548ef8
             fld dword ptr [edi + 0x5d0]
             fadd dword ptr [edi + 0x610]
-            fsub dword ptr [rendererStateStoredDispatch+0xc0]
+            fsub dword ptr [gMatchFloat_0058c958]
             jmp L00548f22
     L00548ef8:
             fld dword ptr [ebx + 0x2c]
-            fcomp dword ptr [rendererStateStoredDispatch+0xbc]
+            _emit 0xd8
+        _emit 0x1d
+        _emit 0x54
+        _emit 0xc9
+        _emit 0x58
+        _emit 0x00
             fnstsw ax
             test ah, 0x41
             je L00548f13
@@ -287,17 +323,22 @@ void C2_NAKED C2_HOOK_CDECL SurfaceColourLit(br_soft_renderer* self, br_vector3*
             fstp dword ptr [ebx + 0x2c]
     L00548f25:
             fld dword ptr [ebx + 0x30]
-            fcomp dword ptr [rendererStateStoredDispatch+0xb8]
+            fcomp dword ptr [gMatchFloat_0058c950]
             fnstsw ax
             test ah, 1
             jne L00548f49
             fld dword ptr [edi + 0x5d4]
             fadd dword ptr [edi + 0x614]
-            fsub dword ptr [rendererStateStoredDispatch+0xc0]
+            fsub dword ptr [gMatchFloat_0058c958]
             jmp L00548f73
     L00548f49:
             fld dword ptr [ebx + 0x30]
-            fcomp dword ptr [rendererStateStoredDispatch+0xbc]
+            _emit 0xd8
+        _emit 0x1d
+        _emit 0x54
+        _emit 0xc9
+        _emit 0x58
+        _emit 0x00
             fnstsw ax
             test ah, 0x41
             je L00548f64
@@ -312,13 +353,13 @@ void C2_NAKED C2_HOOK_CDECL SurfaceColourLit(br_soft_renderer* self, br_vector3*
             fstp dword ptr [ebx + 0x30]
     L00548f76:
             fld dword ptr [ebx + 0x34]
-            fcomp dword ptr [rendererStateStoredDispatch+0xb8]
+            fcomp dword ptr [gMatchFloat_0058c950]
             fnstsw ax
             test ah, 1
             jne L00548fa3
             fld dword ptr [edi + 0x5d8]
             fadd dword ptr [edi + 0x618]
-            fsub dword ptr [rendererStateStoredDispatch+0xc0]
+            fsub dword ptr [gMatchFloat_0058c958]
             fstp dword ptr [ebx + 0x34]
             pop edi
             pop esi
@@ -328,7 +369,12 @@ void C2_NAKED C2_HOOK_CDECL SurfaceColourLit(br_soft_renderer* self, br_vector3*
             ret
     L00548fa3:
             fld dword ptr [ebx + 0x34]
-            fcomp dword ptr [rendererStateStoredDispatch+0xbc]
+            _emit 0xd8
+        _emit 0x1d
+        _emit 0x54
+        _emit 0xc9
+        _emit 0x58
+        _emit 0x00
             fnstsw ax
             test ah, 0x41
             je L00548fc4
@@ -411,7 +457,12 @@ void C2_NAKED C2_HOOK_STDCALL lightingColourDirectSpecular(br_soft_renderer* sel
             fxch st(1)
             faddp st(2), st(0)
             faddp st(1), st(0)
-            fcom dword ptr [rendererStateStoredDispatch+0xbc]
+            _emit 0xd8
+        _emit 0x15
+        _emit 0x54
+        _emit 0xc9
+        _emit 0x58
+        _emit 0x00
             fnstsw ax
             test ah, 0x41
             jne L0054936f
@@ -438,15 +489,20 @@ void C2_NAKED C2_HOOK_STDCALL lightingColourDirectSpecular(br_soft_renderer* sel
             mov dword ptr [esp + 0x10], esi
             fild qword ptr [esp + 0xc]
             fxch st(2)
-            fmul dword ptr [rendererStateStoredDispatch+0xa4]
+            fmul dword ptr [gMatchFloat_0058c93c]
             fxch st(3)
             fmulp st(4), st(0)
-            fmul dword ptr [rendererStateStoredDispatch+0xa4]
+            fmul dword ptr [gMatchFloat_0058c93c]
             fld dword ptr [edx + 0x34]
             fxch st(2)
-            fmul dword ptr [rendererStateStoredDispatch+0xa4]
+            fmul dword ptr [gMatchFloat_0058c93c]
             fxch st(2)
-            fcomp dword ptr [rendererStateStoredDispatch+0xbc]
+            _emit 0xd8
+        _emit 0x1d
+        _emit 0x54
+        _emit 0xc9
+        _emit 0x58
+        _emit 0x00
             fxch st(2)
             fmul st(0), st(3)
             fxch st(2)
@@ -473,7 +529,7 @@ void C2_NAKED C2_HOOK_STDCALL lightingColourDirectSpecular(br_soft_renderer* sel
             fxch st(1)
             faddp st(2), st(0)
             faddp st(1), st(0)
-            fcom dword ptr [rendererStateStoredDispatch+0xc4]
+            fcom dword ptr [gMatchFloat_0058c95c]
             fnstsw ax
             test ah, 0x41
             jne L005492e2
@@ -516,7 +572,7 @@ void C2_NAKED C2_HOOK_STDCALL lightingColourDirectSpecular(br_soft_renderer* sel
             mov dword ptr [esp + 8], edx
             pop esi
             fild qword ptr [esp + 4]
-            fmul dword ptr [rendererStateStoredDispatch+0xa4]
+            fmul dword ptr [gMatchFloat_0058c93c]
             fmul st(0), st(1)
             fadd dword ptr [eax + 0x2c]
             fstp dword ptr [eax + 0x2c]
@@ -526,7 +582,7 @@ void C2_NAKED C2_HOOK_STDCALL lightingColourDirectSpecular(br_soft_renderer* sel
             and edx, 0xff00
             mov dword ptr [esp + 0xc], edx
             fild qword ptr [esp + 0xc]
-            fmul dword ptr [rendererStateStoredDispatch+0xa4]
+            fmul dword ptr [gMatchFloat_0058c93c]
             fmul dword ptr [esp + 0x30]
             fadd dword ptr [eax + 0x30]
             fstp dword ptr [eax + 0x30]
@@ -536,7 +592,7 @@ void C2_NAKED C2_HOOK_STDCALL lightingColourDirectSpecular(br_soft_renderer* sel
             shl edx, 8
             mov dword ptr [esp + 0x14], edx
             fild qword ptr [esp + 0x14]
-            fmul dword ptr [rendererStateStoredDispatch+0xa4]
+            fmul dword ptr [gMatchFloat_0058c93c]
             fmul dword ptr [esp + 0x28]
             fadd dword ptr [eax + 0x34]
             fstp dword ptr [eax + 0x34]
@@ -618,7 +674,7 @@ void C2_NAKED C2_HOOK_STDCALL lightingColourLocal2(br_soft_renderer* self, br_ve
             test ah, 0x41
             je L005494fa
             fld dword ptr [esp + 0x40]
-            fcomp dword ptr [rendererStateStoredDispatch+0xc0]
+            fcomp dword ptr [gMatchFloat_0058c958]
             fnstsw ax
             test ah, 1
             jne L005494fa
@@ -639,7 +695,12 @@ void C2_NAKED C2_HOOK_STDCALL lightingColourLocal2(br_soft_renderer* self, br_ve
             faddp st(1), st(0)
             fxch st(1)
             faddp st(1), st(0)
-            fcom dword ptr [rendererStateStoredDispatch+0xbc]
+            _emit 0xd8
+        _emit 0x15
+        _emit 0x54
+        _emit 0xc9
+        _emit 0x58
+        _emit 0x00
             fnstsw ax
             test ah, 1
             jne L005494f6
@@ -674,7 +735,7 @@ void C2_NAKED C2_HOOK_STDCALL lightingColourLocal2(br_soft_renderer* self, br_ve
             fxch st(1)
             fstp st(3)
             fmul st(0), st(2)
-            fmul dword ptr [rendererStateStoredDispatch+0xc8]
+            fmul dword ptr [gMatchFloat_0058c960]
             fsubr dword ptr [esi + 0x2c]
             fstp dword ptr [esi + 0x2c]
             mov edx, dword ptr [edi + 0x34]
@@ -684,7 +745,7 @@ void C2_NAKED C2_HOOK_STDCALL lightingColourLocal2(br_soft_renderer* self, br_ve
             mov dword ptr [esp + 0x18], ecx
             fild qword ptr [esp + 0x18]
             fmul st(0), st(1)
-            fmul dword ptr [rendererStateStoredDispatch+0xc8]
+            fmul dword ptr [gMatchFloat_0058c960]
             fsubr dword ptr [esi + 0x30]
             fstp dword ptr [esi + 0x30]
             mov eax, dword ptr [edi + 0x34]
@@ -695,7 +756,7 @@ void C2_NAKED C2_HOOK_STDCALL lightingColourLocal2(br_soft_renderer* self, br_ve
             mov dword ptr [esp + 0x20], eax
             fild qword ptr [esp + 0x20]
             fmul st(0), st(1)
-            fmul dword ptr [rendererStateStoredDispatch+0xc8]
+            fmul dword ptr [gMatchFloat_0058c960]
             fsubr dword ptr [esi + 0x34]
             fstp dword ptr [esi + 0x34]
             fstp st(0)
@@ -784,7 +845,7 @@ void C2_NAKED C2_HOOK_STDCALL lightingColourLocal1(br_soft_renderer* self, br_ve
             test ah, 0x41
             je L00549623
             fld dword ptr [esp + 0x28]
-            fcomp dword ptr [rendererStateStoredDispatch+0xc0]
+            fcomp dword ptr [gMatchFloat_0058c958]
             fnstsw ax
             test ah, 1
             jne L00549623
@@ -812,7 +873,7 @@ void C2_NAKED C2_HOOK_STDCALL lightingColourLocal1(br_soft_renderer* self, br_ve
             fild qword ptr [esp + 0x10]
             mov dword ptr [esp + 0x14], edi
             fmul st(0), st(1)
-            fmul dword ptr [rendererStateStoredDispatch+0xc8]
+            fmul dword ptr [gMatchFloat_0058c960]
             fsubr dword ptr [eax + 0x2c]
             fstp dword ptr [eax + 0x2c]
             mov ebp, dword ptr [esi + 0x34]
@@ -824,7 +885,7 @@ void C2_NAKED C2_HOOK_STDCALL lightingColourLocal1(br_soft_renderer* self, br_ve
             mov dword ptr [esp + 0x10], edi
             pop ebp
             fmul st(0), st(1)
-            fmul dword ptr [rendererStateStoredDispatch+0xc8]
+            fmul dword ptr [gMatchFloat_0058c960]
             fsubr dword ptr [eax + 0x30]
             fstp dword ptr [eax + 0x30]
             mov edx, dword ptr [esi + 0x34]
@@ -834,7 +895,7 @@ void C2_NAKED C2_HOOK_STDCALL lightingColourLocal1(br_soft_renderer* self, br_ve
             mov dword ptr [esp + 8], ecx
             fild qword ptr [esp + 8]
             fmul st(0), st(1)
-            fmul dword ptr [rendererStateStoredDispatch+0xc8]
+            fmul dword ptr [gMatchFloat_0058c960]
             fsubr dword ptr [eax + 0x34]
             fstp dword ptr [eax + 0x34]
             fstp st(0)
@@ -917,11 +978,11 @@ void C2_NAKED C2_HOOK_STDCALL lightingColourPointSpecular(br_soft_renderer* self
             faddp st(2), st(0)
             faddp st(1), st(0)
             fsqrt
-            fcom dword ptr [rendererStateStoredDispatch+0xa8]
+            fcom dword ptr [gMatchFloat_0058c940]
             fnstsw ax
             test ah, 0x41
             jne L005496a4
-            fdivr qword ptr [rendererStateStoredDispatch+0xb0]
+            fdivr qword ptr [gMatchDouble_0058c948]
             fld st(0)
             fld st(1)
             fxch st(1)
@@ -963,7 +1024,12 @@ void C2_NAKED C2_HOOK_STDCALL lightingColourPointSpecular(br_soft_renderer* self
             faddp st(1), st(0)
             fxch st(1)
             faddp st(1), st(0)
-            fcom dword ptr [rendererStateStoredDispatch+0xbc]
+            _emit 0xd8
+        _emit 0x15
+        _emit 0x54
+        _emit 0xc9
+        _emit 0x58
+        _emit 0x00
             fst dword ptr [esp + 0x2c]
             fnstsw ax
             test ah, 0x41
@@ -989,15 +1055,20 @@ void C2_NAKED C2_HOOK_STDCALL lightingColourPointSpecular(br_soft_renderer* self
             mov dword ptr [esp + 0x10], edx
             fild qword ptr [esp + 0xc]
             fxch st(2)
-            fmul dword ptr [rendererStateStoredDispatch+0xa4]
+            fmul dword ptr [gMatchFloat_0058c93c]
             fxch st(3)
             fmulp st(4), st(0)
-            fmul dword ptr [rendererStateStoredDispatch+0xa4]
+            fmul dword ptr [gMatchFloat_0058c93c]
             fld dword ptr [esi + 0x34]
             fxch st(2)
-            fmul dword ptr [rendererStateStoredDispatch+0xa4]
+            fmul dword ptr [gMatchFloat_0058c93c]
             fxch st(2)
-            fcomp dword ptr [rendererStateStoredDispatch+0xbc]
+            _emit 0xd8
+        _emit 0x1d
+        _emit 0x54
+        _emit 0xc9
+        _emit 0x58
+        _emit 0x00
             fxch st(2)
             fmul st(0), st(3)
             fxch st(2)
@@ -1040,7 +1111,7 @@ void C2_NAKED C2_HOOK_STDCALL lightingColourPointSpecular(br_soft_renderer* self
             fxch st(1)
             faddp st(1), st(0)
             fstp st(1)
-            fcom dword ptr [rendererStateStoredDispatch+0xc4]
+            fcom dword ptr [gMatchFloat_0058c95c]
             fnstsw ax
             test ah, 0x41
             jne L0054982f
@@ -1087,7 +1158,7 @@ void C2_NAKED C2_HOOK_STDCALL lightingColourPointSpecular(br_soft_renderer* self
             fxch st(1)
             fmul st(0), st(2)
             fxch st(1)
-            fmul dword ptr [rendererStateStoredDispatch+0xa4]
+            fmul dword ptr [gMatchFloat_0058c93c]
             fmulp st(1), st(0)
             mov dword ptr [esp + 0x10], edx
             fadd dword ptr [eax + 0x2c]
@@ -1102,7 +1173,7 @@ void C2_NAKED C2_HOOK_STDCALL lightingColourPointSpecular(br_soft_renderer* self
             fxch st(1)
             fmul dword ptr [esp + 0x34]
             fxch st(1)
-            fmul dword ptr [rendererStateStoredDispatch+0xa4]
+            fmul dword ptr [gMatchFloat_0058c93c]
             fmulp st(1), st(0)
             fadd dword ptr [eax + 0x30]
             fstp dword ptr [eax + 0x30]
@@ -1116,7 +1187,7 @@ void C2_NAKED C2_HOOK_STDCALL lightingColourPointSpecular(br_soft_renderer* self
             fxch st(1)
             fmul dword ptr [esp + 0x28]
             fxch st(1)
-            fmul dword ptr [rendererStateStoredDispatch+0xa4]
+            fmul dword ptr [gMatchFloat_0058c93c]
             fmulp st(1), st(0)
             fadd dword ptr [eax + 0x34]
             fstp dword ptr [eax + 0x34]
@@ -1132,6 +1203,20 @@ void C2_NAKED C2_HOOK_STDCALL lightingColourPointSpecular(br_soft_renderer* self
             pop ebx
             add esp, 0x14
             ret 0x18
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -1209,14 +1294,14 @@ void C2_NAKED C2_HOOK_STDCALL lightingColourPointAttnSpecular(br_soft_renderer* 
             faddp st(1), st(0)
             fsqrt
             fst dword ptr [esp + 0x38]
-            fcomp dword ptr [rendererStateStoredDispatch+0xa8]
+            fcomp dword ptr [gMatchFloat_0058c940]
             fnstsw ax
             test ah, 0x41
             jne L00549bc4
             fld dword ptr [esp + 0x38]
-            fdivr qword ptr [rendererStateStoredDispatch+0xb0]
+            fdivr qword ptr [gMatchDouble_0058c948]
             fld dword ptr [esp + 0x38]
-            fcomp dword ptr [rendererStateStoredDispatch+0xd0]
+            fcomp dword ptr [gMatchFloat_0058c968]
             fld st(0)
             fld st(1)
             fxch st(1)
@@ -1236,7 +1321,7 @@ void C2_NAKED C2_HOOK_STDCALL lightingColourPointAttnSpecular(br_soft_renderer* 
             test ah, 1
             fstp st(0)
             jne L00549988
-            fld dword ptr [rendererStateStoredDispatch+0xd4]
+            fld dword ptr [gMatchFloat_0058c96c]
             jmp L00549990
     L00549988:
             fld dword ptr [esp + 0x38]
@@ -1259,7 +1344,7 @@ void C2_NAKED C2_HOOK_STDCALL lightingColourPointAttnSpecular(br_soft_renderer* 
             fxch st(2)
             fmul dword ptr [esp + 0x1c]
             fxch st(2)
-            fdivr qword ptr [rendererStateStoredDispatch+0xb0]
+            fdivr qword ptr [gMatchDouble_0058c948]
             fxch st(1)
             fmul dword ptr [esp + 0x20]
             fxch st(3)
@@ -1272,7 +1357,12 @@ void C2_NAKED C2_HOOK_STDCALL lightingColourPointAttnSpecular(br_soft_renderer* 
             faddp st(1), st(0)
             fxch st(1)
             fstp dword ptr [esp + 0x2c]
-            fcom dword ptr [rendererStateStoredDispatch+0xbc]
+            _emit 0xd8
+        _emit 0x15
+        _emit 0x54
+        _emit 0xc9
+        _emit 0x58
+        _emit 0x00
             fst dword ptr [esp + 0x38]
             fnstsw ax
             test ah, 0x41
@@ -1298,15 +1388,20 @@ void C2_NAKED C2_HOOK_STDCALL lightingColourPointAttnSpecular(br_soft_renderer* 
             mov dword ptr [esp + 0x14], edx
             fild qword ptr [esp + 0x10]
             fxch st(2)
-            fmul dword ptr [rendererStateStoredDispatch+0xa4]
+            fmul dword ptr [gMatchFloat_0058c93c]
             fxch st(3)
             fmulp st(4), st(0)
-            fmul dword ptr [rendererStateStoredDispatch+0xa4]
+            fmul dword ptr [gMatchFloat_0058c93c]
             fld dword ptr [edi + 0x34]
             fxch st(2)
-            fmul dword ptr [rendererStateStoredDispatch+0xa4]
+            fmul dword ptr [gMatchFloat_0058c93c]
             fxch st(2)
-            fcomp dword ptr [rendererStateStoredDispatch+0xbc]
+            _emit 0xd8
+        _emit 0x1d
+        _emit 0x54
+        _emit 0xc9
+        _emit 0x58
+        _emit 0x00
             fxch st(2)
             fmul st(0), st(3)
             fxch st(2)
@@ -1349,7 +1444,12 @@ void C2_NAKED C2_HOOK_STDCALL lightingColourPointAttnSpecular(br_soft_renderer* 
             faddp st(1), st(0)
             fst dword ptr [esp + 0x38]
             fstp st(1)
-            fcomp dword ptr [rendererStateStoredDispatch+0xbc]
+            _emit 0xd8
+        _emit 0x1d
+        _emit 0x54
+        _emit 0xc9
+        _emit 0x58
+        _emit 0x00
             fnstsw ax
             test ah, 0x41
             jne L00549b23
@@ -1389,7 +1489,7 @@ void C2_NAKED C2_HOOK_STDCALL lightingColourPointAttnSpecular(br_soft_renderer* 
             fxch st(3)
             fmul dword ptr [esp + 0x2c]
             fxch st(3)
-            fmul dword ptr [rendererStateStoredDispatch+0xa4]
+            fmul dword ptr [gMatchFloat_0058c93c]
             mov dword ptr [esp + 0x14], edx
             fmulp st(3), st(0)
             fxch st(1)
@@ -1405,7 +1505,7 @@ void C2_NAKED C2_HOOK_STDCALL lightingColourPointAttnSpecular(br_soft_renderer* 
             and edx, 0xff00
             mov dword ptr [esp + 0x18], edx
             fild qword ptr [esp + 0x18]
-            fmul dword ptr [rendererStateStoredDispatch+0xa4]
+            fmul dword ptr [gMatchFloat_0058c93c]
             fmulp st(3), st(0)
             fxch st(2)
             fadd dword ptr [eax + 0x30]
@@ -1416,7 +1516,7 @@ void C2_NAKED C2_HOOK_STDCALL lightingColourPointAttnSpecular(br_soft_renderer* 
             shl edx, 8
             mov dword ptr [esp + 0x10], edx
             fild qword ptr [esp + 0x10]
-            fmul dword ptr [rendererStateStoredDispatch+0xa4]
+            fmul dword ptr [gMatchFloat_0058c93c]
             fmulp st(2), st(0)
             fxch st(1)
             fadd dword ptr [eax + 0x34]
@@ -1530,11 +1630,11 @@ void C2_NAKED C2_HOOK_STDCALL lightingColourSpotSpecular(br_soft_renderer* self,
             faddp st(2), st(0)
             faddp st(1), st(0)
             fsqrt
-            fcom dword ptr [rendererStateStoredDispatch+0xa8]
+            fcom dword ptr [gMatchFloat_0058c940]
             fnstsw ax
             test ah, 0x41
             jne L00549c55
-            fdivr qword ptr [rendererStateStoredDispatch+0xb0]
+            fdivr qword ptr [gMatchDouble_0058c948]
             fld st(0)
             fld st(1)
             fxch st(1)
@@ -1595,7 +1695,12 @@ void C2_NAKED C2_HOOK_STDCALL lightingColourSpotSpecular(br_soft_renderer* self,
             faddp st(1), st(0)
             fxch st(1)
             faddp st(1), st(0)
-            fcom dword ptr [rendererStateStoredDispatch+0xbc]
+            _emit 0xd8
+        _emit 0x15
+        _emit 0x54
+        _emit 0xc9
+        _emit 0x58
+        _emit 0x00
             fst dword ptr [esp + 0x2c]
             fnstsw ax
             test ah, 0x41
@@ -1639,15 +1744,20 @@ void C2_NAKED C2_HOOK_STDCALL lightingColourSpotSpecular(br_soft_renderer* self,
             mov dword ptr [esp + 0x14], edx
             fild qword ptr [esp + 0x10]
             fxch st(2)
-            fmul dword ptr [rendererStateStoredDispatch+0xa4]
+            fmul dword ptr [gMatchFloat_0058c93c]
             fxch st(3)
             fmulp st(4), st(0)
-            fmul dword ptr [rendererStateStoredDispatch+0xa4]
+            fmul dword ptr [gMatchFloat_0058c93c]
             fld dword ptr [esi + 0x34]
             fxch st(2)
-            fmul dword ptr [rendererStateStoredDispatch+0xa4]
+            fmul dword ptr [gMatchFloat_0058c93c]
             fxch st(2)
-            fcomp dword ptr [rendererStateStoredDispatch+0xbc]
+            _emit 0xd8
+        _emit 0x1d
+        _emit 0x54
+        _emit 0xc9
+        _emit 0x58
+        _emit 0x00
             fxch st(2)
             fmul st(0), st(3)
             fxch st(2)
@@ -1690,7 +1800,7 @@ void C2_NAKED C2_HOOK_STDCALL lightingColourSpotSpecular(br_soft_renderer* self,
             faddp st(1), st(0)
             fst dword ptr [esp + 0x2c]
             fstp st(1)
-            fcomp dword ptr [rendererStateStoredDispatch+0xc4]
+            fcomp dword ptr [gMatchFloat_0058c95c]
             fnstsw ax
             test ah, 0x41
             jne L00549e43
@@ -1730,7 +1840,7 @@ void C2_NAKED C2_HOOK_STDCALL lightingColourSpotSpecular(br_soft_renderer* self,
             fxch st(3)
             fmul dword ptr [esp + 0x38]
             fxch st(3)
-            fmul dword ptr [rendererStateStoredDispatch+0xa4]
+            fmul dword ptr [gMatchFloat_0058c93c]
             mov dword ptr [esp + 0x14], edx
             fmulp st(3), st(0)
             fxch st(1)
@@ -1746,7 +1856,7 @@ void C2_NAKED C2_HOOK_STDCALL lightingColourSpotSpecular(br_soft_renderer* self,
             and edx, 0xff00
             mov dword ptr [esp + 0x18], edx
             fild qword ptr [esp + 0x18]
-            fmul dword ptr [rendererStateStoredDispatch+0xa4]
+            fmul dword ptr [gMatchFloat_0058c93c]
             fmulp st(3), st(0)
             fxch st(2)
             fadd dword ptr [eax + 0x30]
@@ -1757,7 +1867,7 @@ void C2_NAKED C2_HOOK_STDCALL lightingColourSpotSpecular(br_soft_renderer* self,
             shl edx, 8
             mov dword ptr [esp + 0x10], edx
             fild qword ptr [esp + 0x10]
-            fmul dword ptr [rendererStateStoredDispatch+0xa4]
+            fmul dword ptr [gMatchFloat_0058c93c]
             fmulp st(2), st(0)
             fxch st(1)
             fadd dword ptr [eax + 0x34]
@@ -1771,6 +1881,18 @@ void C2_NAKED C2_HOOK_STDCALL lightingColourSpotSpecular(br_soft_renderer* self,
             pop ebx
             add esp, 0x14
             ret 0x18
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -1859,12 +1981,12 @@ void C2_NAKED C2_HOOK_STDCALL lightingColourSpotAttnSpecular(br_soft_renderer* s
             faddp st(1), st(0)
             fsqrt
             fst dword ptr [esp + 0x38]
-            fcomp dword ptr [rendererStateStoredDispatch+0xa8]
+            fcomp dword ptr [gMatchFloat_0058c940]
             fnstsw ax
             test ah, 0x41
             jne L0054a222
             fld dword ptr [esp + 0x38]
-            fdivr qword ptr [rendererStateStoredDispatch+0xb0]
+            fdivr qword ptr [gMatchDouble_0058c948]
             mov esi, dword ptr [ecx + 0x34]
             fld st(0)
             fld st(1)
@@ -1915,17 +2037,22 @@ void C2_NAKED C2_HOOK_STDCALL lightingColourSpotAttnSpecular(br_soft_renderer* s
             faddp st(1), st(0)
             fxch st(1)
             faddp st(1), st(0)
-            fcom dword ptr [rendererStateStoredDispatch+0xbc]
+            _emit 0xd8
+        _emit 0x15
+        _emit 0x54
+        _emit 0xc9
+        _emit 0x58
+        _emit 0x00
             fst dword ptr [esp + 0x30]
             fnstsw ax
             test ah, 0x41
             jne L0054a222
             fld dword ptr [esp + 0x38]
-            fcomp dword ptr [rendererStateStoredDispatch+0xd0]
+            fcomp dword ptr [gMatchFloat_0058c968]
             fnstsw ax
             test ah, 1
             jne L0054a011
-            fld dword ptr [rendererStateStoredDispatch+0xd4]
+            fld dword ptr [gMatchFloat_0058c96c]
             jmp L0054a019
     L0054a011:
             fld dword ptr [esp + 0x38]
@@ -1941,7 +2068,7 @@ void C2_NAKED C2_HOOK_STDCALL lightingColourSpotAttnSpecular(br_soft_renderer* s
             fcomp dword ptr [esi + 0x28]
             fadd dword ptr [esi + 0x30]
             fnstsw ax
-            fdivr qword ptr [rendererStateStoredDispatch+0xb0]
+            fdivr qword ptr [gMatchDouble_0058c948]
             test ah, 1
             fstp dword ptr [esp + 0x38]
             je L0054a05f
@@ -1976,15 +2103,20 @@ void C2_NAKED C2_HOOK_STDCALL lightingColourSpotAttnSpecular(br_soft_renderer* s
             mov dword ptr [esp + 0x14], edx
             fild qword ptr [esp + 0x10]
             fxch st(2)
-            fmul dword ptr [rendererStateStoredDispatch+0xa4]
+            fmul dword ptr [gMatchFloat_0058c93c]
             fxch st(3)
             fmulp st(4), st(0)
-            fmul dword ptr [rendererStateStoredDispatch+0xa4]
+            fmul dword ptr [gMatchFloat_0058c93c]
             fld dword ptr [edi + 0x34]
             fxch st(2)
-            fmul dword ptr [rendererStateStoredDispatch+0xa4]
+            fmul dword ptr [gMatchFloat_0058c93c]
             fxch st(2)
-            fcomp dword ptr [rendererStateStoredDispatch+0xbc]
+            _emit 0xd8
+        _emit 0x1d
+        _emit 0x54
+        _emit 0xc9
+        _emit 0x58
+        _emit 0x00
             fxch st(2)
             fmul st(0), st(3)
             fxch st(2)
@@ -2027,7 +2159,7 @@ void C2_NAKED C2_HOOK_STDCALL lightingColourSpotAttnSpecular(br_soft_renderer* s
             faddp st(1), st(0)
             fst dword ptr [esp + 0x2c]
             fstp st(1)
-            fcomp dword ptr [rendererStateStoredDispatch+0xc4]
+            fcomp dword ptr [gMatchFloat_0058c95c]
             fnstsw ax
             test ah, 0x41
             jne L0054a18d
@@ -2067,7 +2199,7 @@ void C2_NAKED C2_HOOK_STDCALL lightingColourSpotAttnSpecular(br_soft_renderer* s
             fxch st(3)
             fmul dword ptr [esp + 0x38]
             fxch st(3)
-            fmul dword ptr [rendererStateStoredDispatch+0xa4]
+            fmul dword ptr [gMatchFloat_0058c93c]
             mov dword ptr [esp + 0x14], edx
             fmulp st(3), st(0)
             fxch st(1)
@@ -2083,7 +2215,7 @@ void C2_NAKED C2_HOOK_STDCALL lightingColourSpotAttnSpecular(br_soft_renderer* s
             and edx, 0xff00
             mov dword ptr [esp + 0x18], edx
             fild qword ptr [esp + 0x18]
-            fmul dword ptr [rendererStateStoredDispatch+0xa4]
+            fmul dword ptr [gMatchFloat_0058c93c]
             fmulp st(3), st(0)
             fxch st(2)
             fadd dword ptr [eax + 0x30]
@@ -2094,7 +2226,7 @@ void C2_NAKED C2_HOOK_STDCALL lightingColourSpotAttnSpecular(br_soft_renderer* s
             shl edx, 8
             mov dword ptr [esp + 0x10], edx
             fild qword ptr [esp + 0x10]
-            fmul dword ptr [rendererStateStoredDispatch+0xa4]
+            fmul dword ptr [gMatchFloat_0058c93c]
             fmulp st(2), st(0)
             fxch st(1)
             fadd dword ptr [eax + 0x34]
@@ -2108,6 +2240,8 @@ void C2_NAKED C2_HOOK_STDCALL lightingColourSpotAttnSpecular(br_soft_renderer* s
             pop ebx
             add esp, 0x14
             ret 0x18
+            nop
+            nop
     }
 #endif
 }

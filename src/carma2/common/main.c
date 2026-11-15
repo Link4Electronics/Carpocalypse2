@@ -89,6 +89,12 @@ extern int gTimers_stack[19];
 extern int gTimers_stack_size;
 extern char g_source_exists[];
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gData_006b75dc[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchData_006b75dc[];
+#endif
 // FUNCTION: CARMA2_HW 0x00492050
 void C2_HOOK_FASTCALL ServiceTheGame(int pRacing) {
 
@@ -126,7 +132,7 @@ void C2_NAKED C2_HOOK_FASTCALL ServiceGameInRace(void) {
             push edi
             mov dword ptr [eax*4 + gTimers_stack], 0x11
             je L004922da
-            mov eax, dword ptr [eax*4 + gCurrent_dropped_actor_index+0x18]
+            mov eax, dword ptr [eax*4 + gMatchData_006b75dc]
             lea esi, [eax*8]
             lea edx, [eax*8]
             sub esi, eax
@@ -174,7 +180,7 @@ void C2_NAKED C2_HOOK_FASTCALL ServiceGameInRace(void) {
     L00492360:
             call MovieStopRecordingIfNecessary
             call PHILDisable
-            push offset g_source_exists+0x198
+            push 0x6587ac
             call dr_dprintf
             mov eax, dword ptr [gProgram_state+0x28]
             add esp, 4
@@ -186,11 +192,11 @@ void C2_NAKED C2_HOOK_FASTCALL ServiceGameInRace(void) {
             mov ecx, dword ptr [eax + 8]
             test ecx, ecx
             je L004923af
-            push offset g_source_exists+0x180
+            push 0x658794
             call dr_dprintf
             add esp, 4
             call AutoSaveAdditionalStuff
-            push offset g_source_exists+0x168
+            push 0x65877c
             call dr_dprintf
             add esp, 4
     L004923af:
@@ -243,7 +249,7 @@ void C2_NAKED C2_HOOK_FASTCALL ServiceGameInRace(void) {
             jle L00492470
             call PDGetMicroseconds
             mov ecx, dword ptr [gTimers_stack_size]
-            mov ecx, dword ptr [ecx*4 + gCurrent_dropped_actor_index+0x18]
+            mov ecx, dword ptr [ecx*4 + gMatchData_006b75dc]
             jmp L0049247b
     L00492470:
             call PDGetMicroseconds
@@ -259,6 +265,15 @@ void C2_NAKED C2_HOOK_FASTCALL ServiceGameInRace(void) {
             dec eax
             mov dword ptr [gTimers_stack_size], eax
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }

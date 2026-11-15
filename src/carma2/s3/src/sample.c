@@ -43,6 +43,24 @@ extern char gS3_path_separator[2];
 #ifdef CARPOCALYPSE2_MATCHING
 extern char gPD_S3_direct_sound[];
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gData_00673644[];
+extern char gData_00673650[];
+extern char gData_00673654[];
+extern char gFloat_0067359c[];
+extern char gFloat_00673630[];
+extern char gFloat_00673658[];
+extern char gString_00673648[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchData_00673644[];
+extern char gMatchData_00673650[];
+extern char gMatchData_00673654[];
+extern char gMatchFloat_0067359c[];
+extern char gMatchFloat_00673630[];
+extern char gMatchFloat_00673658[];
+extern char gMatchString_00673648[];
+#endif
 // FUNCTION: CARMA2_HW 0x005687ff
 tS3_buffer_desc* C2_HOOK_FASTCALL S3GetBufferDescription(int pSample_id) {
     tS3_descriptor* descriptor;
@@ -150,7 +168,7 @@ tS3_error_codes C2_NAKED C2_HOOK_FASTCALL S3LoadSample(int pSample_id) {
             jne L00568910
             lea eax, [ebp - 0x20c]
             push eax
-            push offset gS3_CDA_enabled+0x98
+            push offset gMatchFloat_0067359c
             call BrFailure
             add esp, 8
             mov ecx, dword ptr [ebp - 4]
@@ -539,12 +557,12 @@ C2_NAKED void* C2_HOOK_FASTCALL S3BufferWav(const char* pPath, tS3_buffer_desc* 
             push eax
             push offset gS3_path_separator
             push offset gS3_path_separator
-            push offset gS3_CDA_enabled+0x12c
+            push offset gMatchFloat_00673630
             lea ecx, [ebp - 0x200]
             push ecx
             call sprintf
             add esp, 0x14
-            mov edx, offset gS3_CDA_enabled+0x140
+            mov edx, offset gMatchData_00673644
             lea ecx, [ebp - 0x200]
             call S3_low_memory_fopen
             mov dword ptr [ebp - 0x43c], eax
@@ -559,12 +577,12 @@ C2_NAKED void* C2_HOOK_FASTCALL S3BufferWav(const char* pPath, tS3_buffer_desc* 
             lea eax, [ebp - 0x430]
             push eax
             push offset gS3_sound_dirname
-            push offset gS3_CDA_enabled+0x144
+            push offset gMatchString_00673648
             lea ecx, [ebp - 0x200]
             push ecx
             call sprintf
             add esp, 0x10
-            push offset gS3_CDA_enabled+0x14c
+            push offset gMatchData_00673650
             lea edx, [ebp - 0x200]
             push edx
             call fopen
@@ -572,7 +590,7 @@ C2_NAKED void* C2_HOOK_FASTCALL S3BufferWav(const char* pPath, tS3_buffer_desc* 
             mov dword ptr [ebp - 0x43c], eax
             jmp L00569167
     L0056914d:
-            push offset gS3_CDA_enabled+0x150
+            push offset gMatchData_00673654
             mov eax, dword ptr [ebp - 0x440]
             push eax
             call fopen
@@ -643,7 +661,7 @@ C2_NAKED void* C2_HOOK_FASTCALL S3BufferWav(const char* pPath, tS3_buffer_desc* 
             mov dword ptr [gS3_last_error], 4
             lea ecx, [ebp - 0x200]
             push ecx
-            push offset gS3_CDA_enabled+0x154
+            push offset gMatchFloat_00673658
             call s3_dprintf
             add esp, 8
             xor eax, eax

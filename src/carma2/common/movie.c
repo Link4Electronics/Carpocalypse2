@@ -137,6 +137,14 @@ extern unsigned int C2_HOOK_CDECL FUN_00575340();
 extern void C2_HOOK_FASTCALL PDFileDelete(const char* pPath, int pIgnore_read_only);
 extern void C2_HOOK_FASTCALL RenderAFrame(int pDepth_mask_on);
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gString_0065ef90[];
+extern char gString_0065efa8[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchString_0065ef90[];
+extern char gMatchString_0065efa8[];
+#endif
 // FUNCTION: CARMA2_HW 0x004e1700
 void C2_HOOK_CDECL InitQuickTimeStuff(void) {
     OSErr err;
@@ -396,7 +404,7 @@ quality_found:
             mov ecx, edx
             and ecx, 3
             rep movsb
-            call FUN_00575340
+            call c2pstr
             add esp, 4
     L004e19f9:
             pop edi
@@ -409,6 +417,18 @@ quality_found:
             mov ecx, dword ptr [eax*4 + gQuickTime_quality_options+0x20]
             mov dword ptr [gQuickTime_quality_code], ecx
             jmp L004e194c
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -722,7 +742,7 @@ int C2_NAKED C2_HOOK_FASTCALL MovieStopRecordingIfNecessary(void) {
     return 1;
 #else
     __asm {
-            mov eax, dword ptr ds:[gNext_replay_record_state]
+            mov eax, dword ptr [gNext_replay_record_state]
             sub esp, 0x310
             push ebx
             xor ebx, ebx
@@ -731,62 +751,62 @@ int C2_NAKED C2_HOOK_FASTCALL MovieStopRecordingIfNecessary(void) {
             push edi
             jne L004e1c16
             mov ecx, 1
-            mov dword ptr ds:[gShow_status_message], 1
-            mov dword ptr ds:[gStatus_message_1], 0x11a
-            mov dword ptr ds:[gStatus_message_2], 0x118
-            mov dword ptr ds:[gNext_replay_record_state], 0x14
+            mov dword ptr [gShow_status_message], 1
+            mov dword ptr [gStatus_message_1], 0x11a
+            mov dword ptr [gStatus_message_2], 0x118
+            mov dword ptr [gNext_replay_record_state], 0x14
             call RenderAFrame
             mov ecx, 1
             call RenderAFrame
-            mov dword ptr ds:[gNext_replay_record_state], 5
+            mov dword ptr [gNext_replay_record_state], 5
             _emit 0xe8
         _emit 0xcc
         _emit 0xf7
         _emit 0xff
         _emit 0xff
-            mov eax, dword ptr ds:[gQuicktime_image_sequence]
-            mov dword ptr ds:[gNext_replay_record_state], ebx
+            mov eax, dword ptr [gQuicktime_image_sequence]
+            mov dword ptr [gNext_replay_record_state], ebx
             push eax
-            call FUN_0056dac0
-            mov ecx, dword ptr ds:[gQuicktime_media]
+            call CDSequenceEnd
+            mov ecx, dword ptr [gQuicktime_media]
             add esp, 4
             push ecx
-            call FUN_0056b360
-            mov edx, dword ptr ds:[gQuicktime_media]
+            call EndMediaEdits
+            mov edx, dword ptr [gQuicktime_media]
             add esp, 4
             push edx
-            call FUN_0056b240
+            call GetMediaDuration
             add esp, 4
             cmp eax, ebx
             je L004e1ad0
             push 0x10000
             push eax
-            mov eax, dword ptr ds:[gQuicktime_track]
+            mov eax, dword ptr [gQuicktime_track]
             push ebx
             push ebx
             push eax
-            call FUN_0056c600
+            call InsertMediaIntoTrack
             add esp, 0x14
     L004e1ad0:
-            mov ax, word ptr ds:[gQuicktime_movie_file]
+            mov ax, word ptr [gQuicktime_movie_file]
             cmp ax, bx
             je L004e1ae4
             push eax
-            call FUN_0056baa0
+            call CloseMovieFile
             add esp, 4
     L004e1ae4:
-            mov ecx, dword ptr ds:[gQuicktime_movie_counter]
+            mov ecx, dword ptr [gQuicktime_movie_counter]
             lea edx, [esp + 0x218]
             push ecx
             push offset gQuick_time_movie_path_stub
-            push 0x65efa8
+            push offset gMatchString_0065efa8
             push edx
             call sprintf
-            mov ecx, dword ptr ds:[gQuicktime_movie_counter]
+            mov ecx, dword ptr [gQuicktime_movie_counter]
             add esp, 0x10
             inc ecx
             lea edi, [esp + 0x218]
-            mov dword ptr ds:[gQuicktime_movie_counter], ecx
+            mov dword ptr [gQuicktime_movie_counter], ecx
             or ecx, 0xffffffff
             xor eax, eax
             lea edx, [esp + 0x12]
@@ -805,8 +825,8 @@ int C2_NAKED C2_HOOK_FASTCALL MovieStopRecordingIfNecessary(void) {
             rep movsb
             lea ecx, [esp + 0x12]
             push ecx
-            call FUN_00575340
-            mov eax, dword ptr ds:[gQuicktime_movie]
+            call c2pstr
+            mov eax, dword ptr [gQuicktime_movie]
             add esp, 4
             lea edx, [esp + 0xc]
             push 0x80000000
@@ -815,61 +835,71 @@ int C2_NAKED C2_HOOK_FASTCALL MovieStopRecordingIfNecessary(void) {
             push edx
             push 1
             push eax
-            call FUN_0056c800
-            mov ax, word ptr ds:[gQuicktime_movie_file]
+            call FlattenMovieData
+            mov ax, word ptr [gQuicktime_movie_file]
             add esp, 0x18
             cmp ax, bx
             je L004e1b85
             push eax
-            call FUN_0056baa0
+            call CloseMovieFile
             add esp, 4
     L004e1b85:
-            mov ecx, dword ptr ds:[gQuicktime_movie]
+            mov ecx, dword ptr [gQuicktime_movie]
             push ecx
-            call FUN_0056abe0
+            call CloseMovieFile
             add esp, 4
             mov edx, 1
             mov ecx, offset gQuick_time_temp_path
             call PDFileDelete
             lea edx, [esp + 0x114]
             push offset gQuick_time_temp_path
-            push 0x65ef90
+            push offset gMatchString_0065ef90
             push edx
             call sprintf
             add esp, 0xc
             mov edx, 1
             lea ecx, [esp + 0x114]
             call PDFileDelete
-            mov eax, dword ptr ds:[gQuicktime_frame_pixmap_handle]
+            mov eax, dword ptr [gQuicktime_frame_pixmap_handle]
             cmp eax, ebx
             je L004e1be6
             push eax
-            call FUN_00570ac0
+            call DisposeHandle
             add esp, 4
-            mov dword ptr ds:[gQuicktime_frame_pixmap_handle], ebx
+            mov dword ptr [gQuicktime_frame_pixmap_handle], ebx
     L004e1be6:
-            mov eax, dword ptr ds:[gQuicktime_image_description_handle]
+            mov eax, dword ptr [gQuicktime_image_description_handle]
             cmp eax, ebx
             je L004e1bfe
             push eax
-            call FUN_00570ac0
+            call DisposeHandle
             add esp, 4
-            mov dword ptr ds:[gQuicktime_image_description_handle], ebx
+            mov dword ptr [gQuicktime_image_description_handle], ebx
     L004e1bfe:
-            mov eax, dword ptr ds:[gQuicktime_compressed_frame_handle]
+            mov eax, dword ptr [gQuicktime_compressed_frame_handle]
             cmp eax, ebx
             je L004e1c16
             push eax
-            call FUN_00570ac0
+            call DisposeHandle
             add esp, 4
-            mov dword ptr ds:[gQuicktime_compressed_frame_handle], ebx
+            mov dword ptr [gQuicktime_compressed_frame_handle], ebx
     L004e1c16:
             pop edi
-            mov dword ptr ds:[gShow_status_message], ebx
+            mov dword ptr [gShow_status_message], ebx
             pop esi
             pop ebx
             add esp, 0x310
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }

@@ -81,6 +81,24 @@ extern br_actor* gOther_selfs[4];
 extern char gPed_flags_0058f2e4[];
 extern tProgram_state gProgram_state;
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gFloat_0058ae90[];
+extern char gFloat_0058ae94[];
+extern char gFloat_0058ae9c[];
+extern char gFloat_0058aea8[];
+extern char gFloat_0065fe48[];
+extern char gFloat_0065fe6c[];
+extern char gString_00657d10[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchFloat_0058ae90[];
+extern char gMatchFloat_0058ae94[];
+extern char gMatchFloat_0058ae9c[];
+extern char gMatchFloat_0058aea8[];
+extern char gMatchFloat_0065fe48[];
+extern char gMatchFloat_0065fe6c[];
+extern char gMatchString_00657d10[];
+#endif
 // FUNCTION: CARMA2_HW 0x004e9ee0
 void C2_HOOK_FASTCALL HideSkid(int pSkid_num) {
 
@@ -139,7 +157,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReadSpillData(FILE* pF, tSlick_spec* pSlick_spec)
             mov ebp, ecx
             lea edx, [esp + 0x1c]
             call GetAString
-            mov esi, offset gNet_avail_names+0x7b8
+            mov esi, offset gMatchString_00657d10
             lea eax, [esp + 0x1c]
     L004ee600:
             mov dl, byte ptr [eax]
@@ -370,7 +388,7 @@ void C2_NAKED C2_HOOK_FASTCALL StretchMark(tSkid* pMark, br_vector3* pFrom, br_v
             faddp st(2), st(0)
             faddp st(1), st(0)
             fsqrt
-            fcom dword ptr [gConst_kangeroo_force_factor+0x218]
+            fcom dword ptr [gMatchFloat_0058aea8]
             fnstsw ax
             test ah, 1
             je L004ea339
@@ -470,12 +488,12 @@ void C2_NAKED C2_HOOK_FASTCALL StretchMark(tSkid* pMark, br_vector3* pFrom, br_v
         _emit 0x02
             _emit 0xd8
         _emit 0x07
-            fmul dword ptr [gConst_kangeroo_force_factor+0x20c]
+            fmul dword ptr [gMatchFloat_0058ae9c]
             fstp dword ptr [ecx + 0x10]
-            fmul dword ptr [gConst_kangeroo_force_factor+0x20c]
+            fmul dword ptr [gMatchFloat_0058ae9c]
             fstp dword ptr [ecx + 0x14]
             fld dword ptr [esp + 0x14]
-            fmul dword ptr [gConst_kangeroo_force_factor+0x20c]
+            fmul dword ptr [gMatchFloat_0058ae9c]
             fstp dword ptr [ecx + 0x18]
             fld dword ptr [esp + 0x20]
             fdiv dword ptr [esp + 0x24]
@@ -506,6 +524,7 @@ void C2_NAKED C2_HOOK_FASTCALL StretchMark(tSkid* pMark, br_vector3* pFrom, br_v
             pop esi
             add esp, 0xc
             ret 0xc
+            nop
     }
 #endif
 }
@@ -658,7 +677,7 @@ int C2_NAKED C2_HOOK_FASTCALL SkidSection(tS16* pSkid_id, br_vector3* pSkid_star
             fxch st(1)
             faddp st(2), st(0)
             faddp st(1), st(0)
-            fcomp dword ptr [gConst_kangeroo_force_factor+0x200]
+            fcomp dword ptr [gMatchFloat_0058ae90]
             fnstsw ax
             test ah, 1
             jne L004ea2a0
@@ -697,7 +716,7 @@ int C2_NAKED C2_HOOK_FASTCALL SkidSection(tS16* pSkid_id, br_vector3* pSkid_star
             faddp st(1), st(0)
             fsubp st(1), st(0)
             fabs
-            fcomp dword ptr [gConst_kangeroo_force_factor+0x204]
+            fcomp dword ptr [gMatchFloat_0058ae94]
             fnstsw ax
             test ah, 0x41
             je L004ea2a0
@@ -781,7 +800,7 @@ int C2_NAKED C2_HOOK_FASTCALL SkidSection(tS16* pSkid_id, br_vector3* pSkid_star
             fxch st(1)
             fsqrt
             fstp st(1)
-            fcomp dword ptr [gConst_kangeroo_force_factor+0x20c]
+            fcomp dword ptr [gMatchFloat_0058ae9c]
             fnstsw ax
             test ah, 0x41
             je L004ea1a0
@@ -817,7 +836,12 @@ int C2_NAKED C2_HOOK_FASTCALL SkidSection(tS16* pSkid_id, br_vector3* pSkid_star
             fxch st(2)
             faddp st(1), st(0)
             fxch st(1)
-            fmul dword ptr [gConst_kangeroo_force_factor+0x210]
+            _emit 0xd8
+        _emit 0x0d
+        _emit 0xa0
+        _emit 0xae
+        _emit 0x58
+        _emit 0x00
             fxch st(1)
             fst dword ptr [esp + 0x30]
             fabs
@@ -851,7 +875,12 @@ int C2_NAKED C2_HOOK_FASTCALL SkidSection(tS16* pSkid_id, br_vector3* pSkid_star
             fmulp st(2), st(0)
             fxch st(1)
             faddp st(1), st(0)
-            fcomp dword ptr [gConst_kangeroo_force_factor+0x214]
+            _emit 0xd8
+        _emit 0x1d
+        _emit 0xa4
+        _emit 0xae
+        _emit 0x58
+        _emit 0x00
             fnstsw ax
             test ah, 1
             jne L004ea1a0
@@ -967,6 +996,18 @@ int C2_NAKED C2_HOOK_FASTCALL SkidSection(tS16* pSkid_id, br_vector3* pSkid_star
             pop ebx
             add esp, 8
             ret 0x20
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -1075,7 +1116,7 @@ void C2_NAKED C2_HOOK_FASTCALL InitSkids(void) {
             mov dword ptr [esp + 0x14], edi
             mov dword ptr [esp + 0x10], esi
     L004e9c58:
-            cmp dword ptr ds:[0x75bb90], ebx
+            cmp dword ptr [gProgram_state+0x10], ebx
             je L004e9c68
             mov eax, dword ptr [esi + gBoring_material_name_0]
             jmp L004e9c6e
@@ -1088,7 +1129,7 @@ void C2_NAKED C2_HOOK_FASTCALL InitSkids(void) {
             cmp eax, ebx
             mov dword ptr [edi], eax
             jne L004e9d88
-            cmp dword ptr ds:[0x75bb90], ebx
+            cmp dword ptr [gProgram_state+0x10], ebx
             je L004e9c91
             mov eax, dword ptr [esi + gBoring_material_name_0]
             jmp L004e9c97
@@ -1166,9 +1207,9 @@ void C2_NAKED C2_HOOK_FASTCALL InitSkids(void) {
             mov eax, dword ptr [esp + 0x10]
             mov ecx, dword ptr [eax + gMaterial_names]
             push ecx
-            push 0x65fe6c
+            push offset gMatchFloat_0065fe6c
             push 0xd7
-            push 0x65fe48
+            push offset gMatchFloat_0065fe48
             call BrFatal
             add esp, 0x10
             jmp L004e9d75
@@ -1200,7 +1241,7 @@ void C2_NAKED C2_HOOK_FASTCALL InitSkids(void) {
             add esp, 8
             mov dword ptr [edi], eax
             push eax
-            mov eax, dword ptr ds:[0x74d650]
+            mov eax, dword ptr [gOther_selfs+0xc]
             push eax
             call BrActorAdd
             mov ecx, dword ptr [edi]

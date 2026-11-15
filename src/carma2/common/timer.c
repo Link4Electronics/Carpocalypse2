@@ -62,6 +62,22 @@ extern tDR_font gFonts[28];
 extern tFrontend_spec gFrontend_QUIT;
 extern tBrender_storage* gStorage_for_callbacks;
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gDouble_0058b180[];
+extern char gDouble_0058b188[];
+extern char gFloat_0058b178[];
+extern char gFloat_0058b17c[];
+extern char gFloat_00660e4c[];
+extern char gFloat_00660e78[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchDouble_0058b180[];
+extern char gMatchDouble_0058b188[];
+extern char gMatchFloat_0058b178[];
+extern char gMatchFloat_0058b17c[];
+extern char gMatchFloat_00660e4c[];
+extern char gMatchFloat_00660e78[];
+#endif
 // FUNCTION: CARMA2_HW 0x00504300
 void C2_HOOK_FASTCALL Timers_Init(void) {
     int i;
@@ -199,7 +215,7 @@ void C2_NAKED C2_HOOK_FASTCALL Timers_EndFrame(void) {
             cmp eax, ebx
             push edi
             je L00504759
-            mov ecx, offset gLoad_last_save_game+0x164
+            mov ecx, offset gMatchFloat_00660e4c
             call PDFatalError
     L00504759:
             mov eax, dword ptr [gTimers+0x200]
@@ -264,6 +280,10 @@ void C2_NAKED C2_HOOK_FASTCALL Timers_EndFrame(void) {
             mov dword ptr [gTimers_tolerance], eax
             pop ebx
             ret
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -457,7 +477,7 @@ void C2_NAKED C2_HOOK_FASTCALL Timers_Draw(br_pixelmap* pScreen) {
             mov ecx, dword ptr [esi]
             add esp, 0x18
             push ecx
-            push offset gFrontend_QUIT+0xbcb0
+            push 0x655aa0
             lea edx, [esp + 0x48]
             push edx
             call sprintf
@@ -477,7 +497,7 @@ void C2_NAKED C2_HOOK_FASTCALL Timers_Draw(br_pixelmap* pScreen) {
             push eax
             fmul dword ptr [esp + 0x20]
             fiadd dword ptr [gTimers_draw_x]
-            fsub dword ptr [gFLOAT_0058b130+0x48]
+            fsub dword ptr [gMatchFloat_0058b178]
             call _ftol
             mov edx, eax
             mov ecx, ebx
@@ -512,7 +532,7 @@ void C2_NAKED C2_HOOK_FASTCALL Timers_Draw(br_pixelmap* pScreen) {
             push 6
             fild qword ptr [esp + 0x40]
             fmul dword ptr [esp + 0x18]
-            fsub dword ptr [gFLOAT_0058b130+0x4c]
+            fsub dword ptr [gMatchFloat_0058b17c]
             call _ftol
             imul esi, dword ptr [gTimers_draw_y_stride]
             mov edx, dword ptr [gTimers_draw_x]
@@ -527,7 +547,7 @@ void C2_NAKED C2_HOOK_FASTCALL Timers_Draw(br_pixelmap* pScreen) {
             add esp, 0x18
     L00504a71:
             fld dword ptr [esp + 0x10]
-            fmul qword ptr [gFLOAT_0058b130+0x50]
+            fmul qword ptr [gMatchDouble_0058b180]
             fstp qword ptr [esp + 0x38]
             fild dword ptr [gTimers_draw_x]
             fadd qword ptr [esp + 0x38]
@@ -555,7 +575,7 @@ void C2_NAKED C2_HOOK_FASTCALL Timers_Draw(br_pixelmap* pScreen) {
             add esp, 0x18
             lea ecx, [esp + 0x50]
             push eax
-            push offset gLoad_last_save_game+0x190
+            push offset gMatchFloat_00660e78
             push ecx
             call sprintf
             fild dword ptr [gTimers_draw_x]
@@ -568,7 +588,7 @@ void C2_NAKED C2_HOOK_FASTCALL Timers_Draw(br_pixelmap* pScreen) {
             push 0
             push edx
             push offset gFonts+0x3a0
-            fsub qword ptr [gFLOAT_0058b130+0x58]
+            fsub qword ptr [gMatchDouble_0058b188]
             lea edx, [ecx + eax*2 + 7]
             push edx
             call _ftol
@@ -581,6 +601,10 @@ void C2_NAKED C2_HOOK_FASTCALL Timers_Draw(br_pixelmap* pScreen) {
             pop ebx
             add esp, 0x80
             ret
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }

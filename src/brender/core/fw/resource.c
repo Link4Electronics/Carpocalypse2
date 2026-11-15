@@ -54,6 +54,12 @@ resource_header* C2_HOOK_CDECL UserToRes(void* r) {
 extern br_order_table _BrDefaultOrderTable;
 extern br_framework_state fw;
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gString_006654a0[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchString_006654a0[];
+#endif
 // FUNCTION: CARMA2_HW 0x005276c0
 void* C2_HOOK_CDECL BrResAllocate(void* vparent, br_size_t size, br_uint_8 res_class) {
     resource_header* res;
@@ -193,13 +199,51 @@ br_boolean C2_HOOK_CDECL BrResIsChild(void* vparent, void* vchild) {
 }
 
 // FUNCTION: CARMA2_HW 0x005279f0
-br_uint_32 C2_HOOK_CDECL BrResSize(void* vres) {
+br_uint_32 C2_NAKED C2_HOOK_CDECL BrResSize(void* vres) {
+#ifndef CARPOCALYPSE2_MATCHING
     resource_header* res;
 
     C2_HOOK_BUG_ON(sizeof(resource_header) != 0x18);
 
     res = UserToRes(vres);
     return RESOURCE_SIZE(res) - sizeof(resource_header);
+#else
+    __asm {
+            mov ecx, dword ptr [esp + 4]
+            mov dl, byte ptr [ecx - 1]
+            lea eax, [ecx - 1]
+            test dl, dl
+            jne L00527a0a
+    L005279fe:
+            mov ecx, eax
+            mov dl, byte ptr [ecx - 1]
+            lea eax, [ecx - 1]
+            test dl, dl
+            je L005279fe
+    L00527a0a:
+            xor eax, eax
+            xor edx, edx
+            mov ah, byte ptr [ecx - 0xa]
+            mov dl, byte ptr [ecx - 0xc]
+            mov al, byte ptr [ecx - 0xb]
+            shl eax, 8
+            or eax, edx
+            lea eax, [eax*4 - 0x18]
+            ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00527ad0
@@ -506,14 +550,16 @@ C2_NAKED char* C2_HOOK_CDECL BrResClassIdentifier(br_uint_8 res_class) {
     __asm {
             mov eax, dword ptr [esp + 4]
             and eax, 0xff
-            mov eax, dword ptr [eax*4 + 0x79f4f8]
+            mov eax, dword ptr [eax*4 + fw+0x18]
             test eax, eax
             je L00527c78
             mov eax, dword ptr [eax + 4]
             ret
     L00527c78:
-            mov eax, 0x6654a0
+            mov eax, offset gMatchString_006654a0
             ret
+            nop
+            nop
     }
 #endif
 }

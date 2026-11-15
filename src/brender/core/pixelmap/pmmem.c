@@ -1411,6 +1411,9 @@ br_error C2_NAKED C2_HOOK_CDECL _M_br_device_pixelmap_mem_rectangleCopyTo(br_dev
             pop esi
             add esp, 0x18
             ret
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -1737,6 +1740,7 @@ br_error C2_NAKED C2_HOOK_CDECL _M_br_device_pixelmap_mem_rectangleCopyFrom(br_d
             pop esi
             add esp, 0x18
             ret
+            nop
     }
 #endif
 }
@@ -1993,6 +1997,9 @@ br_error C2_NAKED C2_HOOK_CDECL _M_br_device_pixelmap_mem_rectangleFill(br_devic
             pop esi
             add esp, 0x10
             ret
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -4298,6 +4305,7 @@ br_error C2_NAKED C2_HOOK_CDECL _M_br_device_pixelmap_mem_copyBits(br_device_pix
             pop esi
             add esp, 0x18
             ret
+            nop
     }
 #endif
 }

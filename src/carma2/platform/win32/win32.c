@@ -228,6 +228,54 @@ extern br_pixelmap* gBack_screen;
 extern const char* gDir_separator;
 extern char gDirectInput[];
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gData_006572c4[];
+extern char gData_00662bcc[];
+extern char gData_00662c44[];
+extern char gData_007a1200[];
+extern char gFloat_00662644[];
+extern char gFloat_006627e8[];
+extern char gFloat_0066293c[];
+extern char gFloat_0066297c[];
+extern char gFloat_006629d4[];
+extern char gFloat_00662a24[];
+extern char gFloat_00662a5c[];
+extern char gFloat_00662bb0[];
+extern char gFloat_00662be4[];
+extern char gFloat_00662bfc[];
+extern char gFloat_00662c18[];
+extern char gFloat_00662c5c[];
+extern char gFloat_00662c74[];
+extern char gString_006572b8[];
+extern char gString_006572c0[];
+extern char gString_006620d0[];
+extern char gString_00673698[];
+extern char gString_006736a0[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchData_006572c4[];
+extern char gMatchData_00662bcc[];
+extern char gMatchData_00662c44[];
+extern char gMatchData_007a1200[];
+extern char gMatchFloat_00662644[];
+extern char gMatchFloat_006627e8[];
+extern char gMatchFloat_0066293c[];
+extern char gMatchFloat_0066297c[];
+extern char gMatchFloat_006629d4[];
+extern char gMatchFloat_00662a24[];
+extern char gMatchFloat_00662a5c[];
+extern char gMatchFloat_00662bb0[];
+extern char gMatchFloat_00662be4[];
+extern char gMatchFloat_00662bfc[];
+extern char gMatchFloat_00662c18[];
+extern char gMatchFloat_00662c5c[];
+extern char gMatchFloat_00662c74[];
+extern char gMatchString_006572b8[];
+extern char gMatchString_006572c0[];
+extern char gMatchString_006620d0[];
+extern char gMatchString_00673698[];
+extern char gMatchString_006736a0[];
+#endif
 // FUNCTION: CARMA2_HW 0x0051b810
 void C2_NAKED C2_HOOK_FASTCALL Win32AllocateActionReplayBuffer(void) {
 #ifndef CARPOCALYPSE2_MATCHING
@@ -311,7 +359,7 @@ void C2_NAKED C2_HOOK_FASTCALL Win32AllocateActionReplayBuffer(void) {
                memory_status.dwAvailVirtual);
 #else
     __asm {
-            mov eax, dword ptr ds:[gWin32ActionReplayBufferAllocated]
+            mov eax, dword ptr [gWin32ActionReplayBufferAllocated]
             sub esp, 0x20
             push edi
             xor edi, edi
@@ -320,9 +368,14 @@ void C2_NAKED C2_HOOK_FASTCALL Win32AllocateActionReplayBuffer(void) {
             push esi
             lea eax, [esp + 8]
             push ebx
-            mov ebx, dword ptr ds:[0x589044]
+            _emit 0x8b
+        _emit 0x1d
+        _emit 0x44
+        _emit 0x90
+        _emit 0x58
+        _emit 0x00
             push eax
-            mov dword ptr ds:[gWin32ActionReplayBufferAllocated], 1
+            mov dword ptr [gWin32ActionReplayBufferAllocated], 1
             mov dword ptr [esp + 0x10], 0x20
             call ebx
             mov ecx, dword ptr [esp + 0x28]
@@ -341,12 +394,12 @@ void C2_NAKED C2_HOOK_FASTCALL Win32AllocateActionReplayBuffer(void) {
             push eax
             push ecx
             push edx
-            push 0x662a5c
+            push offset gMatchFloat_00662a5c
             call dr_dprintf
             mov eax, dword ptr [esp + 0x38]
             add esp, 0x24
             cmp eax, 0x16e3600
-            mov esi, 0x7a1200
+            mov esi, offset gMatchData_007a1200
             jae L0051b890
             mov esi, 0x7a120
             jmp L0051b8aa
@@ -361,7 +414,7 @@ void C2_NAKED C2_HOOK_FASTCALL Win32AllocateActionReplayBuffer(void) {
             mov esi, 0x3d0900
     L0051b8aa:
             push esi
-            push 0x662a24
+            push offset gMatchFloat_00662a24
             call dr_dprintf
             mov eax, dword ptr [esp + 0x28]
             mov ecx, dword ptr [esp + 0x20]
@@ -371,7 +424,7 @@ void C2_NAKED C2_HOOK_FASTCALL Win32AllocateActionReplayBuffer(void) {
             jbe L0051b8da
             lea esi, [eax - 0x100000]
             push esi
-            push 0x6629d4
+            push offset gMatchFloat_006629d4
             call dr_dprintf
             add esp, 8
     L0051b8da:
@@ -379,7 +432,7 @@ void C2_NAKED C2_HOOK_FASTCALL Win32AllocateActionReplayBuffer(void) {
             jge L0051b8f9
             mov esi, 0x10000
             push esi
-            push 0x66297c
+            push offset gMatchFloat_0066297c
             call dr_dprintf
             add esp, 8
             cmp esi, esi
@@ -397,17 +450,22 @@ void C2_NAKED C2_HOOK_FASTCALL Win32AllocateActionReplayBuffer(void) {
             jge L0051b8f9
     L0051b91b:
             test edi, edi
-            mov dword ptr ds:[gPDActionReplayBuffer], edi
+            mov dword ptr [gPDActionReplayBuffer], edi
             je L0051b938
             push 0x3e8
-            mov dword ptr ds:[gPDActionReplayBufferSize], esi
-            call dword ptr ds:[0x589094]
+            mov dword ptr [gPDActionReplayBufferSize], esi
+            _emit 0xff
+        _emit 0x15
+        _emit 0x94
+        _emit 0x90
+        _emit 0x58
+        _emit 0x00
             jmp L0051b942
     L0051b938:
-            mov dword ptr ds:[gPDActionReplayBufferSize], 0
+            mov dword ptr [gPDActionReplayBufferSize], 0
     L0051b942:
             push esi
-            push 0x66293c
+            push offset gMatchFloat_0066293c
             call dr_dprintf
             add esp, 8
             lea edx, [esp + 0xc]
@@ -429,7 +487,7 @@ void C2_NAKED C2_HOOK_FASTCALL Win32AllocateActionReplayBuffer(void) {
             push edx
             push eax
             push ecx
-            push 0x6627e8
+            push offset gMatchFloat_006627e8
             call dr_dprintf
             add esp, 0x24
             pop ebx
@@ -438,6 +496,19 @@ void C2_NAKED C2_HOOK_FASTCALL Win32AllocateActionReplayBuffer(void) {
             pop edi
             add esp, 0x20
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -526,11 +597,11 @@ char C2_NAKED C2_HOOK_FASTCALL PDConvertToASCIILessThan128(char pChar) {
             mov esi, dword ptr [esp + 8]
             and esi, 0xff
             xor eax, eax
-            mov al, byte ptr [esi + 0x6620d0]
+            mov al, byte ptr [esi + gMatchString_006620d0]
             push eax
-            push 0x662644
+            push offset gMatchFloat_00662644
             call dr_dprintf
-            mov al, byte ptr [esi + 0x6620d0]
+            mov al, byte ptr [esi + gMatchString_006620d0]
             add esp, 8
             pop esi
             pop ebx
@@ -540,13 +611,24 @@ char C2_NAKED C2_HOOK_FASTCALL PDConvertToASCIILessThan128(char pChar) {
             mov ecx, dword ptr [esp + 4]
             and ecx, 0xff
             push ecx
-            push 0x662644
+            push offset gMatchFloat_00662644
             call dr_dprintf
             add esp, 8
             mov al, bl
             pop ebx
             pop ecx
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -615,47 +697,70 @@ C2_NORETURN void C2_NAKED C2_HOOK_FASTCALL PDShutdownSystem(void) {
     }
 #else
     __asm {
-            mov eax, dword ptr ds:[0x6ad4d8]
+            _emit 0xa1
+        _emit 0xd8
+        _emit 0xd4
+        _emit 0x6a
+        _emit 0x00
             push esi
             xor esi, esi
             push edi
-            mov edi, dword ptr ds:[0x58905c]
+            _emit 0x8b
+        _emit 0x3d
+        _emit 0x5c
+        _emit 0x90
+        _emit 0x58
+        _emit 0x00
             cmp eax, esi
-            mov dword ptr ds:[gBack_screen], esi
+            mov dword ptr [gBack_screen], esi
             jne L0051c259
-            push 0x662c74
-            mov dword ptr ds:[0x6ad4d8], 1
+            push offset gMatchFloat_00662c74
+            _emit 0xc7
+        _emit 0x05
+        _emit 0xd8
+        _emit 0xd4
+        _emit 0x6a
+        _emit 0x00
+        _emit 0x01
+        _emit 0x00
+        _emit 0x00
+        _emit 0x00
             call dr_dprintf
             add esp, 4
             call SSDXStop
             call SSDXRelease
-            mov eax, dword ptr ds:[gDirectInputDevice]
+            mov eax, dword ptr [gDirectInputDevice]
             cmp eax, esi
             je L0051c16e
             mov ecx, dword ptr [eax]
             push eax
             call dword ptr [ecx + 0x20]
-            mov eax, dword ptr ds:[gDirectInputDevice]
+            mov eax, dword ptr [gDirectInputDevice]
             push eax
             mov edx, dword ptr [eax]
             call dword ptr [edx + 8]
-            mov dword ptr ds:[gDirectInputDevice], esi
+            mov dword ptr [gDirectInputDevice], esi
     L0051c16e:
-            mov eax, dword ptr ds:[gDirectInput]
+            mov eax, dword ptr [gDirectInput]
             cmp eax, esi
             je L0051c183
             mov ecx, dword ptr [eax]
             push eax
             call dword ptr [ecx + 8]
-            mov dword ptr ds:[gDirectInput], esi
+            mov dword ptr [gDirectInput], esi
     L0051c183:
             push 1
-            call dword ptr ds:[0x5891d4]
-            cmp dword ptr ds:[gHWnd], esi
+            _emit 0xff
+        _emit 0x15
+        _emit 0xd4
+        _emit 0x91
+        _emit 0x58
+        _emit 0x00
+            cmp dword ptr [gHWnd], esi
             je L0051c1bb
-            push 0x662c5c
+            push offset gMatchFloat_00662c5c
             call dr_dprintf
-            mov edx, dword ptr ds:[gHWnd]
+            mov edx, dword ptr [gHWnd]
             add esp, 4
             push 0x414
             push 0x40
@@ -664,47 +769,67 @@ C2_NORETURN void C2_NAKED C2_HOOK_FASTCALL PDShutdownSystem(void) {
             push -0x64
             push esi
             push edx
-            call dword ptr ds:[0x58921c]
+            _emit 0xff
+        _emit 0x15
+        _emit 0x1c
+        _emit 0x92
+        _emit 0x58
+        _emit 0x00
     L0051c1bb:
-            push 0x662c44
+            push offset gMatchData_00662c44
             call dr_dprintf
             add esp, 4
             call SDL3ServiceMessages
-            push 0x662c18
+            push offset gMatchFloat_00662c18
             call dr_dprintf
             add esp, 4
             push esi
             push 1
             push 0x18
             push 0xffff
-            call dword ptr ds:[0x589214]
-            cmp dword ptr ds:[gIsFatalError], esi
+            _emit 0xff
+        _emit 0x15
+        _emit 0x14
+        _emit 0x92
+        _emit 0x58
+        _emit 0x00
+            cmp dword ptr [gIsFatalError], esi
             je L0051c212
-            push 0x662bfc
+            push offset gMatchFloat_00662bfc
             call dr_dprintf
             add esp, 4
             push 0x10
-            push 0x662be4
+            push offset gMatchFloat_00662be4
             push offset gFatalErrorMessage
             push esi
-            call dword ptr ds:[0x5891dc]
+            _emit 0xff
+        _emit 0x15
+        _emit 0xdc
+        _emit 0x91
+        _emit 0x58
+        _emit 0x00
     L0051c212:
-            cmp dword ptr ds:[gHWnd], esi
+            cmp dword ptr [gHWnd], esi
             je L0051c239
-            push 0x662bcc
+            push offset gMatchData_00662bcc
             call dr_dprintf
-            mov eax, dword ptr ds:[gHWnd]
+            mov eax, dword ptr [gHWnd]
             add esp, 4
             push eax
-            call dword ptr ds:[0x5891fc]
-            mov dword ptr ds:[gHWnd], esi
+            _emit 0xff
+        _emit 0x15
+        _emit 0xfc
+        _emit 0x91
+        _emit 0x58
+        _emit 0x00
+            mov dword ptr [gHWnd], esi
     L0051c239:
-            push 0x662bb0
+            push offset gMatchFloat_00662bb0
             call dr_dprintf
             add esp, 4
             call CloseDiagnostics
             call CloseGlobalPackedFile
-            mov ecx, dword ptr ds:[gExit_code]
+            mov ecx, dword ptr [gExit_code]
             push ecx
             call edi
     L0051c259:
@@ -714,6 +839,14 @@ C2_NORETURN void C2_NAKED C2_HOOK_FASTCALL PDShutdownSystem(void) {
             pop edi
             pop esi
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -744,7 +877,8 @@ void DeActivateApp(void) {
 }
 
 // FUNCTION: CARMA2_HW 0x0051b0c0
-LRESULT CALLBACK Carma2MainWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
+LRESULT C2_NAKED C2_HOOK_STDCALL Carma2MainWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM lParam) {
+#ifndef CARPOCALYPSE2_MATCHING
     PAINTSTRUCT paint;
     POINT point;
     char buffer[256];
@@ -862,6 +996,878 @@ LRESULT CALLBACK Carma2MainWndProc(HWND hWnd, UINT uMsg, WPARAM wParam, LPARAM l
             break;
     }
     return DefWindowProcA(hWnd, uMsg, wParam, lParam);
+#else
+    __asm {
+            push ebp
+            mov ebp, esp
+            sub esp, 0x154
+            push ebx
+            push esi
+            push edi
+            mov edi, dword ptr [ebp + 0xc]
+            cmp edi, 0xf
+            ja L0051b215
+            je L0051b1f1
+            mov eax, edi
+            sub eax, 2
+            je L0051b1df
+            dec eax
+            je L0051b0f5
+            sub eax, 2
+            jne L0051b367
+    L0051b0f5:
+            mov eax, dword ptr [ebp + 8]
+            push eax
+            _emit 0xff
+        _emit 0x15
+        _emit 0x0c
+        _emit 0x92
+        _emit 0x58
+        _emit 0x00
+            test eax, eax
+            je L0051b367
+            push 0x6627c4
+            call dr_dprintf
+            add esp, 4
+            push 0x6627ac
+            call dr_dprintf
+            mov eax, dword ptr [gWindowMovingResizing]
+            xor ebx, ebx
+            add esp, 4
+            cmp eax, ebx
+            jne L0051b1c6
+            cmp dword ptr [gWindowActiveState], 2
+            jne L0051b1c6
+            push 0x662788
+            call dr_dprintf
+            mov eax, dword ptr [gDirectInputDevice]
+            add esp, 4
+            cmp eax, ebx
+            mov dword ptr [gWindowMovingResizing], 1
+            je L0051b163
+            mov ecx, dword ptr [eax]
+            push eax
+            call dword ptr [ecx + 0x20]
+    L0051b163:
+            mov eax, dword ptr [gHWnd]
+            cmp eax, ebx
+            je L0051b17d
+            push 0x414
+            push ebx
+            push ebx
+            push ebx
+            push ebx
+            push ebx
+            push eax
+            _emit 0xff
+        _emit 0x15
+        _emit 0x1c
+        _emit 0x92
+        _emit 0x58
+        _emit 0x00
+    L0051b17d:
+            mov eax, dword ptr [gRenderer]
+            mov esi, 0x662518
+    L0051b187:
+            mov dl, byte ptr [eax]
+            mov cl, dl
+            cmp dl, byte ptr [esi]
+            jne L0051b1ab
+            cmp cl, bl
+            je L0051b1a7
+            mov dl, byte ptr [eax + 1]
+            mov cl, dl
+            cmp dl, byte ptr [esi + 1]
+            jne L0051b1ab
+            add eax, 2
+            add esi, 2
+            cmp cl, bl
+            jne L0051b187
+    L0051b1a7:
+            xor eax, eax
+            jmp L0051b1b0
+    L0051b1ab:
+            sbb eax, eax
+            sbb eax, -1
+    L0051b1b0:
+            mov edi, dword ptr [ebp + 0xc]
+            xor ecx, ecx
+            cmp eax, ebx
+            mov dword ptr [gWindowMovingResizing], ebx
+            setne cl
+            mov dword ptr [gWindowActiveState], ecx
+    L0051b1c6:
+            mov edx, dword ptr [gWindowActiveState]
+            push edx
+            push 0x66275c
+            call dr_dprintf
+            add esp, 8
+            jmp L0051b367
+    L0051b1df:
+            push 0x662734
+            call dr_dprintf
+            add esp, 4
+            jmp L0051b367
+    L0051b1f1:
+            mov esi, dword ptr [ebp + 8]
+            lea eax, [ebp - 0x54]
+            push eax
+            push esi
+            _emit 0xff
+        _emit 0x15
+        _emit 0x20
+        _emit 0x92
+        _emit 0x58
+        _emit 0x00
+            lea ecx, [ebp - 0x54]
+            push ecx
+            push esi
+            _emit 0xff
+        _emit 0x15
+        _emit 0x18
+        _emit 0x92
+        _emit 0x58
+        _emit 0x00
+            xor eax, eax
+            pop edi
+            pop esi
+            pop ebx
+            mov esp, ebp
+            pop ebp
+            ret 0x10
+    L0051b215:
+            cmp edi, 0x102
+            ja L0051b4f8
+            je L0051b478
+            cmp edi, 0x1c
+            jne L0051b367
+            mov edx, dword ptr [gHWnd]
+            _emit 0x8b
+        _emit 0x3d
+        _emit 0x0c
+        _emit 0x92
+        _emit 0x58
+        _emit 0x00
+            push edx
+            call edi
+            mov ecx, dword ptr [gHWnd]
+            _emit 0x8b
+        _emit 0x35
+        _emit 0x28
+        _emit 0x92
+        _emit 0x58
+        _emit 0x00
+            push eax
+            mov eax, dword ptr [ebp + 8]
+            push eax
+            push ecx
+            call esi
+            mov edx, dword ptr [ebp + 0x14]
+            push eax
+            mov eax, dword ptr [ebp + 0x10]
+            push edx
+            push eax
+            push 0x6626cc
+            call dr_dprintf
+            mov eax, dword ptr [gHWnd]
+            xor ebx, ebx
+            add esp, 0x1c
+            cmp eax, ebx
+            je L0051b364
+            call esi
+            mov ecx, dword ptr [gHWnd]
+            cmp eax, ecx
+            jne L0051b396
+            push ecx
+            call edi
+            test eax, eax
+            jne L0051b396
+            push 0x6626bc
+            call dr_dprintf
+            mov eax, dword ptr [gDirectInputDevice]
+            add esp, 4
+            cmp eax, ebx
+            je L0051b2af
+            mov ecx, dword ptr [eax]
+            push eax
+            call dword ptr [ecx + 0x1c]
+    L0051b2af:
+            mov ecx, dword ptr [gHWnd]
+            cmp ecx, ebx
+            je L0051b2d9
+            mov eax, dword ptr [gScreenWidth]
+            cmp eax, ebx
+            je L0051b2d9
+            mov edx, dword ptr [gScreenHeight]
+            push 0x414
+            push edx
+            push eax
+            push ebx
+            push ebx
+            push ebx
+            push ecx
+            _emit 0xff
+        _emit 0x15
+        _emit 0x1c
+        _emit 0x92
+        _emit 0x58
+        _emit 0x00
+    L0051b2d9:
+            cmp dword ptr [gPerformanceCounterInitialized], ebx
+            je L0051b383
+            lea eax, [ebp - 0x14]
+            push eax
+            _emit 0xff
+        _emit 0x15
+        _emit 0x40
+        _emit 0x90
+        _emit 0x58
+        _emit 0x00
+            mov eax, dword ptr [ebp - 0x10]
+            mov esi, 0x10
+            cdq
+            mov dword ptr [ebp - 8], eax
+            mov dword ptr [ebp - 4], edx
+            mov dword ptr [ebp - 0xc], esi
+            mov ecx, dword ptr [ebp - 0xc]
+            mov eax, dword ptr [ebp - 8]
+            mov edx, dword ptr [ebp - 4]
+            shld edx, eax, cl
+            shl eax, cl
+            mov dword ptr [ebp - 4], edx
+            mov dword ptr [ebp - 8], eax
+            mov dword ptr [ebp - 0xc], esi
+            mov ecx, dword ptr [ebp - 0xc]
+            mov eax, dword ptr [ebp - 8]
+            mov edx, dword ptr [ebp - 4]
+            shld edx, eax, cl
+            shl eax, cl
+            mov ecx, dword ptr [ebp - 0x14]
+            xor esi, esi
+            add ecx, eax
+            mov eax, dword ptr [gPerformanceCounterStart+0x4]
+            adc esi, edx
+            mov edx, dword ptr [gPerformanceCounterStart]
+            sub ecx, edx
+            mov edx, dword ptr [gPerformanceCounterFrequency_ms+0x4]
+            sbb esi, eax
+            mov eax, dword ptr [gPerformanceCounterFrequency_ms]
+            push edx
+            push eax
+            push esi
+            push ecx
+            call _alldiv
+            mov dword ptr [ebp - 4], edx
+            mov dword ptr [gTime_app_activated], eax
+            mov dword ptr [gWindowActiveState], 2
+    L0051b364:
+            mov edi, dword ptr [ebp + 0xc]
+    L0051b367:
+            mov edx, dword ptr [ebp + 0x14]
+            mov eax, dword ptr [ebp + 0x10]
+            mov ecx, dword ptr [ebp + 8]
+            push edx
+            push eax
+            push edi
+            push ecx
+            _emit 0xff
+        _emit 0x15
+        _emit 0x2c
+        _emit 0x92
+        _emit 0x58
+        _emit 0x00
+            pop edi
+            pop esi
+            pop ebx
+            mov esp, ebp
+            pop ebp
+            ret 0x10
+    L0051b383:
+            xor eax, eax
+            mov dword ptr [gWindowActiveState], 2
+            mov dword ptr [gTime_app_activated], eax
+            jmp L0051b364
+    L0051b396:
+            mov eax, dword ptr [gBack_screen]
+            cmp eax, ebx
+            je L0051b3b2
+            cmp dword ptr [eax + 8], ebx
+            je L0051b3b2
+            mov eax, 1
+            pop edi
+            pop esi
+            pop ebx
+            mov esp, ebp
+            pop ebp
+            ret 0x10
+    L0051b3b2:
+            push 0x6627ac
+            call dr_dprintf
+            mov eax, dword ptr [gWindowMovingResizing]
+            add esp, 4
+            cmp eax, ebx
+            jne L0051b45f
+            cmp dword ptr [gWindowActiveState], 2
+            jne L0051b45f
+            push 0x662788
+            call dr_dprintf
+            mov eax, dword ptr [gDirectInputDevice]
+            add esp, 4
+            cmp eax, ebx
+            mov dword ptr [gWindowMovingResizing], 1
+            je L0051b3ff
+            mov ecx, dword ptr [eax]
+            push eax
+            call dword ptr [ecx + 0x20]
+    L0051b3ff:
+            mov eax, dword ptr [gHWnd]
+            cmp eax, ebx
+            je L0051b419
+            push 0x414
+            push ebx
+            push ebx
+            push ebx
+            push ebx
+            push ebx
+            push eax
+            _emit 0xff
+        _emit 0x15
+        _emit 0x1c
+        _emit 0x92
+        _emit 0x58
+        _emit 0x00
+    L0051b419:
+            mov eax, dword ptr [gRenderer]
+            mov esi, 0x662518
+    L0051b423:
+            mov dl, byte ptr [eax]
+            mov cl, dl
+            cmp dl, byte ptr [esi]
+            jne L0051b447
+            cmp cl, bl
+            je L0051b443
+            mov dl, byte ptr [eax + 1]
+            mov cl, dl
+            cmp dl, byte ptr [esi + 1]
+            jne L0051b447
+            add eax, 2
+            add esi, 2
+            cmp cl, bl
+            jne L0051b423
+    L0051b443:
+            xor eax, eax
+            jmp L0051b44c
+    L0051b447:
+            sbb eax, eax
+            sbb eax, -1
+    L0051b44c:
+            xor ecx, ecx
+            cmp eax, ebx
+            setne cl
+            mov dword ptr [gWindowActiveState], ecx
+            mov dword ptr [gWindowMovingResizing], ebx
+    L0051b45f:
+            mov edx, dword ptr [gWindowActiveState]
+            push edx
+            push 0x66275c
+            call dr_dprintf
+            add esp, 8
+            jmp L0051b364
+    L0051b478:
+            mov bl, byte ptr [ebp + 0x10]
+            cmp bl, 0x20
+            jb L0051b367
+            cmp bl, 0x7f
+            je L0051b367
+            mov eax, dword ptr [gKeyboardBufferLength]
+            cmp eax, 0x14
+            jl L0051b4b0
+            push 0x13
+            push offset gKeyboardBuffer+0x1
+            push offset gKeyboardBuffer
+            call memmove
+            add esp, 0xc
+            mov eax, 0x13
+    L0051b4b0:
+            mov byte ptr [eax + gKeyboardBuffer], bl
+            inc eax
+            mov dword ptr [gKeyboardBufferLength], eax
+            push eax
+            lea eax, [ebp - 0x154]
+            push offset gKeyboardBuffer
+            push eax
+            call strncpy
+            mov ecx, dword ptr [gKeyboardBufferLength]
+            add esp, 0xc
+            lea edx, [ebp - 0x154]
+            push edx
+            push 0x662698
+            mov byte ptr [ebp + ecx - 0x154], 0
+            call dr_dprintf
+            add esp, 8
+            jmp L0051b367
+    L0051b4f8:
+            lea eax, [edi - 0x112]
+            cmp eax, 0xf4
+            ja L0051b367
+            xor ecx, ecx
+            mov cl, byte ptr [eax + 0x51b710]
+            jmp dword ptr [ecx*4 + 0x51b6f0]
+            cmp dword ptr [gWindowActiveState], 2
+            je L0051b546
+            mov edx, dword ptr [gPD_mouse_position]
+            mov eax, dword ptr [gPD_mouse_position+0x4]
+            mov dword ptr [gCursorPos_LastClick], edx
+            mov dword ptr [gCursorPos_LastClick+0x4], eax
+            mov dword ptr [gCursorPos_LastClick_Valid], 1
+            jmp L0051b367
+    L0051b546:
+            lea ecx, [ebp - 8]
+            push ecx
+            _emit 0xff
+        _emit 0x15
+        _emit 0x24
+        _emit 0x92
+        _emit 0x58
+        _emit 0x00
+            mov eax, dword ptr [gScaleMouse]
+            xor ebx, ebx
+            cmp eax, ebx
+            je L0051b5d3
+            mov eax, dword ptr [gRenderer]
+            mov esi, 0x662518
+    L0051b565:
+            mov dl, byte ptr [eax]
+            mov cl, dl
+            cmp dl, byte ptr [esi]
+            jne L0051b589
+            cmp cl, bl
+            je L0051b585
+            mov dl, byte ptr [eax + 1]
+            mov cl, dl
+            cmp dl, byte ptr [esi + 1]
+            jne L0051b589
+            add eax, 2
+            add esi, 2
+            cmp cl, bl
+            jne L0051b565
+    L0051b585:
+            xor eax, eax
+            jmp L0051b58e
+    L0051b589:
+            sbb eax, eax
+            sbb eax, -1
+    L0051b58e:
+            cmp eax, ebx
+            je L0051b5d0
+            fild dword ptr [ebp - 8]
+            fild dword ptr [gScreenWidth]
+            _emit 0xdc
+        _emit 0x0d
+        _emit 0x48
+        _emit 0xb7
+        _emit 0x58
+        _emit 0x00
+            fdivp st(1), st(0)
+            call _ftol
+            fild dword ptr [ebp - 4]
+            fild dword ptr [gScreenHeight]
+            mov esi, eax
+            mov dword ptr [gCursorPos_LastClick], esi
+            _emit 0xdc
+        _emit 0x0d
+        _emit 0x50
+        _emit 0xb7
+        _emit 0x58
+        _emit 0x00
+            fdivp st(1), st(0)
+            call _ftol
+            mov edi, dword ptr [ebp + 0xc]
+            mov dword ptr [gCursorPos_LastClick+0x4], eax
+            jmp L0051b5f5
+    L0051b5d0:
+            mov edi, dword ptr [ebp + 0xc]
+    L0051b5d3:
+            mov ecx, dword ptr [gHWnd]
+            lea eax, [ebp - 8]
+            push eax
+            push ecx
+            _emit 0xff
+        _emit 0x15
+        _emit 0xb8
+        _emit 0x91
+        _emit 0x58
+        _emit 0x00
+            mov esi, dword ptr [ebp - 8]
+            mov eax, dword ptr [ebp - 4]
+            mov dword ptr [gCursorPos_LastClick], esi
+            mov dword ptr [gCursorPos_LastClick+0x4], eax
+    L0051b5f5:
+            mov dword ptr [gPD_mouse_position], esi
+            mov dword ptr [gPD_mouse_position+0x4], eax
+            mov dword ptr [gCursorPos_LastClick_Valid], 1
+            jmp L0051b367
+            mov eax, dword ptr [gWindowActiveState]
+            mov ecx, dword ptr [gMouseCaptured]
+            xor edx, edx
+            cmp eax, 2
+            sete dl
+            test ecx, ecx
+            mov dword ptr [gMouseLButtonDown], edx
+            jne L0051b367
+            cmp eax, 2
+            jne L0051b367
+            mov eax, dword ptr [gHWnd]
+            push eax
+            jmp L0051b67c
+            xor ebx, ebx
+            mov dword ptr [gMouseLButtonDown], ebx
+            jmp L0051b699
+            mov eax, dword ptr [gWindowActiveState]
+            xor ecx, ecx
+            cmp eax, 2
+            sete cl
+            mov dword ptr [gMouseRButtonDown], ecx
+            mov ecx, dword ptr [gMouseCaptured]
+            test ecx, ecx
+            jne L0051b367
+            cmp eax, 2
+            jne L0051b367
+            mov edx, dword ptr [gHWnd]
+            push edx
+    L0051b67c:
+            _emit 0xff
+        _emit 0x15
+        _emit 0x30
+        _emit 0x92
+        _emit 0x58
+        _emit 0x00
+            mov dword ptr [gMouseCaptured], 1
+            jmp L0051b367
+            xor ebx, ebx
+            mov dword ptr [gMouseRButtonDown], ebx
+    L0051b699:
+            cmp dword ptr [gMouseCaptured], ebx
+            je L0051b367
+            _emit 0xff
+        _emit 0x15
+        _emit 0xbc
+        _emit 0x91
+        _emit 0x58
+        _emit 0x00
+            mov dword ptr [gMouseCaptured], ebx
+            jmp L0051b367
+            mov eax, dword ptr [ebp + 0x10]
+            and eax, 0xfff0
+            cmp eax, 0xf060
+            jne L0051b367
+            mov ecx, dword ptr [gHWnd]
+            push ecx
+            _emit 0xff
+        _emit 0x15
+        _emit 0xfc
+        _emit 0x91
+        _emit 0x58
+        _emit 0x00
+            mov dword ptr [gHWnd], 0
+            call PDShutdownSystem
+            pop edi
+            pop esi
+            xor eax, eax
+            pop ebx
+            mov esp, ebp
+            pop ebp
+            ret 0x10
+            _emit 0xb6
+            _emit 0xb6
+            _emit 0x51
+            _emit 0x00
+            _emit 0x0f
+            _emit 0xb6
+            _emit 0x51
+            _emit 0x00
+            _emit 0x41
+            _emit 0xb6
+            _emit 0x51
+            _emit 0x00
+            _emit 0x18
+            _emit 0xb5
+            _emit 0x51
+            _emit 0x00
+            _emit 0x4b
+            _emit 0xb6
+            _emit 0x51
+            _emit 0x00
+            _emit 0x91
+            _emit 0xb6
+            _emit 0x51
+            _emit 0x00
+            _emit 0x18
+            _emit 0xb5
+            _emit 0x51
+            _emit 0x00
+            _emit 0x67
+            _emit 0xb3
+            _emit 0x51
+            _emit 0x00
+            _emit 0x00
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x07
+            _emit 0x01
+            _emit 0x02
+            _emit 0x03
+            _emit 0x04
+            _emit 0x05
+            _emit 0x06
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0051cab0
@@ -939,7 +1945,7 @@ int C2_NAKED C2_HOOK_FASTCALL PDCheckDriveExists2(const char *pThe_path, const c
             mov al, byte ptr [esp + 0x12]
             test al, al
             jne L0051d589
-            mov edi, dword ptr ds:[gDir_separator]
+            mov edi, dword ptr [gDir_separator]
             or ecx, 0xffffffff
             xor eax, eax
             lea edx, [esp + 0x10]
@@ -960,7 +1966,12 @@ int C2_NAKED C2_HOOK_FASTCALL PDCheckDriveExists2(const char *pThe_path, const c
             rep movsb
     L0051d589:
             push ebx
-            call dword ptr ds:[0x589080]
+            _emit 0xff
+        _emit 0x15
+        _emit 0x80
+        _emit 0x90
+        _emit 0x58
+        _emit 0x00
             cmp eax, -1
             je L0051d5e2
             push 0
@@ -971,16 +1982,31 @@ int C2_NAKED C2_HOOK_FASTCALL PDCheckDriveExists2(const char *pThe_path, const c
             lea eax, [esp + 0x24]
             push 0x80000000
             push eax
-            call dword ptr ds:[0x589064]
+            _emit 0xff
+        _emit 0x15
+        _emit 0x64
+        _emit 0x90
+        _emit 0x58
+        _emit 0x00
             mov esi, eax
             cmp esi, -1
             je L0051d5cb
             push 0
             push esi
-            call dword ptr ds:[0x589060]
+            _emit 0xff
+        _emit 0x15
+        _emit 0x60
+        _emit 0x90
+        _emit 0x58
+        _emit 0x00
             mov ebp, eax
             push esi
-            call dword ptr ds:[0x5890b0]
+            _emit 0xff
+        _emit 0x15
+        _emit 0xb0
+        _emit 0x90
+        _emit 0x58
+        _emit 0x00
     L0051d5cb:
             cmp ebp, dword ptr [esp + 0x114]
             sbb eax, eax
@@ -1100,9 +2126,14 @@ void C2_NAKED C2_HOOK_FASTCALL PDInitTimer(void) {
             mov ebp, esp
             sub esp, 0x14
             lea eax, [ebp - 0xc]
-            mov dword ptr ds:[gPerformanceCounterInitialized], 0
+            mov dword ptr [gPerformanceCounterInitialized], 0
             push eax
-            call dword ptr ds:[0x5890a8]
+            _emit 0xff
+        _emit 0x15
+        _emit 0xa8
+        _emit 0x90
+        _emit 0x58
+        _emit 0x00
             test eax, eax
             je L0051d8ef
             mov eax, dword ptr [ebp - 8]
@@ -1110,21 +2141,21 @@ void C2_NAKED C2_HOOK_FASTCALL PDInitTimer(void) {
             push esi
             mov esi, 0x10
             cdq
-            mov dword ptr ds:[gPerformanceCounterInitialized], 1
-            mov dword ptr ds:[gPerformanceCounterFrequency_s], eax
-            mov dword ptr ds:[0x6acc6c], edx
+            mov dword ptr [gPerformanceCounterInitialized], 1
+            mov dword ptr [gPerformanceCounterFrequency_s], eax
+            mov dword ptr [gPerformanceCounterFrequency_s+0x4], edx
             mov dword ptr [ebp - 4], esi
             mov ecx, dword ptr [ebp - 4]
-            mov eax, dword ptr ds:[gPerformanceCounterFrequency_s]
-            mov edx, dword ptr ds:[0x6acc6c]
+            mov eax, dword ptr [gPerformanceCounterFrequency_s]
+            mov edx, dword ptr [gPerformanceCounterFrequency_s+0x4]
             shld edx, eax, cl
             shl eax, cl
-            mov dword ptr ds:[0x6acc6c], edx
-            mov dword ptr ds:[gPerformanceCounterFrequency_s], eax
+            mov dword ptr [gPerformanceCounterFrequency_s+0x4], edx
+            mov dword ptr [gPerformanceCounterFrequency_s], eax
             mov dword ptr [ebp - 4], esi
             mov ecx, dword ptr [ebp - 4]
-            mov eax, dword ptr ds:[gPerformanceCounterFrequency_s]
-            mov edx, dword ptr ds:[0x6acc6c]
+            mov eax, dword ptr [gPerformanceCounterFrequency_s]
+            mov edx, dword ptr [gPerformanceCounterFrequency_s+0x4]
             shld edx, eax, cl
             shl eax, cl
             mov ecx, dword ptr [ebp - 0xc]
@@ -1132,54 +2163,72 @@ void C2_NAKED C2_HOOK_FASTCALL PDInitTimer(void) {
             lea ecx, [ebp - 0x14]
             adc edx, 0
             push ecx
-            mov dword ptr ds:[gPerformanceCounterFrequency_s], eax
-            mov dword ptr ds:[0x6acc6c], edx
-            call dword ptr ds:[0x589040]
+            mov dword ptr [gPerformanceCounterFrequency_s], eax
+            mov dword ptr [gPerformanceCounterFrequency_s+0x4], edx
+            _emit 0xff
+        _emit 0x15
+        _emit 0x40
+        _emit 0x90
+        _emit 0x58
+        _emit 0x00
             mov eax, dword ptr [ebp - 0x10]
             mov dword ptr [ebp - 4], esi
             cdq
-            mov dword ptr ds:[gPerformanceCounterStart], eax
-            mov dword ptr ds:[0x6acc84], edx
+            mov dword ptr [gPerformanceCounterStart], eax
+            mov dword ptr [gPerformanceCounterStart+0x4], edx
             mov ecx, dword ptr [ebp - 4]
-            mov eax, dword ptr ds:[gPerformanceCounterStart]
-            mov edx, dword ptr ds:[0x6acc84]
+            mov eax, dword ptr [gPerformanceCounterStart]
+            mov edx, dword ptr [gPerformanceCounterStart+0x4]
             shld edx, eax, cl
             shl eax, cl
-            mov dword ptr ds:[0x6acc84], edx
-            mov dword ptr ds:[gPerformanceCounterStart], eax
+            mov dword ptr [gPerformanceCounterStart+0x4], edx
+            mov dword ptr [gPerformanceCounterStart], eax
             mov dword ptr [ebp - 4], esi
             mov ecx, dword ptr [ebp - 4]
-            mov eax, dword ptr ds:[gPerformanceCounterStart]
-            mov edx, dword ptr ds:[0x6acc84]
+            mov eax, dword ptr [gPerformanceCounterStart]
+            mov edx, dword ptr [gPerformanceCounterStart+0x4]
             shld edx, eax, cl
             shl eax, cl
             mov ecx, dword ptr [ebp - 0x14]
-            mov esi, dword ptr ds:[0x6acc6c]
-            mov edi, dword ptr ds:[gPerformanceCounterFrequency_s]
+            mov esi, dword ptr [gPerformanceCounterFrequency_s+0x4]
+            mov edi, dword ptr [gPerformanceCounterFrequency_s]
             add eax, ecx
             push 0
             push 0x3e8
             adc edx, 0
             push esi
             push edi
-            mov dword ptr ds:[gPerformanceCounterStart], eax
-            mov dword ptr ds:[0x6acc84], edx
+            mov dword ptr [gPerformanceCounterStart], eax
+            mov dword ptr [gPerformanceCounterStart+0x4], edx
             call _alldiv
-            mov dword ptr ds:[gPerformanceCounterFrequency_ms], eax
-            mov dword ptr ds:[0x6ad1f4], edx
+            mov dword ptr [gPerformanceCounterFrequency_ms], eax
+            mov dword ptr [gPerformanceCounterFrequency_ms+0x4], edx
             push 0
             push 0xf4240
             push esi
             push edi
             call _alldiv
-            mov dword ptr ds:[gPerformanceCounterFrequency_us], eax
-            mov dword ptr ds:[0x6ac85c], edx
+            mov dword ptr [gPerformanceCounterFrequency_us], eax
+            mov dword ptr [gPerformanceCounterFrequency_us+0x4], edx
             pop esi
             pop edi
     L0051d8ef:
             mov esp, ebp
             pop ebp
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -1201,13 +2250,18 @@ tU32 C2_NAKED C2_HOOK_FASTCALL PDGetTotalTime(void) {
             push ebp
             mov ebp, esp
             sub esp, 0x14
-            mov eax, dword ptr ds:[gPerformanceCounterInitialized]
+            mov eax, dword ptr [gPerformanceCounterInitialized]
             test eax, eax
             je L0051d495
             lea eax, [ebp - 0xc]
             push esi
             push eax
-            call dword ptr ds:[0x589040]
+            _emit 0xff
+        _emit 0x15
+        _emit 0x40
+        _emit 0x90
+        _emit 0x58
+        _emit 0x00
             mov eax, dword ptr [ebp - 8]
             mov esi, 0x10
             cdq
@@ -1230,13 +2284,13 @@ tU32 C2_NAKED C2_HOOK_FASTCALL PDGetTotalTime(void) {
             mov ecx, dword ptr [ebp - 0xc]
             xor esi, esi
             add ecx, eax
-            mov eax, dword ptr ds:[gPerformanceCounterStart]
+            mov eax, dword ptr [gPerformanceCounterStart]
             adc esi, edx
-            mov edx, dword ptr ds:[0x6acc84]
+            mov edx, dword ptr [gPerformanceCounterStart+0x4]
             sub ecx, eax
-            mov eax, dword ptr ds:[gPerformanceCounterFrequency_ms]
+            mov eax, dword ptr [gPerformanceCounterFrequency_ms]
             sbb esi, edx
-            mov edx, dword ptr ds:[0x6ad1f4]
+            mov edx, dword ptr [gPerformanceCounterFrequency_ms+0x4]
             push edx
             push eax
             push esi
@@ -1252,6 +2306,11 @@ tU32 C2_NAKED C2_HOOK_FASTCALL PDGetTotalTime(void) {
             mov esp, ebp
             pop ebp
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -1272,13 +2331,18 @@ int C2_NAKED C2_HOOK_FASTCALL PDGetMicroseconds(void) {
             push ebp
             mov ebp, esp
             sub esp, 0x14
-            mov eax, dword ptr ds:[gPerformanceCounterInitialized]
+            mov eax, dword ptr [gPerformanceCounterInitialized]
             test eax, eax
             je L0051da17
             lea eax, [ebp - 0xc]
             push esi
             push eax
-            call dword ptr ds:[0x589040]
+            _emit 0xff
+        _emit 0x15
+        _emit 0x40
+        _emit 0x90
+        _emit 0x58
+        _emit 0x00
             mov eax, dword ptr [ebp - 8]
             mov esi, 0x10
             cdq
@@ -1301,14 +2365,14 @@ int C2_NAKED C2_HOOK_FASTCALL PDGetMicroseconds(void) {
             mov ecx, dword ptr [ebp - 0xc]
             xor esi, esi
             add eax, ecx
-            mov ecx, dword ptr ds:[0x6acc84]
+            mov ecx, dword ptr [gPerformanceCounterStart+0x4]
             adc edx, esi
-            mov esi, dword ptr ds:[gPerformanceCounterStart]
+            mov esi, dword ptr [gPerformanceCounterStart]
             sub eax, esi
             sbb edx, ecx
-            mov ecx, dword ptr ds:[0x6ac85c]
+            mov ecx, dword ptr [gPerformanceCounterFrequency_us+0x4]
             push ecx
-            mov ecx, dword ptr ds:[gPerformanceCounterFrequency_us]
+            mov ecx, dword ptr [gPerformanceCounterFrequency_us]
             push ecx
             push edx
             push eax
@@ -1323,6 +2387,9 @@ int C2_NAKED C2_HOOK_FASTCALL PDGetMicroseconds(void) {
             mov esp, ebp
             pop ebp
             ret
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -1380,13 +2447,18 @@ tU32 C2_NAKED C2_HOOK_FASTCALL PDGetElapsedMilliseconds(void) {
             push ebp
             mov ebp, esp
             sub esp, 0x14
-            mov eax, dword ptr ds:[gPerformanceCounterInitialized]
+            mov eax, dword ptr [gPerformanceCounterInitialized]
             test eax, eax
             je L0051d987
             lea eax, [ebp - 0xc]
             push esi
             push eax
-            call dword ptr ds:[0x589040]
+            _emit 0xff
+        _emit 0x15
+        _emit 0x40
+        _emit 0x90
+        _emit 0x58
+        _emit 0x00
             mov eax, dword ptr [ebp - 8]
             mov esi, 0x10
             cdq
@@ -1409,14 +2481,14 @@ tU32 C2_NAKED C2_HOOK_FASTCALL PDGetElapsedMilliseconds(void) {
             mov ecx, dword ptr [ebp - 0xc]
             xor esi, esi
             add eax, ecx
-            mov ecx, dword ptr ds:[0x6acc84]
+            mov ecx, dword ptr [gPerformanceCounterStart+0x4]
             adc edx, esi
-            mov esi, dword ptr ds:[gPerformanceCounterStart]
+            mov esi, dword ptr [gPerformanceCounterStart]
             sub eax, esi
             sbb edx, ecx
-            mov ecx, dword ptr ds:[0x6ad1f4]
+            mov ecx, dword ptr [gPerformanceCounterFrequency_ms+0x4]
             push ecx
-            mov ecx, dword ptr ds:[gPerformanceCounterFrequency_ms]
+            mov ecx, dword ptr [gPerformanceCounterFrequency_ms]
             push ecx
             push edx
             push eax
@@ -1431,6 +2503,9 @@ tU32 C2_NAKED C2_HOOK_FASTCALL PDGetElapsedMilliseconds(void) {
             mov esp, ebp
             pop ebp
             ret
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -1513,15 +2588,30 @@ int C2_NAKED C2_HOOK_FASTCALL PDEnumPath(const char *path, tEnumPathCallback pCa
             mov edi, ecx
             push 0x104
             xor esi, esi
-            call dword ptr ds:[0x589068]
+            _emit 0xff
+        _emit 0x15
+        _emit 0x68
+        _emit 0x90
+        _emit 0x58
+        _emit 0x00
             push edi
-            call dword ptr ds:[0x589084]
+            _emit 0xff
+        _emit 0x15
+        _emit 0x84
+        _emit 0x90
+        _emit 0x58
+        _emit 0x00
             test eax, eax
             je L00486d4a
             lea ecx, [esp + 0x10]
             push ecx
-            push 0x6572c0
-            call dword ptr ds:[0x589088]
+            push offset gMatchString_006572c0
+            _emit 0xff
+        _emit 0x15
+        _emit 0x88
+        _emit 0x90
+        _emit 0x58
+        _emit 0x00
             cmp eax, -1
             mov dword ptr [esp + 0xc], eax
             je L00486d3c
@@ -1536,7 +2626,7 @@ int C2_NAKED C2_HOOK_FASTCALL PDEnumPath(const char *path, tEnumPathCallback pCa
             repne scasb
             not ecx
             dec ecx
-            mov edi, 0x6572b8
+            mov edi, offset gMatchString_006572b8
             mov esi, ecx
             or ecx, 0xffffffff
             repne scasb
@@ -1546,7 +2636,7 @@ int C2_NAKED C2_HOOK_FASTCALL PDEnumPath(const char *path, tEnumPathCallback pCa
             cmp esi, edi
             jl L00486cf0
             lea ecx, [esp + esi + 0x40]
-            mov edx, 0x6572b8
+            mov edx, offset gMatchString_006572b8
             sub ecx, edi
             call DRstrcmpi
             test eax, eax
@@ -1585,18 +2675,33 @@ int C2_NAKED C2_HOOK_FASTCALL PDEnumPath(const char *path, tEnumPathCallback pCa
             lea edx, [esp + 0x14]
             push edx
             push eax
-            call dword ptr ds:[0x58908c]
+            _emit 0xff
+        _emit 0x15
+        _emit 0x8c
+        _emit 0x90
+        _emit 0x58
+        _emit 0x00
             test eax, eax
             jne L00486c86
     L00486d30:
             mov ecx, dword ptr [esp + 0x10]
             push ecx
-            call dword ptr ds:[0x589090]
+            _emit 0xff
+        _emit 0x15
+        _emit 0x90
+        _emit 0x90
+        _emit 0x58
+        _emit 0x00
             pop ebx
     L00486d3c:
             lea edx, [esp + 0x250]
             push edx
-            call dword ptr ds:[0x589084]
+            _emit 0xff
+        _emit 0x15
+        _emit 0x84
+        _emit 0x90
+        _emit 0x58
+        _emit 0x00
     L00486d4a:
             mov eax, esi
             pop edi
@@ -1604,6 +2709,14 @@ int C2_NAKED C2_HOOK_FASTCALL PDEnumPath(const char *path, tEnumPathCallback pCa
             pop ebp
             add esp, 0x348
             ret 4
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -1693,13 +2806,23 @@ void C2_NAKED C2_HOOK_FASTCALL PDForEveryFile(const char *pThe_path, tPDForEvery
             mov ebx, edx
             mov esi, ecx
             push 0x104
-            call dword ptr ds:[0x589068]
+            _emit 0xff
+        _emit 0x15
+        _emit 0x68
+        _emit 0x90
+        _emit 0x58
+        _emit 0x00
             push esi
-            call dword ptr ds:[0x589084]
+            _emit 0xff
+        _emit 0x15
+        _emit 0x84
+        _emit 0x90
+        _emit 0x58
+        _emit 0x00
             test eax, eax
             je L0051c833
-            mov ecx, dword ptr ds:[0x6572c0]
-            mov dx, word ptr ds:[0x6572c4]
+            mov ecx, dword ptr [gMatchString_006572c0]
+            mov dx, word ptr [gMatchData_006572c4]
             mov dword ptr [esp + 0x248], ecx
             lea eax, [esp + 8]
             push edi
@@ -1707,7 +2830,12 @@ void C2_NAKED C2_HOOK_FASTCALL PDForEveryFile(const char *pThe_path, tPDForEvery
             push eax
             push ecx
             mov word ptr [esp + 0x258], dx
-            call dword ptr ds:[0x589088]
+            _emit 0xff
+        _emit 0x15
+        _emit 0x88
+        _emit 0x90
+        _emit 0x58
+        _emit 0x00
             mov edi, eax
             cmp edi, -1
             je L0051c824
@@ -1719,7 +2847,12 @@ void C2_NAKED C2_HOOK_FASTCALL PDForEveryFile(const char *pThe_path, tPDForEvery
             call PathCat
             lea ecx, [esp + 0x150]
             call ebx
-            mov ebp, dword ptr ds:[0x58908c]
+            _emit 0x8b
+        _emit 0x2d
+        _emit 0x8c
+        _emit 0x90
+        _emit 0x58
+        _emit 0x00
             lea eax, [esp + 0x10]
             push eax
             push edi
@@ -1742,18 +2875,32 @@ void C2_NAKED C2_HOOK_FASTCALL PDForEveryFile(const char *pThe_path, tPDForEvery
             jne L0051c7f4
     L0051c81c:
             push edi
-            call dword ptr ds:[0x589090]
+            _emit 0xff
+        _emit 0x15
+        _emit 0x90
+        _emit 0x90
+        _emit 0x58
+        _emit 0x00
             pop ebp
     L0051c824:
             lea eax, [esp + 0x34c]
             push eax
-            call dword ptr ds:[0x589084]
+            _emit 0xff
+        _emit 0x15
+        _emit 0x84
+        _emit 0x90
+        _emit 0x58
+        _emit 0x00
             pop edi
     L0051c833:
             pop esi
             pop ebx
             add esp, 0x444
             ret
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -1987,7 +3134,7 @@ void C2_NAKED C2_HOOK_FASTCALL PDGetMousePosition(int *pX, int *pY) {
     gPD_mouse_position.y = *pY;
 #else
     __asm {
-            mov eax, dword ptr ds:[gWindowActiveState]
+            mov eax, dword ptr [gWindowActiveState]
             sub esp, 8
             cmp eax, 2
             push ebp
@@ -1995,9 +3142,9 @@ void C2_NAKED C2_HOOK_FASTCALL PDGetMousePosition(int *pX, int *pY) {
             mov edi, edx
             mov ebp, ecx
             je L0051c929
-            mov eax, dword ptr ds:[gPD_mouse_position]
+            mov eax, dword ptr [gPD_mouse_position]
             mov dword ptr [ebp], eax
-            mov ecx, dword ptr ds:[0x6ad45c]
+            mov ecx, dword ptr [gPD_mouse_position+0x4]
             mov dword ptr [edi], ecx
             pop edi
             pop ebp
@@ -2008,11 +3155,16 @@ void C2_NAKED C2_HOOK_FASTCALL PDGetMousePosition(int *pX, int *pY) {
             lea edx, [esp + 0xc]
             push ebx
             push edx
-            call dword ptr ds:[0x589224]
-            mov eax, dword ptr ds:[gScaleMouse]
+            _emit 0xff
+        _emit 0x15
+        _emit 0x24
+        _emit 0x92
+        _emit 0x58
+        _emit 0x00
+            mov eax, dword ptr [gScaleMouse]
             test eax, eax
             jmp L0051c9ad
-            mov eax, dword ptr ds:[gRenderer]
+            mov eax, dword ptr [gRenderer]
             mov esi, 0x662518
     L0051c949:
             mov dl, byte ptr [eax]
@@ -2041,38 +3193,64 @@ void C2_NAKED C2_HOOK_FASTCALL PDGetMousePosition(int *pX, int *pY) {
             test eax, eax
             je L0051c9ad
             fild dword ptr [esp + 0x10]
-            fild dword ptr ds:[gScreenWidth]
-            fmul qword ptr ds:[0x58b748]
+            fild dword ptr [gScreenWidth]
+            _emit 0xdc
+        _emit 0x0d
+        _emit 0x48
+        _emit 0xb7
+        _emit 0x58
+        _emit 0x00
             fdivp st(1), st(0)
             call _ftol
             fild dword ptr [esp + 0x14]
             mov dword ptr [ebp], eax
-            fild dword ptr ds:[gScreenHeight]
-            fmul qword ptr ds:[0x58b750]
+            fild dword ptr [gScreenHeight]
+            _emit 0xdc
+        _emit 0x0d
+        _emit 0x50
+        _emit 0xb7
+        _emit 0x58
+        _emit 0x00
             fdivp st(1), st(0)
             call _ftol
             jmp L0051c9ca
     L0051c9ad:
-            mov ecx, dword ptr ds:[gHWnd]
+            mov ecx, dword ptr [gHWnd]
             lea eax, [esp + 0x10]
             push eax
             push ecx
-            call dword ptr ds:[0x5891b8]
+            _emit 0xff
+        _emit 0x15
+        _emit 0xb8
+        _emit 0x91
+        _emit 0x58
+        _emit 0x00
             mov edx, dword ptr [esp + 0x10]
             mov eax, dword ptr [esp + 0x14]
             mov dword ptr [ebp], edx
     L0051c9ca:
             mov dword ptr [edi], eax
             mov ecx, dword ptr [ebp]
-            mov dword ptr ds:[gPD_mouse_position], ecx
+            mov dword ptr [gPD_mouse_position], ecx
             mov edx, dword ptr [edi]
             pop ebx
             pop esi
             pop edi
-            mov dword ptr ds:[0x6ad45c], edx
+            mov dword ptr [gPD_mouse_position+0x4], edx
             pop ebp
             add esp, 8
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -2122,7 +3300,7 @@ void C2_NAKED C2_HOOK_FASTCALL PDExtractFilename(char *pDest, const char *pPath)
             push edx
             lea eax, [ebp - 0x104]
             push eax
-            push offset gS3_CDA_enabled+0x19c
+            push offset gMatchString_006736a0
             mov ecx, dword ptr [ebp - 0x308]
             push ecx
             call sprintf
@@ -2167,7 +3345,7 @@ void C2_NAKED C2_HOOK_FASTCALL PDExtractDirectory(char *pDest, const char *pPath
             push edx
             lea eax, [ebp - 4]
             push eax
-            push offset gS3_CDA_enabled+0x194
+            push offset gMatchString_00673698
             mov ecx, dword ptr [ebp - 0x308]
             push ecx
             call sprintf
@@ -2226,14 +3404,19 @@ void C2_NAKED C2_HOOK_FASTCALL PDPageInMemory(void *pMemory) {
             push 0x74
             push esi
             mov dword ptr [esp + 0x18], esi
-            call dword ptr ds:[0x589078]
+            _emit 0xff
+        _emit 0x15
+        _emit 0x78
+        _emit 0x90
+        _emit 0x58
+        _emit 0x00
             test eax, eax
             jne L00492943
             cmp word ptr [esi + 0x72], 0x4948
             jne L00492943
             test esi, esi
             je L00492943
-            mov ecx, dword ptr ds:[gPage_size]
+            mov ecx, dword ptr [gPage_size]
     L004928ce:
             mov eax, dword ptr [esp + 0x10]
             lea ebx, [eax + 0x74]
@@ -2249,9 +3432,14 @@ void C2_NAKED C2_HOOK_FASTCALL PDPageInMemory(void *pMemory) {
             lea esi, [ebx + 0x10]
             jne L00492906
             push offset gSystem_info
-            call dword ptr ds:[0x589150]
-            mov ecx, dword ptr ds:[gSystem_info]
-            mov dword ptr ds:[gPage_size], ecx
+            _emit 0xff
+        _emit 0x15
+        _emit 0x50
+        _emit 0x91
+        _emit 0x58
+        _emit 0x00
+            mov ecx, dword ptr [gSystem_info]
+            mov dword ptr [gPage_size], ecx
     L00492906:
             mov eax, ecx
             shl eax, 4
@@ -2266,7 +3454,7 @@ void C2_NAKED C2_HOOK_FASTCALL PDPageInMemory(void *pMemory) {
             mov byte ptr [ecx], dl
             mov cl, byte ptr [esi + eax]
             mov byte ptr [esi + eax], cl
-            mov ecx, dword ptr ds:[gPage_size]
+            mov ecx, dword ptr [gPage_size]
             add eax, ecx
             cmp eax, edi
             jb L0049290f
@@ -2287,6 +3475,11 @@ void C2_NAKED C2_HOOK_FASTCALL PDPageInMemory(void *pMemory) {
             pop ebx
             pop ecx
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }

@@ -181,6 +181,16 @@ extern void C2_HOOK_CDECL BrMatrix23Mul();
 extern void C2_HOOK_CDECL BrMatrix34Copy();
 extern void C2_HOOK_CDECL BrMatrix34Mul();
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gData_00660f60[];
+extern char gFloat_00589364[];
+extern char gString_00661230[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchData_00660f60[];
+extern char gMatchFloat_00589364[];
+extern char gMatchString_00661230[];
+#endif
 // FUNCTION: CARMA2_HW 0x005113d0
 float C2_HOOK_FASTCALL FastFloatSin(int pAngle_in_degrees) {
 
@@ -241,7 +251,7 @@ float C2_NAKED C2_HOOK_FASTCALL FastFloatCos(int pAngle_in_degrees) {
     L00511460:
             cmp eax, 0x10e
             jle L0051146f
-            fld dword ptr [eax*4 + gFloat_sine_table-0x438]
+            fld dword ptr [eax*4 + gMatchData_00660f60]
             ret
     L0051146f:
             cmp eax, 0xb4
@@ -256,7 +266,7 @@ float C2_NAKED C2_HOOK_FASTCALL FastFloatCos(int pAngle_in_degrees) {
     L00511489:
             cmp eax, 0x5a
             jle L00511498
-            fld dword ptr [eax*4 + gFloat_sine_table-0x168]
+            fld dword ptr [eax*4 + gMatchString_00661230]
             fchs
             ret
     L00511498:
@@ -304,7 +314,7 @@ float C2_NAKED C2_HOOK_FASTCALL FastFloatTan(int pAngle_in_degrees) {
             cmp eax, 0x10e
             jle L005114e8
             shl eax, 2
-            mov edx, offset gFunk_type_names
+            mov edx, 0x661938
             sub edx, eax
             _emit 0xd9
         _emit 0x02
@@ -313,7 +323,7 @@ float C2_NAKED C2_HOOK_FASTCALL FastFloatTan(int pAngle_in_degrees) {
     L005114e8:
             cmp eax, 0xb4
             jle L005114fa
-            fld dword ptr [eax*4 + gFloat_sine_table-0x2d0]
+            fld dword ptr [eax*4 + 0x6610c8]
             fchs
             jmp L00511514
     L005114fa:
@@ -346,7 +356,7 @@ float C2_NAKED C2_HOOK_FASTCALL FastFloatTan(int pAngle_in_degrees) {
     L00511534:
             cmp eax, 0x10e
             jle L0051154c
-            fld dword ptr [eax*4 + gFloat_sine_table-0x438]
+            fld dword ptr [eax*4 + gMatchData_00660f60]
             fxch st(1)
             fdiv st(0), st(1)
             fxch st(1)
@@ -371,7 +381,7 @@ float C2_NAKED C2_HOOK_FASTCALL FastFloatTan(int pAngle_in_degrees) {
     L0051156f:
             cmp eax, 0x5a
             jle L00511587
-            fld dword ptr [eax*4 + gFloat_sine_table-0x168]
+            fld dword ptr [eax*4 + gMatchString_00661230]
             fchs
             fxch st(1)
             fdiv st(0), st(1)
@@ -441,7 +451,7 @@ br_scalar C2_NAKED C2_HOOK_FASTCALL FastScalarCos(int pAngle_in_degrees) {
     L00511640:
             cmp eax, 0x10e
             jle L0051164f
-            fld dword ptr [eax*4 + gFloat_sine_table-0x438]
+            fld dword ptr [eax*4 + gMatchData_00660f60]
             ret
     L0051164f:
             cmp eax, 0xb4
@@ -456,7 +466,7 @@ br_scalar C2_NAKED C2_HOOK_FASTCALL FastScalarCos(int pAngle_in_degrees) {
     L00511669:
             cmp eax, 0x5a
             jle L00511678
-            fld dword ptr [eax*4 + gFloat_sine_table-0x168]
+            fld dword ptr [eax*4 + gMatchString_00661230]
             fchs
             ret
     L00511678:
@@ -504,7 +514,7 @@ br_scalar C2_NAKED C2_HOOK_FASTCALL FastScalarTan(int pAngle_in_degrees) {
             cmp eax, 0x10e
             jle L005116c8
             shl eax, 2
-            mov edx, offset gFunk_type_names
+            mov edx, 0x661938
             sub edx, eax
             _emit 0xd9
         _emit 0x02
@@ -513,7 +523,7 @@ br_scalar C2_NAKED C2_HOOK_FASTCALL FastScalarTan(int pAngle_in_degrees) {
     L005116c8:
             cmp eax, 0xb4
             jle L005116da
-            fld dword ptr [eax*4 + gFloat_sine_table-0x2d0]
+            fld dword ptr [eax*4 + 0x6610c8]
             fchs
             jmp L005116f4
     L005116da:
@@ -546,7 +556,7 @@ br_scalar C2_NAKED C2_HOOK_FASTCALL FastScalarTan(int pAngle_in_degrees) {
     L00511714:
             cmp eax, 0x10e
             jle L0051172a
-            fld dword ptr [eax*4 + gFloat_sine_table-0x438]
+            fld dword ptr [eax*4 + gMatchData_00660f60]
             fld st(0)
             fdivp st(2), st(0)
             fstp st(0)
@@ -569,7 +579,7 @@ br_scalar C2_NAKED C2_HOOK_FASTCALL FastScalarTan(int pAngle_in_degrees) {
     L0051174b:
             cmp eax, 0x5a
             jle L00511761
-            fld dword ptr [eax*4 + gFloat_sine_table-0x168]
+            fld dword ptr [eax*4 + gMatchString_00661230]
             fchs
             fld st(0)
             fdivp st(2), st(0)
@@ -620,7 +630,12 @@ br_scalar C2_NAKED C2_HOOK_FASTCALL FastScalarCosAngle(br_angle pBR_angle) {
         _emit 0x44
         _emit 0x24
         _emit 0x00
-            fmul qword ptr ds:[0x58b218]
+            _emit 0xdc
+        _emit 0x0d
+        _emit 0x18
+        _emit 0xb2
+        _emit 0x58
+        _emit 0x00
             call _ftol
             test eax, eax
             jge L00511846
@@ -639,7 +654,7 @@ br_scalar C2_NAKED C2_HOOK_FASTCALL FastScalarCosAngle(br_angle pBR_angle) {
     L00511850:
             cmp eax, 0x10e
             jle L00511860
-            fld dword ptr [eax*4 + gFloat_sine_table-0x438]
+            fld dword ptr [eax*4 + gMatchData_00660f60]
             pop ecx
             ret
     L00511860:
@@ -656,7 +671,7 @@ br_scalar C2_NAKED C2_HOOK_FASTCALL FastScalarCosAngle(br_angle pBR_angle) {
     L0051187b:
             cmp eax, 0x5a
             jle L0051188b
-            fld dword ptr [eax*4 + gFloat_sine_table-0x168]
+            fld dword ptr [eax*4 + gMatchString_00661230]
             fchs
             pop ecx
             ret
@@ -691,7 +706,12 @@ br_scalar C2_NAKED C2_HOOK_FASTCALL FastScalarTanAngle(br_angle pBR_angle) {
             and eax, 0xffff
             mov dword ptr [esp + 4], eax
             fild dword ptr [esp + 4]
-            fmul qword ptr ds:[0x58b218]
+            _emit 0xdc
+        _emit 0x0d
+        _emit 0x18
+        _emit 0xb2
+        _emit 0x58
+        _emit 0x00
             call _ftol
             mov ecx, eax
             test ecx, ecx
@@ -712,7 +732,7 @@ br_scalar C2_NAKED C2_HOOK_FASTCALL FastScalarTanAngle(br_angle pBR_angle) {
             cmp eax, 0x10e
             jle L005118fe
             lea edx, [eax*4]
-            mov eax, offset gFunk_type_names
+            mov eax, 0x661938
             sub eax, edx
             _emit 0xd9
         _emit 0x00
@@ -721,7 +741,7 @@ br_scalar C2_NAKED C2_HOOK_FASTCALL FastScalarTanAngle(br_angle pBR_angle) {
     L005118fe:
             cmp eax, 0xb4
             jle L00511910
-            fld dword ptr [eax*4 + gFloat_sine_table-0x2d0]
+            fld dword ptr [eax*4 + 0x6610c8]
             fchs
             jmp L0051192e
     L00511910:
@@ -754,7 +774,7 @@ br_scalar C2_NAKED C2_HOOK_FASTCALL FastScalarTanAngle(br_angle pBR_angle) {
     L0051194e:
             cmp eax, 0x10e
             jle L00511965
-            fld dword ptr [eax*4 + gFloat_sine_table-0x438]
+            fld dword ptr [eax*4 + gMatchData_00660f60]
             fld st(0)
             fdivp st(2), st(0)
             fstp st(0)
@@ -779,7 +799,7 @@ br_scalar C2_NAKED C2_HOOK_FASTCALL FastScalarTanAngle(br_angle pBR_angle) {
     L00511987:
             cmp eax, 0x5a
             jle L0051199e
-            fld dword ptr [eax*4 + gFloat_sine_table-0x168]
+            fld dword ptr [eax*4 + gMatchString_00661230]
             fchs
             fld st(0)
             fdivp st(2), st(0)
@@ -980,7 +1000,12 @@ void C2_NAKED C2_HOOK_FASTCALL DRMatrix34RotateX(br_matrix34* mat, br_angle rx) 
             mov dword ptr [esp + 8], eax
             push edi
             fild dword ptr [esp + 0xc]
-            fmul qword ptr ds:[0x58b218]
+            _emit 0xdc
+        _emit 0x0d
+        _emit 0x18
+        _emit 0xb2
+        _emit 0x58
+        _emit 0x00
             call _ftol
             mov ecx, eax
             xor edi, edi
@@ -1002,7 +1027,7 @@ void C2_NAKED C2_HOOK_FASTCALL DRMatrix34RotateX(br_matrix34* mat, br_angle rx) 
             cmp eax, 0x10e
             jle L00512094
             lea edx, [eax*4]
-            mov eax, offset gFunk_type_names
+            mov eax, 0x661938
             sub eax, edx
             _emit 0xd9
         _emit 0x00
@@ -1011,7 +1036,7 @@ void C2_NAKED C2_HOOK_FASTCALL DRMatrix34RotateX(br_matrix34* mat, br_angle rx) 
     L00512094:
             cmp eax, 0xb4
             jle L005120a6
-            fld dword ptr [eax*4 + gFloat_sine_table-0x2d0]
+            fld dword ptr [eax*4 + 0x6610c8]
             fchs
             jmp L005120c4
     L005120a6:
@@ -1044,7 +1069,7 @@ void C2_NAKED C2_HOOK_FASTCALL DRMatrix34RotateX(br_matrix34* mat, br_angle rx) 
     L005120e4:
             cmp eax, 0x10e
             jle L005120f4
-            fld dword ptr [eax*4 + gFloat_sine_table-0x438]
+            fld dword ptr [eax*4 + gMatchData_00660f60]
             jmp L0051212f
     L005120f4:
             cmp eax, 0xb4
@@ -1059,7 +1084,7 @@ void C2_NAKED C2_HOOK_FASTCALL DRMatrix34RotateX(br_matrix34* mat, br_angle rx) 
     L0051210f:
             cmp eax, 0x5a
             jle L0051211f
-            fld dword ptr [eax*4 + gFloat_sine_table-0x168]
+            fld dword ptr [eax*4 + gMatchString_00661230]
             fchs
             jmp L0051212f
     L0051211f:
@@ -1140,7 +1165,12 @@ void C2_NAKED C2_HOOK_FASTCALL DRMatrix34RotateY(br_matrix34* mat, br_angle ry) 
             mov dword ptr [esp + 8], eax
             push edi
             fild dword ptr [esp + 0xc]
-            fmul qword ptr ds:[0x58b218]
+            _emit 0xdc
+        _emit 0x0d
+        _emit 0x18
+        _emit 0xb2
+        _emit 0x58
+        _emit 0x00
             call _ftol
             mov ecx, eax
             xor edi, edi
@@ -1162,7 +1192,7 @@ void C2_NAKED C2_HOOK_FASTCALL DRMatrix34RotateY(br_matrix34* mat, br_angle ry) 
             cmp eax, 0x10e
             jle L005121d4
             lea edx, [eax*4]
-            mov eax, offset gFunk_type_names
+            mov eax, 0x661938
             sub eax, edx
             _emit 0xd9
         _emit 0x00
@@ -1171,7 +1201,7 @@ void C2_NAKED C2_HOOK_FASTCALL DRMatrix34RotateY(br_matrix34* mat, br_angle ry) 
     L005121d4:
             cmp eax, 0xb4
             jle L005121e6
-            fld dword ptr [eax*4 + gFloat_sine_table-0x2d0]
+            fld dword ptr [eax*4 + 0x6610c8]
             fchs
             jmp L00512204
     L005121e6:
@@ -1204,7 +1234,7 @@ void C2_NAKED C2_HOOK_FASTCALL DRMatrix34RotateY(br_matrix34* mat, br_angle ry) 
     L00512224:
             cmp eax, 0x10e
             jle L00512234
-            fld dword ptr [eax*4 + gFloat_sine_table-0x438]
+            fld dword ptr [eax*4 + gMatchData_00660f60]
             jmp L0051226f
     L00512234:
             cmp eax, 0xb4
@@ -1219,7 +1249,7 @@ void C2_NAKED C2_HOOK_FASTCALL DRMatrix34RotateY(br_matrix34* mat, br_angle ry) 
     L0051224f:
             cmp eax, 0x5a
             jle L0051225f
-            fld dword ptr [eax*4 + gFloat_sine_table-0x168]
+            fld dword ptr [eax*4 + gMatchString_00661230]
             fchs
             jmp L0051226f
     L0051225f:
@@ -1301,7 +1331,12 @@ void C2_NAKED C2_HOOK_FASTCALL DRMatrix34RotateZ(br_matrix34* mat, br_angle rz) 
             mov dword ptr [esp + 8], eax
             push edi
             fild dword ptr [esp + 0xc]
-            fmul qword ptr ds:[0x58b218]
+            _emit 0xdc
+        _emit 0x0d
+        _emit 0x18
+        _emit 0xb2
+        _emit 0x58
+        _emit 0x00
             call _ftol
             mov ecx, eax
             xor edi, edi
@@ -1323,7 +1358,7 @@ void C2_NAKED C2_HOOK_FASTCALL DRMatrix34RotateZ(br_matrix34* mat, br_angle rz) 
             cmp eax, 0x10e
             jle L00512314
             lea edx, [eax*4]
-            mov eax, offset gFunk_type_names
+            mov eax, 0x661938
             sub eax, edx
             _emit 0xd9
         _emit 0x00
@@ -1332,7 +1367,7 @@ void C2_NAKED C2_HOOK_FASTCALL DRMatrix34RotateZ(br_matrix34* mat, br_angle rz) 
     L00512314:
             cmp eax, 0xb4
             jle L00512326
-            fld dword ptr [eax*4 + gFloat_sine_table-0x2d0]
+            fld dword ptr [eax*4 + 0x6610c8]
             fchs
             jmp L00512344
     L00512326:
@@ -1365,7 +1400,7 @@ void C2_NAKED C2_HOOK_FASTCALL DRMatrix34RotateZ(br_matrix34* mat, br_angle rz) 
     L00512364:
             cmp eax, 0x10e
             jle L00512374
-            fld dword ptr [eax*4 + gFloat_sine_table-0x438]
+            fld dword ptr [eax*4 + gMatchData_00660f60]
             jmp L005123af
     L00512374:
             cmp eax, 0xb4
@@ -1380,7 +1415,7 @@ void C2_NAKED C2_HOOK_FASTCALL DRMatrix34RotateZ(br_matrix34* mat, br_angle rz) 
     L0051238f:
             cmp eax, 0x5a
             jle L0051239f
-            fld dword ptr [eax*4 + gFloat_sine_table-0x168]
+            fld dword ptr [eax*4 + gMatchString_00661230]
             fchs
             jmp L005123af
     L0051239f:
@@ -1476,7 +1511,12 @@ void C2_NAKED C2_HOOK_FASTCALL DRMatrix34Rotate(br_matrix34* mat, br_angle r, br
             mov esi, ecx
             mov dword ptr [esp + 0x18], eax
             fild dword ptr [esp + 0x18]
-            fmul qword ptr ds:[0x58b218]
+            _emit 0xdc
+        _emit 0x0d
+        _emit 0x18
+        _emit 0xb2
+        _emit 0x58
+        _emit 0x00
             call _ftol
             mov ecx, eax
             test ecx, ecx
@@ -1497,7 +1537,7 @@ void C2_NAKED C2_HOOK_FASTCALL DRMatrix34Rotate(br_matrix34* mat, br_angle r, br
             cmp eax, 0x10e
             jle L00512453
             lea edx, [eax*4]
-            mov eax, offset gFunk_type_names
+            mov eax, 0x661938
             sub eax, edx
             _emit 0xd9
         _emit 0x00
@@ -1506,7 +1546,7 @@ void C2_NAKED C2_HOOK_FASTCALL DRMatrix34Rotate(br_matrix34* mat, br_angle r, br
     L00512453:
             cmp eax, 0xb4
             jle L00512465
-            fld dword ptr [eax*4 + gFloat_sine_table-0x2d0]
+            fld dword ptr [eax*4 + 0x6610c8]
             fchs
             jmp L00512483
     L00512465:
@@ -1540,7 +1580,7 @@ void C2_NAKED C2_HOOK_FASTCALL DRMatrix34Rotate(br_matrix34* mat, br_angle r, br
     L005124a7:
             cmp eax, 0x10e
             jle L005124b7
-            fld dword ptr [eax*4 + gFloat_sine_table-0x438]
+            fld dword ptr [eax*4 + gMatchData_00660f60]
             jmp L005124f2
     L005124b7:
             cmp eax, 0xb4
@@ -1555,7 +1595,7 @@ void C2_NAKED C2_HOOK_FASTCALL DRMatrix34Rotate(br_matrix34* mat, br_angle r, br
     L005124d2:
             cmp eax, 0x5a
             jle L005124e2
-            fld dword ptr [eax*4 + gFloat_sine_table-0x168]
+            fld dword ptr [eax*4 + gMatchString_00661230]
             fchs
             jmp L005124f2
     L005124e2:
@@ -1565,7 +1605,12 @@ void C2_NAKED C2_HOOK_FASTCALL DRMatrix34Rotate(br_matrix34* mat, br_angle r, br
             _emit 0xd9
         _emit 0x02
     L005124f2:
-            fld dword ptr ds:[0x58b22c]
+            _emit 0xd9
+        _emit 0x05
+        _emit 0x2c
+        _emit 0xb2
+        _emit 0x58
+        _emit 0x00
             fxch st(1)
             fstp dword ptr [esp + 0xc]
             mov eax, dword ptr [esp + 0x20]
@@ -1696,7 +1741,12 @@ void C2_NAKED C2_HOOK_FASTCALL DRMatrix34PreRotateX(br_matrix34* mat, br_angle r
             push edi
             mov dword ptr [esp + 8], eax
             fild dword ptr [esp + 8]
-            fmul qword ptr ds:[0x58b218]
+            _emit 0xdc
+        _emit 0x0d
+        _emit 0x18
+        _emit 0xb2
+        _emit 0x58
+        _emit 0x00
             call _ftol
             mov ecx, eax
             test ecx, ecx
@@ -1717,7 +1767,7 @@ void C2_NAKED C2_HOOK_FASTCALL DRMatrix34PreRotateX(br_matrix34* mat, br_angle r
             cmp eax, 0x10e
             jle L00512681
             lea edx, [eax*4]
-            mov eax, offset gFunk_type_names
+            mov eax, 0x661938
             sub eax, edx
             _emit 0xd9
         _emit 0x00
@@ -1726,7 +1776,7 @@ void C2_NAKED C2_HOOK_FASTCALL DRMatrix34PreRotateX(br_matrix34* mat, br_angle r
     L00512681:
             cmp eax, 0xb4
             jle L00512693
-            fld dword ptr [eax*4 + gFloat_sine_table-0x2d0]
+            fld dword ptr [eax*4 + 0x6610c8]
             fchs
             jmp L005126b1
     L00512693:
@@ -1759,7 +1809,7 @@ void C2_NAKED C2_HOOK_FASTCALL DRMatrix34PreRotateX(br_matrix34* mat, br_angle r
     L005126d1:
             cmp eax, 0x10e
             jle L005126e1
-            fld dword ptr [eax*4 + gFloat_sine_table-0x438]
+            fld dword ptr [eax*4 + gMatchData_00660f60]
             jmp L0051271c
     L005126e1:
             cmp eax, 0xb4
@@ -1774,7 +1824,7 @@ void C2_NAKED C2_HOOK_FASTCALL DRMatrix34PreRotateX(br_matrix34* mat, br_angle r
     L005126fc:
             cmp eax, 0x5a
             jle L0051270c
-            fld dword ptr [eax*4 + gFloat_sine_table-0x168]
+            fld dword ptr [eax*4 + gMatchString_00661230]
             fchs
             jmp L0051271c
     L0051270c:
@@ -1835,7 +1885,12 @@ void C2_NAKED C2_HOOK_FASTCALL DRMatrix34PostRotateX(br_matrix34* mat, br_angle 
             push edi
             mov dword ptr [esp + 8], eax
             fild dword ptr [esp + 8]
-            fmul qword ptr ds:[0x58b218]
+            _emit 0xdc
+        _emit 0x0d
+        _emit 0x18
+        _emit 0xb2
+        _emit 0x58
+        _emit 0x00
             call _ftol
             mov ecx, eax
             test ecx, ecx
@@ -1856,7 +1911,7 @@ void C2_NAKED C2_HOOK_FASTCALL DRMatrix34PostRotateX(br_matrix34* mat, br_angle 
             cmp eax, 0x10e
             jle L00512811
             lea edx, [eax*4]
-            mov eax, offset gFunk_type_names
+            mov eax, 0x661938
             sub eax, edx
             _emit 0xd9
         _emit 0x00
@@ -1865,7 +1920,7 @@ void C2_NAKED C2_HOOK_FASTCALL DRMatrix34PostRotateX(br_matrix34* mat, br_angle 
     L00512811:
             cmp eax, 0xb4
             jle L00512823
-            fld dword ptr [eax*4 + gFloat_sine_table-0x2d0]
+            fld dword ptr [eax*4 + 0x6610c8]
             fchs
             jmp L00512841
     L00512823:
@@ -1898,7 +1953,7 @@ void C2_NAKED C2_HOOK_FASTCALL DRMatrix34PostRotateX(br_matrix34* mat, br_angle 
     L00512861:
             cmp eax, 0x10e
             jle L00512871
-            fld dword ptr [eax*4 + gFloat_sine_table-0x438]
+            fld dword ptr [eax*4 + gMatchData_00660f60]
             jmp L005128ac
     L00512871:
             cmp eax, 0xb4
@@ -1913,7 +1968,7 @@ void C2_NAKED C2_HOOK_FASTCALL DRMatrix34PostRotateX(br_matrix34* mat, br_angle 
     L0051288c:
             cmp eax, 0x5a
             jle L0051289c
-            fld dword ptr [eax*4 + gFloat_sine_table-0x168]
+            fld dword ptr [eax*4 + gMatchString_00661230]
             fchs
             jmp L005128ac
     L0051289c:
@@ -1974,7 +2029,12 @@ void C2_NAKED C2_HOOK_FASTCALL DRMatrix34PreRotateY(br_matrix34* mat, br_angle r
             push edi
             mov dword ptr [esp + 8], eax
             fild dword ptr [esp + 8]
-            fmul qword ptr ds:[0x58b218]
+            _emit 0xdc
+        _emit 0x0d
+        _emit 0x18
+        _emit 0xb2
+        _emit 0x58
+        _emit 0x00
             call _ftol
             mov ecx, eax
             test ecx, ecx
@@ -1995,7 +2055,7 @@ void C2_NAKED C2_HOOK_FASTCALL DRMatrix34PreRotateY(br_matrix34* mat, br_angle r
             cmp eax, 0x10e
             jle L005129a1
             lea edx, [eax*4]
-            mov eax, offset gFunk_type_names
+            mov eax, 0x661938
             sub eax, edx
             _emit 0xd9
         _emit 0x00
@@ -2004,7 +2064,7 @@ void C2_NAKED C2_HOOK_FASTCALL DRMatrix34PreRotateY(br_matrix34* mat, br_angle r
     L005129a1:
             cmp eax, 0xb4
             jle L005129b3
-            fld dword ptr [eax*4 + gFloat_sine_table-0x2d0]
+            fld dword ptr [eax*4 + 0x6610c8]
             fchs
             jmp L005129d1
     L005129b3:
@@ -2037,7 +2097,7 @@ void C2_NAKED C2_HOOK_FASTCALL DRMatrix34PreRotateY(br_matrix34* mat, br_angle r
     L005129f1:
             cmp eax, 0x10e
             jle L00512a01
-            fld dword ptr [eax*4 + gFloat_sine_table-0x438]
+            fld dword ptr [eax*4 + gMatchData_00660f60]
             jmp L00512a3c
     L00512a01:
             cmp eax, 0xb4
@@ -2052,7 +2112,7 @@ void C2_NAKED C2_HOOK_FASTCALL DRMatrix34PreRotateY(br_matrix34* mat, br_angle r
     L00512a1c:
             cmp eax, 0x5a
             jle L00512a2c
-            fld dword ptr [eax*4 + gFloat_sine_table-0x168]
+            fld dword ptr [eax*4 + gMatchString_00661230]
             fchs
             jmp L00512a3c
     L00512a2c:
@@ -2113,7 +2173,12 @@ void C2_NAKED C2_HOOK_FASTCALL DRMatrix34PostRotateY(br_matrix34* mat, br_angle 
             push edi
             mov dword ptr [esp + 8], eax
             fild dword ptr [esp + 8]
-            fmul qword ptr ds:[0x58b218]
+            _emit 0xdc
+        _emit 0x0d
+        _emit 0x18
+        _emit 0xb2
+        _emit 0x58
+        _emit 0x00
             call _ftol
             mov ecx, eax
             test ecx, ecx
@@ -2134,7 +2199,7 @@ void C2_NAKED C2_HOOK_FASTCALL DRMatrix34PostRotateY(br_matrix34* mat, br_angle 
             cmp eax, 0x10e
             jle L00512b31
             lea edx, [eax*4]
-            mov eax, offset gFunk_type_names
+            mov eax, 0x661938
             sub eax, edx
             _emit 0xd9
         _emit 0x00
@@ -2143,7 +2208,7 @@ void C2_NAKED C2_HOOK_FASTCALL DRMatrix34PostRotateY(br_matrix34* mat, br_angle 
     L00512b31:
             cmp eax, 0xb4
             jle L00512b43
-            fld dword ptr [eax*4 + gFloat_sine_table-0x2d0]
+            fld dword ptr [eax*4 + 0x6610c8]
             fchs
             jmp L00512b61
     L00512b43:
@@ -2176,7 +2241,7 @@ void C2_NAKED C2_HOOK_FASTCALL DRMatrix34PostRotateY(br_matrix34* mat, br_angle 
     L00512b81:
             cmp eax, 0x10e
             jle L00512b91
-            fld dword ptr [eax*4 + gFloat_sine_table-0x438]
+            fld dword ptr [eax*4 + gMatchData_00660f60]
             jmp L00512bcc
     L00512b91:
             cmp eax, 0xb4
@@ -2191,7 +2256,7 @@ void C2_NAKED C2_HOOK_FASTCALL DRMatrix34PostRotateY(br_matrix34* mat, br_angle 
     L00512bac:
             cmp eax, 0x5a
             jle L00512bbc
-            fld dword ptr [eax*4 + gFloat_sine_table-0x168]
+            fld dword ptr [eax*4 + gMatchString_00661230]
             fchs
             jmp L00512bcc
     L00512bbc:
@@ -2252,7 +2317,12 @@ void C2_NAKED C2_HOOK_FASTCALL DRMatrix34PreRotateZ(br_matrix34* mat, br_angle r
             push edi
             mov dword ptr [esp + 8], eax
             fild dword ptr [esp + 8]
-            fmul qword ptr ds:[0x58b218]
+            _emit 0xdc
+        _emit 0x0d
+        _emit 0x18
+        _emit 0xb2
+        _emit 0x58
+        _emit 0x00
             call _ftol
             mov ecx, eax
             test ecx, ecx
@@ -2273,7 +2343,7 @@ void C2_NAKED C2_HOOK_FASTCALL DRMatrix34PreRotateZ(br_matrix34* mat, br_angle r
             cmp eax, 0x10e
             jle L00512cc1
             lea edx, [eax*4]
-            mov eax, offset gFunk_type_names
+            mov eax, 0x661938
             sub eax, edx
             _emit 0xd9
         _emit 0x00
@@ -2282,7 +2352,7 @@ void C2_NAKED C2_HOOK_FASTCALL DRMatrix34PreRotateZ(br_matrix34* mat, br_angle r
     L00512cc1:
             cmp eax, 0xb4
             jle L00512cd3
-            fld dword ptr [eax*4 + gFloat_sine_table-0x2d0]
+            fld dword ptr [eax*4 + 0x6610c8]
             fchs
             jmp L00512cf1
     L00512cd3:
@@ -2315,7 +2385,7 @@ void C2_NAKED C2_HOOK_FASTCALL DRMatrix34PreRotateZ(br_matrix34* mat, br_angle r
     L00512d11:
             cmp eax, 0x10e
             jle L00512d21
-            fld dword ptr [eax*4 + gFloat_sine_table-0x438]
+            fld dword ptr [eax*4 + gMatchData_00660f60]
             jmp L00512d5c
     L00512d21:
             cmp eax, 0xb4
@@ -2330,7 +2400,7 @@ void C2_NAKED C2_HOOK_FASTCALL DRMatrix34PreRotateZ(br_matrix34* mat, br_angle r
     L00512d3c:
             cmp eax, 0x5a
             jle L00512d4c
-            fld dword ptr [eax*4 + gFloat_sine_table-0x168]
+            fld dword ptr [eax*4 + gMatchString_00661230]
             fchs
             jmp L00512d5c
     L00512d4c:
@@ -2391,7 +2461,12 @@ void C2_NAKED C2_HOOK_FASTCALL DRMatrix34PostRotateZ(br_matrix34* mat, br_angle 
             push edi
             mov dword ptr [esp + 8], eax
             fild dword ptr [esp + 8]
-            fmul qword ptr ds:[0x58b218]
+            _emit 0xdc
+        _emit 0x0d
+        _emit 0x18
+        _emit 0xb2
+        _emit 0x58
+        _emit 0x00
             call _ftol
             mov ecx, eax
             test ecx, ecx
@@ -2412,7 +2487,7 @@ void C2_NAKED C2_HOOK_FASTCALL DRMatrix34PostRotateZ(br_matrix34* mat, br_angle 
             cmp eax, 0x10e
             jle L00512e51
             lea edx, [eax*4]
-            mov eax, offset gFunk_type_names
+            mov eax, 0x661938
             sub eax, edx
             _emit 0xd9
         _emit 0x00
@@ -2421,7 +2496,7 @@ void C2_NAKED C2_HOOK_FASTCALL DRMatrix34PostRotateZ(br_matrix34* mat, br_angle 
     L00512e51:
             cmp eax, 0xb4
             jle L00512e63
-            fld dword ptr [eax*4 + gFloat_sine_table-0x2d0]
+            fld dword ptr [eax*4 + 0x6610c8]
             fchs
             jmp L00512e81
     L00512e63:
@@ -2454,7 +2529,7 @@ void C2_NAKED C2_HOOK_FASTCALL DRMatrix34PostRotateZ(br_matrix34* mat, br_angle 
     L00512ea1:
             cmp eax, 0x10e
             jle L00512eb1
-            fld dword ptr [eax*4 + gFloat_sine_table-0x438]
+            fld dword ptr [eax*4 + gMatchData_00660f60]
             jmp L00512eec
     L00512eb1:
             cmp eax, 0xb4
@@ -2469,7 +2544,7 @@ void C2_NAKED C2_HOOK_FASTCALL DRMatrix34PostRotateZ(br_matrix34* mat, br_angle 
     L00512ecc:
             cmp eax, 0x5a
             jle L00512edc
-            fld dword ptr [eax*4 + gFloat_sine_table-0x168]
+            fld dword ptr [eax*4 + gMatchString_00661230]
             fchs
             jmp L00512eec
     L00512edc:
@@ -2554,7 +2629,12 @@ void C2_NAKED C2_HOOK_FASTCALL DRMatrix23Rotate(br_matrix23* mat, br_angle rz) {
             mov esi, ecx
             mov dword ptr [esp + 8], eax
             fild dword ptr [esp + 8]
-            fmul qword ptr ds:[0x58b218]
+            _emit 0xdc
+        _emit 0x0d
+        _emit 0x18
+        _emit 0xb2
+        _emit 0x58
+        _emit 0x00
             call _ftol
             mov ecx, eax
             test ecx, ecx
@@ -2575,7 +2655,7 @@ void C2_NAKED C2_HOOK_FASTCALL DRMatrix23Rotate(br_matrix23* mat, br_angle rz) {
             cmp eax, 0x10e
             jle L00513081
             lea edx, [eax*4]
-            mov eax, offset gFunk_type_names
+            mov eax, 0x661938
             sub eax, edx
             _emit 0xd9
         _emit 0x00
@@ -2584,7 +2664,7 @@ void C2_NAKED C2_HOOK_FASTCALL DRMatrix23Rotate(br_matrix23* mat, br_angle rz) {
     L00513081:
             cmp eax, 0xb4
             jle L00513093
-            fld dword ptr [eax*4 + gFloat_sine_table-0x2d0]
+            fld dword ptr [eax*4 + 0x6610c8]
             fchs
             jmp L005130b1
     L00513093:
@@ -2617,7 +2697,7 @@ void C2_NAKED C2_HOOK_FASTCALL DRMatrix23Rotate(br_matrix23* mat, br_angle rz) {
     L005130d1:
             cmp eax, 0x10e
             jle L005130e1
-            fld dword ptr [eax*4 + gFloat_sine_table-0x438]
+            fld dword ptr [eax*4 + gMatchData_00660f60]
             jmp L0051311c
     L005130e1:
             cmp eax, 0xb4
@@ -2632,7 +2712,7 @@ void C2_NAKED C2_HOOK_FASTCALL DRMatrix23Rotate(br_matrix23* mat, br_angle rz) {
     L005130fc:
             cmp eax, 0x5a
             jle L0051310c
-            fld dword ptr [eax*4 + gFloat_sine_table-0x168]
+            fld dword ptr [eax*4 + gMatchString_00661230]
             fchs
             jmp L0051311c
     L0051310c:
@@ -2679,7 +2759,12 @@ void C2_NAKED C2_HOOK_FASTCALL DRMatrix23PreRotate(br_matrix23* mat, br_angle rz
             push edi
             mov dword ptr [esp + 8], eax
             fild dword ptr [esp + 8]
-            fmul qword ptr ds:[0x58b218]
+            _emit 0xdc
+        _emit 0x0d
+        _emit 0x18
+        _emit 0xb2
+        _emit 0x58
+        _emit 0x00
             call _ftol
             mov ecx, eax
             test ecx, ecx
@@ -2700,7 +2785,7 @@ void C2_NAKED C2_HOOK_FASTCALL DRMatrix23PreRotate(br_matrix23* mat, br_angle rz
             cmp eax, 0x10e
             jle L005131a1
             lea edx, [eax*4]
-            mov eax, offset gFunk_type_names
+            mov eax, 0x661938
             sub eax, edx
             _emit 0xd9
         _emit 0x00
@@ -2709,7 +2794,7 @@ void C2_NAKED C2_HOOK_FASTCALL DRMatrix23PreRotate(br_matrix23* mat, br_angle rz
     L005131a1:
             cmp eax, 0xb4
             jle L005131b3
-            fld dword ptr [eax*4 + gFloat_sine_table-0x2d0]
+            fld dword ptr [eax*4 + 0x6610c8]
             fchs
             jmp L005131d1
     L005131b3:
@@ -2742,7 +2827,7 @@ void C2_NAKED C2_HOOK_FASTCALL DRMatrix23PreRotate(br_matrix23* mat, br_angle rz
     L005131f1:
             cmp eax, 0x10e
             jle L00513201
-            fld dword ptr [eax*4 + gFloat_sine_table-0x438]
+            fld dword ptr [eax*4 + gMatchData_00660f60]
             jmp L0051323c
     L00513201:
             cmp eax, 0xb4
@@ -2757,7 +2842,7 @@ void C2_NAKED C2_HOOK_FASTCALL DRMatrix23PreRotate(br_matrix23* mat, br_angle rz
     L0051321c:
             cmp eax, 0x5a
             jle L0051322c
-            fld dword ptr [eax*4 + gFloat_sine_table-0x168]
+            fld dword ptr [eax*4 + gMatchString_00661230]
             fchs
             jmp L0051323c
     L0051322c:
@@ -2824,7 +2909,12 @@ void C2_NAKED C2_HOOK_FASTCALL DRMatrix23PostRotate(br_matrix23* mat, br_angle r
             push edi
             mov dword ptr [esp + 8], eax
             fild dword ptr [esp + 8]
-            fmul qword ptr ds:[0x58b218]
+            _emit 0xdc
+        _emit 0x0d
+        _emit 0x18
+        _emit 0xb2
+        _emit 0x58
+        _emit 0x00
             call _ftol
             mov ecx, eax
             test ecx, ecx
@@ -2845,7 +2935,7 @@ void C2_NAKED C2_HOOK_FASTCALL DRMatrix23PostRotate(br_matrix23* mat, br_angle r
             cmp eax, 0x10e
             jle L00513301
             lea edx, [eax*4]
-            mov eax, offset gFunk_type_names
+            mov eax, 0x661938
             sub eax, edx
             _emit 0xd9
         _emit 0x00
@@ -2854,7 +2944,7 @@ void C2_NAKED C2_HOOK_FASTCALL DRMatrix23PostRotate(br_matrix23* mat, br_angle r
     L00513301:
             cmp eax, 0xb4
             jle L00513313
-            fld dword ptr [eax*4 + gFloat_sine_table-0x2d0]
+            fld dword ptr [eax*4 + 0x6610c8]
             fchs
             jmp L00513331
     L00513313:
@@ -2887,7 +2977,7 @@ void C2_NAKED C2_HOOK_FASTCALL DRMatrix23PostRotate(br_matrix23* mat, br_angle r
     L00513351:
             cmp eax, 0x10e
             jle L00513361
-            fld dword ptr [eax*4 + gFloat_sine_table-0x438]
+            fld dword ptr [eax*4 + gMatchData_00660f60]
             jmp L0051339c
     L00513361:
             cmp eax, 0xb4
@@ -2902,7 +2992,7 @@ void C2_NAKED C2_HOOK_FASTCALL DRMatrix23PostRotate(br_matrix23* mat, br_angle r
     L0051337c:
             cmp eax, 0x5a
             jle L0051338c
-            fld dword ptr [eax*4 + gFloat_sine_table-0x168]
+            fld dword ptr [eax*4 + gMatchString_00661230]
             fchs
             jmp L0051339c
     L0051338c:
@@ -2993,7 +3083,7 @@ void C2_NAKED C2_HOOK_FASTCALL DRMatrix34RotateCos(br_matrix34* pDest, const br_
 #else
     __asm {
             fld dword ptr [esp + 4]
-            fcomp dword ptr ds:[0x589364]
+            fcomp dword ptr [gMatchFloat_00589364]
             sub esp, 0x10
             fnstsw ax
             test ah, 1

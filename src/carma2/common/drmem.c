@@ -318,6 +318,12 @@ extern void C2_NORETURN C2_HOOK_CDECL FatalError();
 extern br_uint_8 bl;
 extern tHud_message gHud_messages[46];
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gString_0058f444[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchString_0058f444[];
+#endif
 // FUNCTION: CARMA2_HW 0x0044c810
 int C2_HOOK_FASTCALL AllocationErrorsAreFatal(void) {
     return !gNon_fatal_allocation_errors;
@@ -420,19 +426,34 @@ C2_NAKED void* C2_HOOK_CDECL DRStdlibAllocate(br_size_t size, br_uint_8 type) {
             je L0044c983
             push edi
             push 0
-            call dword ptr ds:[0x5890a0]
+            _emit 0xff
+        _emit 0x15
+        _emit 0xa0
+        _emit 0x90
+        _emit 0x58
+        _emit 0x00
             push eax
-            call dword ptr ds:[0x5890a4]
+            _emit 0xff
+        _emit 0x15
+        _emit 0xa4
+        _emit 0x90
+        _emit 0x58
+        _emit 0x00
             mov esi, eax
             test esi, esi
             je L0044c943
-            mov ecx, dword ptr ds:[gPage_size]
+            mov ecx, dword ptr [gPage_size]
             test ecx, ecx
             jne L0044c90e
             push offset gSystem_info
-            call dword ptr ds:[0x589150]
-            mov ecx, dword ptr ds:[gSystem_info]
-            mov dword ptr ds:[gPage_size], ecx
+            _emit 0xff
+        _emit 0x15
+        _emit 0x50
+        _emit 0x91
+        _emit 0x58
+        _emit 0x00
+            mov ecx, dword ptr [gSystem_info]
+            mov dword ptr [gPage_size], ecx
     L0044c90e:
             mov eax, ecx
             shl eax, 4
@@ -447,7 +468,7 @@ C2_NAKED void* C2_HOOK_CDECL DRStdlibAllocate(br_size_t size, br_uint_8 type) {
             mov byte ptr [ecx], dl
             mov cl, byte ptr [eax + esi]
             mov byte ptr [eax + esi], cl
-            mov ecx, dword ptr ds:[gPage_size]
+            mov ecx, dword ptr [gPage_size]
             add eax, ecx
             cmp eax, edi
             jb L0044c917
@@ -458,7 +479,7 @@ C2_NAKED void* C2_HOOK_CDECL DRStdlibAllocate(br_size_t size, br_uint_8 type) {
             add esp, 0x100
             ret
     L0044c943:
-            mov eax, dword ptr ds:[gNon_fatal_allocation_errors]
+            mov eax, dword ptr [gNon_fatal_allocation_errors]
             test eax, eax
             jne L0044c983
             mov edx, dword ptr [esp + 0x110]
@@ -467,7 +488,7 @@ C2_NAKED void* C2_HOOK_CDECL DRStdlibAllocate(br_size_t size, br_uint_8 type) {
             lea ecx, [esp + 0xc]
             mov eax, dword ptr [edx*4 + gMem_names]
             push eax
-            push 0x58f444
+            push offset gMatchString_0058f444
             push ecx
             call sprintf
             add esp, 0x10
@@ -482,6 +503,8 @@ C2_NAKED void* C2_HOOK_CDECL DRStdlibAllocate(br_size_t size, br_uint_8 type) {
             pop esi
             add esp, 0x100
             ret
+            nop
+            nop
     }
 #endif
 }

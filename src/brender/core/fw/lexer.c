@@ -26,6 +26,38 @@ extern int C2_HOOK_CDECL BrStrICmp();
 extern float C2_HOOK_CDECL BrStrToF();
 extern long C2_HOOK_CDECL BrStrToL();
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gData_0058b87c[];
+extern char gFloat_0058b878[];
+extern char gFloat_0066c724[];
+extern char gFloat_0066c73c[];
+extern char gFloat_0066c754[];
+extern char gFloat_0066c768[];
+extern char gFloat_0066c77c[];
+extern char gFloat_0066c7a4[];
+extern char gFloat_0066c7d0[];
+extern char gFloat_0066c7f4[];
+extern char gFloat_0066c808[];
+extern char gFloat_0066c81c[];
+extern char gString_0066c794[];
+extern char gString_0066c7c0[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchData_0058b87c[];
+extern char gMatchFloat_0058b878[];
+extern char gMatchFloat_0066c724[];
+extern char gMatchFloat_0066c73c[];
+extern char gMatchFloat_0066c754[];
+extern char gMatchFloat_0066c768[];
+extern char gMatchFloat_0066c77c[];
+extern char gMatchFloat_0066c7a4[];
+extern char gMatchFloat_0066c7d0[];
+extern char gMatchFloat_0066c7f4[];
+extern char gMatchFloat_0066c808[];
+extern char gMatchFloat_0066c81c[];
+extern char gMatchString_0066c794[];
+extern char gMatchString_0066c7c0[];
+#endif
 // FUNCTION: CARMA2_HW 0x0052f3f0
 void C2_HOOK_CDECL lexerError(br_lexer* l, const char* string) {
 }
@@ -785,18 +817,18 @@ void C2_NAKED C2_HOOK_CDECL BrLexerTokenError(br_lexer* l, br_lexer_token_id t) 
             cmp edi, 5
             ja L0052f9c7
             jmp dword ptr [edi*4 + 0x52fa70]
-            push 0x66c724
+            push offset gMatchFloat_0066c724
             jmp L0052fa49
             mov eax, dword ptr [esi + 8]
             push eax
             jmp L0052fa49
-            push 0x66c73c
+            push offset gMatchFloat_0066c73c
             jmp L0052fa49
-            push 0x66c754
+            push offset gMatchFloat_0066c754
             jmp L0052fa49
-            push 0x66c768
+            push offset gMatchFloat_0066c768
             jmp L0052fa49
-            push 0x66c77c
+            push offset gMatchFloat_0066c77c
             jmp L0052fa49
     L0052f9c7:
             cmp edi, 0x80
@@ -820,11 +852,11 @@ void C2_NAKED C2_HOOK_CDECL BrLexerTokenError(br_lexer* l, br_lexer_token_id t) 
             mov ecx, dword ptr [esi + 0xc]
             mov edx, dword ptr [ecx + eax*8]
             push edx
-            push 0x66c794
+            push offset gMatchString_0066c794
             jmp L0052fa32
     L0052f9fc:
             push edi
-            push 0x66c7a4
+            push offset gMatchFloat_0066c7a4
             lea ecx, [esp + 0x10]
             push 0x100
             push ecx
@@ -836,13 +868,13 @@ void C2_NAKED C2_HOOK_CDECL BrLexerTokenError(br_lexer* l, br_lexer_token_id t) 
             test eax, eax
             push edi
             je L0052fa2d
-            push 0x66c7c0
+            push offset gMatchString_0066c7c0
             lea edx, [esp + 0x10]
             push 0x100
             push edx
             jmp L0052fa3c
     L0052fa2d:
-            push 0x66c7d0
+            push offset gMatchFloat_0066c7d0
     L0052fa32:
             lea eax, [esp + 0x10]
             push 0x100
@@ -937,7 +969,7 @@ br_fixed_ls C2_NAKED C2_HOOK_CDECL BrParseFixed(br_lexer* l) {
             cmp eax, 5
             jne L0052fb10
             fld dword ptr [esi + 8]
-            fmul dword ptr [IID_IDirectInputDevice2A+0x4e0]
+            fmul dword ptr [gMatchFloat_0058b878]
             call _ftol
             push esi
             mov edi, eax
@@ -952,7 +984,7 @@ br_fixed_ls C2_NAKED C2_HOOK_CDECL BrParseFixed(br_lexer* l) {
             call dword ptr [esi + 0x18]
             jmp L0052fb33
     L0052fb21:
-            push offset tokenTypes+0x1d74
+            push offset gMatchFloat_0066c7f4
             push esi
             call dword ptr [esi + 0x2c]
             add esp, 8
@@ -1039,13 +1071,13 @@ br_float C2_NAKED C2_HOOK_CDECL BrParseFloat(br_lexer* l) {
             fld dword ptr [esp + 0xc]
             jmp L0052fba6
     L0052fb90:
-            push offset tokenTypes+0x1d88
+            push offset gMatchFloat_0066c808
             push esi
             call dword ptr [esi + 0x2c]
             add esp, 8
             push esi
             call dword ptr [esi + 0x18]
-            fld dword ptr [IID_IDirectInputDevice2A+0x4e4]
+            fld dword ptr [gMatchData_0058b87c]
     L0052fba6:
             test edi, edi
             je L0052fbac
@@ -1054,6 +1086,7 @@ br_float C2_NAKED C2_HOOK_CDECL BrParseFloat(br_lexer* l) {
             pop edi
             pop esi
             ret
+            nop
     }
 #endif
 }
@@ -1108,7 +1141,7 @@ br_int_32 C2_NAKED C2_HOOK_CDECL BrParseInteger(br_lexer* l) {
             call dword ptr [esi + 0x18]
             jmp L0052fbf3
     L0052fbe1:
-            push offset tokenTypes+0x1d9c
+            push offset gMatchFloat_0066c81c
             push esi
             call dword ptr [esi + 0x2c]
             add esp, 8
@@ -1343,13 +1376,13 @@ br_int_32 C2_NAKED C2_HOOK_CDECL BrParseVectorFloat(br_lexer* l, br_float* v, br
             fld dword ptr [esp + 0x14]
             jmp L0052fd23
     L0052fd0d:
-            push offset tokenTypes+0x1d88
+            push offset gMatchFloat_0066c808
             push esi
             call dword ptr [esi + 0x2c]
             add esp, 8
             push esi
             call dword ptr [esi + 0x18]
-            fld dword ptr [IID_IDirectInputDevice2A+0x4e4]
+            fld dword ptr [gMatchData_0058b87c]
     L0052fd23:
             test edi, edi
             je L0052fd29
@@ -1398,6 +1431,8 @@ br_int_32 C2_NAKED C2_HOOK_CDECL BrParseVectorFloat(br_lexer* l, br_float* v, br
             pop ebp
             pop ebx
             ret
+            nop
+            nop
     }
 #endif
 }

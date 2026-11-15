@@ -138,6 +138,49 @@ extern br_model* C2_HOOK_CDECL BrModelAdd();
 extern void C2_NORETURN C2_HOOK_FASTCALL PDFatalError(const char* pThe_str);
 extern char gBlind_pedestrians[];
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gData_006a0434[];
+extern char gData_00705c98[];
+extern char gData_00705c9c[];
+extern char gData_00705ca0[];
+extern char gData_00705ca4[];
+extern char gData_00705cc4[];
+extern char gData_00705cc8[];
+extern char gData_007060c8[];
+extern char gData_007080c8[];
+extern char gData_007081b4[];
+extern char gData_007081c8[];
+extern char gData_0070a0c8[];
+extern char gData_0070c0c8[];
+extern char gData_0070c0cc[];
+extern char gDouble_0058aba8[];
+extern char gDouble_0058abb0[];
+extern char gDouble_0058abb8[];
+extern char gDouble_0058abc0[];
+extern char gDouble_0058abc8[];
+extern char gFloat_0065e890[];
+extern char gString_0059641c[];
+extern char gString_0065e8ac[];
+extern char gString_0065e8b8[];
+extern char gString_0065e8c4[];
+extern char gString_0065e8d0[];
+extern char gString_0065e8d8[];
+extern char gString_0065e8e8[];
+extern char gString_0065e8f0[];
+extern char gString_0065e8f4[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchFloat_0065e890[];
+extern char gMatchString_0059641c[];
+extern char gMatchString_0065e8ac[];
+extern char gMatchString_0065e8b8[];
+extern char gMatchString_0065e8c4[];
+extern char gMatchString_0065e8d0[];
+extern char gMatchString_0065e8d8[];
+extern char gMatchString_0065e8e8[];
+extern char gMatchString_0065e8f0[];
+extern char gMatchString_0065e8f4[];
+#endif
 // FUNCTION: CARMA2_HW 0x004d7040
 void C2_HOOK_FASTCALL InitTintedPolyStuff(void) {
     br_camera *camera;
@@ -390,7 +433,7 @@ int C2_NAKED C2_HOOK_FASTCALL CreateTintedPoly(int x0, int y0, int width, int he
             mov dword ptr [esp + 0x1c], edx
             mov dword ptr [esp + 0x24], ebp
             xor ecx, ecx
-            mov eax, 0x705cb0
+            mov eax, offset gTintedPolys+0x30
     L004d70e0:
             cmp dword ptr [eax], 0
             je L004d70f4
@@ -422,10 +465,10 @@ int C2_NAKED C2_HOOK_FASTCALL CreateTintedPoly(int x0, int y0, int width, int he
             mov edi, dword ptr [gDefaultOpacity_TintedPoly]
             shl esi, 6
             add esi, ebp
-            push 0x65e8d8
+            push offset gMatchString_0065e8d8
             lea esi, [esi + esi*4]
             shl esi, 4
-            mov dword ptr [esi + 0x705cb8], eax
+            mov dword ptr [esi + gTintedPolys+0x38], eax
             call BrMaterialAllocate
             mov ebx, eax
             add esp, 4
@@ -442,7 +485,7 @@ int C2_NAKED C2_HOOK_FASTCALL CreateTintedPoly(int x0, int y0, int width, int he
             push 0x40
             mov dword ptr [ebx + 0x58], 0x65e840
             push ebx
-            mov dword ptr ds:[0x65e84c], edi
+            mov dword ptr [gTinted_poly_material_tokens+0xc], edi
             call BrMaterialUpdate
             add esp, 8
     L004d718c:
@@ -454,16 +497,16 @@ int C2_NAKED C2_HOOK_FASTCALL CreateTintedPoly(int x0, int y0, int width, int he
             push eax
             push ecx
             mov ecx, dword ptr [esp + 0x28]
-            mov dword ptr [esi + 0x705c84], ebx
+            mov dword ptr [esi + gTintedPolys+0x4], ebx
             call BuildTintedPolyModel
-            mov dword ptr [esi + 0x705c88], eax
+            mov dword ptr [esi + gTintedPolys+0x8], eax
             push 0
             push 1
             call BrActorAllocate
             mov dword ptr [esi + gTintedPolys], eax
-            mov edx, dword ptr [esi + 0x705c84]
+            mov edx, dword ptr [esi + gTintedPolys+0x4]
             mov dword ptr [eax + 0x1c], edx
-            mov eax, dword ptr [esi + 0x705c88]
+            mov eax, dword ptr [esi + gTintedPolys+0x8]
             xor ecx, ecx
             add esp, 8
             cmp word ptr [eax + 0x12], cx
@@ -471,10 +514,10 @@ int C2_NAKED C2_HOOK_FASTCALL CreateTintedPoly(int x0, int y0, int width, int he
             xor edx, edx
     L004d71e4:
             mov eax, dword ptr [eax + 0xc]
-            mov edi, dword ptr [esi + 0x705c84]
+            mov edi, dword ptr [esi + gTintedPolys+0x4]
             inc ecx
             mov dword ptr [eax + edx + 8], edi
-            mov eax, dword ptr [esi + 0x705c88]
+            mov eax, dword ptr [esi + gTintedPolys+0x8]
             xor edi, edi
             add edx, 0x28
             mov di, word ptr [eax + 0x12]
@@ -482,9 +525,9 @@ int C2_NAKED C2_HOOK_FASTCALL CreateTintedPoly(int x0, int y0, int width, int he
             jl L004d71e4
     L004d7205:
             mov ecx, dword ptr [esi + gTintedPolys]
-            mov edx, dword ptr [esi + 0x705c88]
+            mov edx, dword ptr [esi + gTintedPolys+0x8]
             mov dword ptr [ecx + 0x18], edx
-            mov eax, dword ptr [esi + 0x705c88]
+            mov eax, dword ptr [esi + gTintedPolys+0x8]
             push eax
             call BrModelAdd
             add esp, 4
@@ -493,10 +536,10 @@ int C2_NAKED C2_HOOK_FASTCALL CreateTintedPoly(int x0, int y0, int width, int he
             mov edi, dword ptr [gDefaultOpacity_TintedPoly]
             shl esi, 6
             add esi, ebp
-            push 0x65e8d8
+            push offset gMatchString_0065e8d8
             lea esi, [esi + esi*4]
             shl esi, 4
-            mov dword ptr [esi + 0x705cb8], eax
+            mov dword ptr [esi + gTintedPolys+0x38], eax
             call BrMaterialAllocate
             mov ebx, eax
             add esp, 4
@@ -513,18 +556,18 @@ int C2_NAKED C2_HOOK_FASTCALL CreateTintedPoly(int x0, int y0, int width, int he
             push 0x40
             mov dword ptr [ebx + 0x58], 0x65e840
             push ebx
-            mov dword ptr ds:[0x65e84c], edi
+            mov dword ptr [gTinted_poly_material_tokens+0xc], edi
             call BrMaterialUpdate
             add esp, 8
     L004d728c:
             mov eax, ebx
     L004d728e:
-            mov dword ptr [esi + 0x705c84], eax
+            mov dword ptr [esi + gTintedPolys+0x4], eax
             mov ebx, dword ptr [eax + 0x20]
             or ebx, 6
             push 0x7fff
             mov dword ptr [eax + 0x20], ebx
-            mov ecx, dword ptr [esi + 0x705c84]
+            mov ecx, dword ptr [esi + gTintedPolys+0x4]
             push ecx
             call BrMaterialUpdate
             mov edx, dword ptr [esp + 0x144]
@@ -537,14 +580,14 @@ int C2_NAKED C2_HOOK_FASTCALL CreateTintedPoly(int x0, int y0, int width, int he
             mov edx, dword ptr [esp + 0x28]
             push eax
             call BuildTintedPolyModel
-            mov dword ptr [esi + 0x705c88], eax
+            mov dword ptr [esi + gTintedPolys+0x8], eax
             push 0
             push 1
             call BrActorAllocate
             mov dword ptr [esi + gTintedPolys], eax
-            mov ecx, dword ptr [esi + 0x705c84]
+            mov ecx, dword ptr [esi + gTintedPolys+0x4]
             mov dword ptr [eax + 0x1c], ecx
-            mov eax, dword ptr [esi + 0x705c88]
+            mov eax, dword ptr [esi + gTintedPolys+0x8]
             xor ecx, ecx
             add esp, 8
             cmp word ptr [eax + 0x12], cx
@@ -552,10 +595,10 @@ int C2_NAKED C2_HOOK_FASTCALL CreateTintedPoly(int x0, int y0, int width, int he
             xor edx, edx
     L004d7303:
             mov eax, dword ptr [eax + 0xc]
-            mov edi, dword ptr [esi + 0x705c84]
+            mov edi, dword ptr [esi + gTintedPolys+0x4]
             inc ecx
             mov dword ptr [eax + edx + 8], edi
-            mov eax, dword ptr [esi + 0x705c88]
+            mov eax, dword ptr [esi + gTintedPolys+0x8]
             xor edi, edi
             add edx, 0x28
             mov di, word ptr [eax + 0x12]
@@ -563,11 +606,11 @@ int C2_NAKED C2_HOOK_FASTCALL CreateTintedPoly(int x0, int y0, int width, int he
             jl L004d7303
     L004d7324:
             mov ecx, dword ptr [esi + gTintedPolys]
-            mov edx, dword ptr [esi + 0x705c88]
+            mov edx, dword ptr [esi + gTintedPolys+0x8]
             mov eax, dword ptr [esp + 0x144]
             mov dword ptr [ecx + 0x18], edx
-            mov dword ptr [esi + 0x705cc0], eax
-            mov ecx, dword ptr [esi + 0x705c88]
+            mov dword ptr [esi + gTintedPolys+0x40], eax
+            mov ecx, dword ptr [esi + gTintedPolys+0x8]
             push ecx
             call BrModelAdd
             add esp, 4
@@ -576,10 +619,10 @@ int C2_NAKED C2_HOOK_FASTCALL CreateTintedPoly(int x0, int y0, int width, int he
             mov edi, dword ptr [gDefaultOpacity_TintedPoly]
             shl esi, 6
             add esi, ebp
-            push 0x65e8d8
+            push offset gMatchString_0065e8d8
             lea esi, [esi + esi*4]
             shl esi, 4
-            mov dword ptr [esi + 0x705cb8], eax
+            mov dword ptr [esi + gTintedPolys+0x38], eax
             call BrMaterialAllocate
             mov ebx, eax
             add esp, 4
@@ -596,24 +639,24 @@ int C2_NAKED C2_HOOK_FASTCALL CreateTintedPoly(int x0, int y0, int width, int he
             push 0x40
             mov dword ptr [ebx + 0x58], 0x65e840
             push ebx
-            mov dword ptr ds:[0x65e84c], edi
+            mov dword ptr [gTinted_poly_material_tokens+0xc], edi
             call BrMaterialUpdate
             add esp, 8
     L004d73b8:
             mov eax, ebx
     L004d73ba:
-            mov dword ptr [esi + 0x705c84], eax
+            mov dword ptr [esi + gTintedPolys+0x4], eax
             mov ecx, dword ptr [eax + 0x20]
             or ecx, 6
             xor edi, edi
             mov dword ptr [eax + 0x20], ecx
-            mov edx, dword ptr [esi + 0x705c84]
+            mov edx, dword ptr [esi + gTintedPolys+0x4]
             push 0x7fff
             mov dword ptr [edx + 0x58], 0x65e850
-            mov eax, dword ptr [esi + 0x705c84]
+            mov eax, dword ptr [esi + gTintedPolys+0x4]
             mov ecx, dword ptr [eax + 0x58]
             mov dword ptr [ecx + 0xc], edi
-            mov edx, dword ptr [esi + 0x705c84]
+            mov edx, dword ptr [esi + gTintedPolys+0x4]
             push edx
             call BrMaterialUpdate
             mov eax, dword ptr [esp + 0x144]
@@ -626,14 +669,14 @@ int C2_NAKED C2_HOOK_FASTCALL CreateTintedPoly(int x0, int y0, int width, int he
             push ecx
             mov ecx, dword ptr [esp + 0x28]
             call BuildTintedPolyModel
-            mov dword ptr [esi + 0x705c88], eax
+            mov dword ptr [esi + gTintedPolys+0x8], eax
             push edi
             push 1
             call BrActorAllocate
             mov dword ptr [esi + gTintedPolys], eax
-            mov edx, dword ptr [esi + 0x705c84]
+            mov edx, dword ptr [esi + gTintedPolys+0x4]
             mov dword ptr [eax + 0x1c], edx
-            mov eax, dword ptr [esi + 0x705c88]
+            mov eax, dword ptr [esi + gTintedPolys+0x8]
             add esp, 8
             xor ecx, ecx
             cmp word ptr [eax + 0x12], di
@@ -641,10 +684,10 @@ int C2_NAKED C2_HOOK_FASTCALL CreateTintedPoly(int x0, int y0, int width, int he
             xor edx, edx
     L004d7449:
             mov eax, dword ptr [eax + 0xc]
-            mov ebx, dword ptr [esi + 0x705c84]
+            mov ebx, dword ptr [esi + gTintedPolys+0x4]
             inc ecx
             mov dword ptr [eax + edx + 8], ebx
-            mov eax, dword ptr [esi + 0x705c88]
+            mov eax, dword ptr [esi + gTintedPolys+0x8]
             xor ebx, ebx
             add edx, 0x28
             mov bx, word ptr [eax + 0x12]
@@ -652,12 +695,12 @@ int C2_NAKED C2_HOOK_FASTCALL CreateTintedPoly(int x0, int y0, int width, int he
             jl L004d7449
     L004d746a:
             mov ecx, dword ptr [esi + gTintedPolys]
-            mov edx, dword ptr [esi + 0x705c88]
+            mov edx, dword ptr [esi + gTintedPolys+0x8]
             mov eax, dword ptr [esp + 0x144]
             mov dword ptr [ecx + 0x18], edx
-            mov dword ptr [esi + 0x70c0c8], edi
-            mov dword ptr [esi + 0x70c0cc], eax
-            mov ecx, dword ptr [esi + 0x705c88]
+            mov dword ptr [esi + gTintedPolys+0x6448], edi
+            mov dword ptr [esi + gTintedPolys+0x644c], eax
+            mov ecx, dword ptr [esi + gTintedPolys+0x8]
             push ecx
             call BrModelAdd
             add esp, 4
@@ -668,12 +711,12 @@ int C2_NAKED C2_HOOK_FASTCALL CreateTintedPoly(int x0, int y0, int width, int he
             call SetTintedPolyColour
             jmp L004d7a57
             lea esi, [ebp + ebp*4]
-            push 0x65e8d8
+            push offset gMatchString_0065e8d8
             shl esi, 6
             add esi, ebp
             lea esi, [esi + esi*4]
             shl esi, 4
-            mov dword ptr [esi + 0x705cb8], eax
+            mov dword ptr [esi + gTintedPolys+0x38], eax
             call BrMaterialAllocate
             mov ebx, eax
             add esp, 4
@@ -686,10 +729,10 @@ int C2_NAKED C2_HOOK_FASTCALL CreateTintedPoly(int x0, int y0, int width, int he
             add esp, 4
             mov eax, ebx
     L004d74ec:
-            mov dword ptr [esi + 0x705c84], eax
+            mov dword ptr [esi + gTintedPolys+0x4], eax
             mov ebx, dword ptr [eax + 0x20]
             or ebx, 0x400000
-            push 0x65e8d0
+            push offset gMatchString_0065e8d0
             mov edx, offset gApplication_path
             lea ecx, [esp + 0x38]
             mov dword ptr [eax + 0x20], ebx
@@ -697,23 +740,23 @@ int C2_NAKED C2_HOOK_FASTCALL CreateTintedPoly(int x0, int y0, int width, int he
             lea edx, [esp + 0x34]
             mov ecx, offset gMisc_storage_space
             call LoadAllImagesInDirectory
-            push 0x65e8c4
+            push offset gMatchString_0065e8c4
             call BrMapFind
-            mov dword ptr [esi + 0x705cc4], eax
-            mov edx, dword ptr [esi + 0x705c84]
+            mov dword ptr [esi + gTintedPolys+0x44], eax
+            mov edx, dword ptr [esi + gTintedPolys+0x4]
             add esp, 4
             mov dword ptr [edx + 0x40], eax
-            mov eax, dword ptr [esi + 0x705c84]
+            mov eax, dword ptr [esi + gTintedPolys+0x4]
             push 0x7fff
             push eax
             call BrMaterialUpdate
             add esp, 8
-            push 0x65e8b8
+            push offset gMatchString_0065e8b8
             call BrMapFind
             add esp, 4
             mov ebp, eax
             xor edi, edi
-            lea ebx, [esi + 0x705cc8]
+            lea ebx, [esi + gTintedPolys+0x48]
     L004d7566:
             push edi
             push 0
@@ -725,7 +768,7 @@ int C2_NAKED C2_HOOK_FASTCALL CreateTintedPoly(int x0, int y0, int width, int he
             add ebx, 4
             cmp edi, 0x100
             jl L004d7566
-            push 0x65e8ac
+            push offset gMatchString_0065e8ac
             call BrMapFind
             mov ebx, eax
             xor eax, eax
@@ -780,7 +823,7 @@ int C2_NAKED C2_HOOK_FASTCALL CreateTintedPoly(int x0, int y0, int width, int he
             fild qword ptr [esp + 0x28]
             sub eax, ebp
             mov dword ptr [esp + 0x10], eax
-            lea eax, [esi + 0x7060c8]
+            lea eax, [esi + gTintedPolys+0x448]
             fidiv dword ptr [esp + 0x10]
             mov dword ptr [esp + 0x10], eax
             fstp dword ptr [esp + 0x28]
@@ -829,10 +872,10 @@ int C2_NAKED C2_HOOK_FASTCALL CreateTintedPoly(int x0, int y0, int width, int he
             mov edx, dword ptr [esp + 0x13c]
             mov ecx, 0x800
             xor eax, eax
-            lea edi, [esi + 0x7080c8]
+            lea edi, [esi + gTintedPolys+0x2448]
             rep stosd
             mov ecx, 0x800
-            lea edi, [esi + 0x70a0c8]
+            lea edi, [esi + gTintedPolys+0x4448]
             rep stosd
             mov eax, dword ptr [esp + 0x138]
             mov ecx, dword ptr [esp + 0x18]
@@ -842,14 +885,14 @@ int C2_NAKED C2_HOOK_FASTCALL CreateTintedPoly(int x0, int y0, int width, int he
             mov edx, dword ptr [esp + 0x28]
             push eax
             call BuildTintedPolyModel
-            mov dword ptr [esi + 0x705c88], eax
+            mov dword ptr [esi + gTintedPolys+0x8], eax
             push 0
             push 1
             call BrActorAllocate
             mov dword ptr [esi + gTintedPolys], eax
-            mov ecx, dword ptr [esi + 0x705c84]
+            mov ecx, dword ptr [esi + gTintedPolys+0x4]
             mov dword ptr [eax + 0x1c], ecx
-            mov eax, dword ptr [esi + 0x705c88]
+            mov eax, dword ptr [esi + gTintedPolys+0x8]
             xor ecx, ecx
             add esp, 8
             cmp word ptr [eax + 0x12], cx
@@ -857,10 +900,10 @@ int C2_NAKED C2_HOOK_FASTCALL CreateTintedPoly(int x0, int y0, int width, int he
             xor edx, edx
     L004d770b:
             mov eax, dword ptr [eax + 0xc]
-            mov edi, dword ptr [esi + 0x705c84]
+            mov edi, dword ptr [esi + gTintedPolys+0x4]
             inc ecx
             mov dword ptr [eax + edx + 8], edi
-            mov eax, dword ptr [esi + 0x705c88]
+            mov eax, dword ptr [esi + gTintedPolys+0x8]
             xor edi, edi
             add edx, 0x28
             mov di, word ptr [eax + 0x12]
@@ -868,9 +911,9 @@ int C2_NAKED C2_HOOK_FASTCALL CreateTintedPoly(int x0, int y0, int width, int he
             jl L004d770b
     L004d772c:
             mov ecx, dword ptr [esi + gTintedPolys]
-            mov edx, dword ptr [esi + 0x705c88]
+            mov edx, dword ptr [esi + gTintedPolys+0x8]
             mov dword ptr [ecx + 0x18], edx
-            mov eax, dword ptr [esi + 0x705c88]
+            mov eax, dword ptr [esi + gTintedPolys+0x8]
             push eax
             call BrModelAdd
             mov ebp, dword ptr [esp + 0x28]
@@ -880,10 +923,10 @@ int C2_NAKED C2_HOOK_FASTCALL CreateTintedPoly(int x0, int y0, int width, int he
             mov edi, dword ptr [gDefaultOpacity_TintedPoly]
             shl esi, 6
             add esi, ebp
-            push 0x65e8d8
+            push offset gMatchString_0065e8d8
             lea esi, [esi + esi*4]
             shl esi, 4
-            mov dword ptr [esi + 0x705cb8], eax
+            mov dword ptr [esi + gTintedPolys+0x38], eax
             call BrMaterialAllocate
             mov ebx, eax
             add esp, 4
@@ -900,7 +943,7 @@ int C2_NAKED C2_HOOK_FASTCALL CreateTintedPoly(int x0, int y0, int width, int he
             push 0x40
             mov dword ptr [ebx + 0x58], 0x65e840
             push ebx
-            mov dword ptr ds:[0x65e84c], edi
+            mov dword ptr [gTinted_poly_material_tokens+0xc], edi
             call BrMaterialUpdate
             add esp, 8
     L004d77b7:
@@ -912,16 +955,16 @@ int C2_NAKED C2_HOOK_FASTCALL CreateTintedPoly(int x0, int y0, int width, int he
             mov ecx, dword ptr [esp + 0x24]
             push edx
             mov edx, dword ptr [esp + 0x2c]
-            mov dword ptr [esi + 0x705c84], ebx
+            mov dword ptr [esi + gTintedPolys+0x4], ebx
             call BuildTintedPolyModel
-            mov dword ptr [esi + 0x705c88], eax
+            mov dword ptr [esi + gTintedPolys+0x8], eax
             push 0
             push 1
             call BrActorAllocate
             mov dword ptr [esi + gTintedPolys], eax
-            mov ecx, dword ptr [esi + 0x705c84]
+            mov ecx, dword ptr [esi + gTintedPolys+0x4]
             mov dword ptr [eax + 0x1c], ecx
-            mov eax, dword ptr [esi + 0x705c88]
+            mov eax, dword ptr [esi + gTintedPolys+0x8]
             xor ecx, ecx
             add esp, 8
             cmp word ptr [eax + 0x12], cx
@@ -929,10 +972,10 @@ int C2_NAKED C2_HOOK_FASTCALL CreateTintedPoly(int x0, int y0, int width, int he
             xor edx, edx
     L004d780f:
             mov eax, dword ptr [eax + 0xc]
-            mov edi, dword ptr [esi + 0x705c84]
+            mov edi, dword ptr [esi + gTintedPolys+0x4]
             inc ecx
             mov dword ptr [eax + edx + 8], edi
-            mov eax, dword ptr [esi + 0x705c88]
+            mov eax, dword ptr [esi + gTintedPolys+0x8]
             xor edi, edi
             add edx, 0x28
             mov di, word ptr [eax + 0x12]
@@ -940,57 +983,57 @@ int C2_NAKED C2_HOOK_FASTCALL CreateTintedPoly(int x0, int y0, int width, int he
             jl L004d780f
     L004d7830:
             mov ecx, dword ptr [esi + gTintedPolys]
-            mov edx, dword ptr [esi + 0x705c88]
+            mov edx, dword ptr [esi + gTintedPolys+0x8]
             mov dword ptr [ecx + 0x18], edx
-            mov eax, dword ptr [esi + 0x705c88]
+            mov eax, dword ptr [esi + gTintedPolys+0x8]
             push eax
             call BrModelAdd
             mov eax, dword ptr [esp + 0x148]
             add esp, 4
-            mov dword ptr [esi + 0x705ca4], eax
+            mov dword ptr [esi + gTintedPolys+0x24], eax
             sub eax, 0
             je L004d78a7
             dec eax
             je L004d7872
-            mov ecx, 0x65e890
+            mov ecx, offset gMatchFloat_0065e890
             call PDFatalError
             jmp L004d7a57
     L004d7872:
-            mov eax, dword ptr [esi + 0x705c84]
+            mov eax, dword ptr [esi + gTintedPolys+0x4]
             push 0x7fff
             mov ebx, dword ptr [eax + 0x20]
             or ebx, 6
             mov dword ptr [eax + 0x20], ebx
-            mov ecx, dword ptr [esi + 0x705c84]
+            mov ecx, dword ptr [esi + gTintedPolys+0x4]
             push ecx
             call BrMaterialUpdate
             mov edx, dword ptr [esp + 0x150]
             add esp, 8
-            mov dword ptr [esi + 0x705cc0], edx
+            mov dword ptr [esi + gTintedPolys+0x40], edx
             jmp L004d7a57
     L004d78a7:
             xor eax, eax
             mov edx, dword ptr [esp + 0x14c]
             mov al, byte ptr [esp + 0x14a]
             xor ecx, ecx
-            mov dword ptr [esi + 0x705c98], eax
+            mov dword ptr [esi + gTintedPolys+0x18], eax
             mov eax, dword ptr [esp + 0x148]
             mov cl, ah
             and eax, 0xff
-            mov dword ptr [esi + 0x705c9c], ecx
-            mov dword ptr [esi + 0x705ca0], eax
-            mov dword ptr [esi + 0x705cc0], edx
-            mov eax, dword ptr [esi + 0x705c98]
-            mov ecx, dword ptr [esi + 0x705c9c]
-            mov edi, dword ptr [esi + 0x705ca0]
+            mov dword ptr [esi + gTintedPolys+0x1c], ecx
+            mov dword ptr [esi + gTintedPolys+0x20], eax
+            mov dword ptr [esi + gTintedPolys+0x40], edx
+            mov eax, dword ptr [esi + gTintedPolys+0x18]
+            mov ecx, dword ptr [esi + gTintedPolys+0x1c]
+            mov edi, dword ptr [esi + gTintedPolys+0x20]
             shl eax, 8
             or eax, ecx
-            mov ecx, dword ptr [esi + 0x705c84]
+            mov ecx, dword ptr [esi + gTintedPolys+0x4]
             shl eax, 8
             or eax, edi
             push 0x7fff
             mov dword ptr [ecx + 8], eax
-            mov edx, dword ptr [esi + 0x705c84]
+            mov edx, dword ptr [esi + gTintedPolys+0x4]
             push edx
             jmp L004d7a4f
     L004d7915:
@@ -998,10 +1041,10 @@ int C2_NAKED C2_HOOK_FASTCALL CreateTintedPoly(int x0, int y0, int width, int he
             mov edi, dword ptr [gDefaultOpacity_TintedPoly]
             shl esi, 6
             add esi, ebp
-            push 0x65e8d8
+            push offset gMatchString_0065e8d8
             lea esi, [esi + esi*4]
             shl esi, 4
-            mov dword ptr [esi + 0x705cb8], eax
+            mov dword ptr [esi + gTintedPolys+0x38], eax
             call BrMaterialAllocate
             mov ebx, eax
             add esp, 4
@@ -1018,7 +1061,7 @@ int C2_NAKED C2_HOOK_FASTCALL CreateTintedPoly(int x0, int y0, int width, int he
             push 0x40
             mov dword ptr [ebx + 0x58], 0x65e840
             push ebx
-            mov dword ptr ds:[0x65e84c], edi
+            mov dword ptr [gTinted_poly_material_tokens+0xc], edi
             call BrMaterialUpdate
             add esp, 8
     L004d7979:
@@ -1030,16 +1073,16 @@ int C2_NAKED C2_HOOK_FASTCALL CreateTintedPoly(int x0, int y0, int width, int he
             push eax
             push ecx
             mov ecx, dword ptr [esp + 0x28]
-            mov dword ptr [esi + 0x705c84], ebx
+            mov dword ptr [esi + gTintedPolys+0x4], ebx
             call BuildTintedPolyModel
-            mov dword ptr [esi + 0x705c88], eax
+            mov dword ptr [esi + gTintedPolys+0x8], eax
             push 0
             push 1
             call BrActorAllocate
             mov dword ptr [esi + gTintedPolys], eax
-            mov edx, dword ptr [esi + 0x705c84]
+            mov edx, dword ptr [esi + gTintedPolys+0x4]
             mov dword ptr [eax + 0x1c], edx
-            mov eax, dword ptr [esi + 0x705c88]
+            mov eax, dword ptr [esi + gTintedPolys+0x8]
             xor ecx, ecx
             add esp, 8
             cmp word ptr [eax + 0x12], cx
@@ -1047,10 +1090,10 @@ int C2_NAKED C2_HOOK_FASTCALL CreateTintedPoly(int x0, int y0, int width, int he
             xor edx, edx
     L004d79d1:
             mov eax, dword ptr [eax + 0xc]
-            mov edi, dword ptr [esi + 0x705c84]
+            mov edi, dword ptr [esi + gTintedPolys+0x4]
             inc ecx
             mov dword ptr [eax + edx + 8], edi
-            mov eax, dword ptr [esi + 0x705c88]
+            mov eax, dword ptr [esi + gTintedPolys+0x8]
             xor edi, edi
             add edx, 0x28
             mov di, word ptr [eax + 0x12]
@@ -1058,24 +1101,24 @@ int C2_NAKED C2_HOOK_FASTCALL CreateTintedPoly(int x0, int y0, int width, int he
             jl L004d79d1
     L004d79f2:
             mov ecx, dword ptr [esi + gTintedPolys]
-            mov edx, dword ptr [esi + 0x705c88]
+            mov edx, dword ptr [esi + gTintedPolys+0x8]
             mov dword ptr [ecx + 0x18], edx
-            mov eax, dword ptr [esi + 0x705c88]
+            mov eax, dword ptr [esi + gTintedPolys+0x8]
             push eax
             call BrModelAdd
-            mov ecx, dword ptr [esi + 0x705c84]
+            mov ecx, dword ptr [esi + gTintedPolys+0x4]
             mov edx, dword ptr [esp + 0x148]
             add esp, 4
             mov dword ptr [ecx + 8], edx
-            mov eax, dword ptr [esi + 0x705c84]
+            mov eax, dword ptr [esi + gTintedPolys+0x4]
             mov ecx, dword ptr [esp + 0x148]
             push 0x7fff
             mov dword ptr [eax + 0x58], 0x65e860
-            mov edx, dword ptr [esi + 0x705c84]
+            mov edx, dword ptr [esi + gTintedPolys+0x4]
             shl ecx, 0x10
             mov eax, dword ptr [edx + 0x58]
             mov dword ptr [eax + 0xc], ecx
-            mov ecx, dword ptr [esi + 0x705c84]
+            mov ecx, dword ptr [esi + gTintedPolys+0x4]
             push ecx
     L004d7a4f:
             call BrMaterialUpdate
@@ -1092,16 +1135,16 @@ int C2_NAKED C2_HOOK_FASTCALL CreateTintedPoly(int x0, int y0, int width, int he
             add esp, 8
     L004d7a73:
             mov ecx, 1
-            mov dword ptr [esi + 0x705cb0], ecx
+            mov dword ptr [esi + gTintedPolys+0x30], ecx
             mov eax, dword ptr [esi + gTintedPolys]
             cmp eax, edi
             je L004d7a8b
             mov byte ptr [eax + 0x20], cl
     L004d7a8b:
-            mov dword ptr [esi + 0x705c8c], edi
-            mov dword ptr [esi + 0x705c90], edi
-            mov dword ptr [esi + 0x705c94], edi
-            mov dword ptr [esi + 0x705cb4], edi
+            mov dword ptr [esi + gTintedPolys+0xc], edi
+            mov dword ptr [esi + gTintedPolys+0x10], edi
+            mov dword ptr [esi + gTintedPolys+0x14], edi
+            mov dword ptr [esi + gTintedPolys+0x34], edi
             pop edi
             mov eax, ebp
             pop esi
@@ -1217,7 +1260,7 @@ C2_NAKED br_model* C2_HOOK_FASTCALL BuildTintedPolyModel(int x0, int y0, int wid
             shl eax, 1
             push eax
             push ecx
-            push offset gUNK_00596310+0x10c
+            push offset gMatchString_0059641c
             call BrModelAllocate
             add esp, 0xc
             mov dword ptr [esp + 0x14], eax
@@ -1350,6 +1393,17 @@ C2_NAKED br_model* C2_HOOK_FASTCALL BuildTintedPolyModel(int x0, int y0, int wid
             pop ebx
             add esp, 0x1c
             ret 0x10
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -1805,6 +1859,19 @@ void C2_NAKED C2_HOOK_FASTCALL UpdateTintedPolyByMaterial(int pIndex) {
             pop ebx
             add esp, 0x14
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -1967,7 +2034,7 @@ void C2_NAKED C2_HOOK_FASTCALL UpdateTintedPolys(void) {
             mov edi, dword ptr [esp + 0x10]
             mov ebx, dword ptr [esp + 0x10]
             mov ebp, dword ptr [esp + 0x10]
-            mov esi, 0x705cb8
+            mov esi, offset gTintedPolys+0x38
     L004d8a3c:
             mov eax, dword ptr [esi - 8]
             test eax, eax
@@ -1977,18 +2044,23 @@ void C2_NAKED C2_HOOK_FASTCALL UpdateTintedPolys(void) {
             cmp eax, 4
             ja L004d8b78
             jmp dword ptr [eax*4 + 0x4d8b9c]
-            mov eax, dword ptr ds:[gCar_to_view]
+            mov eax, dword ptr [gCar_to_view]
             mov edx, dword ptr [eax + 8]
             mov eax, dword ptr [edx + 0x258]
             test eax, eax
             je L004d8a81
             fld dword ptr [eax + 0x88]
-            fcomp dword ptr ds:[0x58abd0]
+            _emit 0xd8
+        _emit 0x1d
+        _emit 0xd0
+        _emit 0xab
+        _emit 0x58
+        _emit 0x00
             fnstsw ax
             test ah, 1
             jne L004d8a8e
     L004d8a81:
-            mov eax, dword ptr ds:[gPed_676914]
+            mov eax, dword ptr [gPed_676914]
             test eax, eax
             je L004d8b78
     L004d8a8e:
@@ -2000,7 +2072,7 @@ void C2_NAKED C2_HOOK_FASTCALL UpdateTintedPolys(void) {
             call PDKeyDown
             test eax, eax
             jne L004d8ac0
-            mov eax, dword ptr ds:[gINT_006a0444]
+            mov eax, dword ptr [gINT_006a0444]
             test eax, eax
             jle L004d8ac9
             cmp eax, 0xc8
@@ -2013,14 +2085,14 @@ void C2_NAKED C2_HOOK_FASTCALL UpdateTintedPolys(void) {
             call PDKeyDown
             test eax, eax
             jne L004d8aef
-            mov eax, dword ptr ds:[gINT_006a0444]
+            mov eax, dword ptr [gINT_006a0444]
             test eax, eax
             jle L004d8b78
             cmp eax, 0xc8
             jg L004d8b78
     L004d8aef:
             mov ecx, dword ptr [esp + 0x10]
-            mov dword ptr ds:[gINT_006a0448], 1
+            mov dword ptr [gINT_006a0448], 1
             call UpdateFirePoly
             jmp L004d8b78
             mov eax, dword ptr [esi - 4]
@@ -2373,26 +2445,31 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessTintedPoly(int pIndex) {
             add eax, edi
             lea esi, [eax + eax*4]
             shl esi, 4
-            mov eax, dword ptr [esi + 0x705cb0]
+            mov eax, dword ptr [esi + gTintedPolys+0x30]
             test eax, eax
             je L004d85c9
-            mov eax, dword ptr [esi + 0x705cb8]
+            mov eax, dword ptr [esi + gTintedPolys+0x38]
             add eax, -2
             cmp eax, 4
             ja L004d85c9
             jmp dword ptr [eax*4 + 0x4d8618]
-            mov eax, dword ptr ds:[gCar_to_view]
+            mov eax, dword ptr [gCar_to_view]
             mov ecx, dword ptr [eax + 8]
             mov eax, dword ptr [ecx + 0x258]
             test eax, eax
             je L004d84ff
             fld dword ptr [eax + 0x88]
-            fcomp dword ptr ds:[0x58abd0]
+            _emit 0xd8
+        _emit 0x1d
+        _emit 0xd0
+        _emit 0xab
+        _emit 0x58
+        _emit 0x00
             fnstsw ax
             test ah, 1
             jne L004d850c
     L004d84ff:
-            mov eax, dword ptr ds:[gPed_676914]
+            mov eax, dword ptr [gPed_676914]
             test eax, eax
             je L004d85c9
     L004d850c:
@@ -2412,7 +2489,7 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessTintedPoly(int pIndex) {
             call PDKeyDown
             test eax, eax
             jne L004d8540
-            mov eax, dword ptr ds:[gINT_006a0444]
+            mov eax, dword ptr [gINT_006a0444]
             test eax, eax
             jle L004d8547
             cmp eax, 0xc8
@@ -2425,23 +2502,23 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessTintedPoly(int pIndex) {
             call PDKeyDown
             test eax, eax
             jne L004d8565
-            mov eax, dword ptr ds:[gINT_006a0444]
+            mov eax, dword ptr [gINT_006a0444]
             test eax, eax
             jle L004d85c9
             cmp eax, 0xc8
             jg L004d85c9
     L004d8565:
             mov ecx, edi
-            mov dword ptr ds:[gINT_006a0448], 1
+            mov dword ptr [gINT_006a0448], 1
             call UpdateFirePoly
             pop edi
             pop esi
             pop ecx
             ret
-            mov eax, dword ptr [esi + 0x705cb4]
+            mov eax, dword ptr [esi + gTintedPolys+0x34]
             test eax, eax
             je L004d85c9
-            mov eax, dword ptr [esi + 0x705ca4]
+            mov eax, dword ptr [esi + gTintedPolys+0x24]
             sub eax, 0
             je L004d85cd
             dec eax
@@ -2453,14 +2530,14 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessTintedPoly(int pIndex) {
             mov edx, dword ptr [esp + 8]
             mov edi, dword ptr [esp + 8]
     L004d85a5:
-            mov eax, dword ptr [esi + 0x705c84]
+            mov eax, dword ptr [esi + gTintedPolys+0x4]
             push 4
             shl ecx, 8
             or ecx, edx
             shl ecx, 8
             or ecx, edi
             mov dword ptr [eax + 8], ecx
-            mov ecx, dword ptr [esi + 0x705c84]
+            mov ecx, dword ptr [esi + gTintedPolys+0x4]
             push ecx
             call BrMaterialUpdate
             add esp, 8
@@ -2471,7 +2548,7 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessTintedPoly(int pIndex) {
             ret
     L004d85cd:
             call GetTotalTime
-            mov ecx, dword ptr [esi + 0x705cc0]
+            mov ecx, dword ptr [esi + gTintedPolys+0x40]
             shr eax, cl
             and eax, 0x1ff
             cmp eax, 0xff
@@ -2484,9 +2561,9 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessTintedPoly(int pIndex) {
             and edx, 0xff
             mov eax, edx
     L004d85fc:
-            mov ecx, dword ptr [esi + 0x705c98]
-            mov edx, dword ptr [esi + 0x705c9c]
-            mov edi, dword ptr [esi + 0x705ca0]
+            mov ecx, dword ptr [esi + gTintedPolys+0x18]
+            mov edx, dword ptr [esi + gTintedPolys+0x1c]
+            mov edi, dword ptr [esi + gTintedPolys+0x20]
             and ecx, eax
             and edx, eax
             and edi, eax
@@ -2560,7 +2637,11 @@ void C2_NAKED C2_HOOK_FASTCALL UpdatePolyVertexColours(int pTintedIndex) {
     }
 #else
     __asm {
-            mov eax, dword ptr [gTintedPolyCamera+0x4]
+            _emit 0xa1
+        _emit 0x34
+        _emit 0x04
+        _emit 0x6a
+        _emit 0x00
             sub esp, 0x30
             push ebx
             xor ebx, ebx
@@ -2596,7 +2677,12 @@ void C2_NAKED C2_HOOK_FASTCALL UpdatePolyVertexColours(int pTintedIndex) {
             fild dword ptr [esp + 0x10]
             fild dword ptr [esp + 0x14]
             fxch st(2)
-            fdivr qword ptr [gConst_average_ped_scale_factor+0x8]
+            _emit 0xdc
+        _emit 0x3d
+        _emit 0xa8
+        _emit 0xab
+        _emit 0x58
+        _emit 0x00
             mov dword ptr [esp + 0x10], 4
             fild dword ptr [esp + 0x1c]
             fxch st(2)
@@ -2606,24 +2692,58 @@ void C2_NAKED C2_HOOK_FASTCALL UpdatePolyVertexColours(int pTintedIndex) {
             fxch st(2)
             fmul st(0), st(1)
             fxch st(3)
-            fmul qword ptr [gConst_average_ped_scale_factor+0x10]
+            _emit 0xdc
+        _emit 0x0d
+        _emit 0xb0
+        _emit 0xab
+        _emit 0x58
+        _emit 0x00
             fxch st(2)
-            fmul qword ptr [gConst_average_ped_scale_factor+0x10]
+            _emit 0xdc
+        _emit 0x0d
+        _emit 0xb0
+        _emit 0xab
+        _emit 0x58
+        _emit 0x00
             fxch st(2)
-            fsubr qword ptr [gConst_average_ped_scale_factor+0x18]
+            _emit 0xdc
+        _emit 0x2d
+        _emit 0xb8
+        _emit 0xab
+        _emit 0x58
+        _emit 0x00
             fxch st(3)
-            fmul qword ptr [gConst_average_ped_scale_factor+0x10]
+            _emit 0xdc
+        _emit 0x0d
+        _emit 0xb0
+        _emit 0xab
+        _emit 0x58
+        _emit 0x00
             fxch st(2)
-            fsubr qword ptr [gConst_average_ped_scale_factor+0x18]
+            _emit 0xdc
+        _emit 0x2d
+        _emit 0xb8
+        _emit 0xab
+        _emit 0x58
+        _emit 0x00
             fxch st(3)
             fstp st(1)
             fxch st(1)
-            fsubr qword ptr [gConst_average_ped_scale_factor+0x18]
+            _emit 0xdc
+        _emit 0x2d
+        _emit 0xb8
+        _emit 0xab
+        _emit 0x58
+        _emit 0x00
             fxch st(1)
             fxch st(2)
             fxch st(1)
     L004d8115:
-            mov eax, dword ptr [gTintedPolyCamera+0x4]
+            _emit 0xa1
+        _emit 0x34
+        _emit 0x04
+        _emit 0x6a
+        _emit 0x00
             mov ecx, dword ptr [esp + 0x10]
             xor edx, edx
             mov eax, dword ptr [eax + ecx]
@@ -2652,10 +2772,20 @@ void C2_NAKED C2_HOOK_FASTCALL UpdatePolyVertexColours(int pTintedIndex) {
             mov dword ptr [esp + 0x18], ebx
             lea eax, [esi + ecx]
             mov dword ptr [esp + 0x2c], ebx
-            fdivr qword ptr [gConst_average_ped_scale_factor+0x20]
+            _emit 0xdc
+        _emit 0x3d
+        _emit 0xc0
+        _emit 0xab
+        _emit 0x58
+        _emit 0x00
             mov dword ptr [esp + 0x28], eax
             fimul dword ptr [esp + 0x14]
-            fmul qword ptr [gConst_average_ped_scale_factor+0x28]
+            _emit 0xdc
+        _emit 0x0d
+        _emit 0xc8
+        _emit 0xab
+        _emit 0x58
+        _emit 0x00
             fild qword ptr [esp + 0x28]
             fmul st(0), st(3)
             fmul st(0), st(1)
@@ -2704,6 +2834,11 @@ void C2_NAKED C2_HOOK_FASTCALL UpdatePolyVertexColours(int pTintedIndex) {
             pop ebx
             add esp, 0x30
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -2993,24 +3128,24 @@ void C2_NAKED C2_HOOK_FASTCALL UpdateFirePoly(int pIndex) {
             jle L004d89eb
             mov esi, 1
     L004d8951:
-            push offset gDefaultOpacity_TintedPoly+0x80
+            push offset gMatchString_0065e8f4
             mov edx, offset gApplication_path
             lea ecx, [esp + 0x24]
             call PathCat
             lea edi, [esp + 0x20]
             or ecx, 0xffffffff
             xor eax, eax
-            push offset gDefaultOpacity_TintedPoly+0x7c
+            push offset gMatchString_0065e8f0
             repne scasb
             not ecx
             dec ecx
             push esi
-            push offset gDefaultOpacity_TintedPoly+0x74
+            push offset gMatchString_0065e8e8
             lea ecx, [esp + ecx + 0x2c]
             push ecx
             call sprintf
             add esp, 0x10
-            mov edx, offset gNext_crush_actor_id+0x180
+            mov edx, 0x58f9e0
             lea ecx, [esp + 0x20]
             call DRfopen
             cmp eax, ebx
@@ -3026,7 +3161,7 @@ void C2_NAKED C2_HOOK_FASTCALL UpdateFirePoly(int pIndex) {
             lea edx, [esp + 0x20]
             lea eax, [esp + 0x120]
             push edx
-            push offset gCancel_recover+0xbc
+            push 0x59101c
             push eax
             call sprintf
             add esp, 0xc

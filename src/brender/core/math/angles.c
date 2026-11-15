@@ -44,6 +44,25 @@ extern char IID_IDirectInputDevice2A[];
 extern br_uint_8 _CombineTransforms[7][7];
 extern void __cdecl _ftol();
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gData_0066cba0[];
+extern char gData_0066cba1[];
+extern char gData_0066cba2[];
+extern char gDouble_0058b898[];
+extern char gDouble_0058b8a8[];
+extern char gFloat_0058b8a0[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gData_0058b894[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchData_0066cba0[];
+extern char gMatchData_0066cba1[];
+extern char gMatchData_0066cba2[];
+extern char gMatchDouble_0058b898[];
+extern char gMatchDouble_0058b8a8[];
+extern char gMatchFloat_0058b8a0[];
+#endif
 // FUNCTION: CARMA2_HW 0x00531de0
 C2_NAKED br_matrix34* C2_HOOK_CDECL BrEulerToMatrix34(br_matrix34* mat, const br_euler* euler) {
 #ifndef CARPOCALYPSE2_MATCHING
@@ -161,22 +180,22 @@ C2_NAKED br_matrix34* C2_HOOK_CDECL BrEulerToMatrix34(br_matrix34* mat, const br
             mov esi, dword ptr [esp + 0x28]
             mov dword ptr [esp + 0x38], ecx
             and esi, 0xff
-            fmul qword ptr [IID_IDirectInputDevice2A+0x500]
+            fmul qword ptr [gMatchDouble_0058b898]
             fxch st(1)
-            fmul qword ptr [IID_IDirectInputDevice2A+0x500]
+            fmul qword ptr [gMatchDouble_0058b898]
             fild dword ptr [esp + 0x38]
             fxch st(2)
             fst dword ptr [esp + 0x38]
             fld st(1)
             fld dword ptr [esp + 0x38]
             fxch st(4)
-            fmul qword ptr [IID_IDirectInputDevice2A+0x500]
+            fmul qword ptr [gMatchDouble_0058b898]
             fxch st(1)
             fcos
             shl esi, 2
             xor ecx, ecx
             xor edx, edx
-            mov cl, byte ptr [esi + _CombineTransforms+0x38]
+            mov cl, byte ptr [esi + gMatchData_0066cba0]
             fxch st(2)
             fsin
             fxch st(3)
@@ -224,9 +243,9 @@ C2_NAKED br_matrix34* C2_HOOK_CDECL BrEulerToMatrix34(br_matrix34* mat, const br
             fstp dword ptr [esp + 0x38]
             fxch st(2)
             fstp dword ptr [esp + 0x28]
-            mov dl, byte ptr [esi + _CombineTransforms+0x39]
+            mov dl, byte ptr [esi + gMatchData_0066cba1]
             xor eax, eax
-            mov al, byte ptr [esi + _CombineTransforms+0x3a]
+            mov al, byte ptr [esi + gMatchData_0066cba2]
             fxch st(1)
             fstp dword ptr [esp + 0x1c]
             fstp dword ptr [esp + 0x2c]
@@ -382,6 +401,7 @@ C2_NAKED br_matrix34* C2_HOOK_CDECL BrEulerToMatrix34(br_matrix34* mat, const br
             pop ebx
             add esp, 0x20
             ret
+            nop
     }
 #endif
 }
@@ -460,11 +480,11 @@ C2_NAKED br_euler* C2_HOOK_CDECL BrMatrix34ToEuler(br_euler* euler, const br_mat
             mov eax, dword ptr [esp + 0x10]
             and eax, 0xff
             shl eax, 2
-            mov dl, byte ptr [eax + _CombineTransforms+0x38]
-            mov bl, byte ptr [eax + _CombineTransforms+0x3a]
+            mov dl, byte ptr [eax + gMatchData_0066cba0]
+            mov bl, byte ptr [eax + gMatchData_0066cba2]
             mov ebp, edx
             xor edx, edx
-            mov dl, byte ptr [eax + _CombineTransforms+0x39]
+            mov dl, byte ptr [eax + gMatchData_0066cba1]
             test cl, 8
             mov edi, edx
             je L005321db
@@ -488,7 +508,7 @@ C2_NAKED br_euler* C2_HOOK_CDECL BrMatrix34ToEuler(br_euler* euler, const br_mat
             faddp st(1), st(0)
             fsqrt
             fstp st(1)
-            fcom dword ptr [IID_IDirectInputDevice2A+0x508]
+            fcom dword ptr [gMatchFloat_0058b8a0]
             fnstsw ax
             test ah, 0x41
             jne L005321a7
@@ -498,7 +518,7 @@ C2_NAKED br_euler* C2_HOOK_CDECL BrMatrix34ToEuler(br_euler* euler, const br_mat
             _emit 0xd9
         _emit 0x01
             fpatan
-            fmul qword ptr [IID_IDirectInputDevice2A+0x510]
+            fmul qword ptr [gMatchDouble_0058b8a8]
             call _ftol
             mov edx, ebp
             mov word ptr [esi], ax
@@ -506,7 +526,7 @@ C2_NAKED br_euler* C2_HOOK_CDECL BrMatrix34ToEuler(br_euler* euler, const br_mat
             shl edx, 4
             fld dword ptr [edx + eax]
             fpatan
-            fmul qword ptr [IID_IDirectInputDevice2A+0x510]
+            fmul qword ptr [gMatchDouble_0058b8a8]
             call _ftol
             lea ebp, [ebp + ebp*2]
             mov word ptr [esi + 2], ax
@@ -526,7 +546,7 @@ C2_NAKED br_euler* C2_HOOK_CDECL BrMatrix34ToEuler(br_euler* euler, const br_mat
             fchs
             fxch st(1)
             fpatan
-            fmul qword ptr [IID_IDirectInputDevice2A+0x510]
+            fmul qword ptr [gMatchDouble_0058b8a8]
             call _ftol
             mov ecx, dword ptr [esp + 0x24]
             mov word ptr [esi], ax
@@ -555,7 +575,7 @@ C2_NAKED br_euler* C2_HOOK_CDECL BrMatrix34ToEuler(br_euler* euler, const br_mat
             faddp st(1), st(0)
             fsqrt
             fstp st(1)
-            fcom dword ptr [IID_IDirectInputDevice2A+0x508]
+            fcom dword ptr [gMatchFloat_0058b8a0]
             fnstsw ax
             test ah, 0x41
             jne L0053228a
@@ -568,7 +588,7 @@ C2_NAKED br_euler* C2_HOOK_CDECL BrMatrix34ToEuler(br_euler* euler, const br_mat
             fld dword ptr [ebp + edx*4]
             fxch st(1)
             fpatan
-            fmul qword ptr [IID_IDirectInputDevice2A+0x510]
+            fmul qword ptr [gMatchDouble_0058b8a8]
             call _ftol
             mov ecx, dword ptr [esp + 0x20]
             mov word ptr [esi], ax
@@ -577,7 +597,7 @@ C2_NAKED br_euler* C2_HOOK_CDECL BrMatrix34ToEuler(br_euler* euler, const br_mat
             fchs
             fxch st(1)
             fpatan
-            fmul qword ptr [IID_IDirectInputDevice2A+0x510]
+            fmul qword ptr [gMatchDouble_0058b8a8]
             call _ftol
             mov edx, dword ptr [esp + 0x18]
             mov word ptr [esi + 2], ax
@@ -588,7 +608,7 @@ C2_NAKED br_euler* C2_HOOK_CDECL BrMatrix34ToEuler(br_euler* euler, const br_mat
         _emit 0x00
     L00532277:
             fpatan
-            fmul qword ptr [IID_IDirectInputDevice2A+0x510]
+            fmul qword ptr [gMatchDouble_0058b8a8]
             call _ftol
             mov word ptr [esi + 4], ax
             jmp L005322d2
@@ -601,7 +621,7 @@ C2_NAKED br_euler* C2_HOOK_CDECL BrMatrix34ToEuler(br_euler* euler, const br_mat
             fchs
             fld dword ptr [edi + ebp]
             fpatan
-            fmul qword ptr [IID_IDirectInputDevice2A+0x510]
+            fmul qword ptr [gMatchDouble_0058b8a8]
             call _ftol
             mov word ptr [esi], ax
             mov eax, dword ptr [esp + 0x20]
@@ -611,7 +631,7 @@ C2_NAKED br_euler* C2_HOOK_CDECL BrMatrix34ToEuler(br_euler* euler, const br_mat
             fxch st(1)
     L005322bb:
             fpatan
-            fmul qword ptr [IID_IDirectInputDevice2A+0x510]
+            fmul qword ptr [gMatchDouble_0058b8a8]
             call _ftol
             mov word ptr [esi + 2], ax
             mov word ptr [esi + 4], 0
@@ -643,6 +663,17 @@ C2_NAKED br_euler* C2_HOOK_CDECL BrMatrix34ToEuler(br_euler* euler, const br_mat
             pop ebx
             add esp, 0xc
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -771,9 +802,9 @@ C2_NAKED br_quat* C2_HOOK_CDECL BrEulerToQuat(br_quat* q, const br_euler* euler)
             mov eax, dword ptr [esp + 0xc]
             mov dword ptr [esp + 0x14], ecx
             and eax, 0xff
-            fmul qword ptr [IID_IDirectInputDevice2A+0x500]
+            fmul qword ptr [gMatchDouble_0058b898]
             fxch st(1)
-            fmul qword ptr [IID_IDirectInputDevice2A+0x500]
+            fmul qword ptr [gMatchDouble_0058b898]
             fild dword ptr [esp + 0x14]
             fxch st(2)
             fst dword ptr [esp + 0x14]
@@ -781,12 +812,12 @@ C2_NAKED br_quat* C2_HOOK_CDECL BrEulerToQuat(br_quat* q, const br_euler* euler)
             fld st(2)
             fld dword ptr [esp + 0x14]
             fxch st(5)
-            fmul qword ptr [IID_IDirectInputDevice2A+0x500]
+            fmul qword ptr [gMatchDouble_0058b898]
             fxch st(2)
             fcos
             shl eax, 2
             xor ecx, ecx
-            mov cl, byte ptr [eax + _CombineTransforms+0x38]
+            mov cl, byte ptr [eax + gMatchData_0066cba0]
             mov esi, ecx
             xor ecx, ecx
             fxch st(3)
@@ -833,10 +864,10 @@ C2_NAKED br_quat* C2_HOOK_CDECL BrEulerToQuat(br_quat* q, const br_euler* euler)
             fmul dword ptr [esp + 8]
             fxch st(3)
             fstp dword ptr [esp + 0x10]
-            mov cl, byte ptr [eax + _CombineTransforms+0x39]
+            mov cl, byte ptr [eax + gMatchData_0066cba1]
             xor edx, edx
             fstp dword ptr [esp + 8]
-            mov dl, byte ptr [eax + _CombineTransforms+0x3a]
+            mov dl, byte ptr [eax + gMatchData_0066cba2]
             fstp dword ptr [esp + 0xc]
             fstp dword ptr [esp + 0x14]
             test bl, 8

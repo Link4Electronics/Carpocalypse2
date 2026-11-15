@@ -89,6 +89,16 @@ extern MCI_OPEN_PARMS mci_open_params;
 extern MCI_PLAY_PARMS mci_play_parms;
 extern char rendererStateStoredDispatch[];
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gDouble_0058d528[];
+extern char gDouble_0058d530[];
+extern char gString_00673684[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchDouble_0058d528[];
+extern char gMatchDouble_0058d530[];
+extern char gMatchString_00673684[];
+#endif
 // FUNCTION: CARMA2_HW 0x0056992f
 int C2_HOOK_FASTCALL PDS3Init(void) {
 
@@ -353,21 +363,26 @@ C2_NAKED const char* C2_HOOK_FASTCALL PDS3GetWorkingDirectory(void) {
             push ecx
             push esi
             mov dword ptr [ebp - 4], ecx
-            cmp dword ptr ds:[gS3_working_directory_initialized], 0
+            cmp dword ptr [gS3_working_directory_initialized], 0
             jne L00569b7c
-            mov byte ptr ds:[gS3_working_directory], 0
+            mov byte ptr [gS3_working_directory], 0
             push offset gS3_working_directory
             push 0x104
-            call dword ptr ds:[0x589068]
+            _emit 0xff
+        _emit 0x15
+        _emit 0x68
+        _emit 0x90
+        _emit 0x58
+        _emit 0x00
             mov esi, eax
             push offset gS3_working_directory
             call strlen
             add esp, 4
             cmp esi, eax
             je L00569b72
-            mov byte ptr ds:[gS3_working_directory], 0
+            mov byte ptr [gS3_working_directory], 0
     L00569b72:
-            mov dword ptr ds:[gS3_working_directory_initialized], 1
+            mov dword ptr [gS3_working_directory_initialized], 1
     L00569b7c:
             mov eax, offset gS3_working_directory
             pop esi
@@ -407,7 +422,12 @@ int C2_NAKED C2_HOOK_FASTCALL PDS3StopMidiChannel(tS3_channel* pChannel) {
             push 0x804
             mov edx, dword ptr [ebp - 4]
             push edx
-            call dword ptr [gS3_sample_filter_disable_func+0x1994]
+            _emit 0xff
+        _emit 0x15
+        _emit 0xf8
+        _emit 0x20
+        _emit 0x7a
+        _emit 0x00
     L00569ce9:
             mov eax, dword ptr [ebp - 8]
             cmp dword ptr [eax], 0
@@ -610,9 +630,9 @@ int C2_NAKED C2_HOOK_FASTCALL PDS3UpdateChannelVolume(tS3_channel* pChannel) {
             je L0056964e
             fld dword ptr [ebp - 0x10]
             fld dword ptr [ebp - 0x14]
-            fdiv qword ptr [rendererStateStoredDispatch+0xc90]
+            fdiv qword ptr [gMatchDouble_0058d528]
             fmulp st(1), st(0)
-            fmul qword ptr [rendererStateStoredDispatch+0xc98]
+            fmul qword ptr [gMatchDouble_0058d530]
             call _ftol
             mov dword ptr [ebp - 8], eax
             mov eax, dword ptr [ebp - 8]
@@ -650,7 +670,12 @@ int C2_NAKED C2_HOOK_FASTCALL PDS3UpdateChannelVolume(tS3_channel* pChannel) {
             je L0056964e
             mov eax, dword ptr [ebp - 0x18]
             fld dword ptr [eax + 0x28]
-            fmul qword ptr [rendererStateStoredDispatch+0xca0]
+            _emit 0xdc
+        _emit 0x0d
+        _emit 0x38
+        _emit 0xd5
+        _emit 0x58
+        _emit 0x00
             call _ftol
             mov dword ptr [ebp - 4], eax
             cmp dword ptr [ebp - 4], 0xffffd8f1
@@ -795,7 +820,12 @@ int C2_NAKED C2_HOOK_FASTCALL PDS3IsMIDIStopped(tS3_channel *pChannel) {
             push 0x814
             mov edx, dword ptr [ebp - 4]
             push edx
-            call dword ptr [gS3_sample_filter_disable_func+0x1994]
+            _emit 0xff
+        _emit 0x15
+        _emit 0xf8
+        _emit 0x20
+        _emit 0x7a
+        _emit 0x00
             cmp dword ptr [gPDS3_mci_midi_status_parms+0x4], 0x20e
             jne L00569f60
             xor eax, eax
@@ -991,7 +1021,7 @@ tS3_error_codes C2_NAKED C2_HOOK_FASTCALL PDS3StartMidiChannel(tS3_channel* pCha
             push ecx
             call strcpy
             add esp, 8
-            push offset gS3_CDA_enabled+0x180
+            push offset gMatchString_00673684
             lea edx, [ebp - 0x50]
             push edx
             call strcat
@@ -1005,7 +1035,12 @@ tS3_error_codes C2_NAKED C2_HOOK_FASTCALL PDS3StartMidiChannel(tS3_channel* pCha
             push 0x2200
             push 0x803
             push 0
-            call dword ptr [gS3_sample_filter_disable_func+0x1994]
+            _emit 0xff
+        _emit 0x15
+        _emit 0xf8
+        _emit 0x20
+        _emit 0x7a
+        _emit 0x00
             mov dword ptr [ebp - 0x60], eax
             cmp dword ptr [ebp - 0x60], 0
             je L00569c10
@@ -1020,7 +1055,12 @@ tS3_error_codes C2_NAKED C2_HOOK_FASTCALL PDS3StartMidiChannel(tS3_channel* pCha
             push 0x814
             mov eax, dword ptr [ebp - 0x54]
             push eax
-            call dword ptr [gS3_sample_filter_disable_func+0x1994]
+            _emit 0xff
+        _emit 0x15
+        _emit 0xf8
+        _emit 0x20
+        _emit 0x7a
+        _emit 0x00
             mov dword ptr [ebp - 0x60], eax
             cmp dword ptr [ebp - 0x60], 0
             je L00569c5f
@@ -1029,7 +1069,12 @@ tS3_error_codes C2_NAKED C2_HOOK_FASTCALL PDS3StartMidiChannel(tS3_channel* pCha
             push 0x804
             mov ecx, dword ptr [ebp - 0x54]
             push ecx
-            call dword ptr [gS3_sample_filter_disable_func+0x1994]
+            _emit 0xff
+        _emit 0x15
+        _emit 0xf8
+        _emit 0x20
+        _emit 0x7a
+        _emit 0x00
             mov eax, 0xf
             jmp L00569cad
     L00569c5f:
@@ -1038,7 +1083,12 @@ tS3_error_codes C2_NAKED C2_HOOK_FASTCALL PDS3StartMidiChannel(tS3_channel* pCha
             push 0x806
             mov edx, dword ptr [ebp - 0x54]
             push edx
-            call dword ptr [gS3_sample_filter_disable_func+0x1994]
+            _emit 0xff
+        _emit 0x15
+        _emit 0xf8
+        _emit 0x20
+        _emit 0x7a
+        _emit 0x00
             mov dword ptr [ebp - 0x60], eax
             cmp dword ptr [ebp - 0x60], 0
             je L00569c98
@@ -1047,7 +1097,12 @@ tS3_error_codes C2_NAKED C2_HOOK_FASTCALL PDS3StartMidiChannel(tS3_channel* pCha
             push 0x804
             mov eax, dword ptr [ebp - 0x54]
             push eax
-            call dword ptr [gS3_sample_filter_disable_func+0x1994]
+            _emit 0xff
+        _emit 0x15
+        _emit 0xf8
+        _emit 0x20
+        _emit 0x7a
+        _emit 0x00
             mov eax, 0xf
             jmp L00569cad
     L00569c98:
@@ -1179,7 +1234,12 @@ void C2_NAKED C2_HOOK_FASTCALL PDS3ServiceCDA(tS32 pDelta_time) {
             push 0x814
             mov ecx, dword ptr [gPDS3_mci_open_parms+0x4]
             push ecx
-            call dword ptr [gS3_sample_filter_disable_func+0x1994]
+            _emit 0xff
+        _emit 0x15
+        _emit 0xf8
+        _emit 0x20
+        _emit 0x7a
+        _emit 0x00
             xor edx, edx
             cmp dword ptr [gPDS3_cda_status_parms+0x4], 0x20e
             sete dl

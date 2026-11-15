@@ -243,6 +243,12 @@ extern int gHeadup_map_x;
 extern int gHeadup_map_y;
 extern char gNext_crush_actor_id[];
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gDouble_0058a378[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchDouble_0058a378[];
+#endif
 // FUNCTION: CARMA2_HW 0x00496e30
 void C2_HOOK_FASTCALL InitMap(void) {
 
@@ -497,10 +503,15 @@ void C2_NAKED C2_HOOK_FASTCALL CheckMapMoveKeys(int pKey0, int pKey1) {
             fld dword ptr [gHeadup_map_y_float]
             mov dword ptr [esp + 8], eax
             fild qword ptr [esp + 8]
-            fmul qword ptr [gDouble_0058a068+0x310]
+            fmul qword ptr [gMatchDouble_0058a378]
             fsubp st(1), st(0)
             fst dword ptr [gHeadup_map_y_float]
-            fcomp dword ptr [gDouble_0058a068+0x2e8]
+            _emit 0xd8
+        _emit 0x1d
+        _emit 0x50
+        _emit 0xa3
+        _emit 0x58
+        _emit 0x00
             fnstsw ax
             test ah, 1
             je L004976e8
@@ -519,7 +530,7 @@ void C2_NAKED C2_HOOK_FASTCALL CheckMapMoveKeys(int pKey0, int pKey1) {
             mov edx, dword ptr [gBack_screen]
             fild qword ptr [esp + 8]
             xor ecx, ecx
-            fmul qword ptr [gDouble_0058a068+0x310]
+            fmul qword ptr [gMatchDouble_0058a378]
             fadd dword ptr [gHeadup_map_y_float]
             fstp dword ptr [gHeadup_map_y_float]
             fld dword ptr [gHeadup_map_y_float]
@@ -550,10 +561,15 @@ void C2_NAKED C2_HOOK_FASTCALL CheckMapMoveKeys(int pKey0, int pKey1) {
             fld dword ptr [gHeadup_map_x_float]
             mov dword ptr [esp + 8], eax
             fild qword ptr [esp + 8]
-            fmul qword ptr [gDouble_0058a068+0x310]
+            fmul qword ptr [gMatchDouble_0058a378]
             fsubp st(1), st(0)
             fst dword ptr [gHeadup_map_x_float]
-            fcomp dword ptr [gDouble_0058a068+0x2e8]
+            _emit 0xd8
+        _emit 0x1d
+        _emit 0x50
+        _emit 0xa3
+        _emit 0x58
+        _emit 0x00
             fnstsw ax
             test ah, 1
             je L004977ce
@@ -577,7 +593,7 @@ void C2_NAKED C2_HOOK_FASTCALL CheckMapMoveKeys(int pKey0, int pKey1) {
             mov edx, dword ptr [gBack_screen]
             fild qword ptr [esp + 8]
             xor ecx, ecx
-            fmul qword ptr [gDouble_0058a068+0x310]
+            fmul qword ptr [gMatchDouble_0058a378]
             fadd dword ptr [gHeadup_map_x_float]
             fst dword ptr [gHeadup_map_x_float]
             mov cx, word ptr [edx + 0x34]
@@ -585,7 +601,12 @@ void C2_NAKED C2_HOOK_FASTCALL CheckMapMoveKeys(int pKey0, int pKey1) {
             mov dword ptr [esp + 8], ecx
             fild dword ptr [esp + 8]
             fxch st(1)
-            fsub dword ptr [gDouble_0058a068+0x2fc]
+            _emit 0xd8
+        _emit 0x25
+        _emit 0x64
+        _emit 0xa3
+        _emit 0x58
+        _emit 0x00
             fxch st(1)
             fcompp
             fnstsw ax

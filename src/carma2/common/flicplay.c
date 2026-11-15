@@ -603,6 +603,12 @@ extern tS16 C2_HOOK_FASTCALL MemReadS16(char** pPtr);
 extern tS8 C2_HOOK_FASTCALL MemReadS8(char** pPtr);
 extern tU8 C2_HOOK_FASTCALL MemReadU8(char** pPtr);
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gString_0059ac9c[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchString_0059ac9c[];
+#endif
 // FUNCTION: CARMA2_HW 0x00461a40
 
 int C2_HOOK_FASTCALL GetPanelFlicFrameIndex(int pIndex) {
@@ -779,7 +785,7 @@ int C2_NAKED C2_HOOK_FASTCALL StartFlic(char* pFile_name, int pIndex, tFlic_desc
             mov dword ptr [esp + 0x10], edx
             mov esi, ecx
             je L00461bb3
-            push offset gFlic_bunch+0x108c
+            push offset gMatchString_0059ac9c
             mov edx, offset gApplication_path
             lea ecx, [esp + 0x18]
             call PathCat
@@ -787,7 +793,7 @@ int C2_NAKED C2_HOOK_FASTCALL StartFlic(char* pFile_name, int pIndex, tFlic_desc
             lea ecx, [esp + 0x14]
             push esi
             call PathCat
-            mov edx, offset gCancel_recover+0x1a4
+            mov edx, offset gFile_mode_rb
             lea ecx, [esp + 0x14]
             call DRfopen
             mov ebx, dword ptr [esp + 0x118]
@@ -993,6 +999,17 @@ int C2_NAKED C2_HOOK_FASTCALL StartFlic(char* pFile_name, int pIndex, tFlic_desc
     L00461d4d:
             mov dword ptr [ebx + 0x3c], edi
             jmp L00461c91
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -1759,7 +1776,7 @@ int C2_NAKED C2_HOOK_FASTCALL PlayNextFlicFrame(tFlic_descriptor* pFlic_info) {
             mov dword ptr [esp + 0x14], ecx
     L00461e7c:
             mov eax, dword ptr [esp + 0x18]
-            mov edx, dword ptr ds:[gPalette_pixels]
+            mov edx, dword ptr [gPalette_pixels]
             add eax, esi
             test ecx, ecx
             mov dword ptr [esp + 0x18], eax
@@ -1787,13 +1804,13 @@ int C2_NAKED C2_HOOK_FASTCALL PlayNextFlicFrame(tFlic_descriptor* pFlic_info) {
             dec edi
             jne L00461e97
     L00461ec6:
-            mov eax, dword ptr ds:[gPalette_fuck_prevention]
+            mov eax, dword ptr [gPalette_fuck_prevention]
             test eax, eax
             jne L00461ee3
             mov ecx, dword ptr [esp + 0x14]
             mov edx, dword ptr [esp + 0x18]
             push ecx
-            mov ecx, dword ptr ds:[gPalette]
+            mov ecx, dword ptr [gPalette]
             call DRSetPaletteEntries
     L00461ee3:
             mov eax, dword ptr [esp + 0x1c]
@@ -1801,7 +1818,7 @@ int C2_NAKED C2_HOOK_FASTCALL PlayNextFlicFrame(tFlic_descriptor* pFlic_info) {
             mov dword ptr [esp + 0x1c], eax
             jne L00461e51
             jmp L00462276
-            mov eax, dword ptr ds:[gTransparency_on]
+            mov eax, dword ptr [gTransparency_on]
             mov ecx, ebp
             test eax, eax
             je L00462043
@@ -2049,7 +2066,7 @@ int C2_NAKED C2_HOOK_FASTCALL PlayNextFlicFrame(tFlic_descriptor* pFlic_info) {
             mov edi, 0x100
             mov dword ptr [esp + 0x1c], edi
     L00462195:
-            mov ecx, dword ptr ds:[gPalette_pixels]
+            mov ecx, dword ptr [gPalette_pixels]
             add ebx, esi
             test edi, edi
             mov dword ptr [esp + 0x18], ebx
@@ -2081,10 +2098,10 @@ int C2_NAKED C2_HOOK_FASTCALL PlayNextFlicFrame(tFlic_descriptor* pFlic_info) {
             mov edi, dword ptr [esp + 0x1c]
             mov ebx, dword ptr [esp + 0x18]
     L004621e8:
-            mov eax, dword ptr ds:[gPalette_fuck_prevention]
+            mov eax, dword ptr [gPalette_fuck_prevention]
             test eax, eax
             jne L004621ff
-            mov ecx, dword ptr ds:[gPalette]
+            mov ecx, dword ptr [gPalette]
             push edi
             mov edx, ebx
             call DRSetPaletteEntries
@@ -2094,7 +2111,7 @@ int C2_NAKED C2_HOOK_FASTCALL PlayNextFlicFrame(tFlic_descriptor* pFlic_info) {
             mov dword ptr [esp + 0x14], eax
             jne L0046216a
             jmp L00462276
-            mov eax, dword ptr ds:[gTransparency_on]
+            mov eax, dword ptr [gTransparency_on]
             mov edx, esi
             test eax, eax
             mov ecx, ebp
@@ -2108,7 +2125,7 @@ int C2_NAKED C2_HOOK_FASTCALL PlayNextFlicFrame(tFlic_descriptor* pFlic_info) {
             mov ecx, ebp
             call DoBlack
             jmp L00462276
-            mov eax, dword ptr ds:[gTransparency_on]
+            mov eax, dword ptr [gTransparency_on]
             mov edx, esi
             test eax, eax
             mov ecx, ebp
@@ -2118,7 +2135,7 @@ int C2_NAKED C2_HOOK_FASTCALL PlayNextFlicFrame(tFlic_descriptor* pFlic_info) {
     L0046224a:
             call DoRunLengthX
             jmp L00462276
-            mov eax, dword ptr ds:[gTransparency_on]
+            mov eax, dword ptr [gTransparency_on]
             mov edx, esi
             test eax, eax
             mov ecx, ebp
@@ -2167,7 +2184,7 @@ int C2_NAKED C2_HOOK_FASTCALL PlayNextFlicFrame(tFlic_descriptor* pFlic_info) {
             test esi, esi
             mov dword ptr [esp + 0x2c], esi
             je L004622de
-            mov eax, dword ptr ds:[gTranslation_count]
+            mov eax, dword ptr [gTranslation_count]
             test eax, eax
             je L004622de
             mov ecx, ebp
@@ -2475,7 +2492,7 @@ int C2_NAKED C2_HOOK_FASTCALL LoadFlicData(char* pName, tU8** pData, tU32* pData
             call PossibleService
             mov edx, offset gApplication_path
             lea ecx, [esp + 0xc]
-            push offset gFlic_bunch+0x108c
+            push offset gMatchString_0059ac9c
             call PathCat
             lea edx, [esp + 0xc]
             lea ecx, [esp + 0xc]
@@ -2537,6 +2554,20 @@ int C2_NAKED C2_HOOK_FASTCALL LoadFlicData(char* pName, tU8** pData, tU32* pData
             pop ebx
             add esp, 0x100
             ret 4
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }

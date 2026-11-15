@@ -208,6 +208,52 @@ extern char gDouble_00589970[];
 extern char gFLOAT_0058a3fc[];
 extern char gFLOAT_0058a400[];
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gData_00692dd8[];
+extern char gDouble_00589948[];
+extern char gDouble_0058a728[];
+extern char gDouble_0058a730[];
+extern char gDouble_0058a738[];
+extern char gDouble_0058a760[];
+extern char gDouble_0058b160[];
+extern char gFloat_00589940[];
+extern char gFloat_0058a418[];
+extern char gFloat_0058a41c[];
+extern char gFloat_0058a704[];
+extern char gFloat_0058a758[];
+extern char gFloat_0058a778[];
+extern char gFloat_00657b44[];
+extern char gFloat_00657b7c[];
+extern char gFloat_0065d01c[];
+extern char gString_0058f86c[];
+extern char gString_00657b6c[];
+extern char gString_00657b74[];
+extern char gString_00657bb4[];
+extern char gString_0065d054[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchData_00692dd8[];
+extern char gMatchDouble_00589948[];
+extern char gMatchDouble_0058a728[];
+extern char gMatchDouble_0058a730[];
+extern char gMatchDouble_0058a738[];
+extern char gMatchDouble_0058a760[];
+extern char gMatchDouble_0058b160[];
+extern char gMatchFloat_00589940[];
+extern char gMatchFloat_0058a418[];
+extern char gMatchFloat_0058a41c[];
+extern char gMatchFloat_0058a704[];
+extern char gMatchFloat_0058a758[];
+extern char gMatchFloat_0058a778[];
+extern char gMatchFloat_00657b44[];
+extern char gMatchFloat_00657b7c[];
+extern char gMatchFloat_0065d01c[];
+extern char gMatchString_0058f86c[];
+extern char gMatchString_00657b6c[];
+extern char gMatchString_00657b74[];
+extern char gMatchString_00657bb4[];
+extern char gMatchString_0065d054[];
+#endif
 // FUNCTION: CARMA2_HW 0x004268a0
 int C2_HOOK_FASTCALL AddObjectObjectForce(tPhysics_joint_force* pForces, const br_vector3* pPoint_a, br_scalar pT, const br_vector3* pPoint_b, const br_vector3* pNormal, int pCount, tPhysics_object* pObject_a, tPhysics_object* pObject_b, int pType, void* pUnused, br_scalar pValue) {
     int i;
@@ -3558,7 +3604,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReadMechanicsShapes(tPhysics_shape** pShape, FILE
             lea edx, [esp + 0x64]
             mov ecx, ebp
             call GetAString
-            mov edx, offset gNext_crush_actor_id+0xc
+            mov edx, offset gMatchString_0058f86c
             lea ecx, [esp + 0x64]
             call DRStricmp
             test eax, eax
@@ -3594,7 +3640,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReadMechanicsShapes(tPhysics_shape** pShape, FILE
             mov dword ptr [esi + 0x18], eax
             jmp L00488d97
     L00488ba9:
-            mov edx, offset gNet_avail_names+0x65c
+            mov edx, offset gMatchString_00657bb4
             lea ecx, [esp + 0x64]
             call DRStricmp
             test eax, eax
@@ -3606,7 +3652,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReadMechanicsShapes(tPhysics_shape** pShape, FILE
             jle L00488be5
             push ebx
             lea ecx, [esp + 0x68]
-            push offset gNet_avail_names+0x624
+            push offset gMatchFloat_00657b7c
             push ecx
             call sprintf
             add esp, 0xc
@@ -3641,7 +3687,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReadMechanicsShapes(tPhysics_shape** pShape, FILE
             jne L00488c04
             jmp L00488d97
     L00488c39:
-            mov edx, offset gNet_avail_names+0x61c
+            mov edx, offset gMatchString_00657b74
             lea ecx, [esp + 0x64]
             call DRStricmp
             test eax, eax
@@ -3667,7 +3713,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReadMechanicsShapes(tPhysics_shape** pShape, FILE
             mov dword ptr [esi + 0x44], edx
             jmp L00488d97
     L00488c90:
-            mov edx, offset gNet_avail_names+0x614
+            mov edx, offset gMatchString_00657b6c
             lea ecx, [esp + 0x64]
             call DRStricmp
             test eax, eax
@@ -3677,7 +3723,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReadMechanicsShapes(tPhysics_shape** pShape, FILE
             mov edi, eax
             cmp edi, 0x40
             jle L00488cc3
-            push offset gNet_avail_names+0x5ec
+            push offset gMatchFloat_00657b44
             push 0x5d
             call FatalError
             add esp, 8
@@ -3774,6 +3820,17 @@ void C2_NAKED C2_HOOK_FASTCALL ReadMechanicsShapes(tPhysics_shape** pShape, FILE
             pop ebp
             add esp, 0x454
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -4192,11 +4249,11 @@ tPhysicsError C2_NAKED C2_HOOK_FASTCALL ProcessTetrahedronPolyhedronCollisionSha
             fxch st(1)
             fsqrt
             fstp st(1)
-            fcom dword ptr [gFlyCarRadiansToAngleNeg+0x10]
+            fcom dword ptr [gMatchFloat_00589940]
             fnstsw ax
             test ah, 0x41
             jne L004213d3
-            fdivr qword ptr [gFlyCarRadiansToAngleNeg+0x18]
+            fdivr qword ptr [gMatchDouble_00589948]
             _emit 0xd9
         _emit 0x01
             fmul st(0), st(1)
@@ -4262,7 +4319,12 @@ tPhysicsError C2_NAKED C2_HOOK_FASTCALL ProcessTetrahedronPolyhedronCollisionSha
             faddp st(1), st(0)
             fadd dword ptr [edi + 0xc]
             fabs
-            fcomp dword ptr [gFLOAT_00589954+0x4]
+            _emit 0xd8
+        _emit 0x1d
+        _emit 0x58
+        _emit 0x99
+        _emit 0x58
+        _emit 0x00
             fnstsw ax
             test ah, 0x41
             je L00421456
@@ -4309,7 +4371,12 @@ tPhysicsError C2_NAKED C2_HOOK_FASTCALL ProcessTetrahedronPolyhedronCollisionSha
         _emit 0x08
             faddp st(1), st(0)
             fadd dword ptr [ecx + 0xc]
-            fcomp dword ptr [gFLOAT_00589954+0x4]
+            _emit 0xd8
+        _emit 0x1d
+        _emit 0x58
+        _emit 0x99
+        _emit 0x58
+        _emit 0x00
             fnstsw ax
             test ah, 1
             je L004214da
@@ -4429,11 +4496,11 @@ tPhysicsError C2_NAKED C2_HOOK_FASTCALL ProcessTetrahedronPolyhedronCollisionSha
             fxch st(1)
             fsqrt
             fstp st(1)
-            fcom dword ptr [gFlyCarRadiansToAngleNeg+0x10]
+            fcom dword ptr [gMatchFloat_00589940]
             fnstsw ax
             test ah, 0x41
             jne L0042164b
-            fdivr qword ptr [gFlyCarRadiansToAngleNeg+0x18]
+            fdivr qword ptr [gMatchDouble_00589948]
             fld dword ptr [edi + ecx + 0x10]
             fmul st(0), st(1)
             fstp dword ptr [edi + ecx + 0x10]
@@ -4523,7 +4590,12 @@ tPhysicsError C2_NAKED C2_HOOK_FASTCALL ProcessTetrahedronPolyhedronCollisionSha
         _emit 0x08
             faddp st(1), st(0)
             fadd dword ptr [ecx + edi + 0x1c]
-            fcomp dword ptr [gFLOAT_00589954+0x4]
+            _emit 0xd8
+        _emit 0x1d
+        _emit 0x58
+        _emit 0x99
+        _emit 0x58
+        _emit 0x00
             fnstsw ax
             test ah, 1
             je L00421755
@@ -4563,6 +4635,10 @@ tPhysicsError C2_NAKED C2_HOOK_FASTCALL ProcessTetrahedronPolyhedronCollisionSha
             pop ebx
             add esp, 0x30
             ret
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -4790,7 +4866,12 @@ int C2_NAKED C2_HOOK_FASTCALL PolyhedronCollisionShape_AddPoint(tCollision_shape
             faddp st(2), st(0)
             faddp st(1), st(0)
             fadd dword ptr [eax + 0xc]
-            fcom dword ptr [gFLOAT_00589954+0x8]
+            _emit 0xd8
+        _emit 0x15
+        _emit 0x5c
+        _emit 0x99
+        _emit 0x58
+        _emit 0x00
             fnstsw ax
             test ah, 1
             je L004217fc
@@ -4798,7 +4879,12 @@ int C2_NAKED C2_HOOK_FASTCALL PolyhedronCollisionShape_AddPoint(tCollision_shape
             mov eax, 1
             jmp L00421812
     L004217fc:
-            fcomp dword ptr [gFLOAT_00589954+0x4]
+            _emit 0xd8
+        _emit 0x1d
+        _emit 0x58
+        _emit 0x99
+        _emit 0x58
+        _emit 0x00
             fnstsw ax
             test ah, 1
             je L00421810
@@ -4971,11 +5057,11 @@ int C2_NAKED C2_HOOK_FASTCALL PolyhedronCollisionShape_AddPoint(tCollision_shape
             faddp st(1), st(0)
             fsqrt
             fstp st(1)
-            fcom dword ptr [gFlyCarRadiansToAngleNeg+0x10]
+            fcom dword ptr [gMatchFloat_00589940]
             fnstsw ax
             test ah, 0x41
             jne L00421a14
-            fdivr qword ptr [gFlyCarRadiansToAngleNeg+0x18]
+            fdivr qword ptr [gMatchDouble_00589948]
             fld dword ptr [edi - 8]
             fmul st(0), st(1)
             fstp dword ptr [edi - 8]
@@ -5787,11 +5873,11 @@ tPhysicsError C2_NAKED C2_HOOK_FASTCALL AddPolyhedronCollisionShapePlanes(tColli
             faddp st(2), st(0)
             fxch st(1)
             fsqrt
-            fcom dword ptr [gFlyCarRadiansToAngleNeg+0x10]
+            fcom dword ptr [gMatchFloat_00589940]
             fnstsw ax
             test ah, 0x41
             jne L00420a53
-            fdivr qword ptr [gFlyCarRadiansToAngleNeg+0x18]
+            fdivr qword ptr [gMatchDouble_00589948]
             fld st(0)
             fld st(1)
             fxch st(1)
@@ -5964,7 +6050,12 @@ tPhysicsError C2_NAKED C2_HOOK_FASTCALL AddPolyhedronCollisionShapePlanes(tColli
             lea edx, [esp + 0x24]
             fstp dword ptr [esp + 0x2c]
             call SignedTwiceAreaOf3DTriangle
-            fcomp dword ptr [gFLOAT_00589954+0x4]
+            _emit 0xd8
+        _emit 0x1d
+        _emit 0x58
+        _emit 0x99
+        _emit 0x58
+        _emit 0x00
             fnstsw ax
             test ah, 0x41
             jne L00420c3d
@@ -6083,6 +6174,17 @@ tPhysicsError C2_NAKED C2_HOOK_FASTCALL AddPolyhedronCollisionShapePlanes(tColli
             pop ebx
             add esp, 0x12e4
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -7233,7 +7335,7 @@ int C2_NAKED C2_HOOK_CDECL PHILSetObjectProperty(tPhysics_object *pCollision_inf
     return 0;
 #else
     __asm {
-            mov eax, dword ptr ds:[gPHIL_enabled]
+            mov eax, dword ptr [gPHIL_enabled]
             test eax, eax
             je L004b63bc
             xor eax, eax
@@ -7288,7 +7390,7 @@ int C2_NAKED C2_HOOK_CDECL PHILSetObjectProperty(tPhysics_object *pCollision_inf
             test al, 0x40
             mov dword ptr [ecx + 0x19c], eax
             jne L004b64f4
-            mov eax, dword ptr ds:[gFace_num__car]
+            mov eax, dword ptr [gFace_num__car]
             add eax, -2
             mov word ptr [ecx + 0x178], ax
             xor eax, eax
@@ -7434,7 +7536,7 @@ float C2_NAKED C2_HOOK_FASTCALL PHILGetObjectProperty(tPhysics_object *pCollisio
 #else
     __asm {
             push ecx
-            mov eax, dword ptr ds:[gPHIL_enabled]
+            mov eax, dword ptr [gPHIL_enabled]
             test eax, eax
             jne L004b6604
             mov al, byte ptr [ecx + 0x239]
@@ -7518,11 +7620,16 @@ float C2_NAKED C2_HOOK_FASTCALL PHILGetObjectProperty(tPhysics_object *pCollisio
             pop ecx
             ret
     L004b65fc:
-            fld dword ptr ds:[0x58a704]
+            fld dword ptr [gMatchFloat_0058a704]
             pop ecx
             ret
     L004b6604:
-            fld dword ptr ds:[0x58a700]
+            _emit 0xd9
+        _emit 0x05
+        _emit 0x00
+        _emit 0xa7
+        _emit 0x58
+        _emit 0x00
             pop ecx
             ret
             _emit 0x75
@@ -8368,7 +8475,7 @@ int C2_NAKED C2_HOOK_FASTCALL CollectPlacementFaces(tPhysics_object* pObject, tC
             call CullPlacementFaces
             test eax, eax
             je L00422f29
-            mov eax, dword ptr ds:[gSensible_place_collect_active]
+            mov eax, dword ptr [gSensible_place_collect_active]
             test eax, eax
             je L0042297d
             mov ebx, dword ptr [esp + 0x1c]
@@ -8563,7 +8670,7 @@ int C2_NAKED C2_HOOK_FASTCALL CollectPlacementFaces(tPhysics_object* pObject, tC
             mov ecx, 1
             call PhysicsError
     L00422c11:
-            mov eax, dword ptr ds:[gSensible_place_collect_active]
+            mov eax, dword ptr [gSensible_place_collect_active]
             test eax, eax
             je L00422c7b
             mov ecx, dword ptr [esp + 0x1c]
@@ -8719,7 +8826,7 @@ int C2_NAKED C2_HOOK_FASTCALL CollectPlacementFaces(tPhysics_object* pObject, tC
             jl L00422d9a
     L00422e20:
             fld dword ptr [esp + 0x28]
-            fcomp dword ptr ds:[gFLOAT_0058996c]
+            fcomp dword ptr [gFLOAT_0058996c]
             fnstsw ax
             test ah, 0x41
             je L00422edc
@@ -8844,7 +8951,7 @@ int C2_NAKED C2_HOOK_FASTCALL CollectPlacementFaces(tPhysics_object* pObject, tC
             faddp st(2), st(0)
             fmul dword ptr [edx + 0x34]
             faddp st(1), st(0)
-            fcomp qword ptr ds:[gDouble_00589970]
+            fcomp qword ptr [gDouble_00589970]
             fnstsw ax
             test ah, 0x41
             jne L00422fa1
@@ -9806,6 +9913,17 @@ void C2_NAKED C2_HOOK_FASTCALL FUN_00429490(tPhysics_object* pObject) {
             xor eax, eax
             add esp, 0x30
             ret 8
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -10244,6 +10362,14 @@ int C2_NAKED C2_HOOK_FASTCALL TestForObjectInSensiblePlace(tPhysics_object* pCol
             mov dword ptr [esp + 0x14], 0
             mov dword ptr [esp + 0x18], 0
             jmp L00429166
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -11371,7 +11497,7 @@ void C2_NAKED C2_HOOK_FAKE_THISCALL FUN_004b9230(tPhysics_object* pObject, tPhys
             fld dword ptr [esp + 0x38]
             mov edx, dword ptr [esi + 0x188]
             add esp, 0xc
-            fmul qword ptr ds:[gDOUBLE_0058a770]
+            fmul qword ptr [gDOUBLE_0058a770]
             add edx, 0x38
             push edx
             call _ftol
@@ -11732,13 +11858,13 @@ differ_done:
             fld dword ptr [esi + 0xc]
             fld dword ptr [esi + 0x10]
             fxch st(3)
-            fmul dword ptr [gDOUBLE_0058a770+0x8]
+            fmul dword ptr [gMatchFloat_0058a778]
             fxch st(2)
-            fmul dword ptr [gDOUBLE_0058a770+0x8]
+            fmul dword ptr [gMatchFloat_0058a778]
             fxch st(1)
-            fmul dword ptr [gDOUBLE_0058a770+0x8]
+            fmul dword ptr [gMatchFloat_0058a778]
             fxch st(3)
-            fmul dword ptr [gDOUBLE_0058a770+0x8]
+            fmul dword ptr [gMatchFloat_0058a778]
             fxch st(1)
             fstp dword ptr [esi + 8]
             fxch st(2)
@@ -11812,7 +11938,7 @@ differ_done:
             test ah, 0x41
             fstp st(0)
             jne L004b9bfe
-            mov ecx, offset gINT_0065d014+0x8
+            mov ecx, offset gMatchFloat_0065d01c
             call PhysicsWarning
             mov ecx, dword ptr [esi]
             add ecx, 0x2c
@@ -11914,6 +12040,14 @@ differ_done:
             pop ebx
             add esp, 0x10
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -14114,7 +14248,12 @@ void C2_NAKED C2_HOOK_FASTCALL TestAutoSpecialVolume(tPhysics_object* pObject) {
 #else
     __asm {
             sub esp, 0x3c
-            fld dword ptr [gFLOAT_0058b130+0x14]
+            _emit 0xd9
+        _emit 0x05
+        _emit 0x44
+        _emit 0xb1
+        _emit 0x58
+        _emit 0x00
             push ebx
             push ebp
             push esi
@@ -14179,7 +14318,12 @@ void C2_NAKED C2_HOOK_FASTCALL TestAutoSpecialVolume(tPhysics_object* pObject) {
             faddp st(2), st(0)
             fmulp st(1), st(0)
             fst dword ptr [esp + 0x10]
-            fcomp dword ptr [gFLOAT_0058b130+0x14]
+            _emit 0xd8
+        _emit 0x1d
+        _emit 0x44
+        _emit 0xb1
+        _emit 0x58
+        _emit 0x00
             fnstsw ax
             test ah, 1
             je L004ff69a
@@ -14209,7 +14353,7 @@ void C2_NAKED C2_HOOK_FASTCALL TestAutoSpecialVolume(tPhysics_object* pObject) {
             ret
     L004ff6d6:
             fld st(1)
-            fsub qword ptr [gFLOAT_0058b130+0x30]
+            fsub qword ptr [gMatchDouble_0058b160]
             fld dword ptr [esi + 0x250]
             fcompp
             fnstsw ax
@@ -14282,7 +14426,12 @@ void C2_NAKED C2_HOOK_FASTCALL TestAutoSpecialVolume(tPhysics_object* pObject) {
             fxch st(1)
             faddp st(2), st(0)
             faddp st(1), st(0)
-            fcomp dword ptr [gFLOAT_0058b130+0x14]
+            _emit 0xd8
+        _emit 0x1d
+        _emit 0x44
+        _emit 0xb1
+        _emit 0x58
+        _emit 0x00
             fnstsw ax
             test ah, 0x41
             fstp st(0)
@@ -14661,7 +14810,7 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessDrag2(tPHIL_queued_header* pObject_info, t
     L004b6ce0:
             sub esp, 0x10
             fld dword ptr [esp + 0x14]
-            fmul qword ptr [gUNK_0058a6f4+0x34]
+            fmul qword ptr [gMatchDouble_0058a728]
             push ebx
             mov ebx, dword ptr [esp + 0x1c]
             push ebp
@@ -14678,19 +14827,29 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessDrag2(tPHIL_queued_header* pObject_info, t
             test ecx, ecx
             je L004b6d5b
             fld dword ptr [ebp + 0x14]
-            fcomp dword ptr [gUNK_0058a6f4+0xc]
+            _emit 0xd8
+        _emit 0x1d
+        _emit 0x00
+        _emit 0xa7
+        _emit 0x58
+        _emit 0x00
             fnstsw ax
             test ah, 0x40
             jne L004b6d47
             fld dword ptr [ecx + 0x8c]
-            fcomp qword ptr [gUNK_0058a6f4+0x2c]
+            _emit 0xdc
+        _emit 0x1d
+        _emit 0x20
+        _emit 0xa7
+        _emit 0x58
+        _emit 0x00
             fnstsw ax
             test ah, 0x41
             jne L004b6d47
             fld dword ptr [esi + 0x254]
             fmul dword ptr [ecx + 0x8c]
             fmul dword ptr [esp + 0x10]
-            fmul qword ptr [gUNK_0058a6f4+0x3c]
+            fmul qword ptr [gMatchDouble_0058a730]
             jmp L004b6d57
     L004b6d47:
             fld dword ptr [ecx + 0x8c]
@@ -14730,7 +14889,7 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessDrag2(tPHIL_queued_header* pObject_info, t
             fmulp st(2), st(0)
             fld dword ptr [esi + 0x70]
             fxch st(2)
-            fmul qword ptr [gUNK_0058a6f4+0x44]
+            fmul qword ptr [gMatchDouble_0058a738]
             fxch st(5)
             fdivp st(5), st(0)
             fxch st(4)
@@ -14809,6 +14968,20 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessDrag2(tPHIL_queued_header* pObject_info, t
             pop ebx
             add esp, 0x10
             ret 0xc
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -14912,11 +15085,11 @@ void C2_NAKED C2_HOOK_FASTCALL LevelOutOnSurface(tPhysics_object *pObject) {
             fld dword ptr [ecx + 0x4c]
     L004b700f:
             fxch st(2)
-            fmul dword ptr [gUNK_0058a6f4+0x64]
+            fmul dword ptr [gMatchFloat_0058a758]
             fxch st(1)
-            fmul dword ptr [gUNK_0058a6f4+0x64]
+            fmul dword ptr [gMatchFloat_0058a758]
             fxch st(2)
-            fmul dword ptr [gUNK_0058a6f4+0x64]
+            fmul dword ptr [gMatchFloat_0058a758]
             fxch st(1)
             fstp dword ptr [esp + 0x14]
             fxch st(1)
@@ -14936,7 +15109,7 @@ void C2_NAKED C2_HOOK_FASTCALL LevelOutOnSurface(tPhysics_object *pObject) {
             fxch st(1)
             faddp st(1), st(0)
             fst dword ptr [esp + 0xc]
-            fcomp qword ptr [gUNK_0058a6f4+0x6c]
+            fcomp qword ptr [gMatchDouble_0058a760]
             fnstsw ax
             test ah, 0x41
             jne L004b71a2
@@ -14971,7 +15144,7 @@ void C2_NAKED C2_HOOK_FASTCALL LevelOutOnSurface(tPhysics_object *pObject) {
             fxch st(2)
             fst dword ptr [esp + 0x28]
             fxch st(2)
-            fsub dword ptr [gUNK_0058a6f4+0x64]
+            fsub dword ptr [gMatchFloat_0058a758]
             fst dword ptr [esp + 4]
             fxch st(1)
             fstp dword ptr [esp + 0xc]
@@ -15036,6 +15209,15 @@ void C2_NAKED C2_HOOK_FASTCALL LevelOutOnSurface(tPhysics_object *pObject) {
             pop esi
             add esp, 0x28
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -19043,7 +19225,7 @@ extern int C2_NAKED C2_HOOK_FASTCALL CollectJointLimitsIntoBuffer(tPhysics_objec
             mov edx, dword ptr [esp + 0x84]
             xor ecx, ecx
             test edx, edx
-            mov dword ptr ds:[0x692dd8], 1
+            mov dword ptr [gMatchData_00692dd8], 1
             mov dword ptr [esp + 0x24], ecx
             jle L004bd487
             mov eax, edi
@@ -21607,7 +21789,7 @@ int C2_NAKED C2_HOOK_FASTCALL SetUpQuickHingeData(tPhysics_object** pObject_list
             ret 0x10
     L004bb0b4:
             mov ebp, edi
-            mov dword ptr [gFLOAT_00692dd4+0x4], 0
+            mov dword ptr [gMatchData_00692dd8], 0
             mov dword ptr [esp + 0x24], ebp
             mov ebx, eax
             xor edi, edi
@@ -21616,7 +21798,7 @@ int C2_NAKED C2_HOOK_FASTCALL SetUpQuickHingeData(tPhysics_object** pObject_list
             inc edi
             cmp edi, 0x64
             jle L004bb0e3
-            mov edx, offset gTooManyLoopsText+0x20
+            mov edx, offset gMatchString_0065d054
             mov ecx, 0xa
             call PhysicsError
             mov eax, dword ptr [esp + 0x14]
@@ -22463,7 +22645,7 @@ int C2_NAKED C2_HOOK_FASTCALL SetUpQuickHingeData(tPhysics_object** pObject_list
             je L004bbacf
             inc dword ptr [gINT_006940a4]
     L004bbacf:
-            mov eax, dword ptr [gFLOAT_00692dd4+0x4]
+            mov eax, dword ptr [gMatchData_00692dd8]
             test eax, eax
             je L004bbda7
             mov esi, dword ptr [esp + 0x14]
@@ -22904,7 +23086,7 @@ int C2_NAKED C2_HOOK_FASTCALL SetUpQuickHingeData(tPhysics_object** pObject_list
             inc edi
             cmp edi, 0x64
             jle L004bbfc8
-            mov edx, offset gTooManyLoopsText+0x20
+            mov edx, offset gMatchString_0065d054
             mov ecx, 0xa
             call PhysicsError
             mov eax, dword ptr [esp + 0x14]
@@ -26663,7 +26845,12 @@ void C2_NAKED C2_HOOK_FAKE_THISCALL InterpolateSingleObject(tPhysics_object* pOb
             fst dword ptr [esp + 0x24]
             fabs
             fst dword ptr [esp + 4]
-            fcomp qword ptr [gFLOAT_0058a86c+0x4]
+            _emit 0xdc
+        _emit 0x1d
+        _emit 0x70
+        _emit 0xa8
+        _emit 0x58
+        _emit 0x00
             fstp dword ptr [esp + 0x18]
             fxch st(1)
             fstp dword ptr [esp + 0x1c]
@@ -26729,6 +26916,8 @@ void C2_NAKED C2_HOOK_FAKE_THISCALL InterpolateSingleObject(tPhysics_object* pOb
             pop esi
             add esp, 0x1c
             ret 4
+            nop
+            nop
     }
 #endif
 }
@@ -28134,24 +28323,24 @@ check_big:
             faddp st(2), st(0)
             fmul dword ptr [eax + 0x40]
             faddp st(1), st(0)
-            fcom dword ptr ds:[gFLOAT_0058a414]
+            fcom dword ptr [gFLOAT_0058a414]
             fnstsw ax
             test ah, 0x41
             jne L0049c153
             fstp st(0)
-            fld dword ptr ds:[gFLOAT_0058a414]
+            fld dword ptr [gFLOAT_0058a414]
     L0049c153:
-            fcom dword ptr ds:[0x58a418]
+            fcom dword ptr [gMatchFloat_0058a418]
             fnstsw ax
             test ah, 1
             je L0049c168
             fstp st(0)
-            fld dword ptr ds:[0x58a418]
+            fld dword ptr [gMatchFloat_0058a418]
     L0049c168:
-            fsub dword ptr ds:[0x58a418]
-            fmul dword ptr ds:[0x58a41c]
-            fmul dword ptr ds:[gFLOAT_0058a404]
-            fsub dword ptr ds:[gFLOAT_0058a408]
+            fsub dword ptr [gMatchFloat_0058a418]
+            fmul dword ptr [gMatchFloat_0058a41c]
+            fmul dword ptr [gFLOAT_0058a404]
+            fsub dword ptr [gFLOAT_0058a408]
             call _ftol
             add ebx, 0x8c
             lea edx, [esp + 0x10]
@@ -28161,48 +28350,48 @@ check_big:
             mov word ptr [esi + 2], ax
             call BrMatrix34ToQuat
             fld dword ptr [esp + 0x18]
-            fcomp dword ptr ds:[gFLOAT_0058a3f8]
+            fcomp dword ptr [gFLOAT_0058a3f8]
             fld dword ptr [esp + 0x18]
             add esp, 8
             fnstsw ax
             test ah, 0x41
             jne L0049c1bd
             fstp st(0)
-            fld dword ptr ds:[gFLOAT_0058a3f8]
+            fld dword ptr [gFLOAT_0058a3f8]
     L0049c1bd:
-            fcom dword ptr ds:[gFLOAT_0058a3fc]
+            fcom dword ptr [gFLOAT_0058a3fc]
             fnstsw ax
             test ah, 1
             je L0049c1d2
             fstp st(0)
-            fld dword ptr ds:[gFLOAT_0058a3fc]
+            fld dword ptr [gFLOAT_0058a3fc]
     L0049c1d2:
-            fsub dword ptr ds:[gFLOAT_0058a3fc]
-            fmul dword ptr ds:[gFLOAT_0058a400]
-            fmul dword ptr ds:[gFLOAT_0058a404]
-            fsub dword ptr ds:[gFLOAT_0058a408]
+            fsub dword ptr [gFLOAT_0058a3fc]
+            fmul dword ptr [gFLOAT_0058a400]
+            fmul dword ptr [gFLOAT_0058a404]
+            fsub dword ptr [gFLOAT_0058a408]
             call _ftol
             fld dword ptr [esp + 0x14]
-            fcomp dword ptr ds:[gFLOAT_0058a3f8]
+            fcomp dword ptr [gFLOAT_0058a3f8]
             fld dword ptr [esp + 0x14]
             mov word ptr [edi], ax
             fnstsw ax
             test ah, 0x41
             jne L0049c20f
             fstp st(0)
-            fld dword ptr ds:[gFLOAT_0058a3f8]
+            fld dword ptr [gFLOAT_0058a3f8]
     L0049c20f:
-            fcom dword ptr ds:[gFLOAT_0058a3fc]
+            fcom dword ptr [gFLOAT_0058a3fc]
             fnstsw ax
             test ah, 1
             je L0049c224
             fstp st(0)
-            fld dword ptr ds:[gFLOAT_0058a3fc]
+            fld dword ptr [gFLOAT_0058a3fc]
     L0049c224:
-            fsub dword ptr ds:[gFLOAT_0058a3fc]
-            fmul dword ptr ds:[gFLOAT_0058a400]
-            fmul dword ptr ds:[gFLOAT_0058a404]
-            fsub dword ptr ds:[gFLOAT_0058a408]
+            fsub dword ptr [gFLOAT_0058a3fc]
+            fmul dword ptr [gFLOAT_0058a400]
+            fmul dword ptr [gFLOAT_0058a404]
+            fsub dword ptr [gFLOAT_0058a408]
             call _ftol
             mov word ptr [edi + 2], ax
             mov eax, dword ptr [esp + 0x18]
@@ -28245,24 +28434,24 @@ check_big:
             _emit 0xd9
         _emit 0x45
         _emit 0x00
-            fcom dword ptr ds:[gFLOAT_0058a414]
+            fcom dword ptr [gFLOAT_0058a414]
             fnstsw ax
             test ah, 0x41
             jne L0049c2cb
             fstp st(0)
-            fld dword ptr ds:[gFLOAT_0058a414]
+            fld dword ptr [gFLOAT_0058a414]
     L0049c2cb:
-            fcom dword ptr ds:[0x58a418]
+            fcom dword ptr [gMatchFloat_0058a418]
             fnstsw ax
             test ah, 1
             je L0049c2e0
             fstp st(0)
-            fld dword ptr ds:[0x58a418]
+            fld dword ptr [gMatchFloat_0058a418]
     L0049c2e0:
-            fsub dword ptr ds:[0x58a418]
-            fmul dword ptr ds:[0x58a41c]
-            fmul dword ptr ds:[gFLOAT_0058a404]
-            fsub dword ptr ds:[gFLOAT_0058a408]
+            fsub dword ptr [gMatchFloat_0058a418]
+            fmul dword ptr [gMatchFloat_0058a41c]
+            fmul dword ptr [gFLOAT_0058a404]
+            fsub dword ptr [gFLOAT_0058a408]
             call _ftol
             mov word ptr [edi], ax
             mov eax, dword ptr [esp + 0x24]
@@ -28278,47 +28467,47 @@ check_big:
             call BrMatrix34ToQuat
             fld dword ptr [esp + 0x18]
             fld dword ptr [esp + 0x18]
-            fcomp dword ptr ds:[gFLOAT_0058a3f8]
+            fcomp dword ptr [gFLOAT_0058a3f8]
             add esp, 8
             fnstsw ax
             test ah, 0x41
             jne L0049c342
             fstp st(0)
-            fld dword ptr ds:[gFLOAT_0058a3f8]
+            fld dword ptr [gFLOAT_0058a3f8]
     L0049c342:
-            fcom dword ptr ds:[gFLOAT_0058a3fc]
+            fcom dword ptr [gFLOAT_0058a3fc]
             fnstsw ax
             test ah, 1
             je L0049c357
             fstp st(0)
-            fld dword ptr ds:[gFLOAT_0058a3fc]
+            fld dword ptr [gFLOAT_0058a3fc]
     L0049c357:
-            fsub dword ptr ds:[gFLOAT_0058a3fc]
-            fmul dword ptr ds:[gFLOAT_0058a400]
-            fmul dword ptr ds:[gFLOAT_0058a404]
-            fsub dword ptr ds:[gFLOAT_0058a408]
+            fsub dword ptr [gFLOAT_0058a3fc]
+            fmul dword ptr [gFLOAT_0058a400]
+            fmul dword ptr [gFLOAT_0058a404]
+            fsub dword ptr [gFLOAT_0058a408]
             call _ftol
             fld dword ptr [esp + 0x14]
-            fcomp dword ptr ds:[gFLOAT_0058a3f8]
+            fcomp dword ptr [gFLOAT_0058a3f8]
             fld dword ptr [esp + 0x14]
             mov word ptr [esi + 8], ax
             fnstsw ax
             test ah, 0x41
             jne L0049c395
             fstp st(0)
-            fld dword ptr ds:[gFLOAT_0058a3f8]
+            fld dword ptr [gFLOAT_0058a3f8]
     L0049c395:
-            fcom dword ptr ds:[gFLOAT_0058a3fc]
+            fcom dword ptr [gFLOAT_0058a3fc]
             fnstsw ax
             test ah, 1
             je L0049c3aa
             fstp st(0)
-            fld dword ptr ds:[gFLOAT_0058a3fc]
+            fld dword ptr [gFLOAT_0058a3fc]
     L0049c3aa:
-            fsub dword ptr ds:[gFLOAT_0058a3fc]
-            fmul dword ptr ds:[gFLOAT_0058a400]
-            fmul dword ptr ds:[gFLOAT_0058a404]
-            fsub dword ptr ds:[gFLOAT_0058a408]
+            fsub dword ptr [gFLOAT_0058a3fc]
+            fmul dword ptr [gFLOAT_0058a400]
+            fmul dword ptr [gFLOAT_0058a404]
+            fsub dword ptr [gFLOAT_0058a408]
             call _ftol
             mov edx, dword ptr [esp + 0x18]
             push 0x3f800000
@@ -28365,24 +28554,24 @@ check_big:
             _emit 0xd9
         _emit 0x45
         _emit 0x00
-            fcom dword ptr ds:[gFLOAT_0058a414]
+            fcom dword ptr [gFLOAT_0058a414]
             fnstsw ax
             test ah, 0x41
             jne L0049c45f
             fstp st(0)
-            fld dword ptr ds:[gFLOAT_0058a414]
+            fld dword ptr [gFLOAT_0058a414]
     L0049c45f:
-            fcom dword ptr ds:[0x58a418]
+            fcom dword ptr [gMatchFloat_0058a418]
             fnstsw ax
             test ah, 1
             je L0049c474
             fstp st(0)
-            fld dword ptr ds:[0x58a418]
+            fld dword ptr [gMatchFloat_0058a418]
     L0049c474:
-            fsub dword ptr ds:[0x58a418]
-            fmul dword ptr ds:[0x58a41c]
-            fmul dword ptr ds:[gFLOAT_0058a404]
-            fsub dword ptr ds:[gFLOAT_0058a408]
+            fsub dword ptr [gMatchFloat_0058a418]
+            fmul dword ptr [gMatchFloat_0058a41c]
+            fmul dword ptr [gFLOAT_0058a404]
+            fsub dword ptr [gFLOAT_0058a408]
             call _ftol
             mov word ptr [edi], ax
             mov eax, dword ptr [esp + 0x24]
@@ -28410,47 +28599,47 @@ check_big:
             call BrMatrix34ToQuat
             fld dword ptr [esp + 0x18]
             fld dword ptr [esp + 0x18]
-            fcomp dword ptr ds:[gFLOAT_0058a3f8]
+            fcomp dword ptr [gFLOAT_0058a3f8]
             add esp, 8
             fnstsw ax
             test ah, 0x41
             jne L0049c4fa
             fstp st(0)
-            fld dword ptr ds:[gFLOAT_0058a3f8]
+            fld dword ptr [gFLOAT_0058a3f8]
     L0049c4fa:
-            fcom dword ptr ds:[gFLOAT_0058a3fc]
+            fcom dword ptr [gFLOAT_0058a3fc]
             fnstsw ax
             test ah, 1
             je L0049c50f
             fstp st(0)
-            fld dword ptr ds:[gFLOAT_0058a3fc]
+            fld dword ptr [gFLOAT_0058a3fc]
     L0049c50f:
-            fsub dword ptr ds:[gFLOAT_0058a3fc]
-            fmul dword ptr ds:[gFLOAT_0058a400]
-            fmul dword ptr ds:[gFLOAT_0058a404]
-            fsub dword ptr ds:[gFLOAT_0058a408]
+            fsub dword ptr [gFLOAT_0058a3fc]
+            fmul dword ptr [gFLOAT_0058a400]
+            fmul dword ptr [gFLOAT_0058a404]
+            fsub dword ptr [gFLOAT_0058a408]
             call _ftol
             fld dword ptr [esp + 0x14]
-            fcomp dword ptr ds:[gFLOAT_0058a3f8]
+            fcomp dword ptr [gFLOAT_0058a3f8]
             fld dword ptr [esp + 0x14]
             mov word ptr [esi + 0x14], ax
             fnstsw ax
             test ah, 0x41
             jne L0049c54d
             fstp st(0)
-            fld dword ptr ds:[gFLOAT_0058a3f8]
+            fld dword ptr [gFLOAT_0058a3f8]
     L0049c54d:
-            fcom dword ptr ds:[gFLOAT_0058a3fc]
+            fcom dword ptr [gFLOAT_0058a3fc]
             fnstsw ax
             test ah, 1
             je L0049c562
             fstp st(0)
-            fld dword ptr ds:[gFLOAT_0058a3fc]
+            fld dword ptr [gFLOAT_0058a3fc]
     L0049c562:
-            fsub dword ptr ds:[gFLOAT_0058a3fc]
-            fmul dword ptr ds:[gFLOAT_0058a400]
-            fmul dword ptr ds:[gFLOAT_0058a404]
-            fsub dword ptr ds:[gFLOAT_0058a408]
+            fsub dword ptr [gFLOAT_0058a3fc]
+            fmul dword ptr [gFLOAT_0058a400]
+            fmul dword ptr [gFLOAT_0058a404]
+            fsub dword ptr [gFLOAT_0058a408]
             call _ftol
             mov word ptr [esi + 0x16], ax
             mov eax, dword ptr [esp + 0x18]
@@ -28709,9 +28898,9 @@ int C2_NAKED C2_HOOK_FASTCALL SetObjectNetworkStuff(const tU8* pBuffer, tPhysics
             mov dword ptr [esp + 0x10], ebp
             dec edx
             fild dword ptr [esp + 0x10]
-            fmul dword ptr ds:[gFLOAT_0058a40c]
-            fmul dword ptr ds:[gFLOAT_0058a420]
-            fsub dword ptr ds:[gFLOAT_0058a414]
+            fmul dword ptr [gFLOAT_0058a40c]
+            fmul dword ptr [gFLOAT_0058a420]
+            fsub dword ptr [gFLOAT_0058a414]
             fstp dword ptr [ecx - 4]
             jne L0049c6f8
             mov eax, dword ptr [edi + 8]
@@ -28738,13 +28927,13 @@ int C2_NAKED C2_HOOK_FASTCALL SetObjectNetworkStuff(const tU8* pBuffer, tPhysics
             lea ecx, [esp + 0x2c]
             fild dword ptr [esp + 0x18]
             fxch st(3)
-            fmul dword ptr ds:[gFLOAT_0058a40c]
+            fmul dword ptr [gFLOAT_0058a40c]
             fxch st(2)
-            fmul dword ptr ds:[gFLOAT_0058a40c]
+            fmul dword ptr [gFLOAT_0058a40c]
             fxch st(1)
-            fmul dword ptr ds:[gFLOAT_0058a40c]
+            fmul dword ptr [gFLOAT_0058a40c]
             fxch st(3)
-            fmul dword ptr ds:[gFLOAT_0058a40c]
+            fmul dword ptr [gFLOAT_0058a40c]
             fxch st(2)
             fadd st(0), st(0)
             fxch st(1)
@@ -28754,13 +28943,13 @@ int C2_NAKED C2_HOOK_FASTCALL SetObjectNetworkStuff(const tU8* pBuffer, tPhysics
             fxch st(2)
             fadd st(0), st(0)
             fxch st(1)
-            fsub dword ptr ds:[gFLOAT_0058a3f8]
+            fsub dword ptr [gFLOAT_0058a3f8]
             fxch st(3)
-            fsub dword ptr ds:[gFLOAT_0058a3f8]
+            fsub dword ptr [gFLOAT_0058a3f8]
             fxch st(2)
-            fsub dword ptr ds:[gFLOAT_0058a3f8]
+            fsub dword ptr [gFLOAT_0058a3f8]
             fxch st(1)
-            fsub dword ptr ds:[gFLOAT_0058a3f8]
+            fsub dword ptr [gFLOAT_0058a3f8]
             fxch st(3)
             fstp dword ptr [esp + 0x2c]
             fxch st(1)
@@ -28806,13 +28995,13 @@ int C2_NAKED C2_HOOK_FASTCALL SetObjectNetworkStuff(const tU8* pBuffer, tPhysics
             push eax
             fild dword ptr [esp + 0x24]
             fxch st(3)
-            fmul dword ptr ds:[gFLOAT_0058a40c]
+            fmul dword ptr [gFLOAT_0058a40c]
             fxch st(2)
-            fmul dword ptr ds:[gFLOAT_0058a40c]
+            fmul dword ptr [gFLOAT_0058a40c]
             fxch st(1)
-            fmul dword ptr ds:[gFLOAT_0058a40c]
+            fmul dword ptr [gFLOAT_0058a40c]
             fxch st(3)
-            fmul dword ptr ds:[gFLOAT_0058a40c]
+            fmul dword ptr [gFLOAT_0058a40c]
             fxch st(2)
             fadd st(0), st(0)
             fxch st(1)
@@ -28822,13 +29011,13 @@ int C2_NAKED C2_HOOK_FASTCALL SetObjectNetworkStuff(const tU8* pBuffer, tPhysics
             fxch st(2)
             fadd st(0), st(0)
             fxch st(1)
-            fsub dword ptr ds:[gFLOAT_0058a3f8]
+            fsub dword ptr [gFLOAT_0058a3f8]
             fxch st(3)
-            fsub dword ptr ds:[gFLOAT_0058a3f8]
+            fsub dword ptr [gFLOAT_0058a3f8]
             fxch st(2)
-            fsub dword ptr ds:[gFLOAT_0058a3f8]
+            fsub dword ptr [gFLOAT_0058a3f8]
             fxch st(1)
-            fsub dword ptr ds:[gFLOAT_0058a3f8]
+            fsub dword ptr [gFLOAT_0058a3f8]
             fxch st(3)
             fstp dword ptr [esp + 0x34]
             fxch st(1)
@@ -28867,11 +29056,11 @@ int C2_NAKED C2_HOOK_FASTCALL SetObjectNetworkStuff(const tU8* pBuffer, tPhysics
             fld dword ptr [eax + 0x3c]
             fld dword ptr [esi + 0x78]
             fxch st(2)
-            fmul dword ptr ds:[gFLOAT_0058a40c]
-            fmul dword ptr ds:[gFLOAT_0058a420]
+            fmul dword ptr [gFLOAT_0058a40c]
+            fmul dword ptr [gFLOAT_0058a420]
             push ecx
             mov edx, ebx
-            fsub dword ptr ds:[gFLOAT_0058a414]
+            fsub dword ptr [gFLOAT_0058a414]
             fld dword ptr [esi + 0x7c]
             fld dword ptr [eax + 0x38]
             fxch st(4)
@@ -28926,9 +29115,9 @@ int C2_NAKED C2_HOOK_FASTCALL SetObjectNetworkStuff(const tU8* pBuffer, tPhysics
             mov dword ptr [esp + 0x1c], ebp
             dec edx
             fild dword ptr [esp + 0x1c]
-            fmul dword ptr ds:[gFLOAT_0058a40c]
-            fmul dword ptr ds:[gFLOAT_0058a420]
-            fsub dword ptr ds:[gFLOAT_0058a414]
+            fmul dword ptr [gFLOAT_0058a40c]
+            fmul dword ptr [gFLOAT_0058a420]
+            fsub dword ptr [gFLOAT_0058a414]
             fstp dword ptr [ecx - 4]
             jne L0049c9a1
             add edi, 8
@@ -28952,13 +29141,13 @@ int C2_NAKED C2_HOOK_FASTCALL SetObjectNetworkStuff(const tU8* pBuffer, tPhysics
             lea eax, [esp + 0x30]
             fild dword ptr [esp + 0x20]
             fxch st(3)
-            fmul dword ptr ds:[gFLOAT_0058a40c]
+            fmul dword ptr [gFLOAT_0058a40c]
             fxch st(2)
-            fmul dword ptr ds:[gFLOAT_0058a40c]
+            fmul dword ptr [gFLOAT_0058a40c]
             fxch st(1)
-            fmul dword ptr ds:[gFLOAT_0058a40c]
+            fmul dword ptr [gFLOAT_0058a40c]
             fxch st(3)
-            fmul dword ptr ds:[gFLOAT_0058a40c]
+            fmul dword ptr [gFLOAT_0058a40c]
             fxch st(2)
             fadd st(0), st(0)
             fxch st(1)
@@ -28968,13 +29157,13 @@ int C2_NAKED C2_HOOK_FASTCALL SetObjectNetworkStuff(const tU8* pBuffer, tPhysics
             fxch st(2)
             fadd st(0), st(0)
             fxch st(1)
-            fsub dword ptr ds:[gFLOAT_0058a3f8]
+            fsub dword ptr [gFLOAT_0058a3f8]
             fxch st(3)
-            fsub dword ptr ds:[gFLOAT_0058a3f8]
+            fsub dword ptr [gFLOAT_0058a3f8]
             fxch st(2)
-            fsub dword ptr ds:[gFLOAT_0058a3f8]
+            fsub dword ptr [gFLOAT_0058a3f8]
             fxch st(1)
-            fsub dword ptr ds:[gFLOAT_0058a3f8]
+            fsub dword ptr [gFLOAT_0058a3f8]
             fxch st(3)
             fstp dword ptr [esp + 0x30]
             fxch st(1)
@@ -32074,7 +32263,7 @@ LAB_004bc7a6:
             fxch st(2)
             faddp st(1), st(0)
             fxch st(3)
-            fmul qword ptr ds:[gDOUBLE_0058a7f0]
+            fmul qword ptr [gDOUBLE_0058a7f0]
             fxch st(1)
             faddp st(3), st(0)
             fstp st(1)
@@ -32170,10 +32359,10 @@ LAB_004bc7a6:
             fld dword ptr [eax + 0x7c]
             fdiv st(0), st(1)
             fxch st(1)
-            fmul dword ptr ds:[gFLOAT_0058a7f8]
+            fmul dword ptr [gFLOAT_0058a7f8]
             fxch st(1)
             fstp dword ptr [esp + 0x80]
-            fmul qword ptr ds:[gDOUBLE_0058a770]
+            fmul qword ptr [gDOUBLE_0058a770]
             call _ftol
             lea edx, [esp + 0x84]
             push eax
@@ -32209,11 +32398,11 @@ LAB_004bc7a6:
             faddp st(2), st(0)
             faddp st(1), st(0)
             fsqrt
-            fcom dword ptr ds:[gFLOAT_0058a7fc]
+            fcom dword ptr [gFLOAT_0058a7fc]
             fnstsw ax
             test ah, 0x41
             jne L004bc51c
-            fdivr qword ptr ds:[gDOUBLE_0058a780]
+            fdivr qword ptr [gDOUBLE_0058a780]
             fld st(0)
             fld st(1)
             fxch st(1)
@@ -32228,8 +32417,8 @@ LAB_004bc7a6:
             fstp st(0)
             fstp st(0)
             fstp st(0)
-            fld dword ptr ds:[gFLOAT_0058a800]
-            fld dword ptr ds:[gFLOAT_0058a768]
+            fld dword ptr [gFLOAT_0058a800]
+            fld dword ptr [gFLOAT_0058a768]
             mov dword ptr [esp + 0x68], 0
     L004bc538:
             fld dword ptr [esp + 0x68]
@@ -32281,7 +32470,7 @@ LAB_004bc7a6:
             fxch st(1)
             fmulp st(1), st(0)
             faddp st(1), st(0)
-            fcomp dword ptr ds:[gFLOAT_0058a768]
+            fcomp dword ptr [gFLOAT_0058a768]
             fnstsw ax
             fstp st(0)
             test ah, 1
@@ -32293,11 +32482,11 @@ LAB_004bc7a6:
             fld dword ptr [ecx + 0x78]
             fld dword ptr [ecx + 0x7c]
             fxch st(2)
-            fmul dword ptr ds:[gFLOAT_0058a804]
+            fmul dword ptr [gFLOAT_0058a804]
             fxch st(1)
-            fmul dword ptr ds:[gFLOAT_0058a804]
+            fmul dword ptr [gFLOAT_0058a804]
             fxch st(2)
-            fmul dword ptr ds:[gFLOAT_0058a804]
+            fmul dword ptr [gFLOAT_0058a804]
             fxch st(1)
             fstp dword ptr [ecx + 0x74]
             fxch st(1)

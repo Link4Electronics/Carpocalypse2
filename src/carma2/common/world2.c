@@ -77,6 +77,22 @@ extern float gCamera_to_horiz_angle;
 extern int gHud_actor_storage_size;
 extern int gHud_tinted4;
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gData_0065fb58[];
+extern char gData_0065fb60[];
+extern char gData_0065fb6c[];
+extern char gData_00703e40[];
+extern char gData_00703e44[];
+extern char gData_00703e48[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchData_0065fb58[];
+extern char gMatchData_0065fb60[];
+extern char gMatchData_0065fb6c[];
+extern char gMatchData_00703e40[];
+extern char gMatchData_00703e44[];
+extern char gMatchData_00703e48[];
+#endif
 // FUNCTION: CARMA2_HW 0x004e5cb0
 void C2_HOOK_FASTCALL InitialiseExtraRenders(void) {
     gCount_extra_renders = 0;
@@ -299,11 +315,11 @@ int C2_NAKED C2_HOOK_FASTCALL FUN_004e5f10(int pRed, tU32 pGreen, tU32 pBlue) {
             dec edi
             cmp ecx, edi
             je L004e6244
-            cmp dword ptr [gHud_tinted4+0x4], esi
+            cmp dword ptr [gMatchData_0065fb58], esi
             je L004e60a3
             mov eax, dword ptr [gRender_palette]
             mov esi, dword ptr [eax + 8]
-            mov eax, offset gHud_actor_storage_size+0x1c
+            mov eax, offset gMatchData_00703e44
     L004e6072:
             xor edx, edx
             add eax, 0x10
@@ -319,9 +335,9 @@ int C2_NAKED C2_HOOK_FASTCALL FUN_004e5f10(int pRed, tU32 pGreen, tU32 pBlue) {
             mov dword ptr [eax - 0xc], edx
             jb L004e6072
             xor esi, esi
-            mov dword ptr [gHud_tinted4+0x4], esi
+            mov dword ptr [gMatchData_0065fb58], esi
     L004e60a3:
-            mov edi, offset gHud_tinted4+0xc
+            mov edi, offset gMatchData_0065fb60
             mov dword ptr [esp + 0x10], esi
             mov dword ptr [esp + 0x18], edi
             jmp L004e60b6
@@ -348,11 +364,11 @@ int C2_NAKED C2_HOOK_FASTCALL FUN_004e5f10(int pRed, tU32 pGreen, tU32 pBlue) {
             and eax, 0xff
             add edi, 0xc
             shl eax, 4
-            mov edx, dword ptr [eax + gHud_actor_storage_size+0x18]
+            mov edx, dword ptr [eax + gMatchData_00703e40]
             imul edx, ecx
             add ebp, edx
-            mov edx, dword ptr [eax + gHud_actor_storage_size+0x1c]
-            mov eax, dword ptr [eax + gHud_actor_storage_size+0x20]
+            mov edx, dword ptr [eax + gMatchData_00703e44]
+            mov eax, dword ptr [eax + gMatchData_00703e48]
             imul edx, ecx
             imul eax, ecx
             mov ecx, dword ptr [esp + 0x14]
@@ -366,7 +382,7 @@ int C2_NAKED C2_HOOK_FASTCALL FUN_004e5f10(int pRed, tU32 pGreen, tU32 pBlue) {
             mov edx, dword ptr [esp + 0x10]
             add edi, 4
             inc edx
-            cmp edi, offset gHud_tinted4+0x18
+            cmp edi, offset gMatchData_0065fb6c
             mov dword ptr [esp + 0x10], edx
             mov dword ptr [esp + 0x18], edi
             jb L004e60b2
@@ -468,6 +484,13 @@ int C2_NAKED C2_HOOK_FASTCALL FUN_004e5f10(int pRed, tU32 pGreen, tU32 pBlue) {
             pop ebx
             add esp, 0x1c
             ret 4
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -1454,7 +1477,7 @@ C2_NAKED br_material* C2_HOOK_FASTCALL WallLinearToUntex(br_model* pModel, tU16 
             repne scasb
             not ecx
             dec ecx
-            mov edi, offset gWall_texturing_tweakers+0x3c
+            mov edi, 0x5913b4
             mov edx, ecx
             or ecx, 0xffffffff
             repne scasb
@@ -1468,7 +1491,7 @@ C2_NAKED br_material* C2_HOOK_FASTCALL WallLinearToUntex(br_model* pModel, tU16 
             jmp L00447de0
     L00447d9f:
             lea eax, [ebp + edx]
-            mov esi, offset gWall_texturing_tweakers+0x3c
+            mov esi, 0x5913b4
             sub eax, ecx
     L00447daa:
             mov dl, byte ptr [eax]
@@ -1528,7 +1551,7 @@ C2_NAKED br_material* C2_HOOK_FASTCALL WallLinearToUntex(br_model* pModel, tU16 
             mov eax, dword ptr [ebx + 0x40]
             test eax, eax
             je L00447ed7
-            mov edi, offset gWall_texturing_tweakers+0x34
+            mov edi, 0x5913ac
             or ecx, 0xffffffff
             xor eax, eax
             push 0xcf
@@ -1547,9 +1570,9 @@ C2_NAKED br_material* C2_HOOK_FASTCALL WallLinearToUntex(br_model* pModel, tU16 
             add esp, 8
             mov edi, eax
             mov eax, dword ptr [ebx + 4]
-            push offset gWall_texturing_tweakers+0x34
+            push 0x5913ac
             push eax
-            push offset gWall_texturing_tweakers+0x54
+            push 0x5913cc
             push edi
             call sprintf
             add esp, 0x10
@@ -1599,6 +1622,21 @@ C2_NAKED br_material* C2_HOOK_FASTCALL WallLinearToUntex(br_model* pModel, tU16 
             pop ebx
             add esp, 8
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }

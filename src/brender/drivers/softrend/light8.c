@@ -12,6 +12,24 @@ extern void C2_HOOK_CDECL BrMatrix34ApplyP();
 extern void C2_HOOK_CDECL BrMatrix34TApplyV();
 extern static_cache_soft scache;
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gDouble_0058c988[];
+extern char gFloat_0058c978[];
+extern char gFloat_0058c97c[];
+extern char gFloat_0058c980[];
+extern char gFloat_0058c984[];
+extern char gFloat_0058c994[];
+extern char gFloat_0058c998[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchDouble_0058c988[];
+extern char gMatchFloat_0058c978[];
+extern char gMatchFloat_0058c97c[];
+extern char gMatchFloat_0058c980[];
+extern char gMatchFloat_0058c984[];
+extern char gMatchFloat_0058c994[];
+extern char gMatchFloat_0058c998[];
+#endif
 // FUNCTION: CARMA2_HW 0x0054a230
 void C2_HOOK_CDECL SurfaceIndexZero(br_soft_renderer* self, br_vector3* p, br_vector2* map, br_vector3* n, br_colour colour, br_scalar* comp) {
 
@@ -106,7 +124,12 @@ void C2_NAKED C2_HOOK_CDECL SurfaceIndexLit(br_soft_renderer* self, br_vector3* 
             fxch st(1)
             faddp st(2), st(0)
             faddp st(1), st(0)
-            fcom dword ptr [rendererStateStoredDispatch+0xdc]
+            _emit 0xd8
+        _emit 0x15
+        _emit 0x74
+        _emit 0xc9
+        _emit 0x58
+        _emit 0x00
             fnstsw ax
             test ah, 0x41
             je L0054a346
@@ -117,12 +140,17 @@ void C2_NAKED C2_HOOK_CDECL SurfaceIndexLit(br_soft_renderer* self, br_vector3* 
             mov dword ptr [esp + 0x38], eax
             mov dword ptr [edx + 0x28], eax
             fld dword ptr [esp + 0x38]
-            fcomp dword ptr [rendererStateStoredDispatch+0xe0]
+            fcomp dword ptr [gMatchFloat_0058c978]
             fnstsw ax
             test ah, 1
             je L0054a3dc
             fld dword ptr [esp + 0x38]
-            fcomp dword ptr [rendererStateStoredDispatch+0xdc]
+            _emit 0xd8
+        _emit 0x1d
+        _emit 0x74
+        _emit 0xc9
+        _emit 0x58
+        _emit 0x00
             fnstsw ax
             test ah, 0x41
             je L0054a32b
@@ -148,7 +176,12 @@ void C2_NAKED C2_HOOK_CDECL SurfaceIndexLit(br_soft_renderer* self, br_vector3* 
     L0054a346:
             mov ecx, dword ptr [esp + 0x38]
             fld dword ptr [ecx + 0x34]
-            fcomp dword ptr [rendererStateStoredDispatch+0xdc]
+            _emit 0xd8
+        _emit 0x1d
+        _emit 0x74
+        _emit 0xc9
+        _emit 0x58
+        _emit 0x00
             fmul dword ptr [ecx + 0x30]
             fnstsw ax
             test ah, 0x40
@@ -166,7 +199,7 @@ void C2_NAKED C2_HOOK_CDECL SurfaceIndexLit(br_soft_renderer* self, br_vector3* 
             fxch st(1)
             faddp st(2), st(0)
             faddp st(1), st(0)
-            fcom dword ptr [rendererStateStoredDispatch+0xe8]
+            fcom dword ptr [gMatchFloat_0058c980]
             fnstsw ax
             test ah, 0x41
             jne L0054a3b3
@@ -194,7 +227,7 @@ void C2_NAKED C2_HOOK_CDECL SurfaceIndexLit(br_soft_renderer* self, br_vector3* 
             mov eax, dword ptr [esp + 0x4c]
             fstp st(0)
             fld dword ptr [esp + 0x4c]
-            fcomp dword ptr [rendererStateStoredDispatch+0xe0]
+            fcomp dword ptr [gMatchFloat_0058c978]
             mov dword ptr [edx + 0x28], eax
             fnstsw ax
             test ah, 1
@@ -202,7 +235,7 @@ void C2_NAKED C2_HOOK_CDECL SurfaceIndexLit(br_soft_renderer* self, br_vector3* 
     L0054a3dc:
             fld dword ptr [ecx + 0x5cc]
             fadd dword ptr [ecx + 0x60c]
-            fsub dword ptr [rendererStateStoredDispatch+0xe4]
+            fsub dword ptr [gMatchFloat_0058c97c]
             fstp dword ptr [edx + 0x28]
             pop edi
             pop esi
@@ -212,7 +245,12 @@ void C2_NAKED C2_HOOK_CDECL SurfaceIndexLit(br_soft_renderer* self, br_vector3* 
             ret
     L0054a3f9:
             fld dword ptr [esp + 0x4c]
-            fcomp dword ptr [rendererStateStoredDispatch+0xdc]
+            _emit 0xd8
+        _emit 0x1d
+        _emit 0x74
+        _emit 0xc9
+        _emit 0x58
+        _emit 0x00
             fnstsw ax
             test ah, 0x41
             je L0054a41b
@@ -292,11 +330,11 @@ void C2_NAKED C2_HOOK_CDECL SurfaceIndexLit(br_soft_renderer* self, br_vector3* 
             fmul dword ptr [esp + 0x18]
             faddp st(1), st(0)
             fsqrt
-            fcom dword ptr [rendererStateStoredDispatch+0xec]
+            fcom dword ptr [gMatchFloat_0058c984]
             fnstsw ax
             test ah, 0x41
             jne L0054a524
-            fdivr qword ptr [rendererStateStoredDispatch+0xf0]
+            fdivr qword ptr [gMatchDouble_0058c988]
             fld st(0)
             fld st(1)
             fxch st(1)
@@ -340,13 +378,13 @@ void C2_NAKED C2_HOOK_CDECL SurfaceIndexLit(br_soft_renderer* self, br_vector3* 
             jl L0054a567
     L0054a584:
             fld dword ptr [ebp + 0x28]
-            fcomp dword ptr [rendererStateStoredDispatch+0xe0]
+            fcomp dword ptr [gMatchFloat_0058c978]
             fnstsw ax
             test ah, 1
             jne L0054a5b1
             fld dword ptr [edi + 0x5cc]
             fadd dword ptr [edi + 0x60c]
-            fsub dword ptr [rendererStateStoredDispatch+0xe4]
+            fsub dword ptr [gMatchFloat_0058c97c]
             fstp dword ptr [ebp + 0x28]
             pop edi
             pop esi
@@ -356,7 +394,12 @@ void C2_NAKED C2_HOOK_CDECL SurfaceIndexLit(br_soft_renderer* self, br_vector3* 
             ret
     L0054a5b1:
             fld dword ptr [ebp + 0x28]
-            fcomp dword ptr [rendererStateStoredDispatch+0xdc]
+            _emit 0xd8
+        _emit 0x1d
+        _emit 0x74
+        _emit 0xc9
+        _emit 0x58
+        _emit 0x00
             fnstsw ax
             test ah, 0x41
             je L0054a5d2
@@ -379,6 +422,10 @@ void C2_NAKED C2_HOOK_CDECL SurfaceIndexLit(br_soft_renderer* self, br_vector3* 
             pop ebx
             add esp, 0x24
             ret
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -424,14 +471,24 @@ void C2_NAKED C2_HOOK_STDCALL lightingIndexDirect(br_soft_renderer* self, br_vec
             fxch st(1)
             faddp st(2), st(0)
             faddp st(1), st(0)
-            fcom dword ptr [rendererStateStoredDispatch+0xdc]
+            _emit 0xd8
+        _emit 0x15
+        _emit 0x74
+        _emit 0xc9
+        _emit 0x58
+        _emit 0x00
             fnstsw ax
             test ah, 0x41
             jne L0054a864
             push esi
             mov esi, dword ptr [esp + 8]
             fld dword ptr [esi + 0x34]
-            fcomp dword ptr [rendererStateStoredDispatch+0xdc]
+            _emit 0xd8
+        _emit 0x1d
+        _emit 0x74
+        _emit 0xc9
+        _emit 0x58
+        _emit 0x00
             fmul dword ptr [esi + 0x30]
             fnstsw ax
             test ah, 0x40
@@ -449,7 +506,7 @@ void C2_NAKED C2_HOOK_STDCALL lightingIndexDirect(br_soft_renderer* self, br_vec
             fxch st(1)
             faddp st(2), st(0)
             faddp st(1), st(0)
-            fcom dword ptr [rendererStateStoredDispatch+0xe8]
+            fcom dword ptr [gMatchFloat_0058c980]
             fnstsw ax
             test ah, 0x41
             jne L0054a854
@@ -478,6 +535,13 @@ void C2_NAKED C2_HOOK_STDCALL lightingIndexDirect(br_soft_renderer* self, br_vec
     L0054a864:
             fstp st(0)
             ret 0x14
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -534,11 +598,11 @@ void C2_NAKED C2_HOOK_STDCALL lightingIndexPoint(br_soft_renderer* self, br_vect
             faddp st(2), st(0)
             faddp st(1), st(0)
             fsqrt
-            fcom dword ptr [rendererStateStoredDispatch+0xec]
+            fcom dword ptr [gMatchFloat_0058c984]
             fnstsw ax
             test ah, 0x41
             jne L0054a8e2
-            fdivr qword ptr [rendererStateStoredDispatch+0xf0]
+            fdivr qword ptr [gMatchDouble_0058c988]
             fld st(0)
             fld st(1)
             fxch st(1)
@@ -580,14 +644,24 @@ void C2_NAKED C2_HOOK_STDCALL lightingIndexPoint(br_soft_renderer* self, br_vect
             faddp st(1), st(0)
             fxch st(1)
             faddp st(1), st(0)
-            fcom dword ptr [rendererStateStoredDispatch+0xdc]
+            _emit 0xd8
+        _emit 0x15
+        _emit 0x74
+        _emit 0xc9
+        _emit 0x58
+        _emit 0x00
             fst dword ptr [esp + 0x20]
             fnstsw ax
             test ah, 0x41
             jne L0054a9d9
             mov esi, dword ptr [esp + 0x14]
             fld dword ptr [esi + 0x34]
-            fcomp dword ptr [rendererStateStoredDispatch+0xdc]
+            _emit 0xd8
+        _emit 0x1d
+        _emit 0x74
+        _emit 0xc9
+        _emit 0x58
+        _emit 0x00
             fmul dword ptr [esi + 0x30]
             fnstsw ax
             test ah, 0x40
@@ -621,7 +695,7 @@ void C2_NAKED C2_HOOK_STDCALL lightingIndexPoint(br_soft_renderer* self, br_vect
             fxch st(1)
             faddp st(1), st(0)
             fstp st(1)
-            fcom dword ptr [rendererStateStoredDispatch+0xe8]
+            fcom dword ptr [gMatchFloat_0058c980]
             fnstsw ax
             test ah, 0x41
             jne L0054a9c8
@@ -719,7 +793,7 @@ void C2_NAKED C2_HOOK_STDCALL lightingIndexLocal1(br_soft_renderer* self, br_vec
             test ah, 0x41
             je L0054aa7a
             fld dword ptr [esp + 0x1c]
-            fcomp dword ptr [rendererStateStoredDispatch+0xe4]
+            fcomp dword ptr [gMatchFloat_0058c97c]
             fnstsw ax
             test ah, 1
             jne L0054aa7a
@@ -797,7 +871,7 @@ void C2_NAKED C2_HOOK_STDCALL lightingIndexLocal2(br_soft_renderer* self, br_vec
             test ah, 0x41
             je L0054ab5f
             fld dword ptr [esp + 0x1c]
-            fcomp dword ptr [rendererStateStoredDispatch+0xe4]
+            fcomp dword ptr [gMatchFloat_0058c97c]
             fnstsw ax
             test ah, 1
             jne L0054ab5f
@@ -821,7 +895,12 @@ void C2_NAKED C2_HOOK_STDCALL lightingIndexLocal2(br_soft_renderer* self, br_vec
             faddp st(1), st(0)
             fxch st(1)
             faddp st(1), st(0)
-            fcom dword ptr [rendererStateStoredDispatch+0xdc]
+            _emit 0xd8
+        _emit 0x15
+        _emit 0x74
+        _emit 0xc9
+        _emit 0x58
+        _emit 0x00
             fnstsw ax
             test ah, 1
             jne L0054ab5b
@@ -850,6 +929,17 @@ void C2_NAKED C2_HOOK_STDCALL lightingIndexLocal2(br_soft_renderer* self, br_vec
     L0054ab5f:
             add esp, 0xc
             ret 0x14
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -910,14 +1000,14 @@ void C2_NAKED C2_HOOK_STDCALL lightingIndexPointAttn(br_soft_renderer* self, br_
             faddp st(1), st(0)
             fsqrt
             fst dword ptr [esp + 0x1c]
-            fcomp dword ptr [rendererStateStoredDispatch+0xec]
+            fcomp dword ptr [gMatchFloat_0058c984]
             fnstsw ax
             test ah, 0x41
             jne L0054ad0c
             fld dword ptr [esp + 0x1c]
-            fdivr qword ptr [rendererStateStoredDispatch+0xf0]
+            fdivr qword ptr [gMatchDouble_0058c988]
             fld dword ptr [esp + 0x1c]
-            fcomp dword ptr [rendererStateStoredDispatch+0xfc]
+            fcomp dword ptr [gMatchFloat_0058c994]
             fld st(0)
             fld st(1)
             fxch st(1)
@@ -940,7 +1030,7 @@ void C2_NAKED C2_HOOK_STDCALL lightingIndexPointAttn(br_soft_renderer* self, br_
             test ah, 1
             fstp st(0)
             jne L0054ac04
-            fld dword ptr [rendererStateStoredDispatch+0x100]
+            fld dword ptr [gMatchFloat_0058c998]
             jmp L0054ac0c
     L0054ac04:
             fld dword ptr [esp + 0x1c]
@@ -963,7 +1053,7 @@ void C2_NAKED C2_HOOK_STDCALL lightingIndexPointAttn(br_soft_renderer* self, br_
         _emit 0x24
         _emit 0x00
             fxch st(1)
-            fdivr qword ptr [rendererStateStoredDispatch+0xf0]
+            fdivr qword ptr [gMatchDouble_0058c988]
             fxch st(2)
             fmul dword ptr [esp + 8]
             fxch st(3)
@@ -977,14 +1067,24 @@ void C2_NAKED C2_HOOK_STDCALL lightingIndexPointAttn(br_soft_renderer* self, br_
             fxch st(1)
             faddp st(2), st(0)
             faddp st(1), st(0)
-            fcom dword ptr [rendererStateStoredDispatch+0xdc]
+            _emit 0xd8
+        _emit 0x15
+        _emit 0x74
+        _emit 0xc9
+        _emit 0x58
+        _emit 0x00
             fst dword ptr [esp + 0x1c]
             fnstsw ax
             test ah, 0x41
             jne L0054ad0e
             mov edx, dword ptr [esp + 0x10]
             fld dword ptr [edx + 0x34]
-            fcomp dword ptr [rendererStateStoredDispatch+0xdc]
+            _emit 0xd8
+        _emit 0x1d
+        _emit 0x74
+        _emit 0xc9
+        _emit 0x58
+        _emit 0x00
             fmul dword ptr [edx + 0x30]
             fnstsw ax
             test ah, 0x40
@@ -1021,7 +1121,7 @@ void C2_NAKED C2_HOOK_STDCALL lightingIndexPointAttn(br_soft_renderer* self, br_
             fxch st(1)
             faddp st(1), st(0)
             fstp st(1)
-            fcom dword ptr [rendererStateStoredDispatch+0xe8]
+            fcom dword ptr [gMatchFloat_0058c980]
             fnstsw ax
             test ah, 0x41
             jne L0054acf6
@@ -1121,11 +1221,11 @@ void C2_NAKED C2_HOOK_STDCALL lightingIndexSpot(br_soft_renderer* self, br_vecto
             faddp st(2), st(0)
             faddp st(1), st(0)
             fsqrt
-            fcom dword ptr [rendererStateStoredDispatch+0xec]
+            fcom dword ptr [gMatchFloat_0058c984]
             fnstsw ax
             test ah, 0x41
             jne L0054ad92
-            fdivr qword ptr [rendererStateStoredDispatch+0xf0]
+            fdivr qword ptr [gMatchDouble_0058c988]
             fld st(0)
             fld st(1)
             fxch st(1)
@@ -1188,7 +1288,12 @@ void C2_NAKED C2_HOOK_STDCALL lightingIndexSpot(br_soft_renderer* self, br_vecto
             faddp st(1), st(0)
             fst dword ptr [esp + 0x18]
             fst dword ptr [esp + 0x1c]
-            fcomp dword ptr [rendererStateStoredDispatch+0xdc]
+            _emit 0xd8
+        _emit 0x1d
+        _emit 0x74
+        _emit 0xc9
+        _emit 0x58
+        _emit 0x00
             fnstsw ax
             test ah, 0x41
             jne L0054aef3
@@ -1211,7 +1316,12 @@ void C2_NAKED C2_HOOK_STDCALL lightingIndexSpot(br_soft_renderer* self, br_vecto
     L0054ae52:
             mov ecx, dword ptr [esp + 0x14]
             fld dword ptr [ecx + 0x34]
-            fcomp dword ptr [rendererStateStoredDispatch+0xdc]
+            _emit 0xd8
+        _emit 0x1d
+        _emit 0x74
+        _emit 0xc9
+        _emit 0x58
+        _emit 0x00
             fld dword ptr [ecx + 0x30]
             fmul dword ptr [esp + 0x1c]
             fnstsw ax
@@ -1246,7 +1356,7 @@ void C2_NAKED C2_HOOK_STDCALL lightingIndexSpot(br_soft_renderer* self, br_vecto
             fxch st(1)
             faddp st(1), st(0)
             fstp st(1)
-            fcom dword ptr [rendererStateStoredDispatch+0xe8]
+            fcom dword ptr [gMatchFloat_0058c980]
             fnstsw ax
             test ah, 0x41
             jne L0054aee1
@@ -1351,12 +1461,12 @@ void C2_NAKED C2_HOOK_STDCALL lightingIndexSpotAttn(br_soft_renderer* self, br_v
             faddp st(1), st(0)
             fsqrt
             fst dword ptr [esp + 0x24]
-            fcomp dword ptr [rendererStateStoredDispatch+0xec]
+            fcomp dword ptr [gMatchFloat_0058c984]
             fnstsw ax
             test ah, 0x41
             jne L0054b101
             fld dword ptr [esp + 0x24]
-            fdivr qword ptr [rendererStateStoredDispatch+0xf0]
+            fdivr qword ptr [gMatchDouble_0058c988]
             mov edx, dword ptr [ecx + 0x34]
             fld st(0)
             fld st(1)
@@ -1409,16 +1519,21 @@ void C2_NAKED C2_HOOK_STDCALL lightingIndexSpotAttn(br_soft_renderer* self, br_v
             faddp st(1), st(0)
             fst dword ptr [esp + 0x20]
             fst dword ptr [esp + 4]
-            fcomp dword ptr [rendererStateStoredDispatch+0xdc]
+            _emit 0xd8
+        _emit 0x1d
+        _emit 0x74
+        _emit 0xc9
+        _emit 0x58
+        _emit 0x00
             fnstsw ax
             test ah, 0x41
             jne L0054b103
             fld dword ptr [esp + 0x24]
-            fcomp dword ptr [rendererStateStoredDispatch+0xfc]
+            fcomp dword ptr [gMatchFloat_0058c994]
             fnstsw ax
             test ah, 1
             jne L0054b022
-            fld dword ptr [rendererStateStoredDispatch+0x100]
+            fld dword ptr [gMatchFloat_0058c998]
             jmp L0054b02a
     L0054b022:
             fld dword ptr [esp + 0x24]
@@ -1434,7 +1549,7 @@ void C2_NAKED C2_HOOK_STDCALL lightingIndexSpotAttn(br_soft_renderer* self, br_v
             fcomp dword ptr [edx + 0x28]
             fadd dword ptr [edx + 0x30]
             fnstsw ax
-            fdivr qword ptr [rendererStateStoredDispatch+0xf0]
+            fdivr qword ptr [gMatchDouble_0058c988]
             test ah, 1
             je L0054b064
             fld dword ptr [edx + 0x24]
@@ -1447,7 +1562,12 @@ void C2_NAKED C2_HOOK_STDCALL lightingIndexSpotAttn(br_soft_renderer* self, br_v
     L0054b064:
             mov ecx, dword ptr [esp + 0x18]
             fld dword ptr [ecx + 0x34]
-            fcomp dword ptr [rendererStateStoredDispatch+0xdc]
+            _emit 0xd8
+        _emit 0x1d
+        _emit 0x74
+        _emit 0xc9
+        _emit 0x58
+        _emit 0x00
             fld dword ptr [ecx + 0x30]
             fmul dword ptr [esp + 4]
             fnstsw ax
@@ -1482,7 +1602,7 @@ void C2_NAKED C2_HOOK_STDCALL lightingIndexSpotAttn(br_soft_renderer* self, br_v
             fxch st(1)
             faddp st(1), st(0)
             fstp st(1)
-            fcom dword ptr [rendererStateStoredDispatch+0xe8]
+            fcom dword ptr [gMatchFloat_0058c980]
             fnstsw ax
             test ah, 0x41
             jne L0054b0f3

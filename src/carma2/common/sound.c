@@ -277,6 +277,68 @@ extern int gNum_active_non_cars;
 extern int gPed_676914;
 extern int gSound_override;
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gData_00589ea0[];
+extern char gData_00595ea8[];
+extern char gData_00595ebc[];
+extern char gData_00595ed4[];
+extern char gData_00595f24[];
+extern char gDouble_00589e98[];
+extern char gDouble_00589eb8[];
+extern char gDouble_00589ec0[];
+extern char gDouble_00589ec8[];
+extern char gDouble_00589ed0[];
+extern char gDouble_00589ee0[];
+extern char gDouble_00589ee8[];
+extern char gDouble_00589ef0[];
+extern char gDouble_00589f00[];
+extern char gDouble_00589f28[];
+extern char gDouble_00589f30[];
+extern char gFloat_00589e90[];
+extern char gFloat_00589eb0[];
+extern char gFloat_00589ed8[];
+extern char gFloat_00589edc[];
+extern char gFloat_00589f08[];
+extern char gFloat_00589f0c[];
+extern char gFloat_00589f18[];
+extern char gFloat_00589f20[];
+extern char gFloat_00595ef0[];
+extern char gFloat_00595f10[];
+extern char gFloat_00595f40[];
+extern char gString_00595d90[];
+extern char gString_00595ea0[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchData_00589ea0[];
+extern char gMatchData_00595ea8[];
+extern char gMatchData_00595ebc[];
+extern char gMatchData_00595ed4[];
+extern char gMatchData_00595f24[];
+extern char gMatchDouble_00589e98[];
+extern char gMatchDouble_00589eb8[];
+extern char gMatchDouble_00589ec0[];
+extern char gMatchDouble_00589ec8[];
+extern char gMatchDouble_00589ed0[];
+extern char gMatchDouble_00589ee0[];
+extern char gMatchDouble_00589ee8[];
+extern char gMatchDouble_00589ef0[];
+extern char gMatchDouble_00589f00[];
+extern char gMatchDouble_00589f28[];
+extern char gMatchDouble_00589f30[];
+extern char gMatchFloat_00589e90[];
+extern char gMatchFloat_00589eb0[];
+extern char gMatchFloat_00589ed8[];
+extern char gMatchFloat_00589edc[];
+extern char gMatchFloat_00589f08[];
+extern char gMatchFloat_00589f0c[];
+extern char gMatchFloat_00589f18[];
+extern char gMatchFloat_00589f20[];
+extern char gMatchFloat_00595ef0[];
+extern char gMatchFloat_00595f10[];
+extern char gMatchFloat_00595f40[];
+extern char gMatchString_00595d90[];
+extern char gMatchString_00595ea0[];
+#endif
 // FUNCTION: CARMA2_HW 0x00456af0
 void C2_NAKED C2_HOOK_FASTCALL DoEnvSound(tSpecial_volume* pVolume, br_vector3* pP, tSpecial_volume_soundfx_type pType, tSpecial_volume_soundfx_data* pSound_data, float pSound_dist, br_vector3 *pSound_dir) {
 #ifndef CARPOCALYPSE2_MATCHING
@@ -298,7 +360,7 @@ void C2_NAKED C2_HOOK_FASTCALL DoEnvSound(tSpecial_volume* pVolume, br_vector3* 
             test eax, eax
             jne L00456bf3
             fld dword ptr [esp + 0x20]
-            fcomp dword ptr [gDrone_select_max_distance_squared+0xcc]
+            fcomp dword ptr [gMatchData_00589ea0]
             fnstsw ax
             test ah, 0x40
             jne L00456bdd
@@ -341,9 +403,9 @@ void C2_NAKED C2_HOOK_FASTCALL DoEnvSound(tSpecial_volume* pVolume, br_vector3* 
             jmp L00456ba1
     L00456b8d:
             fstp st(0)
-            fld dword ptr [gDOUBLE_00589ea8+0x60]
-            fld dword ptr [gDrone_select_max_distance_squared+0xcc]
-            fld dword ptr [gDrone_select_max_distance_squared+0xcc]
+            fld dword ptr [gMatchFloat_00589f08]
+            fld dword ptr [gMatchData_00589ea0]
+            fld dword ptr [gMatchData_00589ea0]
     L00456ba1:
             fld dword ptr [esp + 0x20]
             fld st(1)
@@ -394,11 +456,11 @@ void C2_NAKED C2_HOOK_FASTCALL DoEnvSound(tSpecial_volume* pVolume, br_vector3* 
             fadd dword ptr [esi + 8]
             fstp dword ptr [esp + 0x10]
     L00456c25:
-            fld dword ptr [gFLOAT_00589f14+0x4]
+            fld dword ptr [gMatchFloat_00589f18]
             fsub dword ptr [esp + 0x20]
             lea eax, [esp + 8]
             push eax
-            fmul dword ptr [gDOUBLE_00589ea8+0x8]
+            fmul dword ptr [gMatchFloat_00589eb0]
             fmul dword ptr [gFLOAT_00589f1c]
             call _ftol
             mov edx, dword ptr [esp + 0x20]
@@ -410,6 +472,13 @@ void C2_NAKED C2_HOOK_FASTCALL DoEnvSound(tSpecial_volume* pVolume, br_vector3* 
             pop esi
             add esp, 0xc
             ret 0x10
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -843,7 +912,7 @@ void C2_NAKED C2_HOOK_FASTCALL MungeSoundGenerators(void) {
             fxch st(1)
             fsqrt
             fstp st(1)
-            fcomp dword ptr [gFLOAT_00589f1c+0x4]
+            fcomp dword ptr [gMatchFloat_00589f20]
             fnstsw ax
             test ah, 1
             je L00456fda
@@ -916,7 +985,7 @@ void C2_NAKED C2_HOOK_FASTCALL MungeSoundGenerators(void) {
             fxch st(2)
             faddp st(2), st(0)
             fxch st(1)
-            fcomp dword ptr [gFLOAT_00589f1c+0x4]
+            fcomp dword ptr [gMatchFloat_00589f20]
             fnstsw ax
             test ah, 1
             fstp st(0)
@@ -928,17 +997,17 @@ void C2_NAKED C2_HOOK_FASTCALL MungeSoundGenerators(void) {
             jle L004570e1
             mov ecx, dword ptr [edi + 8]
             fld dword ptr [ecx + 0x68]
-            fcomp dword ptr [gDrone_select_max_distance_squared+0xcc]
+            fcomp dword ptr [gMatchData_00589ea0]
             fnstsw ax
             test ah, 0x40
             je L004570c5
             fld dword ptr [ecx + 0x6c]
-            fcomp dword ptr [gDrone_select_max_distance_squared+0xcc]
+            fcomp dword ptr [gMatchData_00589ea0]
             fnstsw ax
             test ah, 0x40
             je L004570c5
             fld dword ptr [ecx + 0x70]
-            fcomp dword ptr [gDrone_select_max_distance_squared+0xcc]
+            fcomp dword ptr [gMatchData_00589ea0]
             fnstsw ax
             test ah, 0x40
             jne L004570e1
@@ -1058,10 +1127,10 @@ void C2_NAKED C2_HOOK_FASTCALL MungeSoundGenerators(void) {
             jne L00457212
             mov edi, dword ptr [esi + 0x24]
     L00457212:
-            fld dword ptr [gFLOAT_00589f14+0x4]
+            fld dword ptr [gMatchFloat_00589f18]
             fsub st(0), st(1)
             push eax
-            fmul dword ptr [gDOUBLE_00589ea8+0x8]
+            fmul dword ptr [gMatchFloat_00589eb0]
             fmul dword ptr [gFLOAT_00589f1c]
             call _ftol
             push eax
@@ -1337,13 +1406,13 @@ void C2_NAKED C2_HOOK_FASTCALL InitSound(void) {
             cmp eax, ebp
             push edi
             je L00455252
-            push offset gRandom_CDA_tunes_2+0xf4
+            push 0x595d9c
             mov edx, offset gApplication_path
             lea ecx, [esp + 0x154]
             call PathCat
             lea edx, [esp + 0x150]
             lea ecx, [esp + 0x150]
-            push offset gRandom_CDA_tunes_2+0xe8
+            push offset gMatchString_00595d90
             call PathCat
             cmp dword ptr [gSound_override], ebp
             je L004550dc
@@ -1403,7 +1472,7 @@ void C2_NAKED C2_HOOK_FASTCALL InitSound(void) {
             lea edx, [esp + 0x10]
             and ecx, 3
             rep movsb
-            mov edi, offset gRandom_CDA_tunes_2+0x54
+            mov edi, 0x595cfc
             or ecx, 0xffffffff
             repne scasb
             not ecx
@@ -1424,7 +1493,7 @@ void C2_NAKED C2_HOOK_FASTCALL InitSound(void) {
             call PDCheckDriveExists
             test eax, eax
             je L00455678
-            mov edx, offset gNext_crush_actor_id+0x180
+            mov edx, 0x58f9e0
             lea ecx, [esp + 0x10]
             call PFfopen
             mov esi, eax
@@ -1444,7 +1513,7 @@ void C2_NAKED C2_HOOK_FASTCALL InitSound(void) {
             call GetALineWithNoPossibleService
             mov ecx, esi
             call PFfclose
-            mov esi, offset gRandom_CDA_tunes_2+0x4c
+            mov esi, 0x595cf4
             lea eax, [esp + 0x60]
     L00455219:
             mov dl, byte ptr [eax]
@@ -1723,14 +1792,14 @@ void C2_NAKED C2_HOOK_FASTCALL InitSound(void) {
             je L00455654
             mov ecx, dword ptr [gProgram_state+0x70]
             push ecx
-            push offset gRandom_CDA_tunes_2+0xcc
+            push 0x595d74
             call dr_dprintf
             mov eax, dword ptr [gCDA_started_playing]
             xor esi, esi
             add esp, 8
             cmp eax, esi
             jne L004555cf
-            push offset gRandom_CDA_tunes_2+0x98
+            push 0x595d40
             call dr_dprintf
             add esp, 4
             pop edi
@@ -1763,7 +1832,7 @@ void C2_NAKED C2_HOOK_FASTCALL InitSound(void) {
             call PDGetTotalTime
             add eax, 0x2710
             push eax
-            push offset gRandom_CDA_tunes_2+0x60
+            push 0x595d08
             mov dword ptr [gNext_track_finished_check], eax
             call dr_dprintf
             mov ecx, dword ptr [gINT_00595c20]
@@ -1791,6 +1860,15 @@ void C2_NAKED C2_HOOK_FASTCALL InitSound(void) {
     L00455678:
             mov dword ptr [gCD_fully_installed], 1
             jmp L00455252
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -2104,12 +2182,12 @@ void C2_NAKED C2_HOOK_FASTCALL InitSoundSources(void) {
             fld dword ptr [gCamera_to_world+0x4]
             fld dword ptr [gCamera_to_world+0x8]
             fxch st(2)
-            fmul dword ptr [gDrone_select_max_distance_squared+0xbc]
+            fmul dword ptr [gMatchFloat_00589e90]
             fxch st(1)
-            fmul dword ptr [gDrone_select_max_distance_squared+0xbc]
+            fmul dword ptr [gMatchFloat_00589e90]
             fld dword ptr [gCamera_to_world+0x28]
             fxch st(3)
-            fmul dword ptr [gDrone_select_max_distance_squared+0xbc]
+            fmul dword ptr [gMatchFloat_00589e90]
             fxch st(3)
             fstp dword ptr [gCamera_position+0x4]
             mov ecx, dword ptr [gCamera_to_world+0x2c]
@@ -2608,7 +2686,7 @@ void C2_NAKED C2_HOOK_FASTCALL MungeEngineNoise(void) {
             fld dword ptr [gCamera_to_world+0x28]
             fld dword ptr [gCamera_to_world+0x2c]
             fxch st(5)
-            fmul dword ptr [gDrone_select_max_distance_squared+0xbc]
+            fmul dword ptr [gMatchFloat_00589e90]
             mov eax, dword ptr [gCamera_to_world+0x24]
             mov ecx, dword ptr [gCamera_to_world+0x28]
             mov edx, dword ptr [gCamera_to_world+0x2c]
@@ -2617,11 +2695,11 @@ void C2_NAKED C2_HOOK_FASTCALL MungeEngineNoise(void) {
             mov dword ptr [gCamera_position+0x4], ecx
             fstp dword ptr [gCamera_left]
             fxch st(3)
-            fmul dword ptr [gDrone_select_max_distance_squared+0xbc]
+            fmul dword ptr [gMatchFloat_00589e90]
             fxch st(1)
             fsub dword ptr [gOld_camera_position]
             fxch st(2)
-            fmul dword ptr [gDrone_select_max_distance_squared+0xbc]
+            fmul dword ptr [gMatchFloat_00589e90]
             fxch st(3)
             fsub dword ptr [gOld_camera_position+0x4]
             fxch st(4)
@@ -2638,7 +2716,7 @@ void C2_NAKED C2_HOOK_FASTCALL MungeEngineNoise(void) {
             mov dword ptr [esp + 0x1c], eax
             mov dword ptr [esp + 0x20], 0
             fild qword ptr [esp + 0x1c]
-            fmul qword ptr [gDrone_select_max_distance_squared+0xc4]
+            fmul qword ptr [gMatchDouble_00589e98]
             fld st(1)
             fxch st(4)
             fdiv st(0), st(1)
@@ -2727,7 +2805,7 @@ void C2_NAKED C2_HOOK_FASTCALL MungeEngineNoise(void) {
             mov ecx, dword ptr [eax + 0x70]
             mov dword ptr [edi + 0x13d4], ecx
             jne L00456274
-            fld dword ptr [gDOUBLE_00589ea8+0x8]
+            fld dword ptr [gMatchFloat_00589eb0]
             mov esi, dword ptr [gPed_676914]
             mov dword ptr [esp + 0x10], 0x47800000
             jmp L00456363
@@ -2741,10 +2819,10 @@ void C2_NAKED C2_HOOK_FASTCALL MungeEngineNoise(void) {
             xor ebx, ebx
     L00456288:
             fld dword ptr [edi + 0x1340]
-            fmul qword ptr [gDOUBLE_00589ea8+0x10]
+            fmul qword ptr [gMatchDouble_00589eb8]
             mov esi, dword ptr [gPed_676914]
             test esi, esi
-            fsubr qword ptr [gDOUBLE_00589ea8+0x18]
+            fsubr qword ptr [gMatchDouble_00589ec0]
             fstp dword ptr [esp + 0x10]
             je L004562ca
             call ARGetReplayRate
@@ -2759,36 +2837,36 @@ void C2_NAKED C2_HOOK_FASTCALL MungeEngineNoise(void) {
             cmp ebx, 1
             jne L004562db
             fld dword ptr [esp + 0x10]
-            fmul qword ptr [gDOUBLE_00589ea8+0x20]
+            fmul qword ptr [gMatchDouble_00589ec8]
             jmp L004562ea
     L004562db:
             cmp ebx, 2
             jne L004562ee
             fld dword ptr [esp + 0x10]
-            fmul qword ptr [gDOUBLE_00589ea8+0x28]
+            fmul qword ptr [gMatchDouble_00589ed0]
     L004562ea:
             fstp dword ptr [esp + 0x10]
     L004562ee:
             fld dword ptr [esp + 0x10]
-            fcomp dword ptr [gDOUBLE_00589ea8+0x30]
+            fcomp dword ptr [gMatchFloat_00589ed8]
             fnstsw ax
             test ah, 1
             je L00456307
             mov dword ptr [esp + 0x10], 0x45800000
     L00456307:
             fld dword ptr [esp + 0x10]
-            fcomp dword ptr [gDOUBLE_00589ea8+0x34]
+            fcomp dword ptr [gMatchFloat_00589edc]
             fnstsw ax
             test ah, 0x41
             jne L00456320
             mov dword ptr [esp + 0x10], 0x48000000
     L00456320:
             fld dword ptr [edi + 0x1340]
-            fmul qword ptr [gDOUBLE_00589ea8+0x38]
+            fmul qword ptr [gMatchDouble_00589ee0]
             cmp ebx, 1
-            fsubr qword ptr [gDOUBLE_00589ea8+0x40]
+            fsubr qword ptr [gMatchDouble_00589ee8]
             jne L0045633f
-            fmul qword ptr [gDOUBLE_00589ea8+0x48]
+            fmul qword ptr [gMatchDouble_00589ef0]
             jmp L0045634e
     L0045633f:
             cmp ebx, 2
@@ -2796,14 +2874,14 @@ void C2_NAKED C2_HOOK_FASTCALL MungeEngineNoise(void) {
             fadd st(0), st(0)
             jmp L0045634e
     L00456348:
-            fmul qword ptr [gDOUBLE_00589ea8+0x58]
+            fmul qword ptr [gMatchDouble_00589f00]
     L0045634e:
-            fcom dword ptr [gDOUBLE_00589ea8+0x8]
+            fcom dword ptr [gMatchFloat_00589eb0]
             fnstsw ax
             test ah, 1
             jne L00456363
             fstp st(0)
-            fld dword ptr [gDOUBLE_00589ea8+0x8]
+            fld dword ptr [gMatchFloat_00589eb0]
     L00456363:
             fld dword ptr [edi + 0x4d4]
             fcomp qword ptr [gDOUBLE_00589ea8]
@@ -2811,8 +2889,8 @@ void C2_NAKED C2_HOOK_FASTCALL MungeEngineNoise(void) {
             test ah, 0x41
             jne L00456392
             fld dword ptr [edi + 0x4d4]
-            fsub dword ptr [gDOUBLE_00589ea8+0x60]
-            fmul dword ptr [gDOUBLE_00589ea8+0x64]
+            fsub dword ptr [gMatchFloat_00589f08]
+            fmul dword ptr [gMatchFloat_00589f0c]
             fsubr qword ptr [gDOUBLE_00589ea8]
             fxch st(1)
             fmulp st(1), st(0)
@@ -2873,7 +2951,7 @@ void C2_NAKED C2_HOOK_FASTCALL MungeEngineNoise(void) {
             mov eax, dword ptr [gNext_track_finished_check]
             push eax
             push esi
-            push offset gRandom_CDA_tunes_2+0xfc
+            push 0x595da4
             call dr_dprintf
             mov eax, dword ptr [gCD_fully_installed]
             add esp, 0xc
@@ -2901,7 +2979,7 @@ void C2_NAKED C2_HOOK_FASTCALL MungeEngineNoise(void) {
             call PDGetTotalTime
             add eax, 0x2710
             push eax
-            push offset gRandom_CDA_tunes_2+0x60
+            push 0x595d08
             mov dword ptr [gNext_track_finished_check], eax
             call dr_dprintf
             mov ecx, dword ptr [gINT_00595c20]
@@ -2934,6 +3012,17 @@ void C2_NAKED C2_HOOK_FASTCALL MungeEngineNoise(void) {
             pop ebx
             add esp, 0x14
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -3230,7 +3319,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReadSoundGenerators(tTrack_spec* pTrack_spec, FIL
             lea ecx, [esp + 0x18]
             push ebx
             push 0x29
-            push offset gRandom_CDA_tunes_2+0x1f8
+            push offset gMatchString_00595ea0
             push ecx
             call sprintf
             add esp, 0x10
@@ -3253,7 +3342,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReadSoundGenerators(tTrack_spec* pTrack_spec, FIL
             lea edx, [esp + 0x1c]
             push ebx
             push 0x29
-            push offset gRandom_CDA_tunes_2+0x1f8
+            push offset gMatchString_00595ea0
             push edx
             call sprintf
             add esp, 0x10
@@ -3345,7 +3434,7 @@ void C2_NAKED C2_HOOK_FASTCALL WriteOutSoundSpec(FILE* pF, tSpecial_volume_sound
             mov eax, dword ptr [esi]
             cmp eax, -1
             jne L00457478
-            push 0x595f40
+            push offset gMatchFloat_00595f40
             push ebp
             call fprintf
             add esp, 8
@@ -3358,7 +3447,7 @@ void C2_NAKED C2_HOOK_FASTCALL WriteOutSoundSpec(FILE* pF, tSpecial_volume_sound
     L00457478:
             mov eax, dword ptr [eax*4 + gSound_periodicity_choices]
             push eax
-            push 0x595f24
+            push offset gMatchData_00595f24
             push ebp
             call fprintf
             mov eax, dword ptr [esi]
@@ -3373,11 +3462,11 @@ void C2_NAKED C2_HOOK_FASTCALL WriteOutSoundSpec(FILE* pF, tSpecial_volume_sound
             mov dword ptr [esp + 0x10], ecx
             sub esp, 8
             fild qword ptr [esp + 0x18]
-            fmul qword ptr ds:[0x589e98]
+            fmul qword ptr [gMatchDouble_00589e98]
             _emit 0xdd
         _emit 0x1c
         _emit 0x24
-            push 0x595f10
+            push offset gMatchFloat_00595f10
             push ebp
             call fprintf
             add esp, 0x10
@@ -3392,30 +3481,30 @@ void C2_NAKED C2_HOOK_FASTCALL WriteOutSoundSpec(FILE* pF, tSpecial_volume_sound
             mov dword ptr [esp + 0x18], eax
             mov dword ptr [esp + 0x1c], edi
             sub esp, 8
-            fmul qword ptr ds:[0x589e98]
+            fmul qword ptr [gMatchDouble_00589e98]
             fstp qword ptr [esp + 8]
             fild qword ptr [esp + 0x20]
-            fmul qword ptr ds:[0x589e98]
+            fmul qword ptr [gMatchDouble_00589e98]
             _emit 0xdd
         _emit 0x1c
         _emit 0x24
-            push 0x595ef0
+            push offset gMatchFloat_00595ef0
             push ebp
             call fprintf
             add esp, 0x18
     L00457509:
             fild dword ptr [esi + 0x14]
-            fmul qword ptr ds:[0x589f28]
-            fmul qword ptr ds:[0x589f30]
+            fmul qword ptr [gMatchDouble_00589f28]
+            fmul qword ptr [gMatchDouble_00589f30]
             call _ftol
             push eax
-            push 0x595ed4
+            push offset gMatchData_00595ed4
             push ebp
             call fprintf
             mov ecx, dword ptr [esi + 0x10]
             add esp, 0xc
             push ecx
-            push 0x595ebc
+            push offset gMatchData_00595ebc
             push ebp
             call fprintf
             mov eax, dword ptr [esi + 0x10]
@@ -3427,7 +3516,7 @@ void C2_NAKED C2_HOOK_FASTCALL WriteOutSoundSpec(FILE* pF, tSpecial_volume_sound
             xor edx, edx
             mov dx, word ptr [ebx]
             push edx
-            push 0x595ea8
+            push offset gMatchData_00595ea8
             push ebp
             call fprintf
             mov eax, dword ptr [esi + 0x10]
@@ -3443,6 +3532,7 @@ void C2_NAKED C2_HOOK_FASTCALL WriteOutSoundSpec(FILE* pF, tSpecial_volume_sound
             pop ebx
             add esp, 8
             ret
+            nop
     }
 #endif
 }

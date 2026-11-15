@@ -87,6 +87,16 @@ br_uint_8 g_endMasks[9] = {
         }                                                                                                   \
     } while (0)
 
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gData_0066fd20[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gData_0066fd1e[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchData_0066fd1e[];
+extern char gMatchData_0066fd20[];
+#endif
 // FUNCTION: CARMA2_HW 0x0053df30
 void C2_NAKED C2_HOOK_CDECL pm_mem_copy_bits(void* dest, br_uint_32 qual, br_uint_32 dest_stride, void* src, br_uint_32 s_stride, br_uint_32 start_bit, br_uint_32 end_bit, br_uint_32 height, br_uint_32 bpp, br_uint_32 colour) {
 #ifndef CARPOCALYPSE2_MATCHING
@@ -1158,7 +1168,7 @@ void C2_NAKED C2_HOOK_CDECL pm_mem_fill_colour(br_uint_8 *dest, br_uint_32 qual,
             push ds
             push es
             fnstcw word ptr [ebp - 0xa]
-            fldcw word ptr ds:[0x66fd1e]
+            fldcw word ptr [gMatchData_0066fd1e]
             mov es, word ptr [ebp + 0xc]
             mov ebx, dword ptr [ebp + 0x14]
             cmp ebx, 4
@@ -1429,7 +1439,7 @@ void C2_NAKED C2_HOOK_CDECL pm_mem_fill_colour(br_uint_8 *dest, br_uint_32 qual,
             and ecx, 7
             mov dh, dl
             mov dl, bh
-            mov ecx, dword ptr [ecx*4 + 0x66fd20]
+            mov ecx, dword ptr [ecx*4 + gMatchData_0066fd20]
             mov ds, word ptr [ebp + 0xc]
             sub esi, ecx
             jle L0053e92f
@@ -1671,7 +1681,7 @@ void C2_NAKED C2_HOOK_CDECL pm_mem_fill_colour_rect(br_uint_8* dest, br_uint_32 
             push ds
             push es
             fnstcw word ptr [ebp - 0xa]
-            fldcw word ptr ds:[0x66fd1e]
+            fldcw word ptr [gMatchData_0066fd1e]
             mov ds, word ptr [ebp + 0xc]
             mov es, word ptr [ebp + 0xc]
             mov ebx, dword ptr [ebp + 0x1c]
@@ -1987,7 +1997,7 @@ void C2_NAKED C2_HOOK_CDECL pm_mem_fill_colour_rect(br_uint_8* dest, br_uint_32 
             and ecx, 7
             mov dh, dl
             mov dl, bh
-            mov ecx, dword ptr [ecx*4 + 0x66fd20]
+            mov ecx, dword ptr [ecx*4 + gMatchData_0066fd20]
             mov dword ptr [ebp - 0x10], ecx
             sub esi, ecx
             jle L0053ed1b

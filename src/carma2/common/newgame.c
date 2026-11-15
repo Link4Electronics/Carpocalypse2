@@ -199,7 +199,7 @@ void C2_NAKED C2_HOOK_FASTCALL AddToJoinList(tNet_game_details* pGame) {
             mov eax, dword ptr [esp + 0x10]
             mov dword ptr [ebp*8 + gGames_to_join], eax
             call PDGetTotalTime
-            mov dword ptr [ebp*8 + 0x68871c], eax
+            mov dword ptr [ebp*8 + gGames_to_join+0x4], eax
     L0046825a:
             pop edi
             pop esi

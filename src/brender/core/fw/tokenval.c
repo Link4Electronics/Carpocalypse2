@@ -31,6 +31,26 @@ extern br_token C2_HOOK_CDECL BrTokenFindType();
 extern br_token C2_HOOK_CDECL BrTokenType();
 extern void __cdecl _ftol();
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gDouble_0058b870[];
+extern char gFloat_0058b868[];
+extern char gFloat_00667f24[];
+extern char gString_00667f00[];
+extern char gString_00667f08[];
+extern char gString_00667f10[];
+extern char gString_00667f1c[];
+extern char gString_00667f38[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchDouble_0058b870[];
+extern char gMatchFloat_0058b868[];
+extern char gMatchFloat_00667f24[];
+extern char gMatchString_00667f00[];
+extern char gMatchString_00667f08[];
+extern char gMatchString_00667f10[];
+extern char gMatchString_00667f1c[];
+extern char gMatchString_00667f38[];
+#endif
 // FUNCTION: CARMA2_HW 0x0052d740
 br_tv_template* C2_HOOK_CDECL BrTVTemplateAllocate(void* res, br_tv_template_entry* entries, int n_entries) {
     br_tv_template* t;
@@ -624,7 +644,7 @@ br_error C2_NAKED C2_HOOK_STDCALL ValueQuery(br_token_value* tv, void** pextra, 
             ret 0x14
             _emit 0xd9
         _emit 0x06
-            fmul dword ptr ds:[0x58b868]
+            fmul dword ptr [gMatchFloat_0058b868]
             call _ftol
             mov ecx, dword ptr [esp + 0x14]
             mov dword ptr [ecx + 4], eax
@@ -638,7 +658,7 @@ br_error C2_NAKED C2_HOOK_STDCALL ValueQuery(br_token_value* tv, void** pextra, 
         _emit 0x06
             mov edx, dword ptr [esp + 0x14]
             xor eax, eax
-            fmul qword ptr ds:[0x58b870]
+            fmul qword ptr [gMatchDouble_0058b870]
             fstp dword ptr [edx + 4]
             pop edi
             pop esi
@@ -663,7 +683,7 @@ br_error C2_NAKED C2_HOOK_STDCALL ValueQuery(br_token_value* tv, void** pextra, 
     L0052da2c:
             _emit 0xd9
         _emit 0x06
-            fmul dword ptr ds:[0x58b868]
+            fmul dword ptr [gMatchFloat_0058b868]
             call _ftol
             mov ecx, dword ptr [edi]
             add esi, 4
@@ -695,7 +715,7 @@ br_error C2_NAKED C2_HOOK_STDCALL ValueQuery(br_token_value* tv, void** pextra, 
         _emit 0x06
             mov edx, dword ptr [eax]
             add esi, 4
-            fmul qword ptr ds:[0x58b870]
+            fmul qword ptr [gMatchDouble_0058b870]
             _emit 0xd9
         _emit 0x1a
             mov ebx, dword ptr [eax]
@@ -723,7 +743,7 @@ br_error C2_NAKED C2_HOOK_STDCALL ValueQuery(br_token_value* tv, void** pextra, 
     L0052dadf:
             _emit 0xd9
         _emit 0x06
-            fmul dword ptr ds:[0x58b868]
+            fmul dword ptr [gMatchFloat_0058b868]
             call _ftol
             mov edx, dword ptr [edi]
             add esi, 4
@@ -755,7 +775,7 @@ br_error C2_NAKED C2_HOOK_STDCALL ValueQuery(br_token_value* tv, void** pextra, 
         _emit 0x06
             mov edx, dword ptr [eax]
             add esi, 4
-            fmul qword ptr ds:[0x58b870]
+            fmul qword ptr [gMatchDouble_0058b870]
             _emit 0xd9
         _emit 0x1a
             mov ebx, dword ptr [eax]
@@ -783,7 +803,7 @@ br_error C2_NAKED C2_HOOK_STDCALL ValueQuery(br_token_value* tv, void** pextra, 
     L0052db92:
             _emit 0xd9
         _emit 0x06
-            fmul dword ptr ds:[0x58b868]
+            fmul dword ptr [gMatchFloat_0058b868]
             call _ftol
             mov edx, dword ptr [edi]
             add esi, 4
@@ -815,7 +835,7 @@ br_error C2_NAKED C2_HOOK_STDCALL ValueQuery(br_token_value* tv, void** pextra, 
         _emit 0x06
             mov edx, dword ptr [eax]
             add esi, 4
-            fmul qword ptr ds:[0x58b870]
+            fmul qword ptr [gMatchDouble_0058b870]
             _emit 0xd9
         _emit 0x1a
             mov ebx, dword ptr [eax]
@@ -843,7 +863,7 @@ br_error C2_NAKED C2_HOOK_STDCALL ValueQuery(br_token_value* tv, void** pextra, 
     L0052dc45:
             _emit 0xd9
         _emit 0x06
-            fmul dword ptr ds:[0x58b868]
+            fmul dword ptr [gMatchFloat_0058b868]
             call _ftol
             mov edx, dword ptr [edi]
             add esi, 4
@@ -875,7 +895,7 @@ br_error C2_NAKED C2_HOOK_STDCALL ValueQuery(br_token_value* tv, void** pextra, 
         _emit 0x06
             mov edx, dword ptr [eax]
             add esi, 4
-            fmul qword ptr ds:[0x58b870]
+            fmul qword ptr [gMatchDouble_0058b870]
             _emit 0xd9
         _emit 0x1a
             mov ebx, dword ptr [eax]
@@ -903,7 +923,7 @@ br_error C2_NAKED C2_HOOK_STDCALL ValueQuery(br_token_value* tv, void** pextra, 
     L0052dcf8:
             _emit 0xd9
         _emit 0x06
-            fmul dword ptr ds:[0x58b868]
+            fmul dword ptr [gMatchFloat_0058b868]
             call _ftol
             mov edx, dword ptr [edi]
             add esi, 4
@@ -935,7 +955,7 @@ br_error C2_NAKED C2_HOOK_STDCALL ValueQuery(br_token_value* tv, void** pextra, 
         _emit 0x06
             mov edx, dword ptr [eax]
             add esi, 4
-            fmul qword ptr ds:[0x58b870]
+            fmul qword ptr [gMatchDouble_0058b870]
             _emit 0xd9
         _emit 0x1a
             mov ebx, dword ptr [eax]
@@ -963,7 +983,7 @@ br_error C2_NAKED C2_HOOK_STDCALL ValueQuery(br_token_value* tv, void** pextra, 
     L0052ddab:
             _emit 0xd9
         _emit 0x06
-            fmul dword ptr ds:[0x58b868]
+            fmul dword ptr [gMatchFloat_0058b868]
             call _ftol
             mov edx, dword ptr [edi]
             add esi, 4
@@ -995,7 +1015,7 @@ br_error C2_NAKED C2_HOOK_STDCALL ValueQuery(br_token_value* tv, void** pextra, 
         _emit 0x06
             mov edx, dword ptr [eax]
             add esi, 4
-            fmul qword ptr ds:[0x58b870]
+            fmul qword ptr [gMatchDouble_0058b870]
             _emit 0xd9
         _emit 0x1a
             mov ebx, dword ptr [eax]
@@ -1745,7 +1765,7 @@ copy_integers:
             mov ecx, dword ptr [esp + 0x18]
             xor eax, eax
             fild dword ptr [ecx + 4]
-            fmul qword ptr ds:[0x58b870]
+            fmul qword ptr [gMatchDouble_0058b870]
             _emit 0xd9
         _emit 0x1e
             pop edi
@@ -1755,7 +1775,7 @@ copy_integers:
             ret 0xc
             mov edx, dword ptr [esp + 0x18]
             fld dword ptr [edx + 4]
-            fmul dword ptr ds:[0x58b868]
+            fmul dword ptr [gMatchFloat_0058b868]
             call _ftol
             mov dword ptr [esi], eax
             xor eax, eax
@@ -1796,7 +1816,7 @@ copy_integers:
             inc eax
             fild dword ptr [ebx + ecx]
             cmp eax, edx
-            fmul qword ptr ds:[0x58b870]
+            fmul qword ptr [gMatchDouble_0058b870]
             fstp dword ptr [esi + ecx]
             jl L0052e7a6
             xor eax, eax
@@ -1814,7 +1834,7 @@ copy_integers:
     L0052e7dd:
             mov eax, dword ptr [ebp + 4]
             fld dword ptr [eax + edi*4]
-            fmul dword ptr ds:[0x58b868]
+            fmul dword ptr [gMatchFloat_0058b868]
             call _ftol
             mov dword ptr [esi + edi*4], eax
             inc edi
@@ -3260,20 +3280,20 @@ br_error C2_NAKED C2_HOOK_CDECL BrStringToTokenValue(br_token_value* buffer, br_
             cmp al, 0x4d
             jne L0052eafd
     L0052eacc:
-            push 0x667f1c
+            push offset gMatchString_00667f1c
             jmp L0052eaf0
     L0052ead3:
             lea ecx, [esp + 0x10]
-            push 0x667f10
+            push offset gMatchString_00667f10
             push ecx
             jmp L0052eaf5
     L0052eadf:
             lea edx, [esp + 0x10]
-            push 0x667f08
+            push offset gMatchString_00667f08
             push edx
             jmp L0052eaf5
     L0052eaeb:
-            push 0x667f00
+            push offset gMatchString_00667f00
     L0052eaf0:
             lea eax, [esp + 0x14]
             push eax
@@ -3331,7 +3351,7 @@ br_error C2_NAKED C2_HOOK_CDECL BrStringToTokenValue(br_token_value* buffer, br_
             jmp L0052ed38
     L0052eba0:
             fld dword ptr [edi + 8]
-            fmul dword ptr ds:[0x58b868]
+            fmul dword ptr [gMatchFloat_0058b868]
             call _ftol
             mov dword ptr [esi + 4], eax
             jmp L0052ed38
@@ -3458,7 +3478,7 @@ br_error C2_NAKED C2_HOOK_CDECL BrStringToTokenValue(br_token_value* buffer, br_
             add esp, 0xc
             jmp L0052ed38
     L0052ed2c:
-            push 0x667f24
+            push offset gMatchFloat_00667f24
             push edi
             call dword ptr [edi + 0x2c]
             add esp, 8
@@ -3472,7 +3492,7 @@ br_error C2_NAKED C2_HOOK_CDECL BrStringToTokenValue(br_token_value* buffer, br_
             sub ebp, 8
             jmp L0052ed54
     L0052ed48:
-            push 0x667f38
+            push offset gMatchString_00667f38
             push edi
             call dword ptr [edi + 0x2c]
             add esp, 8

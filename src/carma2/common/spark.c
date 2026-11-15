@@ -512,6 +512,90 @@ extern br_pixelmap* C2_HOOK_FASTCALL LoadPixelmap(const char* pPath_name);
 #ifdef CARPOCALYPSE2_MATCHING
 extern br_pixelmap* gRender_palette;
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gData_006601c4[];
+extern char gData_00660248[];
+extern char gData_006a8688[];
+extern char gData_006a912c[];
+extern char gDouble_0058aff8[];
+extern char gDouble_0058b068[];
+extern char gDouble_0058b078[];
+extern char gDouble_0058b088[];
+extern char gDouble_0058b090[];
+extern char gDouble_0058b0d0[];
+extern char gDouble_0058b138[];
+extern char gFloat_0058afd8[];
+extern char gFloat_0058afe4[];
+extern char gFloat_0058afe8[];
+extern char gFloat_0058b000[];
+extern char gFloat_0058b004[];
+extern char gFloat_0058b050[];
+extern char gFloat_0058b058[];
+extern char gFloat_0058b05c[];
+extern char gFloat_0058b070[];
+extern char gFloat_0058b074[];
+extern char gFloat_0058b080[];
+extern char gFloat_0058b084[];
+extern char gFloat_0058b098[];
+extern char gFloat_0058b09c[];
+extern char gFloat_0058b0a0[];
+extern char gFloat_0058b0bc[];
+extern char gFloat_0058b0c0[];
+extern char gFloat_0058b0e8[];
+extern char gFloat_0058b100[];
+extern char gString_006601bc[];
+extern char gString_006601c0[];
+extern char gString_006601d8[];
+extern char gString_006601e4[];
+extern char gString_006601f4[];
+extern char gString_00660230[];
+extern char gString_0066023c[];
+extern char gString_00660240[];
+extern char gString_00660244[];
+extern char gString_0066024c[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchData_006601c4[];
+extern char gMatchData_00660248[];
+extern char gMatchData_006a8688[];
+extern char gMatchData_006a912c[];
+extern char gMatchDouble_0058aff8[];
+extern char gMatchDouble_0058b068[];
+extern char gMatchDouble_0058b078[];
+extern char gMatchDouble_0058b088[];
+extern char gMatchDouble_0058b090[];
+extern char gMatchDouble_0058b0d0[];
+extern char gMatchDouble_0058b138[];
+extern char gMatchFloat_0058afd8[];
+extern char gMatchFloat_0058afe4[];
+extern char gMatchFloat_0058afe8[];
+extern char gMatchFloat_0058b000[];
+extern char gMatchFloat_0058b004[];
+extern char gMatchFloat_0058b050[];
+extern char gMatchFloat_0058b058[];
+extern char gMatchFloat_0058b05c[];
+extern char gMatchFloat_0058b070[];
+extern char gMatchFloat_0058b074[];
+extern char gMatchFloat_0058b080[];
+extern char gMatchFloat_0058b084[];
+extern char gMatchFloat_0058b098[];
+extern char gMatchFloat_0058b09c[];
+extern char gMatchFloat_0058b0a0[];
+extern char gMatchFloat_0058b0bc[];
+extern char gMatchFloat_0058b0c0[];
+extern char gMatchFloat_0058b0e8[];
+extern char gMatchFloat_0058b100[];
+extern char gMatchString_006601bc[];
+extern char gMatchString_006601c0[];
+extern char gMatchString_006601d8[];
+extern char gMatchString_006601e4[];
+extern char gMatchString_006601f4[];
+extern char gMatchString_00660230[];
+extern char gMatchString_0066023c[];
+extern char gMatchString_00660240[];
+extern char gMatchString_00660244[];
+extern char gMatchString_0066024c[];
+#endif
 // FUNCTION: CARMA2_HW 0x004fb910
 void C2_HOOK_FASTCALL GenerateSmokeShades(void) {
     // GLOBAL: CARMA2_HW 0x006aa5b4
@@ -768,13 +852,28 @@ void C2_NAKED C2_HOOK_FASTCALL InitSplash(FILE* pF) {
             xor esi, esi
             push 4
             mov ebx, ecx
-            push 0x66024c
+            push offset gMatchString_0066024c
             mov dword ptr [gSplash_flags], esi
             call BrModelAllocate
-            mov cx, word ptr ds:[0x66010c]
-            mov dl, byte ptr ds:[0x66010e]
+            _emit 0x66
+        _emit 0x8b
+        _emit 0x0d
+        _emit 0x0c
+        _emit 0x01
+        _emit 0x66
+        _emit 0x00
+            _emit 0x8a
+        _emit 0x15
+        _emit 0x0e
+        _emit 0x01
+        _emit 0x66
+        _emit 0x00
             mov dword ptr [gSplash_model], eax
-            mov eax, dword ptr ds:[0x660108]
+            _emit 0xa1
+        _emit 0x08
+        _emit 0x01
+        _emit 0x66
+        _emit 0x00
             add esp, 0xc
             cmp ebx, esi
             mov dword ptr [gCurrent_load_directory], eax
@@ -834,11 +933,11 @@ void C2_NAKED C2_HOOK_FASTCALL InitSplash(FILE* pF) {
             jne L004fde4d
             jmp L004fdf18
     L004fdede:
-            mov eax, dword ptr ds:[0x66023c]
-            mov ecx, dword ptr ds:[0x660240]
-            mov edx, dword ptr ds:[0x660244]
+            mov eax, dword ptr [gMatchString_0066023c]
+            mov ecx, dword ptr [gMatchString_00660240]
+            mov edx, dword ptr [gMatchString_00660244]
             mov dword ptr [esp + 0x64], eax
-            mov al, byte ptr ds:[0x660248]
+            mov al, byte ptr [gMatchData_00660248]
             mov dword ptr [esp + 0x68], ecx
             mov dword ptr [esp + 0x6c], edx
             push 0x14
@@ -1063,13 +1162,13 @@ void C2_NAKED C2_HOOK_FASTCALL LoadInKevStuff(FILE* pF) {
             mov ecx, 0x660198
             call LoadModel
             mov ecx, eax
-            mov dword ptr ds:[0x6aa58c], eax
+            mov dword ptr [gShrapnel_model+0x4], eax
             push 0x3f000000
             call DRScaleModel
             mov eax, dword ptr [gShrapnel_model]
             push eax
             call BrModelAdd
-            mov ecx, dword ptr ds:[0x6aa58c]
+            mov ecx, dword ptr [gShrapnel_model+0x4]
             add esp, 4
             push ecx
             call BrModelAdd
@@ -1095,7 +1194,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadInKevStuff(FILE* pF) {
             and eax, 1
             add esp, 8
             mov edx, dword ptr [eax*4 + gShrapnel_model]
-            push 0x660230
+            push offset gMatchString_00660230
             mov dword ptr [ecx + 0x18], edx
             mov eax, dword ptr [esi]
             mov byte ptr [eax + 0x20], bl
@@ -1247,7 +1346,7 @@ void C2_NAKED C2_HOOK_FASTCALL DisposeFlames(void) {
             call BrPixelmapFree
             add esi, 4
             add esp, 4
-            cmp esi, 0x6a8688
+            cmp esi, offset gMatchData_006a8688
             jl L004fc2e9
             xor ebp, ebp
             mov edi, offset gSmoke_column+0x24
@@ -2864,7 +2963,7 @@ void C2_NAKED C2_HOOK_FASTCALL MungeShrapnel(tU32 pTime) {
             mov dword ptr [esp + 0x1c], eax
             mov dword ptr [esp + 0x20], edx
             fild qword ptr [esp + 0x1c]
-            fmul dword ptr ds:[0x58afe8]
+            fmul dword ptr [gMatchFloat_0058afe8]
             fld dword ptr [esi - 8]
             fld dword ptr [esi - 4]
             fxch st(3)
@@ -2887,7 +2986,7 @@ void C2_NAKED C2_HOOK_FASTCALL MungeShrapnel(tU32 pTime) {
             mov dword ptr [esp + 0x24], eax
             add eax, ecx
             fild qword ptr [esp + 0x24]
-            fmul dword ptr ds:[0x58afe8]
+            fmul dword ptr [gMatchFloat_0058afe8]
             fld dword ptr [esi - 8]
             fld dword ptr [esi - 4]
             fxch st(3)
@@ -2920,7 +3019,7 @@ void C2_NAKED C2_HOOK_FASTCALL MungeShrapnel(tU32 pTime) {
             fxch st(3)
             fadd dword ptr [edi + 0x2c]
             fxch st(2)
-            fmul dword ptr ds:[0x58b050]
+            fmul dword ptr [gMatchFloat_0058b050]
             fxch st(1)
             _emit 0xd9
         _emit 0x5d
@@ -2965,19 +3064,19 @@ void C2_NAKED C2_HOOK_FASTCALL MungeShrapnel(tU32 pTime) {
             faddp st(1), st(0)
             fsqrt
             fst dword ptr [esp + 0x14]
-            fmul dword ptr ds:[0x58b000]
+            fmul dword ptr [gMatchFloat_0058b000]
             fxch st(2)
             fmulp st(2), st(0)
             fxch st(1)
-            fmul dword ptr ds:[0x58afe8]
+            fmul dword ptr [gMatchFloat_0058afe8]
             fsubr dword ptr [gFLOAT_0058afdc]
             fstp st(1)
-            fcom dword ptr ds:[0x58b004]
+            fcom dword ptr [gMatchFloat_0058b004]
             fnstsw ax
             test ah, 1
             je L004f9dfb
             fstp st(0)
-            fld dword ptr ds:[0x58b004]
+            fld dword ptr [gMatchFloat_0058b004]
     L004f9dfb:
             fld dword ptr [esi - 0xc]
             fmul st(0), st(1)
@@ -3796,12 +3895,12 @@ void C2_NAKED C2_HOOK_FASTCALL GenerateContinuousSmoke(tCar_spec* pCar, int pWhe
             faddp st(1), st(0)
             fxch st(1)
             faddp st(1), st(0)
-            fcom dword ptr ds:[0x58b058]
+            fcom dword ptr [gMatchFloat_0058b058]
             fnstsw ax
             test ah, 1
             jne L004fa8c3
             fsqrt
-            fmul dword ptr ds:[0x58b05c]
+            fmul dword ptr [gMatchFloat_0058b05c]
             fst dword ptr [esp + 0xc]
             fcomp dword ptr [gFLOAT_0058afdc]
             fnstsw ax
@@ -3819,8 +3918,8 @@ void C2_NAKED C2_HOOK_FASTCALL GenerateContinuousSmoke(tCar_spec* pCar, int pWhe
             fxch st(3)
             fmul dword ptr [gFLOAT_0058b060]
             fxch st(2)
-            fmul qword ptr ds:[0x58b068]
-            fld dword ptr ds:[0x58b070]
+            fmul qword ptr [gMatchDouble_0058b068]
+            fld dword ptr [gMatchFloat_0058b070]
             fxch st(2)
             fmul dword ptr [gFLOAT_0058b060]
             fxch st(4)
@@ -3852,7 +3951,7 @@ void C2_NAKED C2_HOOK_FASTCALL GenerateContinuousSmoke(tCar_spec* pCar, int pWhe
     L004fa7af:
             fld dword ptr [esp + 0x10]
             fcomp dword ptr [gFLOAT_0058b008]
-            fld dword ptr ds:[0x58b070]
+            fld dword ptr [gMatchFloat_0058b070]
             fnstsw ax
             test ah, 1
             je L004fa7cd
@@ -4558,7 +4657,7 @@ void C2_NAKED C2_HOOK_FASTCALL MungeSmokeColumn(tU32 pTime) {
             fstp dword ptr [esp + 0x40]
             fild dword ptr [esp + 0x18]
             push 0xbcf5c28f
-            fmul dword ptr ds:[0x58b0bc]
+            fmul dword ptr [gMatchFloat_0058b0bc]
             fsubr dword ptr [esi + 0x38]
             fstp dword ptr [esp + 0x48]
             call SRandomBetween
@@ -4591,7 +4690,7 @@ void C2_NAKED C2_HOOK_FASTCALL MungeSmokeColumn(tU32 pTime) {
             mov eax, dword ptr [esi + 0x14]
             fild dword ptr [esp + 0x14]
             cmp eax, 0xfa0
-            fsub dword ptr ds:[0x58b0c0]
+            fsub dword ptr [gMatchFloat_0058b0c0]
             fmul dword ptr [gFLOAT_0058afec]
             fstp dword ptr [esp + 0x14]
             jae L004fbcc0
@@ -4599,7 +4698,7 @@ void C2_NAKED C2_HOOK_FASTCALL MungeSmokeColumn(tU32 pTime) {
             mov dword ptr [esp + 0x1c], 0
             fild qword ptr [esp + 0x18]
             fmul dword ptr [esp + 0x14]
-            fmul dword ptr ds:[0x58b074]
+            fmul dword ptr [gMatchFloat_0058b074]
             fstp dword ptr [esp + 0x14]
     L004fbcc0:
             mov eax, dword ptr [esi + 8]
@@ -4654,7 +4753,7 @@ void C2_NAKED C2_HOOK_FASTCALL MungeSmokeColumn(tU32 pTime) {
             fxch st(1)
             fadd dword ptr [esp + 0x44]
             fxch st(1)
-            fsub qword ptr ds:[0x58b0d0]
+            fsub qword ptr [gMatchDouble_0058b0d0]
             fxch st(1)
             fstp dword ptr [esp + 0x38]
             add esp, 0xc
@@ -5723,7 +5822,7 @@ void C2_NAKED C2_HOOK_FASTCALL GetVelocitiesFromMatrices(br_vector3* pVel, br_ve
             fld dword ptr [eax + 0x28]
             fsub dword ptr [esi + 0x28]
             fxch st(1)
-            fmul qword ptr ds:[0x58b138]
+            fmul qword ptr [gMatchDouble_0058b138]
             _emit 0xd9
         _emit 0x01
             fxch st(2)
@@ -6015,7 +6114,7 @@ void C2_NAKED C2_HOOK_FASTCALL DoSmokeColumn(int i, tU32 pTime, br_vector3* pRet
             mov eax, dword ptr [esi + gSmoke_column+0x4]
             mov ecx, dword ptr [eax + 0x10]
             fld dword ptr [ecx + 0x3c]
-            fcomp dword ptr [gFLOAT_0058aff0+0x14]
+            fcomp dword ptr [gMatchFloat_0058b004]
             fnstsw ax
             test ah, 0x41
             jne L004fc11e
@@ -6024,7 +6123,7 @@ void C2_NAKED C2_HOOK_FASTCALL DoSmokeColumn(int i, tU32 pTime, br_vector3* pRet
             mov edx, dword ptr [esi + gSmoke_column+0x4]
             mov eax, dword ptr [edx + 0x10]
             fld dword ptr [eax + 0x3c]
-            fcomp dword ptr [gDOUBLE_0058b0e0+0x8]
+            fcomp dword ptr [gMatchFloat_0058b0e8]
             fnstsw ax
             test ah, 1
             je L004fc141
@@ -6150,7 +6249,7 @@ void C2_NAKED C2_HOOK_FASTCALL DoSmokeColumn(int i, tU32 pTime, br_vector3* pRet
             push eax
             call BrMatrix34ApplyP
             fld dword ptr [esi + gSmoke_column+0x38]
-            fsub dword ptr [gDOUBLE_0058b0f8+0x8]
+            fsub dword ptr [gMatchFloat_0058b100]
             add esp, 0xc
             pop edi
             fstp dword ptr [esi + gSmoke_column+0x38]
@@ -6158,6 +6257,10 @@ void C2_NAKED C2_HOOK_FASTCALL DoSmokeColumn(int i, tU32 pTime, br_vector3* pRet
             pop ebp
             pop ebx
             ret 4
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -7419,7 +7522,7 @@ int C2_NAKED C2_HOOK_FASTCALL DrawLine3DThroughBRender(br_vector3* start, br_vec
             mov dword ptr [esp + 0x28], edi
             call _ftol
             fld dword ptr [esp + 0x48]
-            fcomp dword ptr ds:[0x58afd8]
+            fcomp dword ptr [gMatchFloat_0058afd8]
             mov ecx, dword ptr [esp + 0x38]
             sub ecx, eax
             mov dword ptr [esp + 0x14], ecx
@@ -7709,7 +7812,7 @@ int C2_NAKED C2_HOOK_FASTCALL DrawLine3DThroughBRender(br_vector3* start, br_vec
             mov ecx, dword ptr [esp + 0x40]
             setge al
             movsx edx, word ptr [ecx + 0x28]
-            fsub dword ptr ds:[0x58afd8]
+            fsub dword ptr [gMatchFloat_0058afd8]
             dec eax
             mov ecx, dword ptr [esp + 0x44]
             and al, 0xfe
@@ -7764,7 +7867,7 @@ int C2_NAKED C2_HOOK_FASTCALL DrawLine3DThroughBRender(br_vector3* start, br_vec
             fsub st(0), st(2)
             xor eax, eax
             mov ax, word ptr [esi]
-            fmul dword ptr ds:[0x58afe4]
+            fmul dword ptr [gMatchFloat_0058afe4]
             mov dword ptr [esp + 0x30], eax
             fild dword ptr [esp + 0x30]
             fld st(1)
@@ -7861,7 +7964,7 @@ int C2_NAKED C2_HOOK_FASTCALL DrawLine3DThroughBRender(br_vector3* start, br_vec
             fsub st(0), st(2)
             xor edx, edx
             mov dx, word ptr [esi]
-            fmul dword ptr ds:[0x58afe4]
+            fmul dword ptr [gMatchFloat_0058afe4]
             mov dword ptr [esp + 0x2c], edx
             fild dword ptr [esp + 0x2c]
             fld st(1)
@@ -8466,7 +8569,7 @@ void C2_NAKED C2_HOOK_FASTCALL RenderSparks(br_pixelmap* pRender_screen, br_pixe
             fld dword ptr [esi - 0x24]
             fld dword ptr [esi - 0x20]
             fxch st(2)
-            fmul dword ptr ds:[0x58afe8]
+            fmul dword ptr [gMatchFloat_0058afe8]
             mov ecx, dword ptr [esi - 0x34]
             sub eax, ebx
             fld st(0)
@@ -8490,7 +8593,7 @@ void C2_NAKED C2_HOOK_FASTCALL RenderSparks(br_pixelmap* pRender_screen, br_pixe
             fld dword ptr [esi - 0x24]
             fld dword ptr [esi - 0x20]
             fxch st(2)
-            fmul dword ptr ds:[0x58afe8]
+            fmul dword ptr [gMatchFloat_0058afe8]
             mov eax, dword ptr [esi - 0x34]
             fld st(0)
             fxch st(2)
@@ -8528,7 +8631,7 @@ void C2_NAKED C2_HOOK_FASTCALL RenderSparks(br_pixelmap* pRender_screen, br_pixe
             mov al, byte ptr [esi + 8]
             fild dword ptr [esp + 0x20]
             test al, al
-            fmul dword ptr ds:[0x58afe8]
+            fmul dword ptr [gMatchFloat_0058afe8]
             je L004f78f0
             fmul dword ptr [gFLOAT_0058afec]
     L004f78f0:
@@ -8552,7 +8655,7 @@ void C2_NAKED C2_HOOK_FASTCALL RenderSparks(br_pixelmap* pRender_screen, br_pixe
             fxch st(1)
             fmul st(0), st(2)
             fxch st(1)
-            fmul qword ptr ds:[0x58aff8]
+            fmul qword ptr [gMatchDouble_0058aff8]
             fxch st(1)
             fstp dword ptr [esi - 0x10]
             mov eax, dword ptr [esi + 4]
@@ -8768,16 +8871,16 @@ void C2_NAKED C2_HOOK_FASTCALL RenderSparks(br_pixelmap* pRender_screen, br_pixe
             faddp st(1), st(0)
             fsqrt
             fstp st(1)
-            fmul dword ptr ds:[0x58b000]
+            fmul dword ptr [gMatchFloat_0058b000]
             fmul dword ptr [esp + 0x20]
-            fmul dword ptr ds:[0x58afe8]
+            fmul dword ptr [gMatchFloat_0058afe8]
             fsubr dword ptr [gFLOAT_0058afdc]
-            fcom dword ptr ds:[0x58b004]
+            fcom dword ptr [gMatchFloat_0058b004]
             fnstsw ax
             test ah, 1
             je L004f7bf4
             fstp st(0)
-            fld dword ptr ds:[0x58b004]
+            fld dword ptr [gMatchFloat_0058b004]
     L004f7bf4:
             fld dword ptr [esi - 0x24]
             fmul st(0), st(1)
@@ -9148,11 +9251,11 @@ void C2_NAKED C2_HOOK_FASTCALL RenderSmoke(br_pixelmap* pRender_screen, br_pixel
             mov dword ptr [esp + 0x2c], 0
             fild qword ptr [esp + 0x28]
             fmul dword ptr [gFLOAT_0058afec]
-            fmul dword ptr ds:[0x58b074]
+            fmul dword ptr [gMatchFloat_0058b074]
             fstp dword ptr [esp + 0x40]
     L004fa9d9:
             fld dword ptr [esi + 0x24]
-            fsub qword ptr ds:[0x58b078]
+            fsub qword ptr [gMatchDouble_0058b078]
             mov eax, dword ptr [esi + 0x20]
             mov ecx, dword ptr [esi + 0x28]
             mov edi, dword ptr [gShade_list+0x1c]
@@ -9250,11 +9353,11 @@ void C2_NAKED C2_HOOK_FASTCALL RenderSmoke(br_pixelmap* pRender_screen, br_pixel
             test eax, edx
             je L004facc9
             fld dword ptr [esi - 0xc]
-            fsub dword ptr ds:[0x58b080]
+            fsub dword ptr [gMatchFloat_0058b080]
             mov al, byte ptr [esi]
             test al, 0x10
-            fmul dword ptr ds:[0x58b084]
-            fmul qword ptr ds:[0x58b088]
+            fmul dword ptr [gMatchFloat_0058b084]
+            fmul qword ptr [gMatchDouble_0058b088]
             fsubr qword ptr [gDOUBLE_0058b010]
             fstp dword ptr [esp + 0x48]
             je L004fac16
@@ -9405,7 +9508,7 @@ void C2_NAKED C2_HOOK_FASTCALL RenderSmoke(br_pixelmap* pRender_screen, br_pixel
             fld dword ptr [edx + 0x10]
             fld dword ptr [edx + 0x14]
             fxch st(2)
-            fmul dword ptr ds:[0x58afe8]
+            fmul dword ptr [gMatchFloat_0058afe8]
             fld dword ptr [edx + 0x18]
             fxch st(2)
             fmul st(0), st(1)
@@ -9425,7 +9528,7 @@ void C2_NAKED C2_HOOK_FASTCALL RenderSmoke(br_pixelmap* pRender_screen, br_pixel
             fld dword ptr [edx + 0x10]
             fld dword ptr [edx + 0x14]
             fxch st(2)
-            fmul dword ptr ds:[0x58afe8]
+            fmul dword ptr [gMatchFloat_0058afe8]
             fld dword ptr [edx + 0x18]
             fxch st(2)
             fmul st(0), st(1)
@@ -9447,7 +9550,7 @@ void C2_NAKED C2_HOOK_FASTCALL RenderSmoke(br_pixelmap* pRender_screen, br_pixel
     L004fade8:
             add edx, 0x2c
             inc ecx
-            cmp edx, 0x6a912c
+            cmp edx, offset gMatchData_006a912c
             jl L004fad47
             mov dword ptr [esp + 0x40], ebp
             mov ebp, dword ptr [gN_BR_smoke_structs]
@@ -9519,11 +9622,11 @@ void C2_NAKED C2_HOOK_FASTCALL RenderSmoke(br_pixelmap* pRender_screen, br_pixel
     L004faead:
             _emit 0xd9
         _emit 0x06
-            fsub dword ptr ds:[0x58b080]
+            fsub dword ptr [gMatchFloat_0058b080]
             mov al, byte ptr [esi + 0xc]
             test al, 0x10
-            fmul dword ptr ds:[0x58b084]
-            fmul qword ptr ds:[0x58b088]
+            fmul dword ptr [gMatchFloat_0058b084]
+            fmul qword ptr [gMatchDouble_0058b088]
             fsubr qword ptr [gDOUBLE_0058b010]
             fstp dword ptr [esp + 0x14]
             je L004faf7e
@@ -9632,16 +9735,16 @@ void C2_NAKED C2_HOOK_FASTCALL RenderSmoke(br_pixelmap* pRender_screen, br_pixel
             mov dword ptr [esp + 0x30], edx
             fild qword ptr [esp + 0x30]
             fld st(0)
-            fmul dword ptr ds:[0x58afe8]
+            fmul dword ptr [gMatchFloat_0058afe8]
             fmul dword ptr [esi + 4]
-            fmul qword ptr ds:[0x58b090]
+            fmul qword ptr [gMatchDouble_0058b090]
             _emit 0xd8
         _emit 0x06
             _emit 0xd9
         _emit 0x1e
             fld dword ptr [edi + 0x20]
             fmul st(0), st(1)
-            fmul dword ptr ds:[0x58afe8]
+            fmul dword ptr [gMatchFloat_0058afe8]
             fsubr dword ptr [esi + 4]
             fstp dword ptr [esi + 4]
             _emit 0xd9
@@ -9664,7 +9767,7 @@ void C2_NAKED C2_HOOK_FASTCALL RenderSmoke(br_pixelmap* pRender_screen, br_pixel
             mov dword ptr [gSmoke_flags], eax
             jmp L004fb141
     L004fb0c6:
-            fmul dword ptr ds:[0x58b098]
+            fmul dword ptr [gMatchFloat_0058b098]
             fsubr dword ptr [gFLOAT_0058afdc]
             fcom dword ptr [gFLOAT_0058afec]
             fnstsw ax
@@ -9685,7 +9788,7 @@ void C2_NAKED C2_HOOK_FASTCALL RenderSmoke(br_pixelmap* pRender_screen, br_pixel
             fstp st(0)
             fld dword ptr [esi - 8]
             fabs
-            fcomp dword ptr ds:[0x58b09c]
+            fcomp dword ptr [gMatchFloat_0058b09c]
             fnstsw ax
             test ah, 1
             je L004fb141
@@ -9699,7 +9802,7 @@ void C2_NAKED C2_HOOK_FASTCALL RenderSmoke(br_pixelmap* pRender_screen, br_pixel
             test ah, 1
             je L004fb13a
             fld dword ptr [esi - 8]
-            fsub dword ptr ds:[0x58b0a0]
+            fsub dword ptr [gMatchFloat_0058b0a0]
             fstp dword ptr [esi - 8]
             jmp L004fb141
     L004fb13a:
@@ -11048,13 +11151,13 @@ void C2_NAKED C2_HOOK_FASTCALL InitSmokeStuff(void) {
             mov edi, 2
             push edi
             push 4
-            push 0x6601f4
+            push offset gMatchString_006601f4
             call BrModelAllocate
             add esp, 0xc
             mov dword ptr [gBlend_model], eax
             push 4
             push 6
-            push 0x6601e4
+            push offset gMatchString_006601e4
             call BrModelAllocate
             add esp, 0xc
             xor ebx, ebx
@@ -11067,7 +11170,7 @@ void C2_NAKED C2_HOOK_FASTCALL InitSmokeStuff(void) {
             xor ebp, ebp
             mov esi, offset gBR_smoke_structs+0x1c
     L004fa013:
-            push 0x6601d8
+            push offset gMatchString_006601d8
             call BrMaterialAllocate
             add esp, 4
             cmp eax, ebx
@@ -11248,10 +11351,10 @@ void C2_NAKED C2_HOOK_FASTCALL InitSmokeStuff(void) {
             or word ptr [eax + 0x20], di
             mov eax, dword ptr [gBlend_model2]
             or word ptr [eax + 0x20], di
-            mov edx, dword ptr ds:[0x6601bc]
-            mov eax, dword ptr ds:[0x6601c0]
+            mov edx, dword ptr [gMatchString_006601bc]
+            mov eax, dword ptr [gMatchString_006601c0]
             mov dword ptr [esp + 0x14], edx
-            mov cx, word ptr ds:[0x6601c4]
+            mov cx, word ptr [gMatchData_006601c4]
             mov dword ptr [esp + 0x18], eax
             mov word ptr [esp + 0x1c], cx
             lea ecx, [esp + 0x14]
@@ -12061,13 +12164,13 @@ void C2_NAKED C2_HOOK_FASTCALL SingleSplash(tPhysics_object* pObject, const br_m
             fcomp dword ptr [gFLOAT_0058b130]
             fxch st(3)
             fst dword ptr [esp + 0x18]
-            fmul dword ptr ds:[0x58b0e8]
+            fmul dword ptr [gMatchFloat_0058b0e8]
             fxch st(2)
             fst dword ptr [esp + 0x1c]
-            fmul dword ptr ds:[0x58b0e8]
+            fmul dword ptr [gMatchFloat_0058b0e8]
             fxch st(3)
             fst dword ptr [esp + 0x20]
-            fmul dword ptr ds:[0x58b0e8]
+            fmul dword ptr [gMatchFloat_0058b0e8]
             fxch st(2)
             fstp dword ptr [esp + 0x24]
             fxch st(2)

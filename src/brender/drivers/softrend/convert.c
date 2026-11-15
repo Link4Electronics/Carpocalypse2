@@ -92,7 +92,12 @@ void C2_NAKED C2_HOOK_STDCALL ConvertVertex(brp_vertex* dest, brp_vertex* src) {
             test bl, 1
             je L00546137
             fld dword ptr [esi + edi]
-            fmul dword ptr [rendererStateStoredDispatch+0x88]
+            _emit 0xd8
+        _emit 0x0d
+        _emit 0x20
+        _emit 0xc9
+        _emit 0x58
+        _emit 0x00
             call _ftol
             mov dword ptr [esi], eax
     L00546137:
@@ -144,6 +149,19 @@ void C2_NAKED C2_HOOK_STDCALL ConvertVertex(brp_vertex* dest, brp_vertex* src) {
             pop ebp
             pop ebx
             ret 8
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }

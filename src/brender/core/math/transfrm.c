@@ -96,6 +96,18 @@ extern br_quat* C2_HOOK_CDECL BrMatrix34ToQuat();
 extern void C2_HOOK_CDECL BrMatrix34Translate();
 extern br_matrix34* C2_HOOK_CDECL BrQuatToMatrix34();
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gData_0058b894[];
+extern char gDouble_0058b888[];
+extern char gFloat_0058b880[];
+extern char gFloat_0058b890[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchData_0058b894[];
+extern char gMatchDouble_0058b888[];
+extern char gMatchFloat_0058b880[];
+extern char gMatchFloat_0058b890[];
+#endif
 // FUNCTION: CARMA2_HW 0x00531870
 void C2_NAKED C2_HOOK_CDECL BrTransformToMatrix34(br_matrix34* mat, const br_transform* xform) {
 #ifndef CARPOCALYPSE2_MATCHING
@@ -251,11 +263,11 @@ void C2_NAKED C2_HOOK_CDECL BrTransformToMatrix34(br_matrix34* mat, const br_tra
             fxch st(1)
             fsqrt
             fstp st(1)
-            fcom dword ptr ds:[0x58b880]
+            fcom dword ptr [gMatchFloat_0058b880]
             fnstsw ax
             test ah, 0x41
             jne L0053197c
-            fdivr qword ptr ds:[0x58b888]
+            fdivr qword ptr [gMatchDouble_0058b888]
             fld dword ptr [esi + 4]
             fld dword ptr [esi + 8]
             fld dword ptr [esi + 0xc]
@@ -273,8 +285,8 @@ void C2_NAKED C2_HOOK_CDECL BrTransformToMatrix34(br_matrix34* mat, const br_tra
             jmp L00531992
     L0053197c:
             fstp st(0)
-            fld dword ptr ds:[0x58b890]
-            fld dword ptr ds:[0x58b894]
+            fld dword ptr [gMatchFloat_0058b890]
+            fld dword ptr [gMatchData_0058b894]
             mov dword ptr [esp + 0x1c], 0
     L00531992:
             fld st(0)
@@ -331,11 +343,11 @@ void C2_NAKED C2_HOOK_CDECL BrTransformToMatrix34(br_matrix34* mat, const br_tra
             fstp dword ptr [esp + 0x34]
             fstp st(0)
             fld dword ptr [esp + 0x34]
-            fcom dword ptr ds:[0x58b880]
+            fcom dword ptr [gMatchFloat_0058b880]
             fnstsw ax
             test ah, 0x41
             jne L00531a63
-            fdivr qword ptr ds:[0x58b888]
+            fdivr qword ptr [gMatchDouble_0058b888]
             fld st(0)
             fld st(1)
             fxch st(1)
@@ -613,17 +625,17 @@ void C2_NAKED C2_HOOK_CDECL BrMatrix34ToTransform(br_transform* xform, const br_
             fchs
             fstp dword ptr [esi + 0xc]
             fld dword ptr [esi + 0x10]
-            fcomp dword ptr ds:[0x58b894]
+            fcomp dword ptr [gMatchData_0058b894]
             fnstsw ax
             test ah, 0x40
             je L00531d3b
             fld dword ptr [esi + 0x14]
-            fcomp dword ptr ds:[0x58b894]
+            fcomp dword ptr [gMatchData_0058b894]
             fnstsw ax
             test ah, 0x40
             je L00531d3b
             fld dword ptr [esi + 0x18]
-            fcomp dword ptr ds:[0x58b894]
+            fcomp dword ptr [gMatchData_0058b894]
             fnstsw ax
             test ah, 0x40
             je L00531d3b

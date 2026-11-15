@@ -185,6 +185,38 @@ extern int C2_HOOK_FASTCALL FUN_00424140(tPhysics_object* pObject, tPhysics_shap
 extern void C2_HOOK_FASTCALL PhysicsError(tPhysicsError pError, const char* pMessage);
 extern void C2_HOOK_FASTCALL SphereFaceCollide(tFace_ref* pFace, br_vector3* pStart, br_vector3* pEnd, br_scalar pRadius, void* pUnused_point, br_vector3* pNormal, br_scalar* pT);
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gData_0058ad10[];
+extern char gData_0058ad14[];
+extern char gData_0058ad30[];
+extern char gData_0058ad40[];
+extern char gDouble_0058ad00[];
+extern char gDouble_0058ad38[];
+extern char gDouble_0058ad48[];
+extern char gFloat_0058ad08[];
+extern char gFloat_0058ad0c[];
+extern char gFloat_0058ad18[];
+extern char gFloat_0058ad24[];
+extern char gFloat_0058ad28[];
+extern char gFloat_0058ad2c[];
+extern char gFloat_0058ad54[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchData_0058ad10[];
+extern char gMatchData_0058ad14[];
+extern char gMatchData_0058ad30[];
+extern char gMatchData_0058ad40[];
+extern char gMatchDouble_0058ad00[];
+extern char gMatchDouble_0058ad38[];
+extern char gMatchDouble_0058ad48[];
+extern char gMatchFloat_0058ad08[];
+extern char gMatchFloat_0058ad0c[];
+extern char gMatchFloat_0058ad18[];
+extern char gMatchFloat_0058ad24[];
+extern char gMatchFloat_0058ad28[];
+extern char gMatchFloat_0058ad2c[];
+extern char gMatchFloat_0058ad54[];
+#endif
 // FUNCTION: CARMA2_HW 0x004e3a30
 int C2_NAKED C2_HOOK_FASTCALL PickBoundsTestRay__raycast(br_bounds* b, br_vector3* rp, br_vector3* rd, br_scalar t_near, br_scalar t_far, br_scalar* new_t_near, br_scalar* new_t_far) {
 #ifndef CARPOCALYPSE2_MATCHING
@@ -240,12 +272,12 @@ int C2_NAKED C2_HOOK_FASTCALL PickBoundsTestRay__raycast(br_bounds* b, br_vector
             sub ecx, edx
     L004e3a40:
             fld dword ptr [esi + edx]
-            fcomp dword ptr ds:[0x58ad08]
+            fcomp dword ptr [gMatchFloat_0058ad08]
             fld dword ptr [esi + edx]
             fnstsw ax
             test ah, 0x41
             jne L004e3ad8
-            fdivr dword ptr ds:[0x58ad0c]
+            fdivr dword ptr [gMatchFloat_0058ad0c]
             _emit 0xd9
         _emit 0x02
             fsub dword ptr [ecx + edx + 0xc]
@@ -253,12 +285,12 @@ int C2_NAKED C2_HOOK_FASTCALL PickBoundsTestRay__raycast(br_bounds* b, br_vector
             fstp dword ptr [esp + 0x10]
             fmul dword ptr [esp + 0x10]
             fst dword ptr [esp + 0xc]
-            fcomp dword ptr ds:[0x58ad10]
+            fcomp dword ptr [gMatchData_0058ad10]
             fnstsw ax
             test ah, 0x41
             jne L004e3a88
             fstp st(0)
-            fld dword ptr ds:[0x58ad10]
+            fld dword ptr [gMatchData_0058ad10]
             jmp L004e3a9b
     L004e3a88:
             fld dword ptr [esp + 0xc]
@@ -273,7 +305,7 @@ int C2_NAKED C2_HOOK_FASTCALL PickBoundsTestRay__raycast(br_bounds* b, br_vector
         _emit 0x02
             fsub dword ptr [ecx + edx]
             fmul dword ptr [esp + 0x10]
-            fcom dword ptr ds:[0x58ad14]
+            fcom dword ptr [gMatchData_0058ad14]
             fnstsw ax
             test ah, 1
             je L004e3ac0
@@ -288,17 +320,17 @@ int C2_NAKED C2_HOOK_FASTCALL PickBoundsTestRay__raycast(br_bounds* b, br_vector
             fstp dword ptr [esp + 0x14]
             jmp L004e3b7c
     L004e3ad8:
-            fcomp dword ptr ds:[0x58ad18]
+            fcomp dword ptr [gMatchFloat_0058ad18]
             fnstsw ax
             test ah, 1
             je L004e3b5f
             fld dword ptr [esi + edx]
-            fdivr dword ptr ds:[0x58ad0c]
+            fdivr dword ptr [gMatchFloat_0058ad0c]
             _emit 0xd9
         _emit 0x02
             fsub dword ptr [ecx + edx + 0xc]
             fmul st(0), st(1)
-            fcom dword ptr ds:[0x58ad14]
+            fcom dword ptr [gMatchData_0058ad14]
             fnstsw ax
             test ah, 1
             je L004e3b0f
@@ -322,12 +354,12 @@ int C2_NAKED C2_HOOK_FASTCALL PickBoundsTestRay__raycast(br_bounds* b, br_vector
             fstp dword ptr [esp + 0xc]
             fstp st(0)
             fld dword ptr [esp + 0xc]
-            fcomp dword ptr ds:[0x58ad10]
+            fcomp dword ptr [gMatchData_0058ad10]
             fnstsw ax
             test ah, 0x41
             jne L004e3b4a
             fstp st(0)
-            fld dword ptr ds:[0x58ad10]
+            fld dword ptr [gMatchData_0058ad10]
             jmp L004e3b7c
     L004e3b4a:
             fld dword ptr [esp + 0xc]
@@ -560,7 +592,7 @@ int C2_NAKED C2_HOOK_FASTCALL DRScenePick2DXY(br_actor* world, br_actor* camera,
             push 0x3f800000
             mov dword ptr [esp + 0x10], eax
             fild dword ptr [esp + 0x10]
-            fmul qword ptr [gConst_kangeroo_force_factor+0x70]
+            fmul qword ptr [gMatchDouble_0058ad00]
             fxch st(2)
             fstp st(0)
             fxch st(1)
@@ -831,7 +863,7 @@ int C2_NAKED C2_HOOK_FASTCALL DRModelPick2D_raycast(br_model* model, br_material
             and esp, 0xfffffff8
             sub esp, 0x7c
             fld dword ptr [ebp + 0x10]
-            fsub dword ptr [gConst_kangeroo_force_factor+0x98]
+            fsub dword ptr [gMatchFloat_0058ad28]
             mov dword ptr [esp + 0x3c], edx
             push ebx
             mov edx, ecx
@@ -840,7 +872,7 @@ int C2_NAKED C2_HOOK_FASTCALL DRModelPick2D_raycast(br_model* model, br_material
             xor edi, edi
             fstp dword ptr [ebp + 0x10]
             fld dword ptr [ebp + 0x14]
-            fsub dword ptr [gConst_kangeroo_force_factor+0x9c]
+            fsub dword ptr [gMatchFloat_0058ad2c]
             mov eax, dword ptr [edx + 0x4c]
             mov dword ptr [esp + 0x30], edx
             mov dword ptr [esp + 0x44], edi
@@ -886,7 +918,7 @@ int C2_NAKED C2_HOOK_FASTCALL DRModelPick2D_raycast(br_model* model, br_material
             fst dword ptr [esp + 0x10]
             fabs
             fst dword ptr [esp + 0x1c]
-            fcomp dword ptr [gConst_kangeroo_force_factor+0x78]
+            fcomp dword ptr [gMatchFloat_0058ad08]
             fnstsw ax
             test ah, 1
             jne L004e42a1
@@ -897,7 +929,7 @@ int C2_NAKED C2_HOOK_FASTCALL DRModelPick2D_raycast(br_model* model, br_material
             jne L004e3e6b
     L004e3e56:
             fld dword ptr [esp + 0x10]
-            fcomp dword ptr [gConst_kangeroo_force_factor+0xa0]
+            fcomp dword ptr [gMatchData_0058ad30]
             fnstsw ax
             test ah, 0x41
             je L004e42a1
@@ -920,14 +952,14 @@ int C2_NAKED C2_HOOK_FASTCALL DRModelPick2D_raycast(br_model* model, br_material
             fxch st(1)
             faddp st(1), st(0)
             fld dword ptr [esp + 0x1c]
-            fcomp dword ptr [gConst_kangeroo_force_factor+0x7c]
+            fcomp dword ptr [gMatchFloat_0058ad0c]
             fsub dword ptr [esi + 0x18]
             fnstsw ax
             test ah, 1
             je L004e3ec4
             fld st(0)
             fld dword ptr [esp + 0x1c]
-            fmul dword ptr [gConst_kangeroo_force_factor+0x80]
+            fmul dword ptr [gMatchData_0058ad10]
             fxch st(1)
             fabs
             fxch st(1)
@@ -1050,7 +1082,7 @@ int C2_NAKED C2_HOOK_FASTCALL DRModelPick2D_raycast(br_model* model, br_material
             fld dword ptr [esp + ebx*4 + 0x7c]
             fxch st(4)
             fabs
-            fcomp qword ptr [gConst_kangeroo_force_factor+0xa8]
+            fcomp qword ptr [gMatchDouble_0058ad38]
             add edx, eax
             add ebx, eax
             fsub dword ptr [esp + 0x10]
@@ -1102,7 +1134,7 @@ int C2_NAKED C2_HOOK_FASTCALL DRModelPick2D_raycast(br_model* model, br_material
             fxch st(1)
             fstp st(3)
             fld st(2)
-            fcomp qword ptr [gConst_kangeroo_force_factor+0xb0]
+            fcomp qword ptr [gMatchData_0058ad40]
             fnstsw ax
             test ah, 0x40
             fsubp st(1), st(0)
@@ -1113,18 +1145,18 @@ int C2_NAKED C2_HOOK_FASTCALL DRModelPick2D_raycast(br_model* model, br_material
             fsubr qword ptr [esp + 0x58]
             fdiv qword ptr [esp + 0x70]
     L004e40c7:
-            fcom qword ptr [gConst_kangeroo_force_factor+0xb0]
+            fcom qword ptr [gMatchData_0058ad40]
             fnstsw ax
             test ah, 1
             jne L004e4292
             fld st(1)
-            fcomp qword ptr [gConst_kangeroo_force_factor+0xb0]
+            fcomp qword ptr [gMatchData_0058ad40]
             fnstsw ax
             test ah, 1
             jne L004e4292
             fld st(1)
             fadd st(0), st(1)
-            fcomp qword ptr [gConst_kangeroo_force_factor+0xb8]
+            fcomp qword ptr [gMatchDouble_0058ad48]
             fnstsw ax
             test ah, 0x41
             je L004e4292
@@ -1160,7 +1192,7 @@ int C2_NAKED C2_HOOK_FASTCALL DRModelPick2D_raycast(br_model* model, br_material
             fmul st(0), st(2)
             fadd dword ptr [esp + 0x50]
             fxch st(1)
-            fsubr dword ptr [gConst_kangeroo_force_factor+0x7c]
+            fsubr dword ptr [gMatchFloat_0058ad0c]
             fld dword ptr [esp + 0x10]
             fcomp st(3)
             fxch st(1)
@@ -1190,7 +1222,7 @@ int C2_NAKED C2_HOOK_FASTCALL DRModelPick2D_raycast(br_model* model, br_material
             fadd st(0), st(0)
             fld dword ptr [esp + 0x10]
             fxch st(1)
-            fsubr dword ptr [gConst_kangeroo_force_factor+0x7c]
+            fsubr dword ptr [gMatchFloat_0058ad0c]
             fxch st(1)
             fcompp
             mov ecx, 2
@@ -1199,10 +1231,10 @@ int C2_NAKED C2_HOOK_FASTCALL DRModelPick2D_raycast(br_model* model, br_material
             jne L004e41ea
             mov ecx, dword ptr [esp + 0x34]
     L004e41ea:
-            fmul dword ptr [gConst_kangeroo_force_factor+0xc4]
+            fmul dword ptr [gMatchFloat_0058ad54]
             fld dword ptr [esp + 0x10]
             fxch st(1)
-            fsubr dword ptr [gConst_kangeroo_force_factor+0xc4]
+            fsubr dword ptr [gMatchFloat_0058ad54]
             fxch st(1)
             fcompp
             fnstsw ax
@@ -1211,10 +1243,10 @@ int C2_NAKED C2_HOOK_FASTCALL DRModelPick2D_raycast(br_model* model, br_material
             mov eax, 2
             jmp L004e4257
     L004e420e:
-            fmul dword ptr [gConst_kangeroo_force_factor+0xc4]
+            fmul dword ptr [gMatchFloat_0058ad54]
             fld dword ptr [esp + 0x10]
             fxch st(1)
-            fsubr dword ptr [gConst_kangeroo_force_factor+0xc4]
+            fsubr dword ptr [gMatchFloat_0058ad54]
             fxch st(1)
             fcompp
             fnstsw ax
@@ -1228,7 +1260,7 @@ int C2_NAKED C2_HOOK_FASTCALL DRModelPick2D_raycast(br_model* model, br_material
             fadd st(0), st(0)
             fld dword ptr [esp + 0x10]
             fxch st(1)
-            fsubr dword ptr [gConst_kangeroo_force_factor+0x7c]
+            fsubr dword ptr [gMatchFloat_0058ad0c]
             fxch st(1)
             fcompp
             fnstsw ax
@@ -1308,6 +1340,7 @@ int C2_NAKED C2_HOOK_FASTCALL DRModelPick2D_raycast(br_model* model, br_material
             mov esp, ebp
             pop ebp
             ret 0x18
+            nop
     }
 #endif
 }
@@ -1492,7 +1525,7 @@ br_scalar C2_NAKED C2_HOOK_FASTCALL FindYVerticallyBelow(br_vector3* pPosition) 
             push 0x3f800000
             mov dword ptr [esp + 0x20], edx
             fild dword ptr [esp + 0x20]
-            fmul qword ptr [gConst_kangeroo_force_factor+0x70]
+            fmul qword ptr [gMatchDouble_0058ad00]
             fxch st(2)
             fstp st(0)
             fxch st(1)
@@ -1541,6 +1574,9 @@ br_scalar C2_NAKED C2_HOOK_FASTCALL FindYVerticallyBelow(br_vector3* pPosition) 
             pop ebx
             add esp, 0x48
             ret
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -1612,7 +1648,7 @@ void C2_NAKED C2_HOOK_FASTCALL FindBestY(br_vector3* pPosition, br_actor* pWorld
             mov dword ptr [gHighest_y_below], 0xc6ea6000
             sub esp, 0x30
             fld dword ptr [ecx + 4]
-            fsub dword ptr [gConst_kangeroo_force_factor+0x94]
+            fsub dword ptr [gMatchFloat_0058ad24]
             push ebx
             push esi
             push edi
@@ -1677,7 +1713,7 @@ void C2_NAKED C2_HOOK_FASTCALL FindBestY(br_vector3* pPosition, br_actor* pWorld
             push 0x3f800000
             mov dword ptr [esp + 0x44], eax
             fild dword ptr [esp + 0x44]
-            fmul qword ptr [gConst_kangeroo_force_factor+0x70]
+            fmul qword ptr [gMatchDouble_0058ad00]
             fxch st(2)
             fstp st(0)
             fxch st(1)
@@ -2175,7 +2211,7 @@ int C2_NAKED C2_HOOK_FASTCALL FUN_004228b0(tPhysics_object* pObject, void* pColl
             call CullPlacementFaces
             test eax, eax
             je L00422f29
-            mov eax, dword ptr ds:[gSensible_place_collect_active]
+            mov eax, dword ptr [gSensible_place_collect_active]
             test eax, eax
             je L0042297d
             mov ebx, dword ptr [esp + 0x1c]
@@ -2370,7 +2406,7 @@ int C2_NAKED C2_HOOK_FASTCALL FUN_004228b0(tPhysics_object* pObject, void* pColl
             mov ecx, 1
             call PhysicsError
     L00422c11:
-            mov eax, dword ptr ds:[gSensible_place_collect_active]
+            mov eax, dword ptr [gSensible_place_collect_active]
             test eax, eax
             je L00422c7b
             mov ecx, dword ptr [esp + 0x1c]
@@ -2526,7 +2562,7 @@ int C2_NAKED C2_HOOK_FASTCALL FUN_004228b0(tPhysics_object* pObject, void* pColl
             jl L00422d9a
     L00422e20:
             fld dword ptr [esp + 0x28]
-            fcomp dword ptr ds:[gFLOAT_0058996c]
+            fcomp dword ptr [gFLOAT_0058996c]
             fnstsw ax
             test ah, 0x41
             je L00422edc
@@ -2651,7 +2687,7 @@ int C2_NAKED C2_HOOK_FASTCALL FUN_004228b0(tPhysics_object* pObject, void* pColl
             faddp st(2), st(0)
             fmul dword ptr [edx + 0x34]
             faddp st(1), st(0)
-            fcomp qword ptr ds:[gDouble_00589970]
+            fcomp qword ptr [gDouble_00589970]
             fnstsw ax
             test ah, 0x41
             jne L00422fa1
@@ -3140,6 +3176,14 @@ int C2_NAKED C2_HOOK_FASTCALL FUN_00422fe0(float* pCollision_list, float* pConta
             pop ebx
             add esp, 0x20
             ret 0x20
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -3842,8 +3886,10 @@ int C2_NAKED C2_HOOK_FASTCALL FUN_004236a0(tPhysics_object* pObject, tPhysics_sh
             lea edx, [esp + 0x84]
             mov ecx, edi
             call RayCastThruFaceList
-            fld dword ptr [edi]
-            fsub dword ptr [esi]
+            _emit 0xd9
+        _emit 0x07
+            _emit 0xd8
+        _emit 0x26
             test eax, eax
             mov dword ptr [esp + 0x3c], eax
             fstp dword ptr [esp + 0x64]
@@ -4392,9 +4438,12 @@ int C2_NAKED C2_HOOK_FASTCALL FUN_00423ce0(br_vector3* pStart, br_vector3* pEnd,
             fld dword ptr [gFLOAT_00589978]
             mov dword ptr [esp + 0x40], 0
     L00423e19:
-            fld dword ptr [esi]
-            fld dword ptr [esi]
-            fld dword ptr [esi]
+            _emit 0xd9
+        _emit 0x06
+            _emit 0xd9
+        _emit 0x06
+            _emit 0xd9
+        _emit 0x06
             fxch st(2)
             fmul st(0), st(4)
             fld dword ptr [esi + 4]
@@ -4569,7 +4618,8 @@ int C2_NAKED C2_HOOK_FASTCALL FUN_00423ed0(tPhysics_object* pObject, tPhysics_sh
             mov eax, dword ptr [esp + 0x74]
             cmp dword ptr [eax], 0
             jne L004240f2
-            fld dword ptr [edi]
+            _emit 0xd9
+        _emit 0x07
             fld dword ptr [edi - 4]
             fsub dword ptr [edi - 0x304]
             fxch st(1)
@@ -4678,7 +4728,9 @@ int C2_NAKED C2_HOOK_FASTCALL FUN_00423ed0(tPhysics_object* pObject, tPhysics_sh
             push ecx
             faddp st(1), st(0)
             fstp dword ptr [esp + 0x24]
-            fld dword ptr [ebp]
+            _emit 0xd9
+        _emit 0x45
+        _emit 0x00
             fsub dword ptr [esi + 0x24]
             fstp dword ptr [esp + 0x50]
             fld dword ptr [edi - 0x300]
@@ -5063,13 +5115,15 @@ int C2_NAKED C2_HOOK_FASTCALL FUN_00424270(float* pStart, float* pEnd, int* vola
             xor ebp, ebp
             lea ecx, [eax + 8]
     L004242aa:
-            fld dword ptr [ecx]
+            _emit 0xd9
+        _emit 0x01
             fld dword ptr [ebx + 8]
             fld dword ptr [ecx - 8]
             fld dword ptr [ecx - 4]
             fld dword ptr [ebx + 4]
             fxch st(2)
-            fmul dword ptr [ebx]
+            _emit 0xd8
+        _emit 0x0b
             fxch st(3)
             fmulp st(4), st(0)
             fxch st(3)
@@ -5079,8 +5133,10 @@ int C2_NAKED C2_HOOK_FASTCALL FUN_00424270(float* pStart, float* pEnd, int* vola
             fxch st(2)
             faddp st(1), st(0)
             fxch st(1)
-            fmul dword ptr [edi]
-            fld dword ptr [ecx]
+            _emit 0xd8
+        _emit 0x0f
+            _emit 0xd9
+        _emit 0x01
             fld st(2)
             fld dword ptr [esi - 0xc]
             fld dword ptr [edi + 8]
@@ -5137,7 +5193,8 @@ int C2_NAKED C2_HOOK_FASTCALL FUN_00424270(float* pStart, float* pEnd, int* vola
     L00424359:
             fstp st(0)
     L0042435b:
-            fld dword ptr [esi]
+            _emit 0xd9
+        _emit 0x06
             fsub qword ptr [gDouble_005899d0]
             fld st(1)
             fxch st(1)
@@ -5186,7 +5243,8 @@ int C2_NAKED C2_HOOK_FASTCALL FUN_00424270(float* pStart, float* pEnd, int* vola
             mov esi, dword ptr [esp + 0x190]
             test ecx, ecx
             je L004244e7
-            fld dword ptr [ebx]
+            _emit 0xd9
+        _emit 0x03
             fsub dword ptr [eax + 0xb0]
             add eax, 0x8c
             lea edx, [esp + 0x38]
@@ -5204,7 +5262,8 @@ int C2_NAKED C2_HOOK_FASTCALL FUN_00424270(float* pStart, float* pEnd, int* vola
             call BrMatrix34TApplyV
             mov ecx, dword ptr [esp + 0x190]
             add esp, 0xc
-            fld dword ptr [ebx]
+            _emit 0xd9
+        _emit 0x03
             mov eax, dword ptr [ecx]
             lea edx, [esp + 0x20]
             add eax, 0x2c
@@ -5263,7 +5322,8 @@ int C2_NAKED C2_HOOK_FASTCALL FUN_00424270(float* pStart, float* pEnd, int* vola
             je L004245f0
             mov ecx, dword ptr [esp + 0x184]
             lea edx, [esp + 0x20]
-            fld dword ptr [edi]
+            _emit 0xd9
+        _emit 0x07
             fsub dword ptr [ecx + 0xb0]
             lea eax, [ecx + 0x8c]
             push eax
@@ -5280,7 +5340,8 @@ int C2_NAKED C2_HOOK_FASTCALL FUN_00424270(float* pStart, float* pEnd, int* vola
             call BrMatrix34TApplyV
             mov ecx, dword ptr [esp + 0x190]
             add esp, 0xc
-            fld dword ptr [edi]
+            _emit 0xd9
+        _emit 0x07
             mov eax, dword ptr [ecx]
             lea edx, [esp + 0x38]
             add eax, 0x2c
@@ -5334,11 +5395,13 @@ int C2_NAKED C2_HOOK_FASTCALL FUN_00424270(float* pStart, float* pEnd, int* vola
     L004245e9:
             mov dword ptr [esp + 0x190], esi
     L004245f0:
-            fld dword ptr [edi]
+            _emit 0xd9
+        _emit 0x07
             fld dword ptr [edi + 4]
             fld dword ptr [edi + 8]
             fxch st(2)
-            fsub dword ptr [ebx]
+            _emit 0xd8
+        _emit 0x23
             fxch st(1)
             fsub dword ptr [ebx + 4]
             fxch st(2)
@@ -5376,7 +5439,8 @@ int C2_NAKED C2_HOOK_FASTCALL FUN_00424270(float* pStart, float* pEnd, int* vola
             lea ecx, [ecx + ecx*2]
             lea eax, [esi + eax*4]
             fld dword ptr [esi + ecx*4]
-            fsub dword ptr [eax]
+            _emit 0xd8
+        _emit 0x20
             lea edi, [esi + ecx*4]
             lea ecx, [edx + edx*2]
             add edx, 0x40
@@ -5389,8 +5453,10 @@ int C2_NAKED C2_HOOK_FASTCALL FUN_00424270(float* pStart, float* pEnd, int* vola
             fld dword ptr [eax + 0x308]
             fsub dword ptr [eax + 8]
             fstp dword ptr [esp + 0x60]
-            fld dword ptr [ecx]
-            fsub dword ptr [eax]
+            _emit 0xd9
+        _emit 0x01
+            _emit 0xd8
+        _emit 0x20
             fstp dword ptr [esp + 0x48]
             fld dword ptr [ecx + 4]
             fsub dword ptr [eax + 4]
@@ -5399,7 +5465,8 @@ int C2_NAKED C2_HOOK_FASTCALL FUN_00424270(float* pStart, float* pEnd, int* vola
             fsub dword ptr [eax + 8]
             fstp dword ptr [esp + 0x50]
             fld dword ptr [esi + edx*4]
-            fsub dword ptr [edi]
+            _emit 0xd8
+        _emit 0x27
             mov edx, dword ptr [esp + 0x188]
             push edx
             lea edx, [esp + 0x34]
@@ -5437,7 +5504,8 @@ int C2_NAKED C2_HOOK_FASTCALL FUN_00424270(float* pStart, float* pEnd, int* vola
             xor ecx, ecx
             mov eax, dword ptr [esp + 0x10]
             test ebp, ebp
-            fld dword ptr [edi]
+            _emit 0xd9
+        _emit 0x07
             sete cl
             mov dword ptr [esp + 0x14], eax
             lea edx, [ecx + ecx*2]
@@ -5482,7 +5550,8 @@ int C2_NAKED C2_HOOK_FASTCALL FUN_00424270(float* pStart, float* pEnd, int* vola
             je L004248ab
             mov edx, dword ptr [esp + 0x184]
             lea eax, [esp + 0x20]
-            fld dword ptr [ebx]
+            _emit 0xd9
+        _emit 0x03
             fsub dword ptr [edx + 0xb0]
             lea esi, [edx + 0x8c]
             lea ecx, [esp + 0xa8]
@@ -5497,7 +5566,8 @@ int C2_NAKED C2_HOOK_FASTCALL FUN_00424270(float* pStart, float* pEnd, int* vola
             fsub dword ptr [esi + 0x2c]
             fstp dword ptr [esp + 0x34]
             call BrMatrix34TApplyV
-            fld dword ptr [edi]
+            _emit 0xd9
+        _emit 0x07
             fsub dword ptr [esi + 0x24]
             add esp, 0xc
             lea edx, [esp + 0x20]
@@ -5834,21 +5904,27 @@ fallback:
             fstp dword ptr [esp + 0x34]
             fld dword ptr [esi + 4]
             fxch st(4)
-            fmul dword ptr [esi]
+            _emit 0xd8
+        _emit 0x0e
             mov ecx, dword ptr [esp + 0x80]
             mov edx, dword ptr [esp + 0x7c]
             push edi
             fld dword ptr [ecx + 4]
             fxch st(3)
-            fmul dword ptr [ebp]
+            _emit 0xd8
+        _emit 0x4d
+        _emit 0x00
             fsubp st(1), st(0)
             fstp dword ptr [esp + 0x3c]
             fld dword ptr [esi + 4]
             fxch st(4)
-            fmul dword ptr [ebp]
+            _emit 0xd8
+        _emit 0x4d
+        _emit 0x00
             fld dword ptr [esi + 8]
             fxch st(2)
-            fmul dword ptr [esi]
+            _emit 0xd8
+        _emit 0x0e
             fsubp st(1), st(0)
             fstp dword ptr [esp + 0x40]
             fld dword ptr [esi + 4]
@@ -5861,17 +5937,21 @@ fallback:
             fxch st(3)
             fsubp st(2), st(0)
             fxch st(3)
-            fmul dword ptr [esi]
+            _emit 0xd8
+        _emit 0x0e
             fxch st(1)
             fstp dword ptr [esp + 0x44]
             fxch st(2)
-            fmul dword ptr [ecx]
+            _emit 0xd8
+        _emit 0x09
             fxch st(1)
-            fmul dword ptr [ecx]
+            _emit 0xd8
+        _emit 0x09
             fxch st(1)
             fsubp st(2), st(0)
             fld dword ptr [ecx + 4]
-            fmul dword ptr [esi]
+            _emit 0xd8
+        _emit 0x0e
             fxch st(2)
             fstp dword ptr [esp + 0x48]
             mov edi, dword ptr [esp + 0x78]
@@ -5879,8 +5959,10 @@ fallback:
             fsubp st(1), st(0)
             fstp dword ptr [esp + 0x4c]
             fld dword ptr [edi + 4]
-            fld dword ptr [edi]
-            fsub dword ptr [ebx]
+            _emit 0xd9
+        _emit 0x07
+            _emit 0xd8
+        _emit 0x23
             fxch st(1)
             fsub dword ptr [ebx + 4]
             fld dword ptr [edi + 4]
@@ -5892,7 +5974,8 @@ fallback:
             fmul dword ptr [esp + 0x4c]
             faddp st(2), st(0)
             fld dword ptr [esp + 0x44]
-            fmul dword ptr [edx]
+            _emit 0xd8
+        _emit 0x0a
             faddp st(2), st(0)
             fld dword ptr [ebx + 4]
             fld dword ptr [edi + 8]
@@ -5901,7 +5984,8 @@ fallback:
             fmul dword ptr [esp + 0x48]
             faddp st(5), st(0)
             fld dword ptr [esp + 0x44]
-            fmul dword ptr [edi]
+            _emit 0xd8
+        _emit 0x0f
             faddp st(5), st(0)
             fxch st(3)
             fmul dword ptr [esp + 0x3c]
@@ -5910,7 +5994,8 @@ fallback:
             faddp st(1), st(0)
             fld dword ptr [ebx + 8]
             fld dword ptr [esp + 0x38]
-            fmul dword ptr [edx]
+            _emit 0xd8
+        _emit 0x0a
             faddp st(2), st(0)
             fxch st(1)
             faddp st(4), st(0)
@@ -5922,7 +6007,8 @@ fallback:
             faddp st(3), st(0)
             fld dword ptr [esi + 4]
             fld dword ptr [esp + 0x44]
-            fmul dword ptr [ebx]
+            _emit 0xd8
+        _emit 0x0b
             faddp st(4), st(0)
             fxch st(1)
             fmul dword ptr [esp + 0x40]
@@ -5931,7 +6017,8 @@ fallback:
             faddp st(1), st(0)
             fld dword ptr [edi + 8]
             fld dword ptr [esp + 0x38]
-            fmul dword ptr [esi]
+            _emit 0xd8
+        _emit 0x0e
             faddp st(2), st(0)
             fxch st(1)
             faddp st(3), st(0)
@@ -6220,7 +6307,8 @@ fallback:
     L00424e7a:
             mov edi, dword ptr [esp + 0x88]
             fld dword ptr [esp + 0x7c]
-            fcomp dword ptr [edi]
+            _emit 0xd8
+        _emit 0x1f
             fnstsw ax
             test ah, 1
             jne L00424e9a
@@ -6273,7 +6361,8 @@ fallback:
             fld dword ptr [ecx + 4]
             fld dword ptr [ecx + 8]
             fld dword ptr [esp + 0x7c]
-            fmul dword ptr [ecx]
+            _emit 0xd8
+        _emit 0x09
             fxch st(2)
             fmul dword ptr [esp + 0x7c]
             fxch st(1)
@@ -6286,9 +6375,11 @@ fallback:
             fadd dword ptr [ebp + 8]
             fld dword ptr [esi + 4]
             fld dword ptr [esp + 0x7c]
-            fmul dword ptr [edx]
+            _emit 0xd8
+        _emit 0x0a
             mov eax, dword ptr [esp + 0x78]
-            fadd dword ptr [eax]
+            _emit 0xd8
+        _emit 0x00
             fstp dword ptr [esp + 0x68]
             fld dword ptr [edx + 4]
             fmul dword ptr [esp + 0x7c]
@@ -6299,14 +6390,17 @@ fallback:
             fadd dword ptr [eax + 8]
             fstp dword ptr [esp + 0x70]
             fxch st(5)
-            fadd dword ptr [ebp]
+            _emit 0xd8
+        _emit 0x45
+        _emit 0x00
             fst dword ptr [esp + 0x5c]
             fxch st(3)
             fstp dword ptr [esp + 0x60]
             fld dword ptr [esi + 8]
             fxch st(1)
             fstp dword ptr [esp + 0x64]
-            fld dword ptr [esi]
+            _emit 0xd9
+        _emit 0x06
             fxch st(5)
             fmul dword ptr [esp + 0x60]
             fxch st(1)
@@ -6322,7 +6416,8 @@ fallback:
             fmul dword ptr [esp + 0x84]
             fld st(4)
             fxch st(3)
-            fmul dword ptr [esi]
+            _emit 0xd8
+        _emit 0x0e
             fxch st(1)
             faddp st(4), st(0)
             fxch st(2)
@@ -6335,7 +6430,8 @@ fallback:
             faddp st(4), st(0)
             fxch st(1)
             fst dword ptr [esp + 0x88]
-            fmul dword ptr [esi]
+            _emit 0xd8
+        _emit 0x0e
             fxch st(1)
             fmul dword ptr [esp + 0x88]
             fxch st(2)
@@ -6352,7 +6448,8 @@ fallback:
             fld dword ptr [esp + 0x60]
             fld dword ptr [esp + 0x5c]
             fmul dword ptr [esp + 0x88]
-            fld dword ptr [ebx]
+            _emit 0xd9
+        _emit 0x03
             fxch st(2)
             fmul dword ptr [esp + 0x88]
             fld dword ptr [ebx + 4]
@@ -6417,7 +6514,8 @@ fallback:
             fnstsw ax
             test ah, 0x41
             je L004255ec
-            fld dword ptr [esi]
+            _emit 0xd9
+        _emit 0x06
             fld dword ptr [esi + 4]
             fabs
             fxch st(1)
@@ -6619,11 +6717,13 @@ fallback:
             mov dword ptr [edi + 0x34], eax
     L004253b3:
             fld dword ptr [esp + 0x84]
-            fmul dword ptr [esi]
+            _emit 0xd8
+        _emit 0x0e
             fld dword ptr [esi + 4]
             fmul dword ptr [esp + 0x84]
             fxch st(1)
-            fadd dword ptr [ebx]
+            _emit 0xd8
+        _emit 0x03
             fld dword ptr [esi + 8]
             fxch st(2)
             fst dword ptr [esp + 0x30]
@@ -6646,14 +6746,17 @@ fallback:
             fld dword ptr [ebp + 4]
             fld dword ptr [ebp + 8]
             fxch st(2)
-            fmul dword ptr [ebp]
+            _emit 0xd8
+        _emit 0x4d
+        _emit 0x00
             fxch st(1)
             fmul dword ptr [esp + 0x88]
             fxch st(2)
             fmul dword ptr [esp + 0x88]
             fxch st(1)
             fst dword ptr [esp + 0x2c]
-            fadd dword ptr [eax]
+            _emit 0xd8
+        _emit 0x00
             fxch st(2)
             fst dword ptr [esp + 0x30]
             fadd dword ptr [eax + 4]
@@ -6727,13 +6830,16 @@ fallback:
             fld dword ptr [ebp + 4]
             fld dword ptr [ebp + 8]
             fxch st(2)
-            fmul dword ptr [ebp]
+            _emit 0xd8
+        _emit 0x4d
+        _emit 0x00
             fxch st(1)
             fmul dword ptr [esp + 0x88]
             fxch st(2)
             fmul dword ptr [esp + 0x88]
             fxch st(1)
-            fadd dword ptr [eax]
+            _emit 0xd8
+        _emit 0x00
             fxch st(2)
             fst dword ptr [esp + 0x30]
             fadd dword ptr [eax + 4]
@@ -6764,7 +6870,8 @@ fallback:
             fstp dword ptr [esp + 0x7c]
             call BrMatrix34TApplyV
             fld dword ptr [esp + 0x90]
-            fmul dword ptr [esi]
+            _emit 0xd8
+        _emit 0x0e
             fstp dword ptr [edi + 0x20]
             fld dword ptr [esi + 4]
             fmul dword ptr [esp + 0x90]
@@ -6775,7 +6882,8 @@ fallback:
             fld dword ptr [edi + 0x24]
             fxch st(1)
             fstp dword ptr [edi + 0x28]
-            fld dword ptr [ebx]
+            _emit 0xd9
+        _emit 0x03
             fadd dword ptr [edi + 0x20]
             fld dword ptr [edi + 0x28]
             fxch st(1)
@@ -6960,14 +7068,17 @@ int C2_NAKED C2_HOOK_FASTCALL FUN_00425630(const br_vector3* param_1, const br_v
             push esi
             mov esi, dword ptr [esp + 0x58]
             push edi
-            fld dword ptr [esi]
+            _emit 0xd9
+        _emit 0x06
             fcomp qword ptr [gDouble_005899b0]
             fnstsw ax
             test ah, 0x41
             jne L00425b93
             fld dword ptr [edx + 4]
-            fld dword ptr [ecx]
-            fadd dword ptr [edx]
+            _emit 0xd9
+        _emit 0x01
+            _emit 0xd8
+        _emit 0x02
             fxch st(1)
             fadd dword ptr [ecx + 4]
             fld dword ptr [edx + 8]
@@ -6994,14 +7105,17 @@ int C2_NAKED C2_HOOK_FASTCALL FUN_00425630(const br_vector3* param_1, const br_v
             mov edx, dword ptr [esp + 0x4c]
             mov eax, dword ptr [esp + 0x54]
             mov edi, dword ptr [esp + 0x44]
-            fld dword ptr [edx]
-            fadd dword ptr [eax]
+            _emit 0xd9
+        _emit 0x02
+            _emit 0xd8
+        _emit 0x00
             fld dword ptr [edx + 4]
             fadd dword ptr [eax + 4]
             fld dword ptr [edx + 8]
             fadd dword ptr [eax + 8]
             fxch st(2)
-            fsub dword ptr [edi]
+            _emit 0xd8
+        _emit 0x27
             fxch st(1)
             fsub dword ptr [edi + 4]
             fxch st(2)
@@ -7041,13 +7155,16 @@ int C2_NAKED C2_HOOK_FASTCALL FUN_00425630(const br_vector3* param_1, const br_v
             fld dword ptr [ebx + 8]
             fxch st(5)
             fstp dword ptr [esp + 0x10]
-            fld dword ptr [eax]
+            _emit 0xd9
+        _emit 0x00
             fxch st(3)
             fst dword ptr [esp + 0x14]
             fxch st(4)
             fst dword ptr [esp + 0x18]
             fxch st(3)
-            fadd dword ptr [ebp]
+            _emit 0xd8
+        _emit 0x45
+        _emit 0x00
             fst dword ptr [esp + 0x28]
             fld dword ptr [eax + 4]
             fadd dword ptr [ebp + 4]
@@ -7065,10 +7182,12 @@ int C2_NAKED C2_HOOK_FASTCALL FUN_00425630(const br_vector3* param_1, const br_v
             fxch st(1)
             fmul st(0), st(4)
             fxch st(2)
-            fmul dword ptr [ebx]
+            _emit 0xd8
+        _emit 0x0b
             fld dword ptr [ebx + 4]
             fxch st(4)
-            fmul dword ptr [ebx]
+            _emit 0xd8
+        _emit 0x0b
             fxch st(4)
             fmul dword ptr [esp + 0x10]
             fld dword ptr [esp + 0x2c]
@@ -7134,7 +7253,8 @@ int C2_NAKED C2_HOOK_FASTCALL FUN_00425630(const br_vector3* param_1, const br_v
             fstp dword ptr [esp + 0x20]
             fxch st(1)
             fadd dword ptr [esp + 0x24]
-            fld dword ptr [ebx]
+            _emit 0xd9
+        _emit 0x03
             fxch st(1)
             fstp dword ptr [esp + 0x24]
             fld dword ptr [ebx + 4]
@@ -7155,7 +7275,8 @@ int C2_NAKED C2_HOOK_FASTCALL FUN_00425630(const br_vector3* param_1, const br_v
             fmul dword ptr [esp + 0x44]
             faddp st(1), st(0)
             fxch st(2)
-            fmul dword ptr [ebx]
+            _emit 0xd8
+        _emit 0x0b
             fxch st(3)
             fmul dword ptr [esp + 0x48]
             fxch st(3)
@@ -7179,13 +7300,15 @@ int C2_NAKED C2_HOOK_FASTCALL FUN_00425630(const br_vector3* param_1, const br_v
             mov dword ptr [esi], 0x3f800000
             fld dword ptr [edx + 4]
             fld dword ptr [edx + 8]
-            fld dword ptr [edx]
+            _emit 0xd9
+        _emit 0x02
             fxch st(2)
             fsub dword ptr [edi + 4]
             fxch st(1)
             fsub dword ptr [edi + 8]
             fxch st(2)
-            fsub dword ptr [edi]
+            _emit 0xd8
+        _emit 0x27
             fld dword ptr [ecx + 4]
             fld dword ptr [ecx + 8]
             fxch st(3)
@@ -7195,7 +7318,8 @@ int C2_NAKED C2_HOOK_FASTCALL FUN_00425630(const br_vector3* param_1, const br_v
             fmul st(0), st(3)
             fxch st(1)
             fst dword ptr [esp + 0x1c]
-            fmul dword ptr [ecx]
+            _emit 0xd8
+        _emit 0x09
             fxch st(1)
             faddp st(2), st(0)
             faddp st(1), st(0)
@@ -7216,14 +7340,17 @@ int C2_NAKED C2_HOOK_FASTCALL FUN_00425630(const br_vector3* param_1, const br_v
     L00425939:
             fld dword ptr [edx + 4]
             mov eax, dword ptr [esp + 0x54]
-            fld dword ptr [edx]
-            fadd dword ptr [eax]
+            _emit 0xd9
+        _emit 0x02
+            _emit 0xd8
+        _emit 0x00
             fxch st(1)
             fadd dword ptr [eax + 4]
             fld dword ptr [edx + 8]
             fadd dword ptr [eax + 8]
             fxch st(2)
-            fsub dword ptr [edi]
+            _emit 0xd8
+        _emit 0x27
             fxch st(1)
             fsub dword ptr [edi + 4]
             fxch st(2)
@@ -7260,14 +7387,17 @@ int C2_NAKED C2_HOOK_FASTCALL FUN_00425630(const br_vector3* param_1, const br_v
             fld dword ptr [ebp + 4]
             fld dword ptr [ebp + 8]
             fld dword ptr [esp + 0x5c]
-            fmul dword ptr [ebp]
+            _emit 0xd8
+        _emit 0x4d
+        _emit 0x00
             fxch st(2)
             fmul dword ptr [esp + 0x5c]
             fxch st(1)
             fmul dword ptr [esp + 0x5c]
             fxch st(2)
             fst dword ptr [esp + 0x1c]
-            fadd dword ptr [edx]
+            _emit 0xd8
+        _emit 0x02
             fxch st(1)
             fst dword ptr [esp + 0x20]
             fadd dword ptr [edx + 4]
@@ -7330,14 +7460,17 @@ int C2_NAKED C2_HOOK_FASTCALL FUN_00425630(const br_vector3* param_1, const br_v
             fld dword ptr [ebp + 4]
             fld dword ptr [ebp + 8]
             fld dword ptr [esp + 0x5c]
-            fmul dword ptr [ebp]
+            _emit 0xd8
+        _emit 0x4d
+        _emit 0x00
             fxch st(2)
             fmul dword ptr [esp + 0x5c]
             fxch st(1)
             fmul dword ptr [esp + 0x5c]
             fxch st(2)
             fst dword ptr [esp + 0x1c]
-            fadd dword ptr [edx]
+            _emit 0xd8
+        _emit 0x02
             fxch st(1)
             fst dword ptr [esp + 0x20]
             fadd dword ptr [edx + 4]
@@ -7388,12 +7521,14 @@ int C2_NAKED C2_HOOK_FASTCALL FUN_00425630(const br_vector3* param_1, const br_v
             fld dword ptr [ebx + 4]
             fxch st(1)
     L00425b43:
-            fmul dword ptr [ebx]
+            _emit 0xd8
+        _emit 0x0b
             fxch st(1)
             fmul dword ptr [esp + 0x58]
             fld dword ptr [ebx + 8]
             fxch st(2)
-            fadd dword ptr [edi]
+            _emit 0xd8
+        _emit 0x07
             fld st(1)
             fxch st(3)
             fmul dword ptr [esp + 0x58]

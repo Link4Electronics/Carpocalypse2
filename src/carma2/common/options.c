@@ -186,6 +186,14 @@ extern void C2_HOOK_FASTCALL SetWallTexturingLevel(tWall_texturing_level pLevel)
 extern void C2_HOOK_STDCALL SetYon(br_scalar pYon);
 extern void C2_HOOK_STDCALL SetYonFactor(br_scalar pNew);
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gFloat_0065ceec[];
+extern char gFloat_0065cf04[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchFloat_0065ceec[];
+extern char gMatchFloat_0065cf04[];
+#endif
 // FUNCTION: CARMA2_HW 0x004b39f0
 void C2_NAKED C2_HOOK_FASTCALL DoOptions(void) {
 #ifndef CARPOCALYPSE2_MATCHING
@@ -196,7 +204,7 @@ void C2_NAKED C2_HOOK_FASTCALL DoOptions(void) {
 #else
     __asm {
             sub esp, 0x208
-            mov edx, offset gInterface_0065cd70+0x194
+            mov edx, offset gMatchFloat_0065cf04
             xor ecx, ecx
             push ebx
             push ebp
@@ -230,14 +238,14 @@ void C2_NAKED C2_HOOK_FASTCALL DoOptions(void) {
             mov dword ptr [esp + 0x10], ecx
             mov ecx, 0x4d
             mov edi, offset gINT_00691798
-            push offset gFrontend_QUIT+0xbcd8
+            push 0x655ac8
             rep movsd
             mov edx, offset gApplication_path
             lea ecx, [esp + 0x11c]
             mov dword ptr [esp + 0x18], ebx
             mov dword ptr [gUNK_006918cc], 0x65ca90
             call PathCat
-            mov edx, offset gNext_crush_actor_id+0x180
+            mov edx, 0x58f9e0
             lea ecx, [esp + 0x118]
             call DRfopen
             mov ebp, eax
@@ -325,7 +333,7 @@ void C2_NAKED C2_HOOK_FASTCALL DoOptions(void) {
             mov dword ptr [gKey_map_index], ecx
             jmp L004b3c61
     L004b3bc8:
-            push offset gFrontend_QUIT+0xbcc8
+            push 0x655ab8
             mov edx, offset gApplication_path
             lea ecx, [esp + 0x1c]
             call PathCat
@@ -342,7 +350,7 @@ void C2_NAKED C2_HOOK_FASTCALL DoOptions(void) {
             mov byte ptr [ecx + eax], dl
             lea ecx, [esp + 0x18]
             call PDFileUnlock
-            mov edx, offset gFrontend_QUIT+0xbcc4
+            mov edx, 0x655ab4
             lea ecx, [esp + 0x18]
             call DRfopen
             mov esi, eax
@@ -356,7 +364,7 @@ void C2_NAKED C2_HOOK_FASTCALL DoOptions(void) {
     L004b3c28:
             mov ecx, dword ptr [edi]
             push ecx
-            push offset gPed_flags_0058f2e4+0x134
+            push 0x58f418
             push esi
             call fprintf
             add esp, 0xc
@@ -369,7 +377,7 @@ void C2_NAKED C2_HOOK_FASTCALL DoOptions(void) {
             call fputc
             add edi, 4
             add esp, 8
-            cmp edi, offset gKey_mapping+0x134
+            cmp edi, 0x74b714
             jl L004b3c28
             mov ecx, esi
             call PFfclose
@@ -553,7 +561,7 @@ void C2_NAKED C2_HOOK_FASTCALL DoOptions(void) {
     L004b3ea1:
             mov ecx, ebp
             call UnlockBunchOfFlics
-            mov edx, offset gInterface_0065cd70+0x17c
+            mov edx, offset gMatchFloat_0065ceec
             xor ecx, ecx
             call PrintMemoryDump
             pop edi
@@ -562,6 +570,7 @@ void C2_NAKED C2_HOOK_FASTCALL DoOptions(void) {
             pop ebx
             add esp, 0x208
             ret
+            nop
     }
 #endif
 }
@@ -776,13 +785,13 @@ void C2_NAKED C2_HOOK_FASTCALL FUN_004b3ec0(void) {
     SaveOptions();
 #else
     __asm {
-            mov ecx, dword ptr ds:[gUNK_0065bd80]
+            mov ecx, dword ptr [gUNK_0065bd80]
             cmp ecx, 2
             jl L004b3ecc
             inc ecx
     L004b3ecc:
             call SetCarSimplificationLevel
-            mov eax, dword ptr ds:[gUNK_0065bda0]
+            mov eax, dword ptr [gUNK_0065bda0]
             sub eax, 0
             je L004b3eec
             dec eax
@@ -799,7 +808,7 @@ void C2_NAKED C2_HOOK_FASTCALL FUN_004b3ec0(void) {
     L004b3ef1:
             call SetCarTexturingLevel
     L004b3ef6:
-            mov eax, dword ptr ds:[gUNK_0065bdc0]
+            mov eax, dword ptr [gUNK_0065bdc0]
             sub eax, 0
             je L004b3f11
             dec eax
@@ -816,7 +825,7 @@ void C2_NAKED C2_HOOK_FASTCALL FUN_004b3ec0(void) {
     L004b3f16:
             call SetShadowLevel
     L004b3f1b:
-            mov eax, dword ptr ds:[gUNK_0065bde0]
+            mov eax, dword ptr [gUNK_0065bde0]
             sub eax, 0
             je L004b3f36
             dec eax
@@ -833,7 +842,7 @@ void C2_NAKED C2_HOOK_FASTCALL FUN_004b3ec0(void) {
     L004b3f3b:
             call SetWallTexturingLevel
     L004b3f40:
-            mov eax, dword ptr ds:[gUNK_0065be00]
+            mov eax, dword ptr [gUNK_0065be00]
             sub eax, 0
             je L004b3f53
             sub eax, 2
@@ -845,15 +854,15 @@ void C2_NAKED C2_HOOK_FASTCALL FUN_004b3ec0(void) {
     L004b3f58:
             call SetRoadTexturingLevel
     L004b3f5d:
-            fild dword ptr ds:[gUNK_0065be20]
+            fild dword ptr [gUNK_0065be20]
             push ecx
-            fmul dword ptr ds:[gUNK_0058a6f4]
-            fsubr dword ptr ds:[gUNK_0058a6e0]
+            fmul dword ptr [gUNK_0058a6f4]
+            fsubr dword ptr [gUNK_0058a6e0]
             _emit 0xd9
         _emit 0x1c
         _emit 0x24
             call SetYon
-            mov eax, dword ptr ds:[gUNK_0065be40]
+            mov eax, dword ptr [gUNK_0065be40]
             cmp eax, 3
             ja L004b3fa8
             jmp dword ptr [eax*4 + 0x4b4004]
@@ -867,23 +876,23 @@ void C2_NAKED C2_HOOK_FASTCALL FUN_004b3ec0(void) {
     L004b3fa3:
             call SetYonFactor
     L004b3fa8:
-            mov eax, dword ptr ds:[gUNK_0065be60]
+            mov eax, dword ptr [gUNK_0065be60]
             mov ecx, 1
             sub ecx, eax
             call SetSkyTextureOn
-            mov edx, dword ptr ds:[gUNK_0065be80]
+            mov edx, dword ptr [gUNK_0065be80]
             mov ecx, 1
             sub ecx, edx
             call SetDepthCueingOn
-            mov eax, dword ptr ds:[gUNK_0065bea0]
+            mov eax, dword ptr [gUNK_0065bea0]
             mov ecx, 1
             sub ecx, eax
             call SetAccessoryRendering
-            mov edx, dword ptr ds:[gUNK_0065bec0]
+            mov edx, dword ptr [gUNK_0065bec0]
             mov ecx, 1
             sub ecx, edx
             call SetSmokeOn
-            mov eax, dword ptr ds:[gUNK_0065bee0]
+            mov eax, dword ptr [gUNK_0065bee0]
             mov ecx, 2
             sub ecx, eax
             call SetSoundDetailLevel

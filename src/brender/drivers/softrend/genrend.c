@@ -11,6 +11,14 @@ extern rend_block_soft rend;
 extern char rendererStateStoredDispatch[];
 extern static_cache_soft scache;
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gData_0058c930[];
+extern char gFloat_0058c934[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchData_0058c930[];
+extern char gMatchFloat_0058c934[];
+#endif
 // FUNCTION: CARMA2_HW 0x00547810
 void C2_NAKED C2_HOOK_CDECL Vertex_TransformProjectOutcodeBounds(br_geometry* self, br_soft_renderer* renderer) {
 #ifndef CARPOCALYPSE2_MATCHING
@@ -197,7 +205,7 @@ void C2_NAKED C2_HOOK_CDECL Vertex_TransformProjectOutcodeBounds(br_geometry* se
             faddp st(2), st(0)
             fmul dword ptr [edx + 8]
             faddp st(1), st(0)
-            fcomp dword ptr [rendererStateStoredDispatch+0x98]
+            fcomp dword ptr [gMatchData_0058c930]
             fnstsw ax
             test ah, 1
             je L005479fd
@@ -466,7 +474,7 @@ void C2_NAKED C2_HOOK_CDECL Vertex_TransformProjectOutcode(br_geometry *self, br
             faddp st(2), st(0)
             fmul dword ptr [edx + 0xc]
             faddp st(1), st(0)
-            fcomp dword ptr [rendererStateStoredDispatch+0x98]
+            fcomp dword ptr [gMatchData_0058c930]
             fnstsw ax
             test ah, 1
             je L00547ccd
@@ -2110,7 +2118,7 @@ void C2_NAKED C2_HOOK_CDECL Vertex_ForceFront(br_geometry* self, br_soft_rendere
             je L00548c00
             _emit 0xd9
         _emit 0x00
-            fsub dword ptr [rendererStateStoredDispatch+0x9c]
+            fsub dword ptr [gMatchFloat_0058c934]
             mov dword ptr [eax + 0xc], edx
             fstp dword ptr [eax - 4]
     L00548c00:

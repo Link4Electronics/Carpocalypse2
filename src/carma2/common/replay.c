@@ -239,6 +239,36 @@ extern tU32 gRace_finished;
 extern tRace_over_reason gRace_over_reason;
 extern br_vector3 gZero_v__car;
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gData_0065fbf8[];
+extern char gData_0065fc24[];
+extern char gData_006a23b4[];
+extern char gData_006a23cc[];
+extern char gData_006a23d0[];
+extern char gDouble_00589408[];
+extern char gDouble_0058adc8[];
+extern char gDouble_0058add0[];
+extern char gDouble_0058ade0[];
+extern char gDouble_0058ade8[];
+extern char gFloat_005893f8[];
+extern char gFloat_0058add8[];
+extern char gFloat_0058adf0[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchData_0065fbf8[];
+extern char gMatchData_0065fc24[];
+extern char gMatchData_006a23b4[];
+extern char gMatchData_006a23cc[];
+extern char gMatchData_006a23d0[];
+extern char gMatchDouble_00589408[];
+extern char gMatchDouble_0058adc8[];
+extern char gMatchDouble_0058add0[];
+extern char gMatchDouble_0058ade0[];
+extern char gMatchDouble_0058ade8[];
+extern char gMatchFloat_005893f8[];
+extern char gMatchFloat_0058add8[];
+extern char gMatchFloat_0058adf0[];
+#endif
 // FUNCTION: CARMA2_HW 0x0040ea30
 void C2_NAKED C2_HOOK_FASTCALL PositionExternalCamera(tCar_spec* pCar_spec, tU32 pTime) {
 #ifndef CARPOCALYPSE2_MATCHING
@@ -315,7 +345,7 @@ void C2_NAKED C2_HOOK_FASTCALL PositionExternalCamera(tCar_spec* pCar_spec, tU32
 #else
     __asm {
             sub esp, 0x104
-            mov eax, dword ptr ds:[gCamera]
+            mov eax, dword ptr [gCamera]
             push ebp
             push esi
             push edi
@@ -328,16 +358,25 @@ void C2_NAKED C2_HOOK_FASTCALL PositionExternalCamera(tCar_spec* pCar_spec, tU32
             call TestForNan
             test eax, eax
             je L0040ea61
-            fild dword ptr ds:[0x67931c]
+            _emit 0xdb
+        _emit 0x05
+        _emit 0x1c
+        _emit 0x93
+        _emit 0x67
+        _emit 0x00
             _emit 0xd9
         _emit 0x1e
     L0040ea61:
             _emit 0xd9
         _emit 0x06
             call _ftol
-            mov esi, dword ptr ds:[gAction_replay_camera_mode]
-            mov dword ptr ds:[0x67931c], eax
-            mov eax, dword ptr ds:[gPed_676914]
+            mov esi, dword ptr [gAction_replay_camera_mode]
+            _emit 0xa3
+        _emit 0x1c
+        _emit 0x93
+        _emit 0x67
+        _emit 0x00
+            mov eax, dword ptr [gPed_676914]
             test eax, eax
             je L0040ea8a
             mov cl, byte ptr [esi + gCamera_type_allowed_replay]
@@ -360,18 +399,18 @@ void C2_NAKED C2_HOOK_FASTCALL PositionExternalCamera(tCar_spec* pCar_spec, tU32
     L0040eaa7:
             cmp esi, 5
             jne L0040eb6d
-            mov eax, dword ptr ds:[gPed_count]
+            mov eax, dword ptr [gPed_count]
             test eax, eax
             jne L0040eb6d
     L0040eabd:
             mov ecx, 8
             call KeyIsDown
-            mov ecx, dword ptr ds:[gAction_replay_camera_mode]
+            mov ecx, dword ptr [gAction_replay_camera_mode]
             test eax, eax
             je L0040eae8
             dec ecx
             cmp ecx, 9
-            mov dword ptr ds:[gAction_replay_camera_mode], ecx
+            mov dword ptr [gAction_replay_camera_mode], ecx
             jge L0040eae1
             test ecx, ecx
             jge L0040eafc
@@ -381,13 +420,13 @@ void C2_NAKED C2_HOOK_FASTCALL PositionExternalCamera(tCar_spec* pCar_spec, tU32
     L0040eae8:
             inc ecx
             cmp ecx, 9
-            mov dword ptr ds:[gAction_replay_camera_mode], ecx
+            mov dword ptr [gAction_replay_camera_mode], ecx
             jl L0040eafc
             xor ecx, ecx
     L0040eaf6:
-            mov dword ptr ds:[gAction_replay_camera_mode], ecx
+            mov dword ptr [gAction_replay_camera_mode], ecx
     L0040eafc:
-            mov eax, dword ptr ds:[gPed_676914]
+            mov eax, dword ptr [gPed_676914]
             mov esi, ecx
             test eax, eax
             je L0040eb15
@@ -408,89 +447,118 @@ void C2_NAKED C2_HOOK_FASTCALL PositionExternalCamera(tCar_spec* pCar_spec, tU32
             call OKToViewDrones
             test eax, eax
             je L0040eb46
-            mov ecx, dword ptr ds:[gAction_replay_camera_mode]
+            mov ecx, dword ptr [gAction_replay_camera_mode]
     L0040eb38:
             cmp esi, 5
             jne L0040eb51
-            mov eax, dword ptr ds:[gPed_count]
+            mov eax, dword ptr [gPed_count]
             test eax, eax
             jne L0040eb51
     L0040eb46:
             call ChangeCameraType
-            mov ecx, dword ptr ds:[gAction_replay_camera_mode]
+            mov ecx, dword ptr [gAction_replay_camera_mode]
     L0040eb51:
-            mov eax, dword ptr ds:[gPed_676914]
+            mov eax, dword ptr [gPed_676914]
             test eax, eax
             je L0040eb62
-            mov dword ptr ds:[gAR_camera_type], ecx
+            mov dword ptr [gAR_camera_type], ecx
             jmp L0040eb68
     L0040eb62:
-            mov dword ptr ds:[gCamera_type], ecx
+            mov dword ptr [gCamera_type], ecx
     L0040eb68:
             call SetCameraType
     L0040eb6d:
-            mov eax, dword ptr ds:[gNet_mode]
+            mov eax, dword ptr [gNet_mode]
             xor ecx, ecx
             cmp eax, ecx
             je L0040ed42
-            mov edx, dword ptr ds:[gCurrent_net_game]
+            mov edx, dword ptr [gCurrent_net_game]
             mov eax, dword ptr [edx + 0x74]
             cmp eax, 4
             je L0040eb92
             cmp eax, ecx
             jne L0040ed42
     L0040eb92:
-            cmp dword ptr ds:[gRace_finished], ecx
+            cmp dword ptr [gRace_finished], ecx
             jne L0040ebab
-            mov dword ptr ds:[0x679298], ecx
-            mov dword ptr ds:[gOpponent_viewing_mode], ecx
+            _emit 0x89
+        _emit 0x0d
+        _emit 0x98
+        _emit 0x92
+        _emit 0x67
+        _emit 0x00
+            mov dword ptr [gOpponent_viewing_mode], ecx
             jmp L0040ed42
     L0040ebab:
-            cmp dword ptr ds:[0x679298], ecx
+            _emit 0x39
+        _emit 0x0d
+        _emit 0x98
+        _emit 0x92
+        _emit 0x67
+        _emit 0x00
             jne L0040ebc2
             call GetRaceTime
-            mov dword ptr ds:[0x679298], eax
+            _emit 0xa3
+        _emit 0x98
+        _emit 0x92
+        _emit 0x67
+        _emit 0x00
             jmp L0040ed42
     L0040ebc2:
             call GetRaceTime
-            mov ecx, dword ptr ds:[0x679298]
+            _emit 0x8b
+        _emit 0x0d
+        _emit 0x98
+        _emit 0x92
+        _emit 0x67
+        _emit 0x00
             add ecx, 0x2710
             cmp ecx, eax
             ja L0040ed42
-            mov eax, dword ptr ds:[gOpponent_viewing_mode]
+            mov eax, dword ptr [gOpponent_viewing_mode]
             mov esi, 0xfffffffe
             test eax, eax
             jne L0040ebfe
-            mov dword ptr ds:[gOpponent_viewing_mode], 1
-            mov dword ptr ds:[gNet_player_to_view_index], esi
+            mov dword ptr [gOpponent_viewing_mode], 1
+            mov dword ptr [gNet_player_to_view_index], esi
             call ViewNetPlayer
     L0040ebfe:
-            mov edx, dword ptr ds:[gNet_player_to_view_index]
-            mov eax, dword ptr ds:[gNumber_of_net_players]
+            mov edx, dword ptr [gNet_player_to_view_index]
+            mov eax, dword ptr [gNumber_of_net_players]
             cmp edx, eax
             jl L0040ec18
-            mov dword ptr ds:[gNet_player_to_view_index], esi
+            mov dword ptr [gNet_player_to_view_index], esi
             call ViewNetPlayer
     L0040ec18:
-            mov eax, dword ptr ds:[gNet_player_to_view_index]
+            mov eax, dword ptr [gNet_player_to_view_index]
             test eax, eax
             jge L0040ec39
             call GetRaceLeader
-            cmp eax, dword ptr ds:[gCar_to_view]
+            cmp eax, dword ptr [gCar_to_view]
             je L0040ec39
-            mov dword ptr ds:[gNet_player_to_view_index], esi
+            mov dword ptr [gNet_player_to_view_index], esi
             call ViewNetPlayer
     L0040ec39:
             call GetRaceTime
-            mov ecx, dword ptr ds:[0x679320]
+            _emit 0x8b
+        _emit 0x0d
+        _emit 0x20
+        _emit 0x93
+        _emit 0x67
+        _emit 0x00
             add ecx, 0x3e8
             cmp ecx, eax
             jb L0040ec5f
             call GetRaceTime
-            cmp dword ptr ds:[0x679320], eax
+            _emit 0x39
+        _emit 0x05
+        _emit 0x20
+        _emit 0x93
+        _emit 0x67
+        _emit 0x00
             jbe L0040ed42
     L0040ec5f:
-            cmp dword ptr ds:[gRace_over_reason], -1
+            cmp dword ptr [gRace_over_reason], -1
             jne L0040ed42
             mov ecx, 0xd9
             call GetMiscString
@@ -525,7 +593,7 @@ void C2_NAKED C2_HOOK_FASTCALL PositionExternalCamera(tCar_spec* pCar_spec, tU32
             dec edi
             shr ecx, 2
             rep movsd
-            mov eax, dword ptr ds:[gNet_player_to_view_index]
+            mov eax, dword ptr [gNet_player_to_view_index]
             mov ecx, edx
             and ecx, 3
             test eax, eax
@@ -542,7 +610,7 @@ void C2_NAKED C2_HOOK_FASTCALL PositionExternalCamera(tCar_spec* pCar_spec, tU32
             lea ecx, [ecx + ecx*8]
             shl ecx, 1
             sub ecx, eax
-            lea edi, [ecx*4 + 0x74bce8]
+            lea edi, [ecx*4 + gNet_players+0x28]
     L0040ecf7:
             or ecx, 0xffffffff
             xor eax, eax
@@ -562,7 +630,11 @@ void C2_NAKED C2_HOOK_FASTCALL PositionExternalCamera(tCar_spec* pCar_spec, tU32
             and ecx, 3
             rep movsb
             call GetRaceTime
-            mov dword ptr ds:[0x679320], eax
+            _emit 0xa3
+        _emit 0x20
+        _emit 0x93
+        _emit 0x67
+        _emit 0x00
             lea eax, [esp + 0x10]
             push eax
             push -4
@@ -572,37 +644,41 @@ void C2_NAKED C2_HOOK_FASTCALL PositionExternalCamera(tCar_spec* pCar_spec, tU32
             call NewTextHeadupSlot
             mov edi, dword ptr [esp + 0xc]
     L0040ed42:
-            mov eax, dword ptr ds:[0x75bbcc]
+            mov eax, dword ptr [gProgram_state+0x4c]
             test eax, eax
             jne L0040ef60
-            mov eax, dword ptr ds:[gOpponent_viewing_mode]
+            mov eax, dword ptr [gOpponent_viewing_mode]
             test eax, eax
             je L0040ed66
-            mov eax, dword ptr ds:[gPed_676914]
-            mov esi, 0x75bc2c
+            mov eax, dword ptr [gPed_676914]
+            mov esi, offset gProgram_state+0xac
             test eax, eax
             jne L0040ed6c
     L0040ed66:
-            mov esi, dword ptr ds:[gCar_to_view]
+            mov esi, dword ptr [gCar_to_view]
     L0040ed6c:
             mov ecx, dword ptr [esi + 0x10]
             fld dword ptr [ecx + 0x50]
-            fcomp dword ptr ds:[0x5893f8]
+            fcomp dword ptr [gMatchFloat_005893f8]
             fnstsw ax
             test ah, 0x41
             je L0040ef60
-            mov edx, dword ptr ds:[gAction_replay_camera_mode]
-            mov eax, dword ptr ds:[0x58f62c]
+            mov edx, dword ptr [gAction_replay_camera_mode]
+            _emit 0xa1
+        _emit 0x2c
+        _emit 0xf6
+        _emit 0x58
+        _emit 0x00
             cmp eax, edx
             je L0040eda7
-            fld dword ptr ds:[gCamera_angle]
-            fmul qword ptr ds:[gDegreesToAngle_00589400]
+            fld dword ptr [gCamera_angle]
+            fmul qword ptr [gDegreesToAngle_00589400]
             call _ftol
             mov word ptr [edi + 6], ax
     L0040eda7:
-            mov eax, dword ptr ds:[gCamera_hither]
+            mov eax, dword ptr [gCamera_hither]
             mov dword ptr [edi + 8], eax
-            mov eax, dword ptr ds:[gAction_replay_camera_mode]
+            mov eax, dword ptr [gAction_replay_camera_mode]
             cmp eax, 8
             ja L0040ef54
             jmp dword ptr [eax*4 + 0x40ef6c]
@@ -625,20 +701,20 @@ void C2_NAKED C2_HOOK_FASTCALL PositionExternalCamera(tCar_spec* pCar_spec, tU32
             jmp L0040ef54
             mov ecx, esi
             call CheckDisablePlingMaterials
-            mov eax, dword ptr ds:[gCamera]
+            mov eax, dword ptr [gCamera]
             mov edi, dword ptr [eax + 0x5c]
-            mov ax, word ptr ds:[gPanning_camera_angle]
+            mov ax, word ptr [gPanning_camera_angle]
             test ax, ax
             jne L0040ee3a
-            fld dword ptr ds:[gCamera_angle]
-            fmul qword ptr ds:[gDegreesToAngle_00589400]
+            fld dword ptr [gCamera_angle]
+            fmul qword ptr [gDegreesToAngle_00589400]
             call _ftol
             and eax, 0xffff
             mov dword ptr [esp + 0xc], eax
             fild dword ptr [esp + 0xc]
-            fmul qword ptr ds:[0x589408]
+            fmul qword ptr [gMatchDouble_00589408]
             call _ftol
-            mov word ptr ds:[gPanning_camera_angle], ax
+            mov word ptr [gPanning_camera_angle], ax
     L0040ee3a:
             mov edx, ebp
             mov ecx, esi
@@ -646,29 +722,38 @@ void C2_NAKED C2_HOOK_FASTCALL PositionExternalCamera(tCar_spec* pCar_spec, tU32
             call IncidentCam
             test eax, eax
             jne L0040ef54
-            mov ecx, dword ptr ds:[0x58f62c]
-            mov eax, dword ptr ds:[gAction_replay_camera_mode]
+            _emit 0x8b
+        _emit 0x0d
+        _emit 0x2c
+        _emit 0xf6
+        _emit 0x58
+        _emit 0x00
+            mov eax, dword ptr [gAction_replay_camera_mode]
             cmp ecx, eax
             jmp L0040eeb4
             mov ecx, esi
             call CheckDisablePlingMaterials
-            mov edx, dword ptr ds:[gCamera]
-            mov ax, word ptr ds:[gPanning_camera_angle]
+            mov edx, dword ptr [gCamera]
+            mov ax, word ptr [gPanning_camera_angle]
             test ax, ax
             mov edi, dword ptr [edx + 0x5c]
             jne L0040eea8
-            fld dword ptr ds:[gCamera_angle]
-            fmul qword ptr ds:[gDegreesToAngle_00589400]
+            fld dword ptr [gCamera_angle]
+            fmul qword ptr [gDegreesToAngle_00589400]
             call _ftol
             and eax, 0xffff
             mov dword ptr [esp + 0xc], eax
             fild dword ptr [esp + 0xc]
-            fmul qword ptr ds:[0x589408]
+            fmul qword ptr [gMatchDouble_00589408]
             call _ftol
-            mov word ptr ds:[gPanning_camera_angle], ax
+            mov word ptr [gPanning_camera_angle], ax
     L0040eea8:
             mov word ptr [edi + 6], ax
-            mov eax, dword ptr ds:[0x58f62c]
+            _emit 0xa1
+        _emit 0x2c
+        _emit 0xf6
+        _emit 0x58
+        _emit 0x00
             cmp eax, 1
     L0040eeb4:
             je L0040eebd
@@ -722,14 +807,19 @@ void C2_NAKED C2_HOOK_FASTCALL PositionExternalCamera(tCar_spec* pCar_spec, tU32
             mov edx, esi
             call GeneralisedPositionExternalCamera
             jmp L0040ef54
-            mov eax, dword ptr ds:[gCamera_cockpit_hither]
+            mov eax, dword ptr [gCamera_cockpit_hither]
             mov edx, ebp
             mov ecx, esi
             mov dword ptr [edi + 8], eax
             call PositionCarMountedCamera
     L0040ef54:
-            mov ecx, dword ptr ds:[gAction_replay_camera_mode]
-            mov dword ptr ds:[0x58f62c], ecx
+            mov ecx, dword ptr [gAction_replay_camera_mode]
+            _emit 0x89
+        _emit 0x0d
+        _emit 0x2c
+        _emit 0xf6
+        _emit 0x58
+        _emit 0x00
     L0040ef60:
             pop edi
             pop esi
@@ -1032,7 +1122,7 @@ void C2_NAKED C2_HOOK_FASTCALL PollActionReplayControls(tU32 *pFrame_period, tU3
             lea eax, [eax + eax*8]
             xor esi, esi
             shl eax, 4
-            add eax, offset gReplay_timeline_y+0x34
+            add eax, offset gMatchData_0065fc24
     L004e6add:
             cmp ecx, dword ptr [eax - 4]
             jl L004e6af0
@@ -1050,24 +1140,24 @@ void C2_NAKED C2_HOOK_FASTCALL PollActionReplayControls(tU32 *pFrame_period, tU3
             mov eax, dword ptr [gKey_down]
             jmp L004e6b0c
     L004e6b00:
-            mov eax, dword ptr [esi*4 + gReplay_timeline_y+0x8]
+            mov eax, dword ptr [esi*4 + gMatchData_0065fbf8]
             mov dword ptr [gKey_down], eax
     L004e6b0c:
             cmp esi, 9
             jne L004e6b24
-            cmp dword ptr [gUnk_006a23c8+0x4], edi
+            cmp dword ptr [gMatchData_006a23cc], edi
             jne L004e6b24
             push edi
             call PickActionReplayManualCameraTarget
             mov eax, dword ptr [gKey_down]
     L004e6b24:
-            mov dword ptr [gUnk_006a23c8+0x4], ebp
+            mov dword ptr [gMatchData_006a23cc], ebp
             jmp L004e6b39
     L004e6b2c:
             mov eax, dword ptr [gKey_down]
     L004e6b31:
             xor edi, edi
-            mov dword ptr [gUnk_006a23c8+0x4], edi
+            mov dword ptr [gMatchData_006a23cc], edi
     L004e6b39:
             cmp eax, 0x4b
             jne L004e6b54
@@ -1210,24 +1300,24 @@ void C2_NAKED C2_HOOK_FASTCALL PollActionReplayControls(tU32 *pFrame_period, tU3
             jmp L004e6d9d
     L004e6cc9:
             call ARGetReplayRate
-            fcomp qword ptr [gConst_kangeroo_force_factor+0x138]
+            fcomp qword ptr [gMatchDouble_0058adc8]
             fnstsw ax
             test ah, 1
             je L004e6ce5
             push 0x3f99999a
             call ARSetReplayRate
     L004e6ce5:
-            cmp dword ptr [gUnk_006a23c8+0x8], edi
+            cmp dword ptr [gMatchData_006a23d0], edi
             je L004e6d1b
             call ARGetReplayRate
             mov eax, dword ptr [esp + 0x14]
-            mov edx, dword ptr [gUnk_006a23c8+0x8]
+            mov edx, dword ptr [gMatchData_006a23d0]
             sub eax, edx
             mov dword ptr [esp + 0x24], edi
             mov dword ptr [esp + 0x20], eax
             push ecx
             fild qword ptr [esp + 0x24]
-            fmul qword ptr [gConst_kangeroo_force_factor+0x140]
+            fmul qword ptr [gMatchDouble_0058add0]
             fsubp st(1), st(0)
             _emit 0xd9
         _emit 0x1c
@@ -1235,7 +1325,7 @@ void C2_NAKED C2_HOOK_FASTCALL PollActionReplayControls(tU32 *pFrame_period, tU3
             call ARSetReplayRate
     L004e6d1b:
             call ARGetReplayRate
-            fcomp dword ptr [gConst_kangeroo_force_factor+0x148]
+            fcomp dword ptr [gMatchFloat_0058add8]
             fnstsw ax
             test ah, 0x41
             jne L004e6da2
@@ -1243,24 +1333,24 @@ void C2_NAKED C2_HOOK_FASTCALL PollActionReplayControls(tU32 *pFrame_period, tU3
             jmp L004e6d9d
     L004e6d34:
             call ARGetReplayRate
-            fcomp qword ptr [gConst_kangeroo_force_factor+0x150]
+            fcomp qword ptr [gMatchDouble_0058ade0]
             fnstsw ax
             test ah, 0x41
             jne L004e6d50
             push 0xbf99999a
             call ARSetReplayRate
     L004e6d50:
-            cmp dword ptr [gUnk_006a23c8+0x8], edi
+            cmp dword ptr [gMatchData_006a23d0], edi
             je L004e6d86
             call ARGetReplayRate
             mov ecx, dword ptr [esp + 0x14]
-            mov edx, dword ptr [gUnk_006a23c8+0x8]
+            mov edx, dword ptr [gMatchData_006a23d0]
             sub ecx, edx
             mov dword ptr [esp + 0x24], edi
             mov dword ptr [esp + 0x20], ecx
             push ecx
             fild qword ptr [esp + 0x24]
-            fmul qword ptr [gConst_kangeroo_force_factor+0x158]
+            fmul qword ptr [gMatchDouble_0058ade8]
             fsubp st(1), st(0)
             _emit 0xd9
         _emit 0x1c
@@ -1268,7 +1358,7 @@ void C2_NAKED C2_HOOK_FASTCALL PollActionReplayControls(tU32 *pFrame_period, tU3
             call ARSetReplayRate
     L004e6d86:
             call ARGetReplayRate
-            fcomp dword ptr [gConst_kangeroo_force_factor+0x160]
+            fcomp dword ptr [gMatchFloat_0058adf0]
             fnstsw ax
             test ah, 1
             je L004e6da2
@@ -1360,7 +1450,12 @@ void C2_NAKED C2_HOOK_FASTCALL PollActionReplayControls(tU32 *pFrame_period, tU3
             call ARSetPause
     L004e6eca:
             fld dword ptr [gUnk_006a2378]
-            fcomp dword ptr [gConst_kangeroo_force_factor+0x130]
+            _emit 0xd8
+        _emit 0x1d
+        _emit 0xc0
+        _emit 0xad
+        _emit 0x58
+        _emit 0x00
             fnstsw ax
             test ah, 0x40
             jne L004e6ef3
@@ -1371,7 +1466,12 @@ void C2_NAKED C2_HOOK_FASTCALL PollActionReplayControls(tU32 *pFrame_period, tU3
     L004e6ef3:
             call ARGetReplayRate
             fmul dword ptr [esp + 0x10]
-            fcomp dword ptr [gConst_kangeroo_force_factor+0x130]
+            _emit 0xd8
+        _emit 0x1d
+        _emit 0xc0
+        _emit 0xad
+        _emit 0x58
+        _emit 0x00
             fnstsw ax
             test ah, 1
             je L004e6f1c
@@ -1384,7 +1484,12 @@ void C2_NAKED C2_HOOK_FASTCALL PollActionReplayControls(tU32 *pFrame_period, tU3
             mov dword ptr [gUnk_006a2378], 0
     L004e6f26:
             fld dword ptr [esp + 0x10]
-            fcomp dword ptr [gConst_kangeroo_force_factor+0x130]
+            _emit 0xd8
+        _emit 0x1d
+        _emit 0xc0
+        _emit 0xad
+        _emit 0x58
+        _emit 0x00
             fnstsw ax
             test ah, 0x40
             jne L004e6f5b
@@ -1399,23 +1504,33 @@ void C2_NAKED C2_HOOK_FASTCALL PollActionReplayControls(tU32 *pFrame_period, tU3
     L004e6f5b:
             call ARGetReplayRate
             fabs
-            fcomp qword ptr [gConst_kangeroo_force_factor+0x138]
+            fcomp qword ptr [gMatchDouble_0058adc8]
             fnstsw ax
             test ah, 1
             je L004e6f77
-            mov dword ptr [gUnk_006a23c8+0x8], edi
+            mov dword ptr [gMatchData_006a23d0], edi
             jmp L004e6f81
     L004e6f77:
             mov ecx, dword ptr [esp + 0x14]
-            mov dword ptr [gUnk_006a23c8+0x8], ecx
+            mov dword ptr [gMatchData_006a23d0], ecx
     L004e6f81:
             fld dword ptr [esp + 0x10]
-            fcomp dword ptr [gConst_kangeroo_force_factor+0x130]
+            _emit 0xd8
+        _emit 0x1d
+        _emit 0xc0
+        _emit 0xad
+        _emit 0x58
+        _emit 0x00
             fnstsw ax
             test ah, 0x41
             je L004e6fb1
             call ARGetReplayRate
-            fcomp dword ptr [gConst_kangeroo_force_factor+0x130]
+            _emit 0xd8
+        _emit 0x1d
+        _emit 0xc0
+        _emit 0xad
+        _emit 0x58
+        _emit 0x00
             fnstsw ax
             test ah, 0x41
             jne L004e6fb1
@@ -1428,12 +1543,22 @@ void C2_NAKED C2_HOOK_FASTCALL PollActionReplayControls(tU32 *pFrame_period, tU3
             ret
     L004e6fb1:
             fld dword ptr [esp + 0x10]
-            fcomp dword ptr [gConst_kangeroo_force_factor+0x130]
+            _emit 0xd8
+        _emit 0x1d
+        _emit 0xc0
+        _emit 0xad
+        _emit 0x58
+        _emit 0x00
             fnstsw ax
             test ah, 1
             jne L004e6fd9
             call ARGetReplayRate
-            fcomp dword ptr [gConst_kangeroo_force_factor+0x130]
+            _emit 0xd8
+        _emit 0x1d
+        _emit 0xc0
+        _emit 0xad
+        _emit 0x58
+        _emit 0x00
             fnstsw ax
             test ah, 1
             je L004e6fd9
@@ -1445,6 +1570,21 @@ void C2_NAKED C2_HOOK_FASTCALL PollActionReplayControls(tU32 *pFrame_period, tU3
             pop ebx
             add esp, 0x18
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -1537,7 +1677,12 @@ void C2_NAKED C2_HOOK_FASTCALL SynchronizeActionReplay(void) {
             sub esp, 0x24
             push esi
             call ARGetReplayRate
-            fcomp dword ptr [gConst_kangeroo_force_factor+0x130]
+            _emit 0xd8
+        _emit 0x1d
+        _emit 0xc0
+        _emit 0xad
+        _emit 0x58
+        _emit 0x00
             xor esi, esi
             fnstsw ax
             test ah, 0x40
@@ -1564,7 +1709,12 @@ void C2_NAKED C2_HOOK_FASTCALL SynchronizeActionReplay(void) {
             jne L004e718d
             call ServiceGameInRace
             call ARGetReplayRate
-            fcomp dword ptr [gConst_kangeroo_force_factor+0x130]
+            _emit 0xd8
+        _emit 0x1d
+        _emit 0xc0
+        _emit 0xad
+        _emit 0x58
+        _emit 0x00
             fnstsw ax
             test ah, 0x40
             je L004e712e
@@ -1582,6 +1732,21 @@ void C2_NAKED C2_HOOK_FASTCALL SynchronizeActionReplay(void) {
             mov esp, ebp
             pop ebp
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -1705,10 +1870,23 @@ void C2_NAKED C2_HOOK_FASTCALL DisposeReplayPixelmaps(void) {
             mov dword ptr [esi], 0
     L004e70f6:
             add esi, 4
-            cmp esi, offset gReplay_headup_graphics+0x2c
+            cmp esi, offset gMatchData_006a23b4
             jl L004e70d6
             pop esi
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }

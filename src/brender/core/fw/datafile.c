@@ -275,6 +275,148 @@ extern double C2_HOOK_CDECL BrStrToD();
 extern float C2_HOOK_CDECL BrStrToF();
 extern void __cdecl _ftol();
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gData_006673c4[];
+extern char gData_00667770[];
+extern char gData_00667774[];
+extern char gData_00667778[];
+extern char gData_0066777c[];
+extern char gData_0066778c[];
+extern char gData_00667790[];
+extern char gData_00667794[];
+extern char gData_00667798[];
+extern char gData_0066779c[];
+extern char gData_006677a0[];
+extern char gData_006677a4[];
+extern char gData_006677a8[];
+extern char gData_006677ac[];
+extern char gData_006677b0[];
+extern char gData_006677b4[];
+extern char gData_006677f8[];
+extern char gData_00667860[];
+extern char gDouble_0058b838[];
+extern char gDouble_0058b840[];
+extern char gDouble_0058b858[];
+extern char gDouble_0058b860[];
+extern char gFloat_0058b848[];
+extern char gFloat_0058b84c[];
+extern char gFloat_0058b850[];
+extern char gFloat_00667510[];
+extern char gFloat_00667578[];
+extern char gFloat_00667590[];
+extern char gFloat_00667718[];
+extern char gFloat_00667730[];
+extern char gFloat_00667814[];
+extern char gFloat_00667880[];
+extern char gFloat_006678a0[];
+extern char gFloat_006678b4[];
+extern char gFloat_006678c8[];
+extern char gFloat_006678dc[];
+extern char gFloat_006678f0[];
+extern char gFloat_00667c80[];
+extern char gFloat_00667c94[];
+extern char gFloat_00667cdc[];
+extern char gFloat_00667ce8[];
+extern char gFloat_00667d30[];
+extern char gFloat_00667d44[];
+extern char gFloat_00667d68[];
+extern char gFloat_00667d80[];
+extern char gFloat_00667d94[];
+extern char gString_00667508[];
+extern char gString_00667748[];
+extern char gString_00667768[];
+extern char gString_00667780[];
+extern char gString_006677b8[];
+extern char gString_006677c0[];
+extern char gString_006677cc[];
+extern char gString_006677d8[];
+extern char gString_006677e0[];
+extern char gString_006677ec[];
+extern char gString_006677fc[];
+extern char gString_00667804[];
+extern char gString_0066780c[];
+extern char gString_00667910[];
+extern char gString_00667cf4[];
+extern char gString_00667d04[];
+extern char gString_00667d0c[];
+extern char gString_00667d14[];
+extern char gString_00667d20[];
+extern char gString_00667d28[];
+extern char gString_00667dbc[];
+extern char gString_00667dc4[];
+extern char gString_00667dcc[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchData_006673c4[];
+extern char gMatchData_00667770[];
+extern char gMatchData_00667774[];
+extern char gMatchData_00667778[];
+extern char gMatchData_0066777c[];
+extern char gMatchData_0066778c[];
+extern char gMatchData_00667790[];
+extern char gMatchData_00667794[];
+extern char gMatchData_00667798[];
+extern char gMatchData_0066779c[];
+extern char gMatchData_006677a0[];
+extern char gMatchData_006677a4[];
+extern char gMatchData_006677a8[];
+extern char gMatchData_006677ac[];
+extern char gMatchData_006677b0[];
+extern char gMatchData_006677b4[];
+extern char gMatchData_006677f8[];
+extern char gMatchData_00667860[];
+extern char gMatchDouble_0058b838[];
+extern char gMatchDouble_0058b840[];
+extern char gMatchDouble_0058b858[];
+extern char gMatchDouble_0058b860[];
+extern char gMatchFloat_0058b848[];
+extern char gMatchFloat_0058b84c[];
+extern char gMatchFloat_0058b850[];
+extern char gMatchFloat_00667510[];
+extern char gMatchFloat_00667578[];
+extern char gMatchFloat_00667590[];
+extern char gMatchFloat_00667718[];
+extern char gMatchFloat_00667730[];
+extern char gMatchFloat_00667814[];
+extern char gMatchFloat_00667880[];
+extern char gMatchFloat_006678a0[];
+extern char gMatchFloat_006678b4[];
+extern char gMatchFloat_006678c8[];
+extern char gMatchFloat_006678dc[];
+extern char gMatchFloat_006678f0[];
+extern char gMatchFloat_00667c80[];
+extern char gMatchFloat_00667c94[];
+extern char gMatchFloat_00667cdc[];
+extern char gMatchFloat_00667ce8[];
+extern char gMatchFloat_00667d30[];
+extern char gMatchFloat_00667d44[];
+extern char gMatchFloat_00667d68[];
+extern char gMatchFloat_00667d80[];
+extern char gMatchFloat_00667d94[];
+extern char gMatchString_00667508[];
+extern char gMatchString_00667748[];
+extern char gMatchString_00667768[];
+extern char gMatchString_00667780[];
+extern char gMatchString_006677b8[];
+extern char gMatchString_006677c0[];
+extern char gMatchString_006677cc[];
+extern char gMatchString_006677d8[];
+extern char gMatchString_006677e0[];
+extern char gMatchString_006677ec[];
+extern char gMatchString_006677fc[];
+extern char gMatchString_00667804[];
+extern char gMatchString_0066780c[];
+extern char gMatchString_00667910[];
+extern char gMatchString_00667cf4[];
+extern char gMatchString_00667d04[];
+extern char gMatchString_00667d0c[];
+extern char gMatchString_00667d14[];
+extern char gMatchString_00667d20[];
+extern char gMatchString_00667d28[];
+extern char gMatchString_00667dbc[];
+extern char gMatchString_00667dc4[];
+extern char gMatchString_00667dcc[];
+#endif
 // FUNCTION: CARMA2_HW 0x00529ff0
 void C2_HOOK_STDCALL DfPush(int type, void* value, unsigned int count) {
 
@@ -318,7 +460,7 @@ C2_NAKED void* C2_HOOK_STDCALL DfTop(int type, int* countp) {
             mov eax, dword ptr [DatafileStackTop]
             test eax, eax
             jg L0052a0cb
-            push offset _BrFilePrimsWriteText+0xb0
+            push offset gMatchFloat_00667578
             call BrFailure
             mov eax, dword ptr [DatafileStackTop]
             add esp, 4
@@ -330,7 +472,7 @@ C2_NAKED void* C2_HOOK_STDCALL DfTop(int type, int* countp) {
             mov eax, dword ptr [ecx*4 + DatafileStack]
             push eax
             push edx
-            push offset _BrFilePrimsWriteText+0xc8
+            push offset gMatchFloat_00667590
             call BrFailure
             mov eax, dword ptr [DatafileStackTop]
             add esp, 0xc
@@ -347,6 +489,9 @@ C2_NAKED void* C2_HOOK_STDCALL DfTop(int type, int* countp) {
             lea ecx, [eax + eax*2]
             mov eax, dword ptr [ecx*4 + DatafileStack+0x4]
             ret 8
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -715,7 +860,7 @@ br_uint_32 C2_NAKED C2_HOOK_STDCALL DfStructWriteBinary(br_datafile* df, br_file
             cmp eax, 0x15
             jg L0052a1a8
     L0052a19b:
-            push 0x667718
+            push offset gMatchFloat_00667718
             call BrFailure
             add esp, 4
     L0052a1a8:
@@ -814,7 +959,7 @@ br_uint_32 C2_NAKED C2_HOOK_STDCALL DfStructWriteBinary(br_datafile* df, br_file
             shl edx, 1
             mov dword ptr [esp + 0x20], edx
             fild dword ptr [esp + 0x20]
-            fmul qword ptr ds:[0x58b840]
+            fmul qword ptr [gMatchDouble_0058b840]
             jmp L0052a2b1
             xor eax, eax
             mov ax, word ptr [edi]
@@ -822,7 +967,7 @@ br_uint_32 C2_NAKED C2_HOOK_STDCALL DfStructWriteBinary(br_datafile* df, br_file
             mov dword ptr [esp + 0x20], eax
             fild dword ptr [esp + 0x20]
     L0052a2ab:
-            fmul qword ptr ds:[0x58b838]
+            fmul qword ptr [gMatchDouble_0058b838]
     L0052a2b1:
             mov ecx, dword ptr [esi]
             fstp dword ptr [esp + 0x14]
@@ -865,7 +1010,7 @@ br_uint_32 C2_NAKED C2_HOOK_STDCALL DfStructWriteBinary(br_datafile* df, br_file
         _emit 0x07
             mov eax, dword ptr [esi]
             push eax
-            fmul qword ptr ds:[0x58b838]
+            fmul qword ptr [gMatchDouble_0058b838]
             fstp dword ptr [esp + 0x18]
             mov ecx, dword ptr [esp + 0x1b]
             and ecx, 0xff
@@ -1435,7 +1580,7 @@ br_uint_32 C2_NAKED C2_HOOK_STDCALL DfStructReadBinary(br_datafile* df, br_file_
             cmp eax, 0x15
             jg L0052a683
     L0052a676:
-            push 0x667718
+            push offset gMatchFloat_00667718
             call BrFailure
             add esp, 4
     L0052a683:
@@ -1487,7 +1632,7 @@ br_uint_32 C2_NAKED C2_HOOK_STDCALL DfStructReadBinary(br_datafile* df, br_file_
             mov byte ptr [esp + 0x14], al
             add esp, 4
             fld dword ptr [esp + 0x10]
-            fmul dword ptr ds:[0x58b848]
+            fmul dword ptr [gMatchFloat_0058b848]
             call _ftol
             jmp L0052a967
             mov ecx, dword ptr [esi]
@@ -1511,7 +1656,7 @@ br_uint_32 C2_NAKED C2_HOOK_STDCALL DfStructReadBinary(br_datafile* df, br_file_
             mov byte ptr [esp + 0x14], al
             add esp, 4
             fld dword ptr [esp + 0x10]
-            fmul dword ptr ds:[0x58b84c]
+            fmul dword ptr [gMatchFloat_0058b84c]
             call _ftol
             mov word ptr [edi], ax
             jmp L0052a969
@@ -1536,7 +1681,7 @@ br_uint_32 C2_NAKED C2_HOOK_STDCALL DfStructReadBinary(br_datafile* df, br_file_
             mov byte ptr [esp + 0x14], al
             add esp, 4
             fld dword ptr [esp + 0x10]
-            fmul dword ptr ds:[0x58b848]
+            fmul dword ptr [gMatchFloat_0058b848]
             call _ftol
             mov word ptr [edi], ax
             jmp L0052a969
@@ -1611,7 +1756,7 @@ br_uint_32 C2_NAKED C2_HOOK_STDCALL DfStructReadBinary(br_datafile* df, br_file_
             mov byte ptr [esp + 0x14], al
             add esp, 4
             fld dword ptr [esp + 0x10]
-            fmul dword ptr ds:[0x58b848]
+            fmul dword ptr [gMatchFloat_0058b848]
             call _ftol
             mov dword ptr [edi], eax
             add edi, 4
@@ -1678,7 +1823,7 @@ br_uint_32 C2_NAKED C2_HOOK_STDCALL DfStructReadBinary(br_datafile* df, br_file_
             mov byte ptr [esp + ebp + 0x1c], 0
             test eax, eax
             jne L0052a959
-            mov eax, dword ptr ds:[0x79f918]
+            mov eax, dword ptr [fw+0x438]
     L0052a959:
             lea ecx, [esp + 0x1c]
             push ecx
@@ -2081,7 +2226,7 @@ int C2_NAKED C2_HOOK_STDCALL DfStructSizeBinary(br_datafile* df, br_file_struct*
             cmp eax, 0x15
             jg L0052ab8e
     L0052ab81:
-            push 0x667718
+            push offset gMatchFloat_00667718
             call BrFailure
             add esp, 4
     L0052ab8e:
@@ -2612,7 +2757,7 @@ br_uint_32 C2_NAKED C2_HOOK_STDCALL StructWriteTextSub(br_datafile* df, br_file_
             mov eax, dword ptr [ecx*4 + member_type_names]
             mov ecx, dword ptr [edi]
             push eax
-            push 0x667768
+            push offset gMatchString_00667768
             push ecx
             call BrFilePrintf
             mov edx, dword ptr [esp + 0x1c]
@@ -2634,7 +2779,7 @@ br_uint_32 C2_NAKED C2_HOOK_STDCALL StructWriteTextSub(br_datafile* df, br_file_
             cmp eax, 0x15
             jg L0052aea9
     L0052ae9c:
-            push 0x667718
+            push offset gMatchFloat_00667718
             call BrFailure
             add esp, 4
     L0052aea9:
@@ -2686,7 +2831,7 @@ br_uint_32 C2_NAKED C2_HOOK_STDCALL StructWriteTextSub(br_datafile* df, br_file_
             movsx eax, byte ptr [esi]
             mov ecx, dword ptr [edi]
             push eax
-            push 0x667770
+            push offset gMatchData_00667770
             push ecx
             call BrFilePrintf
             add esp, 0xc
@@ -2695,7 +2840,7 @@ br_uint_32 C2_NAKED C2_HOOK_STDCALL StructWriteTextSub(br_datafile* df, br_file_
             xor edx, edx
             mov dl, byte ptr [esi]
             push edx
-            push 0x667774
+            push offset gMatchData_00667774
             push eax
             call BrFilePrintf
             add esp, 0xc
@@ -2703,7 +2848,7 @@ br_uint_32 C2_NAKED C2_HOOK_STDCALL StructWriteTextSub(br_datafile* df, br_file_
             movsx ecx, word ptr [esi]
             mov edx, dword ptr [edi]
             push ecx
-            push 0x667778
+            push offset gMatchData_00667778
             push edx
             call BrFilePrintf
             add esp, 0xc
@@ -2712,7 +2857,7 @@ br_uint_32 C2_NAKED C2_HOOK_STDCALL StructWriteTextSub(br_datafile* df, br_file_
             xor eax, eax
             mov ax, word ptr [esi]
             push eax
-            push 0x66777c
+            push offset gMatchData_0066777c
             push ecx
             call BrFilePrintf
             add esp, 0xc
@@ -2729,7 +2874,7 @@ br_uint_32 C2_NAKED C2_HOOK_STDCALL StructWriteTextSub(br_datafile* df, br_file_
             push ecx
             mov dl, byte ptr [esp + 0x1e]
             push edx
-            push 0x667780
+            push offset gMatchString_00667780
             push eax
             call BrFilePrintf
             add esp, 0x14
@@ -2737,7 +2882,7 @@ br_uint_32 C2_NAKED C2_HOOK_STDCALL StructWriteTextSub(br_datafile* df, br_file_
             mov ecx, dword ptr [esi]
             mov edx, dword ptr [edi]
             push ecx
-            push 0x66778c
+            push offset gMatchData_0066778c
             push edx
             call BrFilePrintf
             add esp, 0xc
@@ -2745,7 +2890,7 @@ br_uint_32 C2_NAKED C2_HOOK_STDCALL StructWriteTextSub(br_datafile* df, br_file_
             mov eax, dword ptr [esi]
             mov ecx, dword ptr [edi]
             push eax
-            push 0x667790
+            push offset gMatchData_00667790
             push ecx
             call BrFilePrintf
             add esp, 0xc
@@ -2754,11 +2899,11 @@ br_uint_32 C2_NAKED C2_HOOK_STDCALL StructWriteTextSub(br_datafile* df, br_file_
         _emit 0x06
             mov edx, dword ptr [edi]
             sub esp, 8
-            fmul qword ptr ds:[0x58b838]
+            fmul qword ptr [gMatchDouble_0058b838]
             _emit 0xdd
         _emit 0x1c
         _emit 0x24
-            push 0x667794
+            push offset gMatchData_00667794
             push edx
             call BrFilePrintf
             add esp, 0x10
@@ -2768,11 +2913,11 @@ br_uint_32 C2_NAKED C2_HOOK_STDCALL StructWriteTextSub(br_datafile* df, br_file_
             mov ecx, dword ptr [edi]
             fild dword ptr [esp + 0x14]
             sub esp, 8
-            fmul qword ptr ds:[0x58b840]
+            fmul qword ptr [gMatchDouble_0058b840]
             _emit 0xdd
         _emit 0x1c
         _emit 0x24
-            push 0x667798
+            push offset gMatchData_00667798
             push ecx
             call BrFilePrintf
             add esp, 0x10
@@ -2783,11 +2928,11 @@ br_uint_32 C2_NAKED C2_HOOK_STDCALL StructWriteTextSub(br_datafile* df, br_file_
             sub esp, 8
             mov dword ptr [esp + 0x1c], edx
             fild dword ptr [esp + 0x1c]
-            fmul qword ptr ds:[0x58b838]
+            fmul qword ptr [gMatchDouble_0058b838]
             _emit 0xdd
         _emit 0x1c
         _emit 0x24
-            push 0x66779c
+            push offset gMatchData_0066779c
             push eax
             call BrFilePrintf
             add esp, 0x10
@@ -2802,11 +2947,11 @@ br_uint_32 C2_NAKED C2_HOOK_STDCALL StructWriteTextSub(br_datafile* df, br_file_
             fild dword ptr [esp + 0x1c]
             add esp, 8
             sub esp, 8
-            fmul dword ptr ds:[0x58b850]
+            fmul dword ptr [gMatchFloat_0058b850]
             _emit 0xdd
         _emit 0x1c
         _emit 0x24
-            push 0x6677a0
+            push offset gMatchData_006677a0
             push edx
             call BrFilePrintf
             add esp, 0x10
@@ -2818,7 +2963,7 @@ br_uint_32 C2_NAKED C2_HOOK_STDCALL StructWriteTextSub(br_datafile* df, br_file_
             _emit 0xdd
         _emit 0x1c
         _emit 0x24
-            push 0x6677a4
+            push offset gMatchData_006677a4
             push eax
             call BrFilePrintf
             add esp, 0x10
@@ -2828,7 +2973,7 @@ br_uint_32 C2_NAKED C2_HOOK_STDCALL StructWriteTextSub(br_datafile* df, br_file_
             mov eax, dword ptr [edi]
             push ecx
             push edx
-            push 0x6677a8
+            push offset gMatchData_006677a8
             push eax
             call BrFilePrintf
             add esp, 0x10
@@ -2852,14 +2997,14 @@ br_uint_32 C2_NAKED C2_HOOK_STDCALL StructWriteTextSub(br_datafile* df, br_file_
             jb L0052b11c
     L0052b12c:
             push ebx
-            push 0x667748
+            push offset gMatchString_00667748
             call BrFailure
             add esp, 8
             xor eax, eax
     L0052b13c:
             mov edx, dword ptr [edi]
             push eax
-            push 0x6677ac
+            push offset gMatchData_006677ac
             push edx
             call BrFilePrintf
             add esp, 0xc
@@ -2887,14 +3032,14 @@ br_uint_32 C2_NAKED C2_HOOK_STDCALL StructWriteTextSub(br_datafile* df, br_file_
             jmp L0052b18f
     L0052b17f:
             push eax
-            push 0x667748
+            push offset gMatchString_00667748
             call BrFailure
             add esp, 8
             xor ecx, ecx
     L0052b18f:
             mov edx, dword ptr [edi]
             push ecx
-            push 0x6677b0
+            push offset gMatchData_006677b0
             push edx
             call BrFilePrintf
             add esp, 0xc
@@ -2921,14 +3066,14 @@ br_uint_32 C2_NAKED C2_HOOK_STDCALL StructWriteTextSub(br_datafile* df, br_file_
             jmp L0052b1df
     L0052b1cf:
             push esi
-            push 0x667748
+            push offset gMatchString_00667748
             call BrFailure
             add esp, 8
             xor eax, eax
     L0052b1df:
             mov ecx, dword ptr [edi]
             push eax
-            push 0x6677b4
+            push offset gMatchData_006677b4
             push ecx
             call BrFilePrintf
             add esp, 0xc
@@ -2939,16 +3084,16 @@ br_uint_32 C2_NAKED C2_HOOK_STDCALL StructWriteTextSub(br_datafile* df, br_file_
             mov edx, dword ptr [edi]
             sub esp, 8
             sub esp, 8
-            fmul qword ptr ds:[0x58b838]
+            fmul qword ptr [gMatchDouble_0058b838]
             fxch st(1)
-            fmul qword ptr ds:[0x58b838]
+            fmul qword ptr [gMatchDouble_0058b838]
             fst dword ptr [esp + 0x24]
             fxch st(1)
             fstp qword ptr [esp + 8]
             _emit 0xdd
         _emit 0x1c
         _emit 0x24
-            push 0x6677b8
+            push offset gMatchString_006677b8
             push edx
             call BrFilePrintf
             add esp, 0x18
@@ -2958,11 +3103,11 @@ br_uint_32 C2_NAKED C2_HOOK_STDCALL StructWriteTextSub(br_datafile* df, br_file_
             _emit 0xdb
         _emit 0x06
             fxch st(2)
-            fmul qword ptr ds:[0x58b838]
+            fmul qword ptr [gMatchDouble_0058b838]
             fxch st(1)
-            fmul qword ptr ds:[0x58b838]
+            fmul qword ptr [gMatchDouble_0058b838]
             fxch st(2)
-            fmul qword ptr ds:[0x58b838]
+            fmul qword ptr [gMatchDouble_0058b838]
             fld st(1)
             fxch st(3)
             fst dword ptr [esp + 0x14]
@@ -2983,7 +3128,7 @@ br_uint_32 C2_NAKED C2_HOOK_STDCALL StructWriteTextSub(br_datafile* df, br_file_
             _emit 0xdd
         _emit 0x1c
         _emit 0x24
-            push 0x6677c0
+            push offset gMatchString_006677c0
             push eax
             fstp st(0)
             call BrFilePrintf
@@ -2993,16 +3138,16 @@ br_uint_32 C2_NAKED C2_HOOK_STDCALL StructWriteTextSub(br_datafile* df, br_file_
             fild dword ptr [esi + 8]
             fild dword ptr [esi + 4]
             fxch st(2)
-            fmul qword ptr ds:[0x58b838]
+            fmul qword ptr [gMatchDouble_0058b838]
             _emit 0xdb
         _emit 0x06
             fxch st(2)
-            fmul qword ptr ds:[0x58b838]
+            fmul qword ptr [gMatchDouble_0058b838]
             fxch st(3)
-            fmul qword ptr ds:[0x58b838]
+            fmul qword ptr [gMatchDouble_0058b838]
             fld st(1)
             fxch st(3)
-            fmul qword ptr ds:[0x58b838]
+            fmul qword ptr [gMatchDouble_0058b838]
             fxch st(4)
             fst dword ptr [esp + 0x14]
             sub esp, 8
@@ -3028,7 +3173,7 @@ br_uint_32 C2_NAKED C2_HOOK_STDCALL StructWriteTextSub(br_datafile* df, br_file_
             _emit 0xdd
         _emit 0x1c
         _emit 0x24
-            push 0x6677cc
+            push offset gMatchString_006677cc
             push ecx
             fstp st(0)
             call BrFilePrintf
@@ -3046,7 +3191,7 @@ br_uint_32 C2_NAKED C2_HOOK_STDCALL StructWriteTextSub(br_datafile* df, br_file_
             _emit 0xdd
         _emit 0x1c
         _emit 0x24
-            push 0x6677d8
+            push offset gMatchString_006677d8
             push edx
             call BrFilePrintf
             add esp, 0x18
@@ -3068,7 +3213,7 @@ br_uint_32 C2_NAKED C2_HOOK_STDCALL StructWriteTextSub(br_datafile* df, br_file_
             _emit 0xdd
         _emit 0x1c
         _emit 0x24
-            push 0x6677e0
+            push offset gMatchString_006677e0
             push eax
             call BrFilePrintf
             add esp, 0x20
@@ -3095,7 +3240,7 @@ br_uint_32 C2_NAKED C2_HOOK_STDCALL StructWriteTextSub(br_datafile* df, br_file_
             _emit 0xdd
         _emit 0x1c
         _emit 0x24
-            push 0x6677ec
+            push offset gMatchString_006677ec
             push ecx
             call BrFilePrintf
             add esp, 0x28
@@ -3105,7 +3250,7 @@ br_uint_32 C2_NAKED C2_HOOK_STDCALL StructWriteTextSub(br_datafile* df, br_file_
             mov edx, dword ptr [edi]
             mov ecx, dword ptr [eax]
             push ecx
-            push 0x6677f8
+            push offset gMatchData_006677f8
             push edx
             call BrFilePrintf
             mov ebx, eax
@@ -3135,7 +3280,7 @@ br_uint_32 C2_NAKED C2_HOOK_STDCALL StructWriteTextSub(br_datafile* df, br_file_
             mov ecx, dword ptr [edi]
             mov eax, dword ptr [edx + 8]
             push eax
-            push 0x6677fc
+            push offset gMatchString_006677fc
             push ecx
             call BrFilePrintf
             add esp, 0xc
@@ -3160,14 +3305,14 @@ br_uint_32 C2_NAKED C2_HOOK_STDCALL StructWriteTextSub(br_datafile* df, br_file_
             je L0052b437
             mov eax, dword ptr [edi]
             push esi
-            push 0x667804
+            push offset gMatchString_00667804
             push eax
             call BrFilePrintf
             add esp, 0xc
             jmp L0052b447
     L0052b437:
             mov ecx, dword ptr [edi]
-            push 0x66780c
+            push offset gMatchString_0066780c
             push ecx
             call BrFilePrintf
             add esp, 8
@@ -3198,7 +3343,7 @@ br_uint_32 C2_NAKED C2_HOOK_STDCALL StructWriteTextSub(br_datafile* df, br_file_
             mov eax, dword ptr [edi]
             mov edx, dword ptr [ecx + 8]
             push edx
-            push 0x667814
+            push offset gMatchFloat_00667814
             push eax
             call BrFilePrintf
             add esp, 0xc
@@ -3656,7 +3801,7 @@ br_uint_32 C2_NAKED C2_HOOK_STDCALL StructReadTextSub(br_datafile* df, br_file_s
             call TextReadLine
             test eax, eax
             jne L0052b773
-            push 0x667860
+            push offset gMatchData_00667860
             call BrFailure
             add esp, 4
     L0052b773:
@@ -3672,7 +3817,7 @@ br_uint_32 C2_NAKED C2_HOOK_STDCALL StructReadTextSub(br_datafile* df, br_file_s
             je L0052b7a3
             mov edx, dword ptr [esp + 0x1c]
             push edx
-            push 0x667880
+            push offset gMatchFloat_00667880
             call BrFailure
             add esp, 8
     L0052b7a3:
@@ -3691,7 +3836,7 @@ br_uint_32 C2_NAKED C2_HOOK_STDCALL StructReadTextSub(br_datafile* df, br_file_s
             cmp eax, 0x15
             jg L0052b7dc
     L0052b7cf:
-            push 0x667718
+            push offset gMatchFloat_00667718
             call BrFailure
             add esp, 4
     L0052b7dc:
@@ -3744,7 +3889,7 @@ br_uint_32 C2_NAKED C2_HOOK_STDCALL StructReadTextSub(br_datafile* df, br_file_s
             add esp, 0xc
             cmp byte ptr [edx], 0x2c
             je L0052b885
-            push 0x6678a0
+            push offset gMatchFloat_006678a0
             call BrFailure
             add esp, 4
     L0052b885:
@@ -3760,7 +3905,7 @@ br_uint_32 C2_NAKED C2_HOOK_STDCALL StructReadTextSub(br_datafile* df, br_file_s
             add esp, 0xc
             cmp byte ptr [edx], 0x2c
             je L0052b8b2
-            push 0x6678b4
+            push offset gMatchFloat_006678b4
             call BrFailure
             add esp, 4
     L0052b8b2:
@@ -3798,7 +3943,7 @@ br_uint_32 C2_NAKED C2_HOOK_STDCALL StructReadTextSub(br_datafile* df, br_file_s
             push 0
             push ecx
             call BrStrToD
-            fmul qword ptr ds:[0x58b858]
+            fmul qword ptr [gMatchDouble_0058b858]
             add esp, 8
             call _ftol
             mov dword ptr [ebp], eax
@@ -3807,7 +3952,7 @@ br_uint_32 C2_NAKED C2_HOOK_STDCALL StructReadTextSub(br_datafile* df, br_file_s
             push 0
             push edx
             call BrStrToD
-            fmul qword ptr ds:[0x58b860]
+            fmul qword ptr [gMatchDouble_0058b860]
             add esp, 8
             call _ftol
             mov word ptr [ebp], ax
@@ -3816,7 +3961,7 @@ br_uint_32 C2_NAKED C2_HOOK_STDCALL StructReadTextSub(br_datafile* df, br_file_s
             push 0
             push eax
             call BrStrToD
-            fmul qword ptr ds:[0x58b858]
+            fmul qword ptr [gMatchDouble_0058b858]
             add esp, 8
             call _ftol
             mov word ptr [ebp], ax
@@ -3827,7 +3972,7 @@ br_uint_32 C2_NAKED C2_HOOK_STDCALL StructReadTextSub(br_datafile* df, br_file_s
             push 0
             push ecx
             call BrStrToF
-            fmul dword ptr ds:[0x58b848]
+            fmul dword ptr [gMatchFloat_0058b848]
             add esp, 8
             call _ftol
             push eax
@@ -3886,7 +4031,7 @@ br_uint_32 C2_NAKED C2_HOOK_STDCALL StructReadTextSub(br_datafile* df, br_file_s
             jmp L0052bc99
     L0052ba21:
             push ebx
-            push 0x667730
+            push offset gMatchFloat_00667730
             call BrFailure
             mov ebx, dword ptr [esp + 0x1c]
             add esp, 8
@@ -3926,7 +4071,7 @@ br_uint_32 C2_NAKED C2_HOOK_STDCALL StructReadTextSub(br_datafile* df, br_file_s
             jmp L0052bc99
     L0052ba88:
             push ebx
-            push 0x667730
+            push offset gMatchFloat_00667730
             call BrFailure
             mov ebx, dword ptr [esp + 0x1c]
             add esp, 8
@@ -3966,7 +4111,7 @@ br_uint_32 C2_NAKED C2_HOOK_STDCALL StructReadTextSub(br_datafile* df, br_file_s
             jmp L0052bc99
     L0052baef:
             push ebx
-            push 0x667730
+            push offset gMatchFloat_00667730
             call BrFailure
             mov ebx, dword ptr [esp + 0x1c]
             add esp, 8
@@ -3999,7 +4144,7 @@ br_uint_32 C2_NAKED C2_HOOK_STDCALL StructReadTextSub(br_datafile* df, br_file_s
     L0052bb43:
             cmp byte ptr [ecx], 0
             jne L0052bb59
-            push 0x6678c8
+            push offset gMatchFloat_006678c8
             call BrFailure
             mov ecx, dword ptr [esp + 0x14]
             add esp, 4
@@ -4007,7 +4152,7 @@ br_uint_32 C2_NAKED C2_HOOK_STDCALL StructReadTextSub(br_datafile* df, br_file_s
             push 0
             push ecx
             call BrStrToF
-            fmul dword ptr ds:[0x58b848]
+            fmul dword ptr [gMatchFloat_0058b848]
             add esp, 8
             call _ftol
             mov dword ptr [esi], eax
@@ -4058,7 +4203,7 @@ br_uint_32 C2_NAKED C2_HOOK_STDCALL StructReadTextSub(br_datafile* df, br_file_s
     L0052bbd5:
             cmp byte ptr [ecx], 0
             jne L0052bbeb
-            push 0x6678dc
+            push offset gMatchFloat_006678dc
             call BrFailure
             mov ecx, dword ptr [esp + 0x14]
             add esp, 4
@@ -4101,7 +4246,7 @@ br_uint_32 C2_NAKED C2_HOOK_STDCALL StructReadTextSub(br_datafile* df, br_file_s
             je L0052bc4a
             mov eax, dword ptr [esp + 0x10]
             push eax
-            push 0x6678f0
+            push offset gMatchFloat_006678f0
             call BrFailure
             add esp, 8
     L0052bc4a:
@@ -4112,7 +4257,7 @@ br_uint_32 C2_NAKED C2_HOOK_STDCALL StructReadTextSub(br_datafile* df, br_file_s
             call L0052b720
             jmp L0052bc99
             mov edx, dword ptr [esp + 0x10]
-            push 0x667910
+            push offset gMatchString_00667910
             push edx
             call BrStrCmp
             add esp, 8
@@ -4124,7 +4269,7 @@ br_uint_32 C2_NAKED C2_HOOK_STDCALL StructReadTextSub(br_datafile* df, br_file_s
             mov eax, dword ptr [edi + 0xc]
             test eax, eax
             jne L0052bc82
-            mov eax, dword ptr ds:[0x79f918]
+            mov eax, dword ptr [fw+0x438]
     L0052bc82:
             inc ecx
             push ecx
@@ -4627,7 +4772,7 @@ int C2_NAKED C2_HOOK_STDCALL DfChunkReadText(br_datafile* df, br_uint_32* plengt
             push esi
             cmp byte ptr [eax], 0x2a
             je L0052bfcc
-            push offset _BrFilePrimsWriteText+0x7b8
+            push offset gMatchFloat_00667c80
             call BrFailure
             mov eax, dword ptr [esp + 0x14]
             add esp, 4
@@ -4659,14 +4804,14 @@ int C2_NAKED C2_HOOK_STDCALL DfChunkReadText(br_datafile* df, br_uint_32* plengt
             je L0052c010
             add esi, 4
             inc edi
-            cmp esi, offset ChunkNames+0xf4
+            cmp esi, offset gMatchData_006673c4
             jb L0052bff0
     L0052c010:
             cmp edi, 0x3d
             jb L0052c027
             mov ecx, dword ptr [esp + 0x10]
             push ecx
-            push offset _BrFilePrimsWriteText+0x7cc
+            push offset gMatchFloat_00667c94
             call BrFailure
             add esp, 8
     L0052c027:
@@ -4686,6 +4831,12 @@ int C2_NAKED C2_HOOK_STDCALL DfChunkReadText(br_datafile* df, br_uint_32* plengt
             pop edi
             pop ecx
             ret 8
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -4880,14 +5031,14 @@ int C2_NAKED C2_HOOK_STDCALL DfBlockWriteText(br_datafile* df, void* base, int b
     L0052c2f7:
             mov edi, dword ptr [esp + 0x1c]
             push eax
-            push offset _BrFilePrimsWriteText+0x814
+            push offset gMatchFloat_00667cdc
             mov edx, dword ptr [edi]
             push edx
             call BrFilePrintf
             mov eax, dword ptr [edi]
             add esp, 0xc
             push ebx
-            push offset _BrFilePrimsWriteText+0x820
+            push offset gMatchFloat_00667ce8
             push eax
             call BrFilePrintf
             mov eax, dword ptr [esp + 0x1c]
@@ -4912,7 +5063,7 @@ int C2_NAKED C2_HOOK_STDCALL DfBlockWriteText(br_datafile* df, void* base, int b
             mov cl, byte ptr [ebp + esi]
             push ecx
             push esi
-            push offset _BrFilePrimsWriteText+0x82c
+            push offset gMatchString_00667cf4
             push edx
             call BrFilePrintf
             add esp, 0x10
@@ -4922,7 +5073,7 @@ int C2_NAKED C2_HOOK_STDCALL DfBlockWriteText(br_datafile* df, void* base, int b
             xor eax, eax
             mov al, byte ptr [ebp + esi]
             push eax
-            push offset _BrFilePrimsWriteText+0x83c
+            push offset gMatchString_00667d04
             push ecx
             call BrFilePrintf
             add esp, 0xc
@@ -4967,6 +5118,16 @@ int C2_NAKED C2_HOOK_STDCALL DfBlockWriteText(br_datafile* df, void* base, int b
             pop ebx
             add esp, 8
             ret 0x18
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -5032,14 +5193,14 @@ C2_NAKED void* C2_HOOK_STDCALL DfBlockReadText(br_datafile* df, void* base, int*
             push ecx
             push ebp
             call TextReadLine
-            push offset _BrFilePrimsWriteText+0x844
+            push offset gMatchString_00667d0c
             mov edx, dword ptr [esp + 0x18]
             push edx
             call BrStrCmp
             add esp, 8
             test eax, eax
             je L0052c40e
-            push offset _BrFilePrimsWriteText+0x84c
+            push offset gMatchString_00667d14
             call BrFailure
             add esp, 4
     L0052c40e:
@@ -5057,14 +5218,14 @@ C2_NAKED void* C2_HOOK_STDCALL DfBlockReadText(br_datafile* df, void* base, int*
             push ebp
             mov dword ptr [esp + 0x24], ebx
             call TextReadLine
-            push offset _BrFilePrimsWriteText+0x858
+            push offset gMatchString_00667d20
             mov eax, dword ptr [esp + 0x18]
             push eax
             call BrStrCmp
             add esp, 8
             test eax, eax
             je L0052c458
-            push offset _BrFilePrimsWriteText+0x860
+            push offset gMatchString_00667d28
             call BrFailure
             add esp, 4
     L0052c458:
@@ -5077,7 +5238,7 @@ C2_NAKED void* C2_HOOK_STDCALL DfBlockReadText(br_datafile* df, void* base, int*
             add esp, 0xc
             cmp eax, ecx
             je L0052c47e
-            push offset _BrFilePrimsWriteText+0x868
+            push offset gMatchFloat_00667d30
             call BrFailure
             add esp, 4
     L0052c47e:
@@ -5104,7 +5265,7 @@ C2_NAKED void* C2_HOOK_STDCALL DfBlockReadText(br_datafile* df, void* base, int*
             cmp dword ptr [esi], ebx
             jge L0052c4c2
             push ebx
-            push offset _BrFilePrimsWriteText+0x87c
+            push offset gMatchFloat_00667d44
             call BrFailure
             add esp, 8
     L0052c4c2:
@@ -5129,7 +5290,7 @@ C2_NAKED void* C2_HOOK_STDCALL DfBlockReadText(br_datafile* df, void* base, int*
             add esp, 0xc
             cmp esi, eax
             je L0052c506
-            push offset _BrFilePrimsWriteText+0x8a0
+            push offset gMatchFloat_00667d68
             call BrFailure
             add esp, 4
     L0052c506:
@@ -5390,7 +5551,7 @@ C2_NAKED void* C2_HOOK_STDCALL DfBlockReadBinary(br_datafile* df, void* base, in
             cmp eax, edi
             mov dword ptr [esp + 0x10], eax
             je L0052c6f8
-            push offset _BrFilePrimsWriteText+0x8b8
+            push offset gMatchFloat_00667d80
             call BrFailure
             add esp, 4
     L0052c6f8:
@@ -5419,7 +5580,7 @@ C2_NAKED void* C2_HOOK_STDCALL DfBlockReadBinary(br_datafile* df, void* base, in
             cmp ecx, eax
             jge L0052c747
             push eax
-            push offset _BrFilePrimsWriteText+0x8cc
+            push offset gMatchFloat_00667d94
             call BrFailure
             add esp, 8
     L0052c743:
@@ -5446,6 +5607,21 @@ C2_NAKED void* C2_HOOK_STDCALL DfBlockReadBinary(br_datafile* df, void* base, in
             pop ebx
             pop ecx
             ret 0x14
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -5505,14 +5681,14 @@ C2_NAKED char* C2_HOOK_STDCALL DfNameReadText(br_datafile* df, char* name) {
             push ecx
             push edx
             call TextReadLine
-            push offset _BrFilePrimsWriteText+0x8f4
+            push offset gMatchString_00667dbc
             mov eax, dword ptr [esp + 8]
             push eax
             call BrStrCmp
             add esp, 8
             test eax, eax
             je L0052c7f9
-            push offset _BrFilePrimsWriteText+0x8fc
+            push offset gMatchString_00667dc4
             call BrFailure
             add esp, 4
     L0052c7f9:
@@ -5522,7 +5698,7 @@ C2_NAKED char* C2_HOOK_STDCALL DfNameReadText(br_datafile* df, char* name) {
             cmp byte ptr [eax], 0x22
             je L0052c817
     L0052c806:
-            push offset _BrFilePrimsWriteText+0x904
+            push offset gMatchString_00667dcc
             call BrFailure
             mov eax, dword ptr [esp + 0x10]
             add esp, 4
@@ -5801,7 +5977,7 @@ int C2_NAKED C2_HOOK_CDECL DfFileIdentify(const br_uint_8* magics, br_size_t n_m
             push esi
             mov esi, dword ptr [esp + 8]
             push 8
-            push offset _BrFilePrimsWriteText+0x40
+            push offset gMatchString_00667508
             push esi
             call BrMemCmp
             add esp, 0xc
@@ -5812,7 +5988,7 @@ int C2_NAKED C2_HOOK_CDECL DfFileIdentify(const br_uint_8* magics, br_size_t n_m
             ret
     L0052cb60:
             push 8
-            push offset _BrFilePrimsWriteText+0x48
+            push offset gMatchFloat_00667510
             push esi
             call BrMemCmp
             add esp, 0xc
@@ -5821,6 +5997,13 @@ int C2_NAKED C2_HOOK_CDECL DfFileIdentify(const br_uint_8* magics, br_size_t n_m
             pop esi
             and eax, 2
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -5916,7 +6099,7 @@ void C2_NAKED C2_HOOK_STDCALL DfClose(br_datafile* df) {
     L0052cbaf:
             test eax, eax
             jg L0052cbc5
-            push offset _BrFilePrimsWriteText+0x68
+            push 0x667530
             call BrFailure
             mov eax, dword ptr [DatafileStackTop]
             add esp, 4
@@ -5929,14 +6112,14 @@ void C2_NAKED C2_HOOK_STDCALL DfClose(br_datafile* df) {
             je L0052cb86
             push ecx
             push esi
-            push offset _BrFilePrimsWriteText+0x80
+            push 0x667548
             call BrFailure
             add esp, 0xc
             jmp L0052cb81
     L0052cbea:
             test eax, eax
             jg L0052cc00
-            push offset _BrFilePrimsWriteText+0x68
+            push 0x667530
             call BrFailure
             mov eax, dword ptr [DatafileStackTop]
             add esp, 4
@@ -5949,7 +6132,7 @@ void C2_NAKED C2_HOOK_STDCALL DfClose(br_datafile* df) {
             je L0052cc25
             push eax
             push 0x15
-            push offset _BrFilePrimsWriteText+0x80
+            push 0x667548
             call BrFailure
             add esp, 0xc
     L0052cc25:
@@ -5963,6 +6146,21 @@ void C2_NAKED C2_HOOK_STDCALL DfClose(br_datafile* df) {
             add esp, 4
             pop esi
             ret 4
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }

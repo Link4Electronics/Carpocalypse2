@@ -297,6 +297,29 @@ extern int gReal_graf_data_index;
 extern char gUNK_0065bd80[];
 extern char gUNK_0065bee0[];
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern tDial_flic_option gDial_flic_options[13];
+extern char gData_0058a6b0[];
+extern char gDouble_0058a6b8[];
+extern char gDouble_0058a6c0[];
+extern char gDouble_0058a6c8[];
+extern char gDouble_0058a6d0[];
+extern char gDouble_0058a6d8[];
+extern char gFloat_0058a6a8[];
+extern char gFloat_0058a6ac[];
+extern char gFloat_0058a6b4[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchData_0058a6b0[];
+extern char gMatchDouble_0058a6b8[];
+extern char gMatchDouble_0058a6c0[];
+extern char gMatchDouble_0058a6c8[];
+extern char gMatchDouble_0058a6d0[];
+extern char gMatchDouble_0058a6d8[];
+extern char gMatchFloat_0058a6a8[];
+extern char gMatchFloat_0058a6ac[];
+extern char gMatchFloat_0058a6b4[];
+#endif
 // FUNCTION: CARMA2_HW 0x004b13c0
 void C2_HOOK_CDECL DoNotDprintf_oppoproc(const char* pMessage, ...) {
 }
@@ -1178,8 +1201,8 @@ int C2_NAKED C2_HOOK_FASTCALL CalcSOCs(int pNext_section, int pCount_corners, tC
             mov dword ptr [ecx + eax*8 + 4], edx
             fld dword ptr [ebp - 0xc]
             fmul dword ptr [gFLOAT_0058a620]
-            fmul dword ptr [gFLOAT_0058a6a4+0x4]
-            fmul dword ptr [gFLOAT_0058a6a4+0x8]
+            fmul dword ptr [gMatchFloat_0058a6a8]
+            fmul dword ptr [gMatchFloat_0058a6ac]
             fsqrt
             call _ftol
             mov dword ptr [ebx], eax
@@ -1821,12 +1844,12 @@ void C2_NAKED C2_HOOK_FASTCALL DrawDial(int pDial_index, volatile int pFrom_valu
             fstp dword ptr [esp + 0xc]
             fild dword ptr [esp + 0x14]
             fst dword ptr [esp + 0x14]
-            fcomp dword ptr [gFLOAT_0058a6a4+0xc]
+            fcomp dword ptr [gMatchData_0058a6b0]
             fnstsw ax
             test ah, 0x41
             jne L004b23c2
             fld dword ptr [esp + 0xc]
-            fcomp dword ptr [gFLOAT_0058a6a4+0xc]
+            fcomp dword ptr [gMatchData_0058a6b0]
             fnstsw ax
             test ah, 0x40
             jne L004b230b
@@ -1836,19 +1859,19 @@ void C2_NAKED C2_HOOK_FASTCALL DrawDial(int pDial_index, volatile int pFrom_valu
             fpatan
             jmp L004b2311
     L004b230b:
-            fld dword ptr [gFLOAT_0058a6a4+0x10]
+            fld dword ptr [gMatchFloat_0058a6b4]
     L004b2311:
-            fcom dword ptr [gFLOAT_0058a6a4+0xc]
+            fcom dword ptr [gMatchData_0058a6b0]
             fnstsw ax
             test ah, 1
             je L004b2324
-            fsub qword ptr [gFLOAT_0058a6a4+0x14]
+            fsub qword ptr [gMatchDouble_0058a6b8]
     L004b2324:
-            fcom qword ptr [gFLOAT_0058a6a4+0x1c]
+            fcom qword ptr [gMatchDouble_0058a6c0]
             fnstsw ax
             test ah, 0x41
             jne L004b23c0
-            fcom qword ptr [gFLOAT_0058a6a4+0x24]
+            fcom qword ptr [gMatchDouble_0058a6c8]
             fnstsw ax
             test ah, 1
             je L004b23c0
@@ -1858,10 +1881,10 @@ void C2_NAKED C2_HOOK_FASTCALL DrawDial(int pDial_index, volatile int pFrom_valu
             je L004b2352
             mov esi, offset gProgram_state+0x74
     L004b2352:
-            fsub qword ptr [gFLOAT_0058a6a4+0x24]
+            fsub qword ptr [gMatchDouble_0058a6c8]
             mov edi, dword ptr [esi]
-            fsubr qword ptr [gFLOAT_0058a6a4+0x2c]
-            fmul qword ptr [gFLOAT_0058a6a4+0x34]
+            fsubr qword ptr [gMatchDouble_0058a6d0]
+            fmul qword ptr [gMatchDouble_0058a6d8]
             call _ftol
             cmp eax, 6
             mov dword ptr [esi], eax
@@ -1921,18 +1944,33 @@ void C2_NAKED C2_HOOK_FASTCALL DrawDial(int pDial_index, volatile int pFrom_valu
             mov eax, dword ptr [esi - 4]
             add ecx, edi
             push eax
-            mov edx, dword ptr [ecx*4 + gUNK_0065bd80+0x4]
+            mov edx, dword ptr [ecx*4 + gDial_flic_options+0xc]
             mov ecx, 0x120
             call RunFlicAt
             add esi, 0x20
             add edi, 8
-            cmp esi, offset gUNK_0065bee0+0x20
+            cmp esi, offset gDial_flic_options+0x188
             jl L004b23ed
             call TurnFlicTransparencyOff
             call LetFlicFuckWithPalettes
             pop edi
             pop esi
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }

@@ -5,6 +5,18 @@
 #ifdef CARPOCALYPSE2_MATCHING
 extern char IID_IDirectInputDevice2A[];
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gData_0058b8e8[];
+extern char gDouble_0058b8e0[];
+extern char gFloat_0058b8d8[];
+extern char gFloat_0058b8dc[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchData_0058b8e8[];
+extern char gMatchDouble_0058b8e0[];
+extern char gMatchFloat_0058b8d8[];
+extern char gMatchFloat_0058b8dc[];
+#endif
 // FUNCTION: CARMA2_HW 0x00534390
 void C2_HOOK_CDECL BrVector2Copy(br_vector2* v1, const br_vector2* v2) {
 
@@ -79,10 +91,31 @@ void C2_HOOK_CDECL BrVector2Sub(br_vector2* v1, const br_vector2* v2, const br_v
 }
 
 // FUNCTION: CARMA2_HW 0x00534490
-void C2_HOOK_CDECL BrVector2Scale(br_vector2* v1, const br_vector2* v2, br_scalar s) {
+void C2_NAKED C2_HOOK_CDECL BrVector2Scale(br_vector2* v1, const br_vector2* v2, br_scalar s) {
+#ifndef CARPOCALYPSE2_MATCHING
 
     v1->v[0] = v2->v[0] * s;
     v1->v[1] = v2->v[1] * s;
+#else
+    __asm {
+            mov eax, dword ptr [esp + 8]
+            mov ecx, dword ptr [esp + 4]
+            fld dword ptr [esp + 0xc]
+            _emit 0xd8
+        _emit 0x08
+            _emit 0xd9
+        _emit 0x19
+            fld dword ptr [eax + 4]
+            fmul dword ptr [esp + 0xc]
+            fstp dword ptr [ecx + 4]
+            ret
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x005344b0
@@ -233,11 +266,41 @@ void C2_HOOK_CDECL BrVector3Sub(br_vector3* v1, const br_vector3* v2, const br_v
 }
 
 // FUNCTION: CARMA2_HW 0x00534660
-void C2_HOOK_CDECL BrVector3Scale(br_vector3* v1, const br_vector3* v2, br_scalar s) {
+void C2_NAKED C2_HOOK_CDECL BrVector3Scale(br_vector3* v1, const br_vector3* v2, br_scalar s) {
+#ifndef CARPOCALYPSE2_MATCHING
 
     v1->v[0] = v2->v[0] * s;
     v1->v[1] = v2->v[1] * s;
     v1->v[2] = v2->v[2] * s;
+#else
+    __asm {
+            mov eax, dword ptr [esp + 8]
+            mov ecx, dword ptr [esp + 4]
+            fld dword ptr [esp + 0xc]
+            _emit 0xd8
+        _emit 0x08
+            _emit 0xd9
+        _emit 0x19
+            fld dword ptr [eax + 4]
+            fmul dword ptr [esp + 0xc]
+            fstp dword ptr [ecx + 4]
+            fld dword ptr [eax + 8]
+            fmul dword ptr [esp + 0xc]
+            fstp dword ptr [ecx + 8]
+            ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00534690
@@ -378,11 +441,11 @@ void C2_NAKED C2_HOOK_CDECL BrVector3Normalise(br_vector3* v1, const br_vector3*
             faddp st(1), st(0)
             fsqrt
             fstp st(1)
-            fcom dword ptr [IID_IDirectInputDevice2A+0x540]
+            fcom dword ptr [gMatchFloat_0058b8d8]
             fnstsw ax
             test ah, 0x41
             jne L00534824
-            fdivr dword ptr [IID_IDirectInputDevice2A+0x544]
+            fdivr dword ptr [gMatchFloat_0058b8dc]
             mov eax, dword ptr [esp + 8]
             fld st(0)
             _emit 0xd8
@@ -407,6 +470,12 @@ void C2_NAKED C2_HOOK_CDECL BrVector3Normalise(br_vector3* v1, const br_vector3*
             mov dword ptr [eax + 8], ecx
             pop ecx
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -450,9 +519,9 @@ void C2_NAKED C2_HOOK_CDECL BrVector3NormaliseLP(br_vector3* v1, const br_vector
             faddp st(2), st(0)
             faddp st(1), st(0)
             fsqrt
-            fdivr qword ptr [IID_IDirectInputDevice2A+0x548]
+            fdivr qword ptr [gMatchDouble_0058b8e0]
             fstp st(1)
-            fcom dword ptr [IID_IDirectInputDevice2A+0x550]
+            fcom dword ptr [gMatchData_0058b8e8]
             fnstsw ax
             test ah, 0x40
             jne L005348a0
@@ -564,11 +633,39 @@ void C2_HOOK_STDCALL BrFVector3Copy(br_fvector3* v1, const br_vector3* v2) {
 }
 
 // FUNCTION: CARMA2_HW 0x00534940
-void C2_HOOK_STDCALL BrVector3ScaleF(br_vector3* v1, const br_fvector3* v2, br_scalar s) {
+void C2_NAKED C2_HOOK_STDCALL BrVector3ScaleF(br_vector3* v1, const br_fvector3* v2, br_scalar s) {
+#ifndef CARPOCALYPSE2_MATCHING
 
     v1->v[0] = s * v2->v[0];
     v1->v[1] = v2->v[1] * s;
     v1->v[2] = v2->v[2] * s;
+#else
+    __asm {
+            mov eax, dword ptr [esp + 8]
+            mov ecx, dword ptr [esp + 4]
+            fld dword ptr [esp + 0xc]
+            _emit 0xd8
+        _emit 0x08
+            _emit 0xd9
+        _emit 0x19
+            fld dword ptr [eax + 4]
+            fmul dword ptr [esp + 0xc]
+            fstp dword ptr [ecx + 4]
+            fld dword ptr [eax + 8]
+            fmul dword ptr [esp + 0xc]
+            fstp dword ptr [ecx + 8]
+            ret 0xc
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00534970
@@ -644,11 +741,11 @@ void C2_NAKED C2_HOOK_CDECL BrFVector3Normalise(br_fvector3* v1, const br_vector
             faddp st(1), st(0)
             fsqrt
             fstp st(1)
-            fcom dword ptr [IID_IDirectInputDevice2A+0x550]
+            fcom dword ptr [gMatchData_0058b8e8]
             fnstsw ax
             test ah, 0x40
             jne L00534a06
-            fdivr dword ptr [IID_IDirectInputDevice2A+0x544]
+            fdivr dword ptr [gMatchFloat_0058b8dc]
             mov eax, dword ptr [esp + 8]
             fld st(0)
             _emit 0xd8
@@ -673,6 +770,8 @@ void C2_NAKED C2_HOOK_CDECL BrFVector3Normalise(br_fvector3* v1, const br_vector
             mov dword ptr [eax + 8], ecx
             pop ecx
             ret 8
+            nop
+            nop
     }
 #endif
 }
@@ -715,7 +814,7 @@ v1->v[0] = v2->v[0] * scale;
             faddp st(2), st(0)
             faddp st(1), st(0)
             fsqrt
-            fdivr qword ptr [IID_IDirectInputDevice2A+0x548]
+            fdivr qword ptr [gMatchDouble_0058b8e0]
             fstp st(1)
             fld st(0)
             _emit 0xd8
@@ -731,6 +830,13 @@ v1->v[0] = v2->v[0] * scale;
             fstp st(0)
             pop ecx
             ret 8
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -765,11 +871,11 @@ void C2_NAKED C2_HOOK_CDECL BrVector2Normalise(br_vector2* v1, const br_vector2*
             faddp st(1), st(0)
             fsqrt
             fstp st(1)
-            fcom dword ptr [IID_IDirectInputDevice2A+0x540]
+            fcom dword ptr [gMatchFloat_0058b8d8]
             fnstsw ax
             test ah, 0x41
             jne L00534ac7
-            fdivr dword ptr [IID_IDirectInputDevice2A+0x544]
+            fdivr dword ptr [gMatchFloat_0058b8dc]
             mov eax, dword ptr [esp + 4]
             fld st(0)
             _emit 0xd8
@@ -787,6 +893,11 @@ void C2_NAKED C2_HOOK_CDECL BrVector2Normalise(br_vector2* v1, const br_vector2*
             mov dword ptr [eax], 0x3f800000
             mov dword ptr [eax + 4], 0
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }

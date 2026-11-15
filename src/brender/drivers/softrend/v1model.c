@@ -57,6 +57,14 @@ extern rend_block_soft rend;
 extern char rendererStateStoredDispatch[];
 extern static_cache_soft scache;
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gData_0058c8e0[];
+extern char gFloat_0058c8dc[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchData_0058c8e0[];
+extern char gMatchFloat_0058c8dc[];
+#endif
 // FUNCTION: CARMA2_HW 0x00542f90
 void C2_HOOK_CDECL V1Faces_ScratchAllocate(br_geometry* self, br_soft_renderer* renderer) {
     char *sp;
@@ -373,7 +381,7 @@ void C2_NAKED C2_HOOK_CDECL V1Face_CullOneSidedParallel(br_geometry* self, br_so
             faddp st(1), st(0)
             fxch st(1)
             faddp st(1), st(0)
-            fcomp dword ptr [rendererStateStoredDispatch+0x48]
+            fcomp dword ptr [gMatchData_0058c8e0]
             fnstsw ax
             test ah, 1
             je L005433e6
@@ -704,7 +712,7 @@ void C2_NAKED C2_HOOK_CDECL V1Face_CullTwoSidedParallel(br_geometry* self, br_so
             faddp st(1), st(0)
             fxch st(1)
             faddp st(1), st(0)
-            fcomp dword ptr [rendererStateStoredDispatch+0x48]
+            fcomp dword ptr [gMatchData_0058c8e0]
             fnstsw ax
             test ah, 1
             je L00543717
@@ -768,6 +776,18 @@ void C2_NAKED C2_HOOK_CDECL V1Face_CullTwoSidedParallel(br_geometry* self, br_so
             mov dword ptr [rend+0x1c], eax
             pop esi
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -1533,7 +1553,7 @@ br_error C2_NAKED C2_HOOK_STDCALL V1Model_Render(br_geometry_v1_model_soft* self
             and edi, 0xffffff
             mov dword ptr [scache+0xe0], edi
             fld dword ptr [esi + 0x28]
-            fmul dword ptr [rendererStateStoredDispatch+0x44]
+            fmul dword ptr [gMatchFloat_0058c8dc]
             call _ftol
             shl eax, 0x18
             or edi, eax

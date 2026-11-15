@@ -82,6 +82,22 @@ extern char IID_IDirectInputDevice2A[];
 extern br_filesystem gZlib_filesystem;
 extern br_v1db_state v1db;
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gDouble_0058b788[];
+extern char gDouble_0058b798[];
+extern char gFloat_0058b784[];
+extern char gFloat_006632e4[];
+extern char gFloat_00663318[];
+extern char gString_006632dc[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchDouble_0058b788[];
+extern char gMatchDouble_0058b798[];
+extern char gMatchFloat_0058b784[];
+extern char gMatchFloat_006632e4[];
+extern char gMatchFloat_00663318[];
+extern char gMatchString_006632dc[];
+#endif
 // FUNCTION: CARMA2_HW 0x00520560
 void C2_HOOK_STDCALL prepareEdges(v11group* group, br_model* model) {
     br_size_t scratch_size;
@@ -593,11 +609,11 @@ void C2_NAKED C2_HOOK_STDCALL CopyVertex(v11group* group, int v, prep_vertex* sr
             faddp st(1), st(0)
             fsqrt
             fstp st(1)
-            fcom dword ptr [IID_IDirectInputDevice2A+0x3ec]
+            fcom dword ptr [gMatchFloat_0058b784]
             fnstsw ax
             test ah, 0x41
             jne L00520d25
-            fdivr qword ptr [IID_IDirectInputDevice2A+0x3f0]
+            fdivr qword ptr [gMatchDouble_0058b788]
             mov eax, dword ptr [esi + 0x10]
             _emit 0xd9
         _emit 0x07
@@ -645,6 +661,12 @@ void C2_NAKED C2_HOOK_STDCALL CopyVertex(v11group* group, int v, prep_vertex* sr
             mov word ptr [ecx + eax*2], dx
             pop ebx
             ret 0x10
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -1353,11 +1375,11 @@ void C2_NAKED C2_HOOK_STDCALL RegenerateVertexNormals(v11model* v11m) {
             fxch st(1)
             fsqrt
             fstp st(1)
-            fcom dword ptr [IID_IDirectInputDevice2A+0x3ec]
+            fcom dword ptr [gMatchFloat_0058b784]
             fnstsw ax
             test ah, 0x41
             jne L0051f8e8
-            fdivr qword ptr [IID_IDirectInputDevice2A+0x3f0]
+            fdivr qword ptr [gMatchDouble_0058b788]
             fld dword ptr [edx - 8]
             fmul st(0), st(1)
             fstp dword ptr [ecx - 4]
@@ -1406,6 +1428,12 @@ void C2_NAKED C2_HOOK_STDCALL RegenerateVertexNormals(v11model* v11m) {
             pop ebx
             pop ecx
             ret 4
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -1586,10 +1614,10 @@ void C2_NAKED C2_HOOK_CDECL BrModelUpdate(br_model* model, br_uint_16 flags) {
             mov eax, dword ptr [esi + 4]
             test eax, eax
             jne L0051f97f
-            mov eax, offset gZlib_filesystem+0x11c
+            mov eax, offset gMatchString_006632dc
     L0051f97f:
             push eax
-            push offset gZlib_filesystem+0x124
+            push offset gMatchFloat_006632e4
             call BrFailure
             add esp, 8
     L0051f98d:
@@ -1924,58 +1952,118 @@ void C2_NAKED C2_HOOK_CDECL BrModelUpdate(br_model* model, br_uint_16 flags) {
             push edx
             call BrPlaneEquation
             fld dword ptr [esp + 0x50]
-            fcomp dword ptr [IID_IDirectInputDevice2A+0x3e0]
+            _emit 0xd8
+        _emit 0x1d
+        _emit 0x78
+        _emit 0xb7
+        _emit 0x58
+        _emit 0x00
             add esp, 0x10
             fnstsw ax
             test ah, 0x41
             je L0051fd3d
-            fld dword ptr [IID_IDirectInputDevice2A+0x3e4]
+            _emit 0xd9
+        _emit 0x05
+        _emit 0x7c
+        _emit 0xb7
+        _emit 0x58
+        _emit 0x00
             jmp L0051fd5a
     L0051fd3d:
             fld dword ptr [esp + 0x40]
-            fcomp dword ptr [IID_IDirectInputDevice2A+0x3e8]
+            _emit 0xd8
+        _emit 0x1d
+        _emit 0x80
+        _emit 0xb7
+        _emit 0x58
+        _emit 0x00
             fnstsw ax
             test ah, 1
             jne L0051fd56
-            fld dword ptr [IID_IDirectInputDevice2A+0x3e8]
+            _emit 0xd9
+        _emit 0x05
+        _emit 0x80
+        _emit 0xb7
+        _emit 0x58
+        _emit 0x00
             jmp L0051fd5a
     L0051fd56:
             fld dword ptr [esp + 0x40]
     L0051fd5a:
             fstp dword ptr [edi + 0x18]
             fld dword ptr [esp + 0x44]
-            fcomp dword ptr [IID_IDirectInputDevice2A+0x3e0]
+            _emit 0xd8
+        _emit 0x1d
+        _emit 0x78
+        _emit 0xb7
+        _emit 0x58
+        _emit 0x00
             fnstsw ax
             test ah, 0x41
             je L0051fd76
-            fld dword ptr [IID_IDirectInputDevice2A+0x3e4]
+            _emit 0xd9
+        _emit 0x05
+        _emit 0x7c
+        _emit 0xb7
+        _emit 0x58
+        _emit 0x00
             jmp L0051fd93
     L0051fd76:
             fld dword ptr [esp + 0x44]
-            fcomp dword ptr [IID_IDirectInputDevice2A+0x3e8]
+            _emit 0xd8
+        _emit 0x1d
+        _emit 0x80
+        _emit 0xb7
+        _emit 0x58
+        _emit 0x00
             fnstsw ax
             test ah, 1
             jne L0051fd8f
-            fld dword ptr [IID_IDirectInputDevice2A+0x3e8]
+            _emit 0xd9
+        _emit 0x05
+        _emit 0x80
+        _emit 0xb7
+        _emit 0x58
+        _emit 0x00
             jmp L0051fd93
     L0051fd8f:
             fld dword ptr [esp + 0x44]
     L0051fd93:
             fstp dword ptr [edi + 0x1c]
             fld dword ptr [esp + 0x48]
-            fcomp dword ptr [IID_IDirectInputDevice2A+0x3e0]
+            _emit 0xd8
+        _emit 0x1d
+        _emit 0x78
+        _emit 0xb7
+        _emit 0x58
+        _emit 0x00
             fnstsw ax
             test ah, 0x41
             je L0051fdaf
-            fld dword ptr [IID_IDirectInputDevice2A+0x3e4]
+            _emit 0xd9
+        _emit 0x05
+        _emit 0x7c
+        _emit 0xb7
+        _emit 0x58
+        _emit 0x00
             jmp L0051fdcc
     L0051fdaf:
             fld dword ptr [esp + 0x48]
-            fcomp dword ptr [IID_IDirectInputDevice2A+0x3e8]
+            _emit 0xd8
+        _emit 0x1d
+        _emit 0x80
+        _emit 0xb7
+        _emit 0x58
+        _emit 0x00
             fnstsw ax
             test ah, 1
             jne L0051fdc8
-            fld dword ptr [IID_IDirectInputDevice2A+0x3e8]
+            _emit 0xd9
+        _emit 0x05
+        _emit 0x80
+        _emit 0xb7
+        _emit 0x58
+        _emit 0x00
             jmp L0051fdcc
     L0051fdc8:
             fld dword ptr [esp + 0x48]
@@ -2009,7 +2097,7 @@ void C2_NAKED C2_HOOK_CDECL BrModelUpdate(br_model* model, br_uint_16 flags) {
             jb L0051fe22
             push edi
             push ebp
-            push offset gZlib_filesystem+0x158
+            push offset gMatchFloat_00663318
             call BrFailure
             add esp, 0xc
     L0051fe22:
@@ -2039,7 +2127,7 @@ void C2_NAKED C2_HOOK_CDECL BrModelUpdate(br_model* model, br_uint_16 flags) {
             mov cx, word ptr [esi + 0x2c]
             mov dword ptr [esp + 0x58], ecx
             fild dword ptr [esp + 0x58]
-            fmul qword ptr [IID_IDirectInputDevice2A+0x400]
+            fmul qword ptr [gMatchDouble_0058b798]
             fcos
             fstp dword ptr [esp + 0x14]
             jmp L0051fe92
@@ -2655,6 +2743,14 @@ void C2_NAKED C2_HOOK_CDECL BrModelUpdate(br_model* model, br_uint_16 flags) {
             pop ebx
             add esp, 0x40
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }

@@ -84,6 +84,14 @@ extern static_cache_soft scache;
 #ifdef CARPOCALYPSE2_MATCHING
 extern char _BrExceptionHandler[];
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gData_0058c9cc[];
+extern char gFloat_0058c9d0[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchData_0058c9cc[];
+extern char gMatchFloat_0058c9d0[];
+#endif
 // FUNCTION: CARMA2_HW 0x0054bb70
 int C2_NAKED C2_HOOK_STDCALL ClipFaceToPlus1(brp_vertex* vp, brp_vertex* verts_out, int num_in, int axis, int cmask) {
 #ifndef CARPOCALYPSE2_MATCHING
@@ -186,10 +194,10 @@ int C2_NAKED C2_HOOK_STDCALL ClipFaceToPlus1(brp_vertex* vp, brp_vertex* verts_o
     L0054bbbd:
             fld dword ptr [ebp + ecx]
             fsub dword ptr [ebp + 0x10]
-            fcom dword ptr [rendererStateStoredDispatch+0x134]
+            fcom dword ptr [gMatchData_0058c9cc]
             fld dword ptr [esp + 0x20]
             fnstsw ax
-            fcomp dword ptr [rendererStateStoredDispatch+0x134]
+            fcomp dword ptr [gMatchData_0058c9cc]
             test ah, 0x41
             fnstsw ax
             je L0054bc66
@@ -201,7 +209,7 @@ int C2_NAKED C2_HOOK_STDCALL ClipFaceToPlus1(brp_vertex* vp, brp_vertex* verts_o
             rep movsd
             jmp L0054bcc1
     L0054bbf6:
-            fcom dword ptr [rendererStateStoredDispatch+0x134]
+            fcom dword ptr [gMatchData_0058c9cc]
             fnstsw ax
             test ah, 1
             je L0054bc59
@@ -307,6 +315,21 @@ int C2_NAKED C2_HOOK_STDCALL ClipFaceToPlus1(brp_vertex* vp, brp_vertex* verts_o
             pop ebp
             pop ecx
             ret 0x14
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -411,10 +434,10 @@ int C2_NAKED C2_HOOK_STDCALL ClipFaceToMinus1(brp_vertex* vp, brp_vertex* verts_
             fld dword ptr [ebp + ecx]
             fchs
             fsub dword ptr [ebp + 0x10]
-            fcom dword ptr [rendererStateStoredDispatch+0x134]
+            fcom dword ptr [gMatchData_0058c9cc]
             fld dword ptr [esp + 0x20]
             fnstsw ax
-            fcomp dword ptr [rendererStateStoredDispatch+0x134]
+            fcomp dword ptr [gMatchData_0058c9cc]
             test ah, 0x41
             fnstsw ax
             je L0054be02
@@ -426,7 +449,7 @@ int C2_NAKED C2_HOOK_STDCALL ClipFaceToMinus1(brp_vertex* vp, brp_vertex* verts_
             rep movsd
             jmp L0054be63
     L0054bd8a:
-            fcom dword ptr [rendererStateStoredDispatch+0x134]
+            fcom dword ptr [gMatchData_0058c9cc]
             fnstsw ax
             test ah, 1
             je L0054bdf5
@@ -460,7 +483,7 @@ int C2_NAKED C2_HOOK_STDCALL ClipFaceToMinus1(brp_vertex* vp, brp_vertex* verts_
             jne L0054bdb3
             mov ecx, dword ptr [esp + 0x18]
     L0054bdd5:
-            fld dword ptr [rendererStateStoredDispatch+0x138]
+            fld dword ptr [gMatchFloat_0058c9d0]
             fsub dword ptr [edx + 0x10]
             mov eax, dword ptr [esp + 0x1c]
             add edx, 0x40
@@ -508,7 +531,7 @@ int C2_NAKED C2_HOOK_STDCALL ClipFaceToMinus1(brp_vertex* vp, brp_vertex* verts_
             test ebx, ebx
             jne L0054be2b
     L0054be4d:
-            fld dword ptr [rendererStateStoredDispatch+0x138]
+            fld dword ptr [gMatchFloat_0058c9d0]
             fsub dword ptr [edx + 0x10]
             mov eax, dword ptr [esp + 0x18]
             fstp dword ptr [edx + eax]
@@ -534,6 +557,19 @@ int C2_NAKED C2_HOOK_STDCALL ClipFaceToMinus1(brp_vertex* vp, brp_vertex* verts_
             pop ebp
             pop ecx
             ret 0x14
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -640,7 +676,7 @@ C2_NAKED brp_vertex* C2_HOOK_STDCALL FaceClip(br_soft_renderer* self, brp_vertex
             push esi
             push edi
             test bl, 0x10
-            mov ebp, offset _BrExceptionHandler+0xc
+            mov ebp, 0x6b0a60
             mov dword ptr [esp + 0x24], 1
             je L0054b78d
             mov esi, dword ptr [esp + 0x28]
@@ -664,8 +700,8 @@ C2_NAKED brp_vertex* C2_HOOK_STDCALL FaceClip(br_soft_renderer* self, brp_vertex
             ret 0x18
     L0054b779:
             mov dword ptr [esp + 0x24], 0
-            mov edx, offset _BrExceptionHandler+0xc
-            mov ebp, offset _BrExceptionHandler+0x40c
+            mov edx, 0x6b0a60
+            mov ebp, 0x6b0e60
             jmp L0054b795
     L0054b78d:
             mov eax, dword ptr [esp + 0x30]
@@ -698,12 +734,12 @@ C2_NAKED brp_vertex* C2_HOOK_STDCALL FaceClip(br_soft_renderer* self, brp_vertex
             test ecx, ecx
             mov dword ptr [esp + 0x24], ecx
             je L0054b7da
-            mov edx, offset _BrExceptionHandler+0x40c
-            mov ebp, offset _BrExceptionHandler+0xc
+            mov edx, 0x6b0e60
+            mov ebp, 0x6b0a60
             jmp L0054b7e4
     L0054b7da:
-            mov edx, offset _BrExceptionHandler+0xc
-            mov ebp, offset _BrExceptionHandler+0x40c
+            mov edx, 0x6b0a60
+            mov ebp, 0x6b0e60
     L0054b7e4:
             test bl, 2
             je L0054b833
@@ -732,12 +768,12 @@ C2_NAKED brp_vertex* C2_HOOK_STDCALL FaceClip(br_soft_renderer* self, brp_vertex
             test ecx, ecx
             mov dword ptr [esp + 0x24], ecx
             je L0054b829
-            mov edx, offset _BrExceptionHandler+0x40c
-            mov ebp, offset _BrExceptionHandler+0xc
+            mov edx, 0x6b0e60
+            mov ebp, 0x6b0a60
             jmp L0054b833
     L0054b829:
-            mov edx, offset _BrExceptionHandler+0xc
-            mov ebp, offset _BrExceptionHandler+0x40c
+            mov edx, 0x6b0a60
+            mov ebp, 0x6b0e60
     L0054b833:
             test bl, 1
             je L0054b882
@@ -766,12 +802,12 @@ C2_NAKED brp_vertex* C2_HOOK_STDCALL FaceClip(br_soft_renderer* self, brp_vertex
             test ecx, ecx
             mov dword ptr [esp + 0x24], ecx
             je L0054b878
-            mov edx, offset _BrExceptionHandler+0x40c
-            mov ebp, offset _BrExceptionHandler+0xc
+            mov edx, 0x6b0e60
+            mov ebp, 0x6b0a60
             jmp L0054b882
     L0054b878:
-            mov edx, offset _BrExceptionHandler+0xc
-            mov ebp, offset _BrExceptionHandler+0x40c
+            mov edx, 0x6b0a60
+            mov ebp, 0x6b0e60
     L0054b882:
             test bl, 4
             je L0054b8d1
@@ -800,12 +836,12 @@ C2_NAKED brp_vertex* C2_HOOK_STDCALL FaceClip(br_soft_renderer* self, brp_vertex
             test ecx, ecx
             mov dword ptr [esp + 0x24], ecx
             je L0054b8c7
-            mov edx, offset _BrExceptionHandler+0x40c
-            mov ebp, offset _BrExceptionHandler+0xc
+            mov edx, 0x6b0e60
+            mov ebp, 0x6b0a60
             jmp L0054b8d1
     L0054b8c7:
-            mov edx, offset _BrExceptionHandler+0xc
-            mov ebp, offset _BrExceptionHandler+0x40c
+            mov edx, 0x6b0a60
+            mov ebp, 0x6b0e60
     L0054b8d1:
             test bl, 8
             je L0054b91e
@@ -833,12 +869,12 @@ C2_NAKED brp_vertex* C2_HOOK_STDCALL FaceClip(br_soft_renderer* self, brp_vertex
             test ecx, ecx
             mov dword ptr [esp + 0x24], ecx
             je L0054b914
-            mov edx, offset _BrExceptionHandler+0x40c
-            mov ebp, offset _BrExceptionHandler+0xc
+            mov edx, 0x6b0e60
+            mov ebp, 0x6b0a60
             jmp L0054b91e
     L0054b914:
-            mov edx, offset _BrExceptionHandler+0xc
-            mov ebp, offset _BrExceptionHandler+0x40c
+            mov edx, 0x6b0a60
+            mov ebp, 0x6b0e60
     L0054b91e:
             mov ecx, dword ptr [scache+0x110]
             test ecx, ecx
@@ -907,16 +943,16 @@ C2_NAKED brp_vertex* C2_HOOK_STDCALL FaceClip(br_soft_renderer* self, brp_vertex
             fxch st(1)
             faddp st(1), st(0)
             fchs
-            fcom dword ptr [rendererStateStoredDispatch+0x134]
+            fcom dword ptr [gMatchData_0058c9cc]
             fld dword ptr [esp + 0x20]
             fnstsw ax
-            fcomp dword ptr [rendererStateStoredDispatch+0x134]
+            fcomp dword ptr [gMatchData_0058c9cc]
             test ah, 0x41
             fnstsw ax
             je L0054ba73
             test ah, 0x41
             jne L0054ba5a
-            fcom dword ptr [rendererStateStoredDispatch+0x134]
+            fcom dword ptr [gMatchData_0058c9cc]
             fnstsw ax
             test ah, 1
             je L0054ba5a
@@ -1023,12 +1059,12 @@ C2_NAKED brp_vertex* C2_HOOK_STDCALL FaceClip(br_soft_renderer* self, brp_vertex
             test ecx, ecx
             mov dword ptr [esp + 0x24], ecx
             je L0054bb10
-            mov edx, offset _BrExceptionHandler+0x40c
-            mov ebp, offset _BrExceptionHandler+0xc
+            mov edx, 0x6b0e60
+            mov ebp, 0x6b0a60
             jmp L0054bb1a
     L0054bb10:
-            mov edx, offset _BrExceptionHandler+0xc
-            mov ebp, offset _BrExceptionHandler+0x40c
+            mov edx, 0x6b0a60
+            mov ebp, 0x6b0e60
     L0054bb1a:
             mov ecx, dword ptr [esp + 0x18]
             add ebx, 0x14
@@ -1064,6 +1100,19 @@ C2_NAKED brp_vertex* C2_HOOK_STDCALL FaceClip(br_soft_renderer* self, brp_vertex
             pop ebx
             add esp, 0xc
             ret 0x18
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -1289,7 +1338,7 @@ br_boolean C2_NAKED C2_HOOK_STDCALL ClipLineToPlane(brp_vertex* in, brp_vertex* 
             fxch st(1)
             fchs
             fst dword ptr [esp + 0x1c]
-            fcomp dword ptr [rendererStateStoredDispatch+0x134]
+            fcomp dword ptr [gMatchData_0058c9cc]
             fld dword ptr [edx + 0x4c]
             fmul dword ptr [ebx + 8]
             fnstsw ax
@@ -1308,7 +1357,7 @@ br_boolean C2_NAKED C2_HOOK_STDCALL ClipLineToPlane(brp_vertex* in, brp_vertex* 
             fchs
             fstp dword ptr [esp + 0x14]
             fld dword ptr [esp + 0x14]
-            fcomp dword ptr [rendererStateStoredDispatch+0x134]
+            fcomp dword ptr [gMatchData_0058c9cc]
             lea ebx, [edx + 0x40]
             lea edi, [ebp + 0x40]
             mov ecx, 0x10

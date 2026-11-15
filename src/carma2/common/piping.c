@@ -182,6 +182,18 @@ extern tPipe_chunk_data* C2_HOOK_FASTCALL FUN_00403800(tPipe_chunk* pSession, tP
 extern int C2_HOOK_FASTCALL KeyIsDown(int pKey_index);
 extern void C2_HOOK_FASTCALL WaitForNoKeys(void);
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gFloat_0058a910[];
+extern char gFloat_0058a914[];
+extern char gFloat_0058f1ec[];
+extern char gFloat_0058f210[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchFloat_0058a910[];
+extern char gMatchFloat_0058a914[];
+extern char gMatchFloat_0058f1ec[];
+extern char gMatchFloat_0058f210[];
+#endif
 // FUNCTION: CARMA2_HW 0x004030d0
 void C2_HOOK_FASTCALL SetPipeUndoFlag(void) {
     gPipe_undo_enabled = 1;
@@ -262,7 +274,7 @@ int C2_NAKED C2_HOOK_FASTCALL ARToggleReplay(tTurn_on_AR_callback* pTurn_on_AR_c
             mov eax, dword ptr [gPed_676914]
             test eax, eax
             jne L00403df7
-            push offset gPipe_session_search_limit+0x28
+            push offset gMatchFloat_0058f210
             call dr_dprintf
             add esp, 4
             call InitializeActionReplayPix
@@ -323,7 +335,7 @@ int C2_NAKED C2_HOOK_FASTCALL ARToggleReplay(tTurn_on_AR_callback* pTurn_on_AR_c
             mov dword ptr [eax], edx
     L00403e6a:
             call MovieStopRecordingIfNecessary
-            push offset gPipe_session_search_limit+0x4
+            push offset gMatchFloat_0058f1ec
             call dr_dprintf
             add esp, 4
             call DisposeReplayPixelmaps
@@ -345,6 +357,12 @@ int C2_NAKED C2_HOOK_FASTCALL ARToggleReplay(tTurn_on_AR_callback* pTurn_on_AR_c
             pop ebx
             pop ecx
             ret 0x18
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -1989,15 +2007,15 @@ int C2_NAKED C2_HOOK_FASTCALL CheckCar(tPipe_chunk* pChunk_ptr, int pChunk_count
             mov dword ptr [gCar_pos+0x8], ecx
             lea edx, [esp + 0x20]
             fld dword ptr [eax + 0x58]
-            fmul dword ptr [gDouble_0058a908+0xc]
+            fmul dword ptr [gMatchFloat_0058a914]
             push esi
             push edx
             fstp dword ptr [esp + 0x1c]
             fld dword ptr [eax + 0x5c]
-            fmul dword ptr [gDouble_0058a908+0xc]
+            fmul dword ptr [gMatchFloat_0058a914]
             fstp dword ptr [esp + 0x20]
             fld dword ptr [eax + 0x60]
-            fmul dword ptr [gDouble_0058a908+0xc]
+            fmul dword ptr [gMatchFloat_0058a914]
             fstp dword ptr [esp + 0x24]
             call BrMatrix34ApplyV
             fld dword ptr [esp + 0x2c]
@@ -2448,7 +2466,7 @@ void C2_NAKED C2_HOOK_FASTCALL ScanCarsPositions(tCar_spec* pCar, br_vector3* pS
             mov dword ptr [edx + 8], eax
             _emit 0xd9
         _emit 0x01
-            fcomp dword ptr [gDouble_0058a908+0x8]
+            fcomp dword ptr [gMatchFloat_0058a910]
             fnstsw ax
             test ah, 0x41
             jne L004c6a12
@@ -2472,6 +2490,18 @@ void C2_NAKED C2_HOOK_FASTCALL ScanCarsPositions(tCar_spec* pCar, br_vector3* pS
             mov dword ptr [ecx], edx
             pop ecx
             ret 0x14
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -5104,7 +5134,7 @@ replay_complete:
 #else
     __asm {
             sub esp, 0x34
-            mov eax, dword ptr ds:[gPipe_play_ptr]
+            mov eax, dword ptr [gPipe_play_ptr]
             push ebx
             push ebp
             push esi
@@ -5135,8 +5165,8 @@ replay_complete:
             mov esi, dword ptr [esp + 0x10]
             test ebx, ebx
             jle L0040330d
-            mov edx, dword ptr ds:[gPipe_record_ptr]
-            mov eax, dword ptr ds:[gPipe_play_ptr]
+            mov edx, dword ptr [gPipe_record_ptr]
+            mov eax, dword ptr [gPipe_play_ptr]
             cmp eax, edx
             je L00403362
             cmp dword ptr [esi], 0
@@ -5144,13 +5174,13 @@ replay_complete:
     L004032d9:
             mov ecx, esi
             call LengthOfSession
-            mov edx, dword ptr ds:[gPipe_record_ptr]
+            mov edx, dword ptr [gPipe_record_ptr]
             add esi, eax
-            cmp esi, dword ptr ds:[gPipe_buffer_working_end]
+            cmp esi, dword ptr [gPipe_buffer_working_end]
             jb L004032fa
             cmp esi, edx
             je L00403362
-            mov esi, dword ptr ds:[gPipe_buffer_start]
+            mov esi, dword ptr [gPipe_buffer_start]
     L004032fa:
             cmp esi, edx
             je L00403362
@@ -5158,18 +5188,18 @@ replay_complete:
             jne L004032d9
     L00403303:
             mov eax, dword ptr [esi + 0xc]
-            mov dword ptr ds:[gLast_replay_frame_time], eax
+            mov dword ptr [gLast_replay_frame_time], eax
             jmp L00403362
     L0040330d:
-            mov edi, dword ptr ds:[gPipe_buffer_oldest]
-            mov edx, dword ptr ds:[gPipe_record_ptr]
+            mov edi, dword ptr [gPipe_buffer_oldest]
+            mov edx, dword ptr [gPipe_record_ptr]
             cmp esi, edi
             jne L00403321
             cmp esi, edx
             jne L00403362
     L00403321:
-            mov eax, dword ptr ds:[gPipe_buffer_start]
-            mov ecx, dword ptr ds:[gPipe_buffer_working_end]
+            mov eax, dword ptr [gPipe_buffer_start]
+            mov ecx, dword ptr [gPipe_buffer_working_end]
             cmp esi, eax
             jne L00403332
             mov esi, ecx
@@ -5195,47 +5225,47 @@ replay_complete:
             cmp dword ptr [esi], 0
             jne L0040333c
             mov ecx, dword ptr [esi + 0xc]
-            mov dword ptr ds:[gLast_replay_frame_time], ecx
+            mov dword ptr [gLast_replay_frame_time], ecx
     L00403362:
-            mov eax, dword ptr ds:[gPlay_direction]
+            mov eax, dword ptr [gPlay_direction]
             test eax, eax
             jle L00403375
-            cmp dword ptr ds:[gPipe_play_ptr], edx
+            cmp dword ptr [gPipe_play_ptr], edx
             jne L00403386
             test eax, eax
     L00403375:
             jge L004033ae
-            mov edx, dword ptr ds:[gPipe_play_ptr]
-            mov eax, dword ptr ds:[gPipe_buffer_oldest]
+            mov edx, dword ptr [gPipe_play_ptr]
+            mov eax, dword ptr [gPipe_buffer_oldest]
             cmp edx, eax
             je L004033ae
     L00403386:
-            mov eax, dword ptr ds:[gPipe_count_callbacks]
+            mov eax, dword ptr [gPipe_count_callbacks]
             xor edi, edi
             test eax, eax
             jle L004033ae
             xor esi, esi
     L00403393:
-            mov eax, dword ptr ds:[gPipe_callbacks]
+            mov eax, dword ptr [gPipe_callbacks]
             mov eax, dword ptr [eax + esi]
             test eax, eax
             je L004033a1
             call eax
     L004033a1:
-            mov eax, dword ptr ds:[gPipe_count_callbacks]
+            mov eax, dword ptr [gPipe_count_callbacks]
             inc edi
             add esi, 0x18
             cmp edi, eax
             jl L00403393
     L004033ae:
-            mov ecx, dword ptr ds:[gFrame_period]
+            mov ecx, dword ptr [gFrame_period]
             call dword ptr [esp + 0x48]
             mov ecx, dword ptr [esp + 0x10]
             test ebx, ebx
             mov dword ptr [esp + 0x34], ecx
             jle L004034c3
     L004033c8:
-            cmp ecx, dword ptr ds:[gPipe_record_ptr]
+            cmp ecx, dword ptr [gPipe_record_ptr]
             jne L004033da
             mov eax, 1
             jmp L004034a5
@@ -5271,7 +5301,7 @@ replay_complete:
     L00403422:
             lea edx, [ebx + ecx - 2]
             lea eax, [ecx + 8]
-            mov dword ptr ds:[gPipe_buffer_end_marker], edx
+            mov dword ptr [gPipe_buffer_end_marker], edx
             mov dword ptr [esp + 0x1c], eax
             mov eax, dword ptr [ecx + 4]
             mov esi, dword ptr [ecx]
@@ -5281,7 +5311,7 @@ replay_complete:
             lea eax, [esi + esi*2]
             lea ebx, [eax*8 + 0xc]
     L00403448:
-            mov ecx, dword ptr ds:[gPipe_callbacks]
+            mov ecx, dword ptr [gPipe_callbacks]
             mov eax, dword ptr [ecx + ebx]
             test eax, eax
             je L0040345b
@@ -5299,13 +5329,13 @@ replay_complete:
             call LengthOfSession
             mov ecx, dword ptr [esp + 0x10]
             add ecx, eax
-            mov eax, dword ptr ds:[gPipe_buffer_working_end]
+            mov eax, dword ptr [gPipe_buffer_working_end]
             cmp ecx, eax
             mov dword ptr [esp + 0x10], ecx
             jb L0040349a
-            cmp ecx, dword ptr ds:[gPipe_record_ptr]
+            cmp ecx, dword ptr [gPipe_record_ptr]
             je L0040349a
-            mov ecx, dword ptr ds:[gPipe_buffer_start]
+            mov ecx, dword ptr [gPipe_buffer_start]
             mov dword ptr [esp + 0x10], ecx
     L0040349a:
             mov ebx, dword ptr [esp + 0x24]
@@ -5320,7 +5350,7 @@ replay_complete:
             mov ecx, dword ptr [esp + 0x10]
             jmp L004033c8
     L004034b8:
-            mov dword ptr ds:[gPipe_play_ptr], ecx
+            mov dword ptr [gPipe_play_ptr], ecx
             jmp L00403638
     L004034c3:
             jge L00403638
@@ -5338,18 +5368,18 @@ replay_complete:
             mov dword ptr [esp + 0x20], 0
             lea edx, [eax + ecx - 2]
             lea eax, [ecx + 8]
-            mov dword ptr ds:[gPipe_buffer_end_marker], edx
+            mov dword ptr [gPipe_buffer_end_marker], edx
             mov dword ptr [esp + 0x14], eax
             mov eax, dword ptr [ecx + 4]
             mov ebp, dword ptr [ecx]
             test eax, eax
             jbe L004035fc
-            mov esi, dword ptr ds:[gPipe_callbacks]
+            mov esi, dword ptr [gPipe_callbacks]
             lea edi, [ebp + ebp*2]
             shl edi, 3
     L00403520:
             mov eax, dword ptr [esi + edi + 0x10]
-            mov ebx, dword ptr ds:[gPipe_buffer_end_marker]
+            mov ebx, dword ptr [gPipe_buffer_end_marker]
             cmp eax, 2
             jl L00403552
             cmp eax, 5
@@ -5360,14 +5390,14 @@ replay_complete:
             push edx
             mov edx, dword ptr [ecx]
             call FUN_00403800
-            mov esi, dword ptr ds:[gPipe_callbacks]
+            mov esi, dword ptr [gPipe_callbacks]
             mov dword ptr [esp + 0x18], eax
             jmp L00403558
     L00403552:
             xor eax, eax
             mov dword ptr [esp + 0x18], eax
     L00403558:
-            mov dword ptr ds:[gPipe_buffer_end_marker], ebx
+            mov dword ptr [gPipe_buffer_end_marker], ebx
             mov ecx, dword ptr [esi + edi + 0x10]
             dec ecx
             cmp ecx, 4
@@ -5392,9 +5422,9 @@ replay_complete:
             je L004035b7
     L00403599:
             lea ecx, [esp + 0x18]
-            mov dword ptr ds:[gPipe_undo_enabled], 1
+            mov dword ptr [gPipe_undo_enabled], 1
             call dword ptr [esi + edi + 0xc]
-            mov dword ptr ds:[gPipe_undo_enabled], 0
+            mov dword ptr [gPipe_undo_enabled], 0
             jmp L004035cf
     L004035b7:
             lea ecx, [esp + 0x14]
@@ -5411,7 +5441,7 @@ replay_complete:
             lea ecx, [esp + 0x14]
             call ARAdvanceChunkPtr
     L004035da:
-            mov esi, dword ptr ds:[gPipe_callbacks]
+            mov esi, dword ptr [gPipe_callbacks]
     L004035e0:
             mov ecx, dword ptr [esp + 0x10]
             mov eax, dword ptr [esp + 0x20]
@@ -5442,9 +5472,9 @@ replay_complete:
             jmp L004034c9
     L0040362f:
             mov eax, dword ptr [esp + 0x10]
-            mov dword ptr ds:[gPipe_play_ptr], eax
+            mov dword ptr [gPipe_play_ptr], eax
     L00403638:
-            mov ecx, dword ptr ds:[gFrame_period]
+            mov ecx, dword ptr [gFrame_period]
             call dword ptr [esp + 0x4c]
             mov eax, dword ptr [esp + 0x30]
             mov ecx, dword ptr [esp + 0x38]
@@ -5454,25 +5484,25 @@ replay_complete:
             mov dword ptr [esp + 0x30], eax
             jl L004032a0
     L0040365b:
-            mov eax, dword ptr ds:[gPipe_play_ptr]
-            mov ecx, dword ptr ds:[gPipe_record_ptr]
+            mov eax, dword ptr [gPipe_play_ptr]
+            mov ecx, dword ptr [gPipe_record_ptr]
             cmp eax, ecx
             jne L0040366e
             xor eax, eax
             jmp L004036bb
     L0040366e:
-            cmp eax, dword ptr ds:[gPipe_buffer_oldest]
+            cmp eax, dword ptr [gPipe_buffer_oldest]
             jne L0040367d
             mov eax, 1
             jmp L004036bb
     L0040367d:
-            fld dword ptr ds:[gReplay_rate]
-            fcomp dword ptr ds:[gFLOAT_00589330]
+            fld dword ptr [gReplay_rate]
+            fcomp dword ptr [gFLOAT_00589330]
             fnstsw ax
             test ah, 0x40
             jne L004036ae
-            fld dword ptr ds:[gReplay_rate]
-            fcomp dword ptr ds:[gFLOAT_00589330]
+            fld dword ptr [gReplay_rate]
+            fcomp dword ptr [gFLOAT_00589330]
             fnstsw ax
             test ah, 0x41
             jne L004036aa
@@ -5482,7 +5512,7 @@ replay_complete:
             xor eax, eax
             jmp L004036bb
     L004036ae:
-            mov ecx, dword ptr ds:[gPlay_direction]
+            mov ecx, dword ptr [gPlay_direction]
             xor eax, eax
             test ecx, ecx
             setg al
@@ -5497,8 +5527,8 @@ replay_complete:
     L004036d2:
             cmp esi, dword ptr [esp + 0x10]
             jne L004036ec
-            mov dword ptr ds:[gReplay_rate], 0
-            mov dword ptr ds:[gReplay_pause_state], 1
+            mov dword ptr [gReplay_rate], 0
+            mov dword ptr [gReplay_pause_state], 1
     L004036ec:
             xor ecx, ecx
             call KeyIsDown
@@ -6279,6 +6309,15 @@ void C2_NAKED C2_HOOK_FASTCALL FUN_004c8710(uintptr_t pOwner, tU16 pValue_0, tU1
             pop ebp
             pop ecx
             ret 0xc
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }

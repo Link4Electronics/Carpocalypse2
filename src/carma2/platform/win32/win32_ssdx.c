@@ -82,6 +82,73 @@ extern char gSoundType_choices[];
 extern void* C2_HOOK_FASTCALL SSDXLockAttachedSurface(void);
 extern void C2_HOOK_FASTCALL SSDXLogError(HRESULT hRes);
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gData_00589018[];
+extern char gFloat_00660578[];
+extern char gFloat_006605a8[];
+extern char gFloat_006605dc[];
+extern char gFloat_00660624[];
+extern char gFloat_0066067c[];
+extern char gFloat_0066069c[];
+extern char gFloat_006606e0[];
+extern char gFloat_006606f8[];
+extern char gFloat_0066070c[];
+extern char gFloat_00660720[];
+extern char gFloat_00660738[];
+extern char gFloat_0066074c[];
+extern char gFloat_00660768[];
+extern char gFloat_0066077c[];
+extern char gFloat_00660790[];
+extern char gFloat_006607a4[];
+extern char gFloat_006607c0[];
+extern char gFloat_006607d4[];
+extern char gFloat_00660800[];
+extern char gFloat_006609ac[];
+extern char gFloat_006609ec[];
+extern char gFloat_00660a1c[];
+extern char gFloat_00660a4c[];
+extern char gFloat_00660a80[];
+extern char gFloat_00660aac[];
+extern char gFloat_00660ae8[];
+extern char gFloat_00660b1c[];
+extern char gString_0066066c[];
+extern char gString_00660694[];
+extern char gString_006607e8[];
+extern char gString_006607f8[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchFloat_00660578[];
+extern char gMatchFloat_006605a8[];
+extern char gMatchFloat_006605dc[];
+extern char gMatchFloat_00660624[];
+extern char gMatchFloat_0066067c[];
+extern char gMatchFloat_0066069c[];
+extern char gMatchFloat_006606e0[];
+extern char gMatchFloat_006606f8[];
+extern char gMatchFloat_0066070c[];
+extern char gMatchFloat_00660720[];
+extern char gMatchFloat_00660738[];
+extern char gMatchFloat_0066074c[];
+extern char gMatchFloat_00660768[];
+extern char gMatchFloat_0066077c[];
+extern char gMatchFloat_00660790[];
+extern char gMatchFloat_006607a4[];
+extern char gMatchFloat_006607c0[];
+extern char gMatchFloat_006607d4[];
+extern char gMatchFloat_00660800[];
+extern char gMatchFloat_006609ac[];
+extern char gMatchFloat_006609ec[];
+extern char gMatchFloat_00660a1c[];
+extern char gMatchFloat_00660a4c[];
+extern char gMatchFloat_00660a80[];
+extern char gMatchFloat_00660aac[];
+extern char gMatchFloat_00660ae8[];
+extern char gMatchFloat_00660b1c[];
+extern char gMatchString_0066066c[];
+extern char gMatchString_00660694[];
+extern char gMatchString_006607e8[];
+extern char gMatchString_006607f8[];
+#endif
 // FUNCTION: CARMA2_HW 0x00500070
 HRESULT CALLBACK LocalEnumAttachedSurfacesCallback(LPDIRECTDRAWSURFACE lpSurface, LPDDSURFACEDESC lpSurfaceDesc, LPVOID lpContext) {
     int* counter = lpContext;
@@ -186,17 +253,22 @@ post_creation:
             push 0
             push 0
             push offset gSSDXRect
-            call dword ptr ds:[0x5891cc]
+            _emit 0xff
+        _emit 0x15
+        _emit 0xcc
+        _emit 0x91
+        _emit 0x58
+        _emit 0x00
             mov ecx, 0x1b
             xor eax, eax
             lea edi, [esp + 0x10]
-            push 0x660624
+            push offset gMatchFloat_00660624
             rep stosd
             mov dword ptr [esp + 0x14], 0x6c
             mov dword ptr [esp + 0x18], 1
             mov dword ptr [esp + 0x7c], 0x200
             call dr_dprintf
-            mov eax, dword ptr ds:[gDirectDraw]
+            mov eax, dword ptr [gDirectDraw]
             add esp, 4
             lea edx, [esp + 0x10]
             mov ecx, dword ptr [eax]
@@ -211,14 +283,14 @@ post_creation:
             mov ecx, 0x1b
             lea edi, [esp + 0x10]
             rep stosd
-            push 0x6605dc
+            push offset gMatchFloat_006605dc
             mov dword ptr [esp + 0x14], 0x6c
             mov dword ptr [esp + 0x18], 7
             mov dword ptr [esp + 0x7c], 0x840
             mov dword ptr [esp + 0x20], ebp
             mov dword ptr [esp + 0x1c], ebx
             call dr_dprintf
-            mov eax, dword ptr ds:[gDirectDraw]
+            mov eax, dword ptr [gDirectDraw]
             add esp, 4
             lea edx, [esp + 0x10]
             mov ecx, dword ptr [eax]
@@ -230,7 +302,7 @@ post_creation:
             mov esi, eax
             test esi, esi
             jne L00500261
-            mov eax, dword ptr ds:[gDirectDraw]
+            mov eax, dword ptr [gDirectDraw]
             push esi
             push offset gDirectDrawClipper
             push esi
@@ -240,8 +312,8 @@ post_creation:
             mov esi, eax
             test esi, esi
             jne L00500261
-            mov eax, dword ptr ds:[gDirectDrawClipper]
-            mov ecx, dword ptr ds:[gHWnd_SSDX]
+            mov eax, dword ptr [gDirectDrawClipper]
+            mov ecx, dword ptr [gHWnd_SSDX]
             push ecx
             push esi
             mov edx, dword ptr [eax]
@@ -250,8 +322,8 @@ post_creation:
             mov esi, eax
             test esi, esi
             jne L00500261
-            mov eax, dword ptr ds:[gPrimary_surface]
-            mov ecx, dword ptr ds:[gDirectDrawClipper]
+            mov eax, dword ptr [gPrimary_surface]
+            mov ecx, dword ptr [gDirectDrawClipper]
             push ecx
             push eax
             mov edx, dword ptr [eax]
@@ -259,24 +331,39 @@ post_creation:
             mov esi, eax
             test esi, esi
             jne L00500261
-            mov edx, dword ptr ds:[gHWnd_SSDX]
+            mov edx, dword ptr [gHWnd_SSDX]
             push edx
-            call dword ptr ds:[0x5891c0]
+            _emit 0xff
+        _emit 0x15
+        _emit 0xc0
+        _emit 0x91
+        _emit 0x58
+        _emit 0x00
             mov esi, eax
             push offset gSSDX_system_palette
             push 0x100
             push 0
             push esi
-            call dword ptr ds:[0x589024]
-            mov eax, dword ptr ds:[gHWnd_SSDX]
+            _emit 0xff
+        _emit 0x15
+        _emit 0x24
+        _emit 0x90
+        _emit 0x58
+        _emit 0x00
+            mov eax, dword ptr [gHWnd_SSDX]
             push esi
             push eax
-            call dword ptr ds:[0x5891b4]
-            mov eax, 0x6aa5db
+            _emit 0xff
+        _emit 0x15
+        _emit 0xb4
+        _emit 0x91
+        _emit 0x58
+        _emit 0x00
+            mov eax, offset gSSDX_system_palette+0x3
     L005001f0:
-            cmp eax, 0x6aa603
+            cmp eax, offset gSSDX_system_palette+0x2b
             jl L00500203
-            cmp eax, 0x6aa9af
+            cmp eax, offset gSSDX_system_palette+0x3d7
             jg L00500203
             mov byte ptr [eax], 4
             jmp L00500206
@@ -284,11 +371,11 @@ post_creation:
             mov byte ptr [eax], 0
     L00500206:
             add eax, 4
-            cmp eax, 0x6aa9db
+            cmp eax, offset gEnumerate_DirectX_surfaces+0x3
             jl L005001f0
-            push 0x6605a8
+            push offset gMatchFloat_006605a8
             call dr_dprintf
-            mov eax, dword ptr ds:[gDirectDraw]
+            mov eax, dword ptr [gDirectDraw]
             add esp, 4
             mov ecx, dword ptr [eax]
             push 0
@@ -300,10 +387,10 @@ post_creation:
             mov esi, eax
             test esi, esi
             jne L00500261
-            push 0x660578
+            push offset gMatchFloat_00660578
             call dr_dprintf
-            mov eax, dword ptr ds:[gPrimary_surface]
-            mov ecx, dword ptr ds:[gDirectDrawPalette]
+            mov eax, dword ptr [gPrimary_surface]
+            mov ecx, dword ptr [gDirectDrawPalette]
             add esp, 4
             mov edx, dword ptr [eax]
             push ecx
@@ -317,11 +404,11 @@ post_creation:
             call SSDXLogError
     L00500268:
             call SSDXLockAttachedSurface
-            mov eax, dword ptr ds:[gAttached_surface_locked]
+            mov eax, dword ptr [gAttached_surface_locked]
             test eax, eax
             je L005002ac
-            mov eax, dword ptr ds:[gAttached_surface]
-            mov ecx, dword ptr ds:[gSSDXLockedRect]
+            mov eax, dword ptr [gAttached_surface]
+            mov ecx, dword ptr [gSSDXLockedRect]
             push ecx
             push eax
             mov edx, dword ptr [eax]
@@ -329,7 +416,7 @@ post_creation:
             mov edi, eax
             test edi, edi
             jne L00500298
-            mov dword ptr ds:[gAttached_surface_locked], eax
+            mov dword ptr [gAttached_surface_locked], eax
             jmp L005002ac
     L00500298:
             push 0x66052c
@@ -339,7 +426,7 @@ post_creation:
             call SSDXLogError
     L005002ac:
             mov edx, dword ptr [esp + 0x80]
-            mov eax, dword ptr ds:[gSSDXPitch]
+            mov eax, dword ptr [gSSDXPitch]
             pop edi
             mov dword ptr [edx], eax
             mov eax, esi
@@ -348,6 +435,16 @@ post_creation:
             pop ebx
             add esp, 0x6c
             ret 4
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -385,18 +482,18 @@ void C2_NAKED C2_HOOK_FASTCALL SSDXLogError(HRESULT hRes) {
             je L005002fb
             cmp ecx, 0x80004001
             jne L0050049c
-            mov eax, 0x660800
+            mov eax, offset gMatchFloat_00660800
             push ecx
             push eax
-            push 0x6607f8
+            push offset gMatchString_006607f8
             call dr_dprintf
             add esp, 0xc
             ret
     L005002fb:
-            mov eax, 0x6607e8
+            mov eax, offset gMatchString_006607e8
             push ecx
             push eax
-            push 0x6607f8
+            push offset gMatchString_006607f8
             call dr_dprintf
             add esp, 0xc
             ret
@@ -406,18 +503,18 @@ void C2_NAKED C2_HOOK_FASTCALL SSDXLogError(HRESULT hRes) {
             je L0050033b
             cmp ecx, 0x8007000e
             jne L0050049c
-            mov eax, 0x6607d4
+            mov eax, offset gMatchFloat_006607d4
             push ecx
             push eax
-            push 0x6607f8
+            push offset gMatchString_006607f8
             call dr_dprintf
             add esp, 0xc
             ret
     L0050033b:
-            mov eax, 0x6607c0
+            mov eax, offset gMatchFloat_006607c0
             push ecx
             push eax
-            push 0x6607f8
+            push offset gMatchString_006607f8
             call dr_dprintf
             add esp, 0xc
             ret
@@ -427,18 +524,18 @@ void C2_NAKED C2_HOOK_FASTCALL SSDXLogError(HRESULT hRes) {
             je L0050037b
             cmp ecx, 0x8876005f
             jne L0050049c
-            mov eax, 0x6607a4
+            mov eax, offset gMatchFloat_006607a4
             push ecx
             push eax
-            push 0x6607f8
+            push offset gMatchString_006607f8
             call dr_dprintf
             add esp, 0xc
             ret
     L0050037b:
-            mov eax, 0x660790
+            mov eax, offset gMatchFloat_00660790
             push ecx
             push eax
-            push 0x6607f8
+            push offset gMatchString_006607f8
             call dr_dprintf
             add esp, 0xc
             ret
@@ -448,18 +545,18 @@ void C2_NAKED C2_HOOK_FASTCALL SSDXLogError(HRESULT hRes) {
             je L005003bb
             cmp ecx, 0x88760078
             jne L0050049c
-            mov eax, 0x66077c
+            mov eax, offset gMatchFloat_0066077c
             push ecx
             push eax
-            push 0x6607f8
+            push offset gMatchString_006607f8
             call dr_dprintf
             add esp, 0xc
             ret
     L005003bb:
-            mov eax, 0x660768
+            mov eax, offset gMatchFloat_00660768
             push ecx
             push eax
-            push 0x6607f8
+            push offset gMatchString_006607f8
             call dr_dprintf
             add esp, 0xc
             ret
@@ -469,18 +566,18 @@ void C2_NAKED C2_HOOK_FASTCALL SSDXLogError(HRESULT hRes) {
             je L005003fb
             cmp ecx, 0x88760091
             jne L0050049c
-            mov eax, 0x66074c
+            mov eax, offset gMatchFloat_0066074c
             push ecx
             push eax
-            push 0x6607f8
+            push offset gMatchString_006607f8
             call dr_dprintf
             add esp, 0xc
             ret
     L005003fb:
-            mov eax, 0x660738
+            mov eax, offset gMatchFloat_00660738
             push ecx
             push eax
-            push 0x6607f8
+            push offset gMatchString_006607f8
             call dr_dprintf
             add esp, 0xc
             ret
@@ -490,18 +587,18 @@ void C2_NAKED C2_HOOK_FASTCALL SSDXLogError(HRESULT hRes) {
             je L00500437
             cmp ecx, 0x887600e1
             jne L0050049c
-            mov eax, 0x660720
+            mov eax, offset gMatchFloat_00660720
             push ecx
             push eax
-            push 0x6607f8
+            push offset gMatchString_006607f8
             call dr_dprintf
             add esp, 0xc
             ret
     L00500437:
-            mov eax, 0x66070c
+            mov eax, offset gMatchFloat_0066070c
             push ecx
             push eax
-            push 0x6607f8
+            push offset gMatchString_006607f8
             call dr_dprintf
             add esp, 0xc
             ret
@@ -511,18 +608,18 @@ void C2_NAKED C2_HOOK_FASTCALL SSDXLogError(HRESULT hRes) {
             je L00500473
             cmp ecx, 0x887601c2
             jne L0050049c
-            mov eax, 0x6606f8
+            mov eax, offset gMatchFloat_006606f8
             push ecx
             push eax
-            push 0x6607f8
+            push offset gMatchString_006607f8
             call dr_dprintf
             add esp, 0xc
             ret
     L00500473:
-            mov eax, 0x6606e0
+            mov eax, offset gMatchFloat_006606e0
             push ecx
             push eax
-            push 0x6607f8
+            push offset gMatchString_006607f8
             call dr_dprintf
             add esp, 0xc
             ret
@@ -538,31 +635,31 @@ void C2_NAKED C2_HOOK_FASTCALL SSDXLogError(HRESULT hRes) {
             and eax, 0xffff
             push eax
             push ecx
-            push 0x66069c
+            push offset gMatchFloat_0066069c
             call dr_dprintf
             add esp, 0xc
             ret
     L005004b3:
-            mov eax, 0x660694
+            mov eax, offset gMatchString_00660694
             push ecx
             push eax
-            push 0x6607f8
+            push offset gMatchString_006607f8
             call dr_dprintf
             add esp, 0xc
             ret
     L005004c8:
-            mov eax, 0x66067c
+            mov eax, offset gMatchFloat_0066067c
             push ecx
             push eax
-            push 0x6607f8
+            push offset gMatchString_006607f8
             call dr_dprintf
             add esp, 0xc
             ret
     L005004dd:
-            mov eax, 0x66066c
+            mov eax, offset gMatchString_0066066c
             push ecx
             push eax
-            push 0x6607f8
+            push offset gMatchString_006607f8
             call dr_dprintf
             add esp, 0xc
             ret
@@ -748,7 +845,7 @@ void C2_NAKED C2_HOOK_FASTCALL SSDXDirectDrawSetup(int pWidth, int pHeight, int 
 #else
     __asm {
             sub esp, 0x470
-            mov eax, dword ptr ds:[gWindowed]
+            mov eax, dword ptr [gWindowed]
             push ebx
             push ebp
             mov ebx, edx
@@ -770,9 +867,9 @@ void C2_NAKED C2_HOOK_FASTCALL SSDXDirectDrawSetup(int pWidth, int pHeight, int 
             push esi
             push ebx
             push ebp
-            push 0x660b1c
+            push offset gMatchFloat_00660b1c
             call dr_dprintf
-            mov eax, dword ptr ds:[gEnumerate_DirectX_surfaces]
+            mov eax, dword ptr [gEnumerate_DirectX_surfaces]
             add esp, 0x10
             test eax, eax
             jne L005007c6
@@ -783,7 +880,7 @@ void C2_NAKED C2_HOOK_FASTCALL SSDXDirectDrawSetup(int pWidth, int pHeight, int 
     L005007c6:
             xor ecx, ecx
     L005007c8:
-            mov eax, dword ptr ds:[gDirectDraw2]
+            mov eax, dword ptr [gDirectDraw2]
             push ecx
             push 0
             push esi
@@ -798,15 +895,20 @@ void C2_NAKED C2_HOOK_FASTCALL SSDXDirectDrawSetup(int pWidth, int pHeight, int 
             push 0
             push 0
             push offset gSSDXWindowPos
-            call dword ptr ds:[0x5891cc]
+            _emit 0xff
+        _emit 0x15
+        _emit 0xcc
+        _emit 0x91
+        _emit 0x58
+        _emit 0x00
             test esi, esi
             jne L00500984
             mov ecx, 0x1b
             xor eax, eax
             lea edi, [esp + 0x14]
-            push 0x660ae8
+            push offset gMatchFloat_00660ae8
             rep stosd
-            mov eax, dword ptr ds:[gEnumerate_DirectX_surfaces]
+            mov eax, dword ptr [gEnumerate_DirectX_surfaces]
             mov dword ptr [esp + 0x18], 0x6c
             mov ecx, eax
             neg ecx
@@ -824,7 +926,7 @@ void C2_NAKED C2_HOOK_FASTCALL SSDXDirectDrawSetup(int pWidth, int pHeight, int 
             or ah, 0xa
             mov dword ptr [esp + 0x80], eax
             call dr_dprintf
-            mov eax, dword ptr ds:[gDirectDraw]
+            mov eax, dword ptr [gDirectDraw]
             add esp, 4
             lea edx, [esp + 0x14]
             mov ecx, dword ptr [eax]
@@ -836,12 +938,12 @@ void C2_NAKED C2_HOOK_FASTCALL SSDXDirectDrawSetup(int pWidth, int pHeight, int 
             mov esi, eax
             test esi, esi
             jne L00500984
-            mov eax, dword ptr ds:[gEnumerate_DirectX_surfaces]
+            mov eax, dword ptr [gEnumerate_DirectX_surfaces]
             test eax, eax
             je L005008a8
-            push 0x660aac
+            push offset gMatchFloat_00660aac
             call dr_dprintf
-            mov eax, dword ptr ds:[gPrimary_surface]
+            mov eax, dword ptr [gPrimary_surface]
             add esp, 4
             lea edx, [esp + 0x10]
             mov ecx, dword ptr [eax]
@@ -852,7 +954,7 @@ void C2_NAKED C2_HOOK_FASTCALL SSDXDirectDrawSetup(int pWidth, int pHeight, int 
             mov esi, eax
             mov eax, dword ptr [esp + 0x10]
             push eax
-            push 0x660a80
+            push offset gMatchFloat_00660a80
             call dr_dprintf
             add esp, 8
             jmp L0050090f
@@ -862,11 +964,16 @@ void C2_NAKED C2_HOOK_FASTCALL SSDXDirectDrawSetup(int pWidth, int pHeight, int 
             push 0
             push 0
             push offset gSSDXRect
-            call dword ptr ds:[0x5891cc]
+            _emit 0xff
+        _emit 0x15
+        _emit 0xcc
+        _emit 0x91
+        _emit 0x58
+        _emit 0x00
             mov ecx, 0x1b
             xor eax, eax
             lea edi, [esp + 0x14]
-            push 0x6605dc
+            push offset gMatchFloat_006605dc
             rep stosd
             mov dword ptr [esp + 0x18], 0x6c
             mov dword ptr [esp + 0x1c], 7
@@ -874,7 +981,7 @@ void C2_NAKED C2_HOOK_FASTCALL SSDXDirectDrawSetup(int pWidth, int pHeight, int 
             mov dword ptr [esp + 0x24], ebp
             mov dword ptr [esp + 0x20], ebx
             call dr_dprintf
-            mov eax, dword ptr ds:[gDirectDraw]
+            mov eax, dword ptr [gDirectDraw]
             add esp, 4
             lea edx, [esp + 0x14]
             mov ecx, dword ptr [eax]
@@ -897,9 +1004,9 @@ void C2_NAKED C2_HOOK_FASTCALL SSDXDirectDrawSetup(int pWidth, int pHeight, int 
             add eax, 4
             dec ecx
             jne L0050091f
-            push 0x660a4c
+            push offset gMatchFloat_00660a4c
             call dr_dprintf
-            mov eax, dword ptr ds:[gDirectDraw]
+            mov eax, dword ptr [gDirectDraw]
             add esp, 4
             lea edx, [esp + 0x80]
             mov ecx, dword ptr [eax]
@@ -912,10 +1019,10 @@ void C2_NAKED C2_HOOK_FASTCALL SSDXDirectDrawSetup(int pWidth, int pHeight, int 
             mov esi, eax
             test esi, esi
             jne L00500984
-            push 0x660a1c
+            push offset gMatchFloat_00660a1c
             call dr_dprintf
-            mov eax, dword ptr ds:[gPrimary_surface]
-            mov edx, dword ptr ds:[gDirectDrawPalette]
+            mov eax, dword ptr [gPrimary_surface]
+            mov edx, dword ptr [gDirectDrawPalette]
             add esp, 4
             mov ecx, dword ptr [eax]
             push edx
@@ -924,11 +1031,11 @@ void C2_NAKED C2_HOOK_FASTCALL SSDXDirectDrawSetup(int pWidth, int pHeight, int 
             mov esi, eax
     L00500984:
             call SSDXLockAttachedSurface
-            mov eax, dword ptr ds:[gAttached_surface_locked]
+            mov eax, dword ptr [gAttached_surface_locked]
             test eax, eax
             je L005009c8
-            mov eax, dword ptr ds:[gAttached_surface]
-            mov edx, dword ptr ds:[gSSDXLockedRect]
+            mov eax, dword ptr [gAttached_surface]
+            mov edx, dword ptr [gSSDXLockedRect]
             push edx
             push eax
             mov ecx, dword ptr [eax]
@@ -936,7 +1043,7 @@ void C2_NAKED C2_HOOK_FASTCALL SSDXDirectDrawSetup(int pWidth, int pHeight, int 
             mov edi, eax
             test edi, edi
             jne L005009b4
-            mov dword ptr ds:[gAttached_surface_locked], eax
+            mov dword ptr [gAttached_surface_locked], eax
             jmp L005009c8
     L005009b4:
             push 0x66052c
@@ -946,11 +1053,11 @@ void C2_NAKED C2_HOOK_FASTCALL SSDXDirectDrawSetup(int pWidth, int pHeight, int 
             call SSDXLogError
     L005009c8:
             mov eax, dword ptr [esp + 0x488]
-            mov ecx, dword ptr ds:[gSSDXPitch]
+            mov ecx, dword ptr [gSSDXPitch]
             test esi, esi
             mov dword ptr [eax], ecx
             je L005009fe
-            push 0x6609ec
+            push offset gMatchFloat_006609ec
             call dr_dprintf
             add esp, 4
             mov ecx, esi
@@ -963,9 +1070,9 @@ void C2_NAKED C2_HOOK_FASTCALL SSDXDirectDrawSetup(int pWidth, int pHeight, int 
             add esp, 0x470
             ret 8
     L005009fe:
-            mov edx, dword ptr ds:[gSSDXPitch]
+            mov edx, dword ptr [gSSDXPitch]
             push edx
-            push 0x6609ac
+            push offset gMatchFloat_006609ac
             call dr_dprintf
             add esp, 8
             mov eax, esi
@@ -975,6 +1082,21 @@ void C2_NAKED C2_HOOK_FASTCALL SSDXDirectDrawSetup(int pWidth, int pHeight, int 
             pop ebx
             add esp, 0x470
             ret 8
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }

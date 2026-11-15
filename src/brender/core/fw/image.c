@@ -28,6 +28,18 @@ extern br_image* C2_HOOK_STDCALL ImageLoad(const char* name);
 extern br_framework_state fw;
 extern char tokenTypes[];
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gString_0066c84c[];
+extern char gString_0066c854[];
+extern char gString_0066c85c[];
+extern char gString_0066c864[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchString_0066c84c[];
+extern char gMatchString_0066c854[];
+extern char gMatchString_0066c85c[];
+extern char gMatchString_0066c864[];
+#endif
 // FUNCTION: CARMA2_HW 0x0052fed0
 br_boolean C2_HOOK_CDECL BrImageAdd(br_image* img) {
     BrAddHead(&fw.images, &img->node);
@@ -145,19 +157,19 @@ C2_NAKED br_image* C2_HOOK_CDECL BrImageReference(const char* name) {
             add esp, 8
             test esi, esi
             je L0052fff9
-            push offset tokenTypes+0x1db4
+            push 0x66c834
             push esi
             call BrStrICmp
             add esp, 8
             test eax, eax
             je L0052fff6
-            push offset tokenTypes+0x1dbc
+            push 0x66c83c
             push esi
             call BrStrICmp
             add esp, 8
             test eax, eax
             je L0052fff6
-            push offset tokenTypes+0x1dc4
+            push 0x66c844
             push esi
             call BrStrICmp
             add esp, 8
@@ -213,7 +225,7 @@ C2_NAKED br_image* C2_HOOK_CDECL BrImageReference(const char* name) {
             push ebp
             call BrStrCpy
             add esp, 8
-            push offset tokenTypes+0x1dcc
+            push offset gMatchString_0066c84c
             push ebp
             call BrStrCat
             add esp, 8
@@ -251,7 +263,7 @@ C2_NAKED br_image* C2_HOOK_CDECL BrImageReference(const char* name) {
             push ebp
             call BrStrCpy
             add esp, 8
-            push offset tokenTypes+0x1dd4
+            push offset gMatchString_0066c854
             push ebp
             call BrStrCat
             add esp, 8
@@ -260,13 +272,13 @@ C2_NAKED br_image* C2_HOOK_CDECL BrImageReference(const char* name) {
             mov esi, eax
             jmp L0053018c
     L005300db:
-            push offset tokenTypes+0x1ddc
+            push offset gMatchString_0066c85c
             push esi
             call BrStrICmp
             add esp, 8
             test eax, eax
             je L00530147
-            push offset tokenTypes+0x1de4
+            push offset gMatchString_0066c864
             push esi
             call BrStrICmp
             add esp, 8

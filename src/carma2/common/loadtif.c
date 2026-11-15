@@ -51,6 +51,25 @@ extern tFrontend_spec gFrontend_QUIT;
 extern int gLast_key_down;
 extern br_filesystem gZlib_filesystem;
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gFile_mode_rb[];
+extern char gString_00657230[];
+extern char gString_00657248[];
+extern char gString_00657254[];
+extern char gString_00657268[];
+extern char gString_00657274[];
+extern char gString_0065727c[];
+extern char gString_00657298[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchString_00657230[];
+extern char gMatchString_00657248[];
+extern char gMatchString_00657254[];
+extern char gMatchString_00657268[];
+extern char gMatchString_00657274[];
+extern char gMatchString_0065727c[];
+extern char gMatchString_00657298[];
+#endif
 // FUNCTION: CARMA2_HW 0x00485130
 C2_NAKED br_pixelmap* C2_HOOK_FASTCALL LoadTiffPixelmap(const char* path, int flags) {
 #ifndef CARPOCALYPSE2_MATCHING
@@ -183,7 +202,7 @@ C2_NAKED br_pixelmap* C2_HOOK_FASTCALL LoadTiffPixelmap(const char* path, int fl
             sub esp, 0x28
             mov dword ptr [esp + 0x10], edx
             push edi
-            mov edx, offset gLast_key_down+0x30
+            mov edx, 0x65723c
             call TIFFOpen
             mov edi, eax
             test edi, edi
@@ -573,7 +592,7 @@ C2_NAKED br_pixelmap* C2_HOOK_FASTCALL LoadTiffPixelmap(const char* path, int fl
             add esp, 0x28
             ret
     L00485540:
-            push offset gLast_key_down+0x24
+            push offset gMatchString_00657230
             push ebp
             call BrResStrDup
             add esp, 8
@@ -603,6 +622,16 @@ C2_NAKED br_pixelmap* C2_HOOK_FASTCALL LoadTiffPixelmap(const char* path, int fl
             pop edi
             add esp, 0x28
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -839,38 +868,38 @@ C2_NAKED br_pixelmap* C2_HOOK_FASTCALL LoadTiffTexture_Ex2(const char* pDirector
             test eax, eax
             mov esi, edx
             mov dword ptr [esp + 0x3c], edi
-            mov ecx, offset gLast_key_down+0xa4
+            mov ecx, 0x6572b0
             jne L00485777
-            mov ecx, offset gLast_key_down+0x9c
+            mov ecx, 0x6572a8
     L00485777:
             mov eax, dword ptr [gDir_separator]
-            push offset gFrontend_QUIT+0xbbac
+            push 0x65599c
             push esi
             push eax
             push ecx
             push eax
             push edi
             lea eax, [esp + 0x58]
-            push offset gLast_key_down+0x8c
+            push offset gMatchString_00657298
             push eax
             call sprintf
             mov eax, dword ptr [esp + 0x968]
             add esp, 0x20
             and eax, 1
-            mov ecx, offset gLast_key_down+0x84
+            mov ecx, 0x657290
             mov dword ptr [esp + 0x30], eax
             je L004857b2
-            mov ecx, offset gLast_key_down+0x7c
+            mov ecx, 0x657288
     L004857b2:
             mov eax, dword ptr [gDir_separator]
-            push offset gDRFont_to_polyfont_mapping+0x314
+            push 0x59b0b4
             push esi
             push eax
             push ecx
             push eax
             push edi
             lea ecx, [esp + 0x158]
-            push offset gLast_key_down+0x8c
+            push offset gMatchString_00657298
             push ecx
             call sprintf
             add esp, 0x20
@@ -911,14 +940,14 @@ C2_NAKED br_pixelmap* C2_HOOK_FASTCALL LoadTiffTexture_Ex2(const char* pDirector
             mov dword ptr [esp + 0x14], eax
     L00485865:
             mov eax, dword ptr [gDir_separator]
-            push offset gFrontend_QUIT+0xbbac
+            push 0x65599c
             push esi
             push eax
-            push offset gLast_key_down+0x9c
+            push 0x6572a8
             push eax
             push edi
             lea ecx, [esp + 0x358]
-            push offset gLast_key_down+0x8c
+            push offset gMatchString_00657298
             push ecx
             call sprintf
             add esp, 0x20
@@ -981,17 +1010,17 @@ C2_NAKED br_pixelmap* C2_HOOK_FASTCALL LoadTiffTexture_Ex2(const char* pDirector
             jmp L00485afe
     L00485960:
             mov eax, dword ptr [gDir_separator]
-            push offset gLast_key_down+0x70
+            push offset gMatchString_0065727c
             push eax
-            push offset gLast_key_down+0x68
+            push offset gMatchString_00657274
             push eax
             push edi
             lea edx, [esp + 0x354]
-            push offset gLast_key_down+0x5c
+            push offset gMatchString_00657268
             push edx
             call sprintf
             add esp, 0x1c
-            mov edx, offset gCancel_recover+0x1a4
+            mov edx, offset gFile_mode_rb
             lea ecx, [esp + 0x340]
             call DRfopen
             mov esi, eax
@@ -1088,7 +1117,7 @@ C2_NAKED br_pixelmap* C2_HOOK_FASTCALL LoadTiffTexture_Ex2(const char* pDirector
             dec esi
             jne L00485a82
     L00485ab6:
-            push offset gLast_key_down+0x70
+            push offset gMatchString_0065727c
             push ebp
             call BrResStrDup
             add esp, 8
@@ -1111,7 +1140,7 @@ C2_NAKED br_pixelmap* C2_HOOK_FASTCALL LoadTiffTexture_Ex2(const char* pDirector
             mov dword ptr [esp + 0x10], ebp
             je L00485fc3
     L00485afe:
-            mov edx, offset gLast_key_down+0x30
+            mov edx, 0x65723c
             lea ecx, [esp + 0x40]
             call TIFFOpen
             mov edi, eax
@@ -1323,10 +1352,10 @@ C2_NAKED br_pixelmap* C2_HOOK_FASTCALL LoadTiffTexture_Ex2(const char* pDirector
             test ebp, ebp
             jne L00485ed8
             mov esi, dword ptr [esp + 0x30]
-            mov eax, offset gLast_key_down+0x84
+            mov eax, 0x657290
             test esi, esi
             je L00485d8c
-            mov eax, offset gLast_key_down+0x7c
+            mov eax, 0x657288
     L00485d8c:
             mov ecx, dword ptr [esp + 0x3c]
             push eax
@@ -1334,7 +1363,7 @@ C2_NAKED br_pixelmap* C2_HOOK_FASTCALL LoadTiffTexture_Ex2(const char* pDirector
             lea edx, [esp + 0x544]
             push eax
             push ecx
-            push offset gLast_key_down+0x54
+            push 0x657260
             push edx
             call sprintf
             add esp, 0x14
@@ -1347,14 +1376,14 @@ C2_NAKED br_pixelmap* C2_HOOK_FASTCALL LoadTiffTexture_Ex2(const char* pDirector
             test eax, eax
             jne L00485ed8
             test esi, esi
-            mov ebp, offset gLast_key_down+0x84
+            mov ebp, 0x657290
             je L00485ddf
-            mov ebp, offset gLast_key_down+0x7c
+            mov ebp, 0x657288
     L00485ddf:
             lea edi, [esp + 0x40]
             or ecx, 0xffffffff
             xor eax, eax
-            push offset gFrontend_QUIT+0xbbac
+            push 0x65599c
             repne scasb
             not ecx
             dec ecx
@@ -1398,7 +1427,7 @@ C2_NAKED br_pixelmap* C2_HOOK_FASTCALL LoadTiffTexture_Ex2(const char* pDirector
             lea eax, [esp + 0x448]
             push ecx
             push edx
-            push offset gLast_key_down+0x48
+            push offset gMatchString_00657254
             push eax
             add esi, edi
             call sprintf
@@ -1407,14 +1436,14 @@ C2_NAKED br_pixelmap* C2_HOOK_FASTCALL LoadTiffTexture_Ex2(const char* pDirector
             add esp, 0x18
             lea ecx, [esp + esi + 0x40]
             sub edx, esi
-            push offset gDRFont_to_polyfont_mapping+0x314
+            push 0x59b0b4
             push ecx
             push edx
             lea ecx, [esp + 0x44c]
             push eax
             push ecx
             lea edx, [esp + 0x254]
-            push offset gLast_key_down+0x3c
+            push offset gMatchString_00657248
             push edx
             call sprintf
             add esp, 0x1c
@@ -1516,6 +1545,20 @@ C2_NAKED br_pixelmap* C2_HOOK_FASTCALL LoadTiffTexture_Ex2(const char* pDirector
             pop ebx
             add esp, 0x930
             ret 0x10
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }

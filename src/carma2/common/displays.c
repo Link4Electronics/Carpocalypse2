@@ -435,6 +435,76 @@ extern int gNumber_of_cops_before_faffage;
 extern br_pixelmap* gRender_screen;
 extern tU32 gTime_stamp_for_this_munging;
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gData_00589d38[];
+extern char gData_0079ec14[];
+extern char gDouble_00589d30[];
+extern char gDouble_00589d40[];
+extern char gDouble_00589d48[];
+extern char gDouble_00589d50[];
+extern char gDouble_00589d58[];
+extern char gDouble_00589d60[];
+extern char gDouble_00589d68[];
+extern char gDouble_00589d70[];
+extern char gDouble_0058a1b8[];
+extern char gDouble_0058a1c0[];
+extern char gDouble_0058a1c8[];
+extern char gDouble_0058a1d0[];
+extern char gDouble_0058a1d8[];
+extern char gDouble_0058a1e0[];
+extern char gDouble_0058a348[];
+extern char gDouble_0058a358[];
+extern char gDouble_0058a370[];
+extern char gDouble_0058a378[];
+extern char gDouble_0058a380[];
+extern char gFloat_0058a354[];
+extern char gFloat_0058a360[];
+extern char gFloat_0058a368[];
+extern char gString_005915dc[];
+extern char gString_005915e4[];
+extern char gString_005915f0[];
+extern char gString_005915fc[];
+extern char gString_00591604[];
+extern char gString_0059641c[];
+extern char gString_00596428[];
+extern char gString_00655b3c[];
+extern char gString_00659b58[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchData_00589d38[];
+extern char gMatchData_0079ec14[];
+extern char gMatchDouble_00589d30[];
+extern char gMatchDouble_00589d40[];
+extern char gMatchDouble_00589d48[];
+extern char gMatchDouble_00589d50[];
+extern char gMatchDouble_00589d58[];
+extern char gMatchDouble_00589d60[];
+extern char gMatchDouble_00589d68[];
+extern char gMatchDouble_00589d70[];
+extern char gMatchDouble_0058a1b8[];
+extern char gMatchDouble_0058a1c0[];
+extern char gMatchDouble_0058a1c8[];
+extern char gMatchDouble_0058a1d0[];
+extern char gMatchDouble_0058a1d8[];
+extern char gMatchDouble_0058a1e0[];
+extern char gMatchDouble_0058a348[];
+extern char gMatchDouble_0058a358[];
+extern char gMatchDouble_0058a370[];
+extern char gMatchDouble_0058a378[];
+extern char gMatchDouble_0058a380[];
+extern char gMatchFloat_0058a354[];
+extern char gMatchFloat_0058a360[];
+extern char gMatchFloat_0058a368[];
+extern char gMatchString_005915dc[];
+extern char gMatchString_005915e4[];
+extern char gMatchString_005915f0[];
+extern char gMatchString_005915fc[];
+extern char gMatchString_00591604[];
+extern char gMatchString_0059641c[];
+extern char gMatchString_00596428[];
+extern char gMatchString_00655b3c[];
+extern char gMatchString_00659b58[];
+#endif
 // FUNCTION: CARMA2_HW 0x0045aa60
 void C2_NAKED C2_HOOK_STDCALL CreateAccentPolyActor(float pX, float pY, float pWidth, float pHeight) {
 #ifndef CARPOCALYPSE2_MATCHING
@@ -478,7 +548,7 @@ void C2_NAKED C2_HOOK_STDCALL CreateAccentPolyActor(float pX, float pY, float pW
             mov eax, dword ptr [gAcc_poly_material]
             test eax, eax
             jne L0045aaca
-            push offset gUNK_00596310+0x118
+            push offset gMatchString_00596428
             call BrMaterialAllocate
             mov dword ptr [gAcc_poly_material], eax
             mov dword ptr [eax + 8], 0x80
@@ -505,7 +575,7 @@ void C2_NAKED C2_HOOK_STDCALL CreateAccentPolyActor(float pX, float pY, float pW
             jne L0045acc2
             push 2
             push 6
-            push offset gUNK_00596310+0x10c
+            push offset gMatchString_0059641c
             call BrModelAllocate
             mov ecx, dword ptr [esp + 0x10]
             mov dword ptr [gAcc_poly_model], eax
@@ -632,6 +702,9 @@ void C2_NAKED C2_HOOK_STDCALL CreateAccentPolyActor(float pX, float pY, float pW
             add esp, 8
     L0045acea:
             ret 0x10
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -710,7 +783,7 @@ void C2_NAKED C2_HOOK_FASTCALL EarnCredits2(int pAmount, const char* pPrefix_tex
             push eax
             push esi
             push ebx
-            push offset gPrev_ps_drawn_levels+0x20c
+            push offset gMatchString_00591604
             jmp L0044b3ea
     L0044b377:
             test esi, esi
@@ -720,7 +793,7 @@ void C2_NAKED C2_HOOK_FASTCALL EarnCredits2(int pAmount, const char* pPrefix_tex
             lea edx, [esp + 0x10]
             push eax
             push ebx
-            push offset gPrev_ps_drawn_levels+0x204
+            push offset gMatchString_005915fc
             push edx
             call sprintf
             add esp, 0x10
@@ -738,7 +811,7 @@ void C2_NAKED C2_HOOK_FASTCALL EarnCredits2(int pAmount, const char* pPrefix_tex
             call GetMiscString
             push eax
             lea eax, [esp + 0x20]
-            push offset gPrev_ps_drawn_levels+0x1f8
+            push offset gMatchString_005915f0
             push eax
             call sprintf
             add esp, 0x18
@@ -751,7 +824,7 @@ void C2_NAKED C2_HOOK_FASTCALL EarnCredits2(int pAmount, const char* pPrefix_tex
             call GetMiscString
             push eax
             push ebx
-            push offset gPrev_ps_drawn_levels+0x1ec
+            push offset gMatchString_005915e4
     L0044b3ea:
             lea ecx, [esp + 0x20]
             push ecx
@@ -1373,12 +1446,22 @@ void C2_NAKED C2_HOOK_FASTCALL DoMapOverlays(br_pixelmap* pScreen) {
             mov dword ptr [esp + 0x20], ecx
             fild dword ptr [esp + 0x28]
             fild dword ptr [esp + 0x20]
-            fld dword ptr [gDouble_0058a068+0x2e8]
+            _emit 0xd9
+        _emit 0x05
+        _emit 0x50
+        _emit 0xa3
+        _emit 0x58
+        _emit 0x00
             fxch st(2)
             fsub dword ptr [esp + 0x38]
             fxch st(1)
             fsub dword ptr [esp + 0x3c]
-            fld dword ptr [gDouble_0058a068+0x2e8]
+            _emit 0xd9
+        _emit 0x05
+        _emit 0x50
+        _emit 0xa3
+        _emit 0x58
+        _emit 0x00
             fxch st(2)
             fst dword ptr [esp + 0x2c]
             fmul dword ptr [esp + 0x2c]
@@ -1463,6 +1546,12 @@ void C2_NAKED C2_HOOK_FASTCALL DoMapOverlays(br_pixelmap* pScreen) {
             pop ebx
             add esp, 0x34
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -1584,9 +1673,9 @@ tOpponent_Status C2_NAKED C2_HOOK_FASTCALL GetOpponentStatus(tCar_spec* pCar) {
             and al, 0
             cmp eax, 0x200
             jne L004af687
-            mov esi, dword ptr ds:[0x75d7a0]
+            mov esi, dword ptr [gProgram_state+0x1c20]
             xor eax, eax
-            mov edx, 0x75d8a8
+            mov edx, offset gProgram_state+0x1d28
     L004af660:
             cmp eax, esi
             jge L004af6c2
@@ -1601,14 +1690,14 @@ tOpponent_Status C2_NAKED C2_HOOK_FASTCALL GetOpponentStatus(tCar_spec* pCar) {
             sub edx, eax
             lea eax, [edx + edx*2]
             lea eax, [eax + eax*4]
-            lea eax, [eax*4 + 0x75d8a0]
+            lea eax, [eax*4 + gProgram_state+0x1d20]
             jmp L004af6c4
     L004af687:
             cmp eax, 0x300
             jne L004af6c2
-            mov esi, dword ptr ds:[gNumber_of_cops_before_faffage]
+            mov esi, dword ptr [gNumber_of_cops_before_faffage]
             xor eax, eax
-            mov edx, 0x7609e0
+            mov edx, offset gProgram_state+0x4e60
     L004af69b:
             cmp eax, esi
             jge L004af6c2
@@ -1623,7 +1712,7 @@ tOpponent_Status C2_NAKED C2_HOOK_FASTCALL GetOpponentStatus(tCar_spec* pCar) {
             sub edx, eax
             lea eax, [edx + edx*2]
             lea edx, [eax + eax*4]
-            lea eax, [edx*4 + 0x7609d8]
+            lea eax, [edx*4 + gProgram_state+0x4e58]
             jmp L004af6c4
     L004af6c2:
             xor eax, eax
@@ -1635,14 +1724,14 @@ tOpponent_Status C2_NAKED C2_HOOK_FASTCALL GetOpponentStatus(tCar_spec* pCar) {
             pop esi
             ret
     L004af6d5:
-            mov ecx, dword ptr ds:[gCountdown]
+            mov ecx, dword ptr [gCountdown]
             test ecx, ecx
             je L004af6e6
             mov eax, 6
             pop esi
             ret
     L004af6e6:
-            mov ecx, dword ptr ds:[gTime_stamp_for_this_munging]
+            mov ecx, dword ptr [gTime_stamp_for_this_munging]
             mov edx, dword ptr [eax + 0x5c]
             cmp ecx, edx
             jae L004af6fa
@@ -2065,6 +2154,18 @@ tOpponent_Status C2_NAKED C2_HOOK_FASTCALL GetOpponentStatus(tCar_spec* pCar) {
             _emit 0x83
             _emit 0xc4
             _emit 0x08
+            _emit 0xc3
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
     }
 #endif
 }
@@ -2258,7 +2359,7 @@ void C2_NAKED C2_HOOK_FASTCALL DoOpponentStatusHeadup(void) {
             push esi
             push edi
             jne L00494922
-            mov ecx, offset gCar_map_colours+0x18
+            mov ecx, offset gMatchString_00659b58
             call LoadPixelmap
             mov dword ptr [gLit_op_stat], eax
     L00494922:
@@ -2289,7 +2390,7 @@ void C2_NAKED C2_HOOK_FASTCALL DoOpponentStatusHeadup(void) {
             call GetMiscString
             push eax
             mov eax, dword ptr [gCurrent_graf_data]
-            push offset gUNK_00768f68+0x27d8
+            push offset gFonts+0x5360
             mov ecx, dword ptr [eax + 0x4dc]
             mov edx, dword ptr [eax + 0x4d8]
             push ecx
@@ -2313,7 +2414,7 @@ void C2_NAKED C2_HOOK_FASTCALL DoOpponentStatusHeadup(void) {
             push edx
             push eax
             mov eax, dword ptr [gCurrent_graf_data]
-            push offset gUNK_00768f68+0x27d8
+            push offset gFonts+0x5360
             mov edx, dword ptr [eax + 0x4dc]
             push edx
             mov edx, dword ptr [eax + 0x4d8]
@@ -2328,7 +2429,7 @@ void C2_NAKED C2_HOOK_FASTCALL DoOpponentStatusHeadup(void) {
             mov ecx, dword ptr [gBack_screen]
             push eax
             mov eax, dword ptr [gCurrent_graf_data]
-            push offset gUNK_00768f68+0x27d8
+            push offset gFonts+0x5360
             mov edx, dword ptr [eax + 0x4e4]
             push edx
             mov edx, dword ptr [eax + 0x4e0]
@@ -2345,7 +2446,7 @@ void C2_NAKED C2_HOOK_FASTCALL DoOpponentStatusHeadup(void) {
             mov ecx, dword ptr [gBack_screen]
             push eax
             mov eax, dword ptr [gCurrent_graf_data]
-            push offset gUNK_00768f68+0x27d8
+            push offset gFonts+0x5360
             mov edx, dword ptr [eax + 0x4ec]
             push edx
             mov edx, dword ptr [eax + 0x4e8]
@@ -2393,7 +2494,7 @@ void C2_NAKED C2_HOOK_FASTCALL DoOpponentStatusHeadup(void) {
             push edx
             push eax
             mov eax, dword ptr [gCurrent_graf_data]
-            push offset gUNK_00768f68+0x27d8
+            push offset gFonts+0x5360
             mov edx, dword ptr [eax + 0x4f4]
             push edx
             mov edx, dword ptr [eax + 0x4f0]
@@ -2445,7 +2546,7 @@ void C2_NAKED C2_HOOK_FASTCALL DoOpponentStatusHeadup(void) {
             mov esi, eax
             lea eax, [esp + 0x14]
             push esi
-            push offset gFrontend_QUIT+0xbd4c
+            push offset gMatchString_00655b3c
             push eax
             mov dword ptr [esp + 0x1c], esi
             call sprintf
@@ -2457,7 +2558,7 @@ void C2_NAKED C2_HOOK_FASTCALL DoOpponentStatusHeadup(void) {
             push edx
             push eax
             mov eax, dword ptr [gCurrent_graf_data]
-            push offset gUNK_00768f68+0x27d8
+            push offset gFonts+0x5360
             mov edx, dword ptr [eax + 0x504]
             push edx
             mov edx, dword ptr [eax + 0x500]
@@ -2742,7 +2843,7 @@ void C2_NAKED C2_HOOK_FASTCALL DoOpponentStatusHeadup(void) {
             push edx
             push eax
             mov eax, dword ptr [gCurrent_graf_data]
-            push offset gUNK_00768f68+0x27d8
+            push offset gFonts+0x5360
             mov edx, dword ptr [eax + 0x514]
             push edx
             mov edx, dword ptr [eax + 0x510]
@@ -2754,6 +2855,11 @@ void C2_NAKED C2_HOOK_FASTCALL DoOpponentStatusHeadup(void) {
             pop ebx
             add esp, 0x204
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -3024,10 +3130,10 @@ void C2_NAKED C2_HOOK_FASTCALL MapOverlay(void) {
             fsubr dword ptr [gOrigin_map+0x4]
             fstp dword ptr [gOrigin_headup_map+0x4]
             fld dword ptr [gOrigin_headup_map]
-            fsub qword ptr [gDouble_0058a068+0x2e0]
+            fsub qword ptr [gMatchDouble_0058a348]
             call _ftol
             fld dword ptr [gOrigin_headup_map+0x4]
-            fsub qword ptr [gDouble_0058a068+0x2e0]
+            fsub qword ptr [gMatchDouble_0058a348]
             mov esi, eax
             mov dword ptr [gINT_0068c878], esi
             call _ftol
@@ -3121,8 +3227,18 @@ void C2_NAKED C2_HOOK_FASTCALL MapOverlay(void) {
             fld dword ptr [gCar_in_map_space+0x4]
             fld dword ptr [gCar_in_map_space+0x18]
             fld dword ptr [gCar_in_map_space+0x1c]
-            fld dword ptr [gDouble_0058a068+0x2e8]
-            fld dword ptr [gDouble_0058a068+0x2e8]
+            _emit 0xd9
+        _emit 0x05
+        _emit 0x50
+        _emit 0xa3
+        _emit 0x58
+        _emit 0x00
+            _emit 0xd9
+        _emit 0x05
+        _emit 0x50
+        _emit 0xa3
+        _emit 0x58
+        _emit 0x00
             fxch st(5)
             fstp dword ptr [esp + 0x3c]
             fxch st(3)
@@ -3271,7 +3387,7 @@ void C2_NAKED C2_HOOK_FASTCALL MapOverlay(void) {
             fxch st(1)
             fxch st(1)
             fst dword ptr [esp + 0x10]
-            fcomp dword ptr [gDouble_0058a068+0x2ec]
+            fcomp dword ptr [gMatchFloat_0058a354]
             fld dword ptr [esp + 0x14]
             fxch st(1)
             fsubp st(1), st(0)
@@ -3279,7 +3395,7 @@ void C2_NAKED C2_HOOK_FASTCALL MapOverlay(void) {
             test ah, 0x41
             jne L004954b3
             fld dword ptr [esp + 0x10]
-            fdivr qword ptr [gDouble_0058a068+0x2f0]
+            fdivr qword ptr [gMatchDouble_0058a358]
             fld dword ptr [esp + 0x1c]
             fld dword ptr [esp + 0x18]
             fmul st(0), st(2)
@@ -3289,8 +3405,13 @@ void C2_NAKED C2_HOOK_FASTCALL MapOverlay(void) {
             fstp st(2)
             jmp L004954bf
     L004954b3:
-            fld dword ptr [gDouble_0058a068+0x2f8]
-            fld dword ptr [gDouble_0058a068+0x2e8]
+            fld dword ptr [gMatchFloat_0058a360]
+            _emit 0xd9
+        _emit 0x05
+        _emit 0x50
+        _emit 0xa3
+        _emit 0x58
+        _emit 0x00
     L004954bf:
             fld st(2)
             fmul st(0), st(2)
@@ -3330,7 +3451,12 @@ void C2_NAKED C2_HOOK_FASTCALL MapOverlay(void) {
             push eax
             fsubp st(2), st(0)
             fxch st(1)
-            fsub dword ptr [gDouble_0058a068+0x2fc]
+            _emit 0xd8
+        _emit 0x25
+        _emit 0x64
+        _emit 0xa3
+        _emit 0x58
+        _emit 0x00
             call _ftol
             mov ecx, dword ptr [gINT_0074abd0]
             mov edx, dword ptr [gINT_0074abd4]
@@ -3442,8 +3568,8 @@ void C2_NAKED C2_HOOK_FASTCALL MapOverlay(void) {
             fld dword ptr [ecx + 0x54]
             fsub dword ptr [eax + 0x50]
             fimul dword ptr [esp + 0x14]
-            fmul dword ptr [gDouble_0058a068+0x300]
-            fmul qword ptr [gDouble_0058a068+0x308]
+            fmul dword ptr [gMatchFloat_0058a368]
+            fmul qword ptr [gMatchDouble_0058a370]
             call _ftol
             mov dword ptr [esp + 0x18], eax
             xor eax, eax
@@ -3452,7 +3578,7 @@ void C2_NAKED C2_HOOK_FASTCALL MapOverlay(void) {
             fild dword ptr [esp + 0x14]
             shr eax, 1
             mov ebp, eax
-            fmul qword ptr [gDouble_0058a068+0x310]
+            fmul qword ptr [gMatchDouble_0058a378]
             mov dword ptr [esp + 0x10], ebp
             call _ftol
             mov edx, dword ptr [gBack_screen]
@@ -3608,7 +3734,7 @@ void C2_NAKED C2_HOOK_FASTCALL MapOverlay(void) {
             fsub dword ptr [ecx + 0x50]
             fld st(0)
             fabs
-            fcomp qword ptr [gDouble_0058a068+0x318]
+            fcomp qword ptr [gMatchDouble_0058a380]
             fnstsw ax
             test ah, 0x41
             jne L004958a8
@@ -3617,12 +3743,12 @@ void C2_NAKED C2_HOOK_FASTCALL MapOverlay(void) {
             call sign
             mov dword ptr [esp + 0x14], eax
             fild dword ptr [esp + 0x14]
-            fmul qword ptr [gDouble_0058a068+0x318]
+            fmul qword ptr [gMatchDouble_0058a380]
     L004958a8:
-            fmul qword ptr [gDouble_0058a068+0x308]
+            fmul qword ptr [gMatchDouble_0058a370]
             fld st(0)
             fabs
-            fcomp qword ptr [gDouble_0058a068+0x310]
+            fcomp qword ptr [gMatchDouble_0058a378]
             fnstsw ax
             test ah, 1
             je L004958c5
@@ -3748,6 +3874,19 @@ void C2_NAKED C2_HOOK_FASTCALL MapOverlay(void) {
             pop ebx
             add esp, 0x38
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -4551,7 +4690,7 @@ void C2_NAKED C2_HOOK_CDECL DimRectangle(br_pixelmap* pPixelmap, int pLeft, int 
             add edi, ecx
             mov esi, dword ptr [esp + 0x28]
             movsx ecx, word ptr [ebx + 0x28]
-            imul ecx, dword ptr [gHeadup_images+0xb4]
+            imul ecx, dword ptr [gMatchData_0079ec14]
             add ecx, dword ptr [ebx + 8]
             test esi, esi
             je L0047ccab
@@ -4638,6 +4777,15 @@ void C2_NAKED C2_HOOK_CDECL DimRectangle(br_pixelmap* pPixelmap, int pLeft, int 
             pop ebp
             pop ebx
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -4770,6 +4918,16 @@ void C2_NAKED C2_HOOK_FASTCALL DeviouslyDimRectangle(br_pixelmap* pPixelmap, int
             mov byte ptr [eax + 0x20], 1
             pop ecx
             ret 0x10
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -5693,7 +5851,7 @@ void C2_NAKED C2_HOOK_FASTCALL DoHeadups(tU32 pThe_time) {
 #else
     __asm {
             sub esp, 0xc
-            mov eax, dword ptr ds:[gNet_mode]
+            mov eax, dword ptr [gNet_mode]
             push ebx
             xor ebx, ebx
             push ebp
@@ -5704,28 +5862,28 @@ void C2_NAKED C2_HOOK_FASTCALL DoHeadups(tU32 pThe_time) {
             je L00449b2b
             call DoNetScores
     L00449b2b:
-            cmp dword ptr ds:[gQueued_headup_count], ebx
+            cmp dword ptr [gQueued_headup_count], ebx
             je L00449b9d
             call PDGetTotalTime
-            sub eax, dword ptr ds:[gLast_centre_headup]
+            sub eax, dword ptr [gLast_centre_headup]
             cmp eax, 0x3e8
             jb L00449b9d
-            mov eax, dword ptr ds:[0x67f898]
-            mov ecx, dword ptr ds:[0x67f894]
-            mov edx, dword ptr ds:[gQueued_headups]
+            mov eax, dword ptr [gQueued_headups+0x8]
+            mov ecx, dword ptr [gQueued_headups+0x4]
+            mov edx, dword ptr [gQueued_headups]
             push 1
-            push 0x67f89c
+            push offset gQueued_headups+0xc
             push eax
             push ecx
             mov ecx, 4
             call NewTextHeadupSlot2
-            mov eax, dword ptr ds:[gQueued_headup_count]
+            mov eax, dword ptr [gQueued_headup_count]
             cmp eax, ebx
             je L00449b9d
             dec eax
-            mov esi, 0x67f99c
+            mov esi, offset gQueued_headups+0x10c
             mov edx, eax
-            mov dword ptr ds:[gQueued_headup_count], eax
+            mov dword ptr [gQueued_headup_count], eax
             shl edx, 5
             add edx, eax
             mov edi, offset gQueued_headups
@@ -5738,21 +5896,21 @@ void C2_NAKED C2_HOOK_FASTCALL DoHeadups(tU32 pThe_time) {
             and ecx, 3
             rep movsb
     L00449b9d:
-            mov eax, dword ptr ds:[gHeadup_detail_level]
+            mov eax, dword ptr [gHeadup_detail_level]
             cmp eax, ebx
             je L00449bee
             cmp eax, 3
             je L00449bee
-            mov eax, dword ptr ds:[gTimer_headup]
+            mov eax, dword ptr [gTimer_headup]
             cmp eax, ebx
             jl L00449c2f
             lea ecx, [eax + eax*4]
             lea ecx, [ecx + ecx*8]
             shl ecx, 1
             sub ecx, eax
-            mov edx, dword ptr [ecx*4 + 0x67c50c]
+            mov edx, dword ptr [ecx*4 + gHeadups+0xc]
             lea eax, [ecx*4 + gHeadups]
-            mov ecx, dword ptr [ecx*4 + 0x67c504]
+            mov ecx, dword ptr [ecx*4 + gHeadups+0x4]
             mov dword ptr [eax + 0xc], 0x185
             sub ecx, edx
             mov dword ptr [eax + 8], 0xd
@@ -5760,16 +5918,16 @@ void C2_NAKED C2_HOOK_FASTCALL DoHeadups(tU32 pThe_time) {
             mov dword ptr [eax + 4], ecx
             jmp L00449c2f
     L00449bee:
-            mov eax, dword ptr ds:[gTimer_headup]
+            mov eax, dword ptr [gTimer_headup]
             cmp eax, ebx
             jl L00449c2f
             lea ecx, [eax + eax*4]
             lea edx, [ecx + ecx*8]
             shl edx, 1
             sub edx, eax
-            mov ecx, dword ptr [edx*4 + 0x67c504]
+            mov ecx, dword ptr [edx*4 + gHeadups+0x4]
             lea eax, [edx*4 + gHeadups]
-            mov edx, dword ptr [edx*4 + 0x67c50c]
+            mov edx, dword ptr [edx*4 + gHeadups+0xc]
             mov dword ptr [eax + 0xc], 0x27a
             sub ecx, edx
             mov dword ptr [eax + 8], 2
@@ -5778,14 +5936,14 @@ void C2_NAKED C2_HOOK_FASTCALL DoHeadups(tU32 pThe_time) {
     L00449c2f:
             mov edi, offset gHeadups
             mov dword ptr [esp + 0x10], ebx
-            mov esi, 0x67c544
+            mov esi, offset gHeadups+0x44
             mov dword ptr [esp + 0x18], edi
     L00449c41:
             mov eax, dword ptr [esi - 0x44]
-            mov ebp, dword ptr ds:[gRender_screen]
+            mov ebp, dword ptr [gRender_screen]
             cmp eax, ebx
             je L00449f56
-            cmp dword ptr ds:[0x75bc10], 2
+            cmp dword ptr [gProgram_state+0x90], 2
             je L00449c64
             cmp dword ptr [esi - 0x10], ebx
             jne L00449f56
@@ -5841,7 +5999,7 @@ void C2_NAKED C2_HOOK_FASTCALL DoHeadups(tU32 pThe_time) {
             mov edx, eax
             neg edx
             push ecx
-            mov ecx, dword ptr ds:[gScreen_wobble_y]
+            mov ecx, dword ptr [gScreen_wobble_y]
             sbb edx, edx
             and edx, ecx
             mov ecx, dword ptr [esi - 0x3c]
@@ -5849,7 +6007,7 @@ void C2_NAKED C2_HOOK_FASTCALL DoHeadups(tU32 pThe_time) {
             mov ecx, dword ptr [esi - 0x40]
             neg eax
             push edx
-            mov edx, dword ptr ds:[gScreen_wobble_x]
+            mov edx, dword ptr [gScreen_wobble_x]
             sbb eax, eax
             and eax, edx
             add eax, ecx
@@ -5858,20 +6016,20 @@ void C2_NAKED C2_HOOK_FASTCALL DoHeadups(tU32 pThe_time) {
             call BrPixelmapText
             add esp, 0x18
             jmp L00449f56
-            mov eax, dword ptr ds:[gHeadup_detail_level]
+            mov eax, dword ptr [gHeadup_detail_level]
             cmp eax, 2
             je L00449d64
             cmp eax, 5
             je L00449d64
             mov eax, dword ptr [esp + 0x10]
-            mov ecx, dword ptr ds:[gCredits_won_headup]
+            mov ecx, dword ptr [gCredits_won_headup]
             cmp eax, ecx
             je L00449f56
-            cmp eax, dword ptr ds:[gPed_kill_count_headup]
+            cmp eax, dword ptr [gPed_kill_count_headup]
             je L00449f56
-            cmp eax, dword ptr ds:[gCar_kill_count_headup]
+            cmp eax, dword ptr [gCar_kill_count_headup]
             je L00449f56
-            cmp eax, dword ptr ds:[gLaps_headup]
+            cmp eax, dword ptr [gLaps_headup]
             je L00449f56
     L00449d64:
             mov eax, dword ptr [esi - 0x14]
@@ -5885,7 +6043,7 @@ void C2_NAKED C2_HOOK_FASTCALL DoHeadups(tU32 pThe_time) {
             push eax
             mov ecx, edx
             je L00449dad
-            mov eax, dword ptr ds:[gScreen_wobble_y]
+            mov eax, dword ptr [gScreen_wobble_y]
             neg ecx
             sbb ecx, ecx
             and ecx, eax
@@ -5894,7 +6052,7 @@ void C2_NAKED C2_HOOK_FASTCALL DoHeadups(tU32 pThe_time) {
             mov eax, dword ptr [esi - 0x40]
             neg edx
             push ecx
-            mov ecx, dword ptr ds:[gScreen_wobble_x]
+            mov ecx, dword ptr [gScreen_wobble_x]
             sbb edx, edx
             and edx, ecx
             mov ecx, ebp
@@ -5902,7 +6060,7 @@ void C2_NAKED C2_HOOK_FASTCALL DoHeadups(tU32 pThe_time) {
             call DRPixelmapCleverText
             jmp L00449f56
     L00449dad:
-            mov eax, dword ptr ds:[gScreen_wobble_y]
+            mov eax, dword ptr [gScreen_wobble_y]
             neg ecx
             sbb ecx, ecx
             and ecx, eax
@@ -5911,7 +6069,7 @@ void C2_NAKED C2_HOOK_FASTCALL DoHeadups(tU32 pThe_time) {
             mov eax, dword ptr [esi - 0x40]
             neg edx
             push ecx
-            mov ecx, dword ptr ds:[gScreen_wobble_x]
+            mov ecx, dword ptr [gScreen_wobble_x]
             sbb edx, edx
             and edx, ecx
             mov ecx, ebp
@@ -5919,7 +6077,7 @@ void C2_NAKED C2_HOOK_FASTCALL DoHeadups(tU32 pThe_time) {
             call DRPixelmapText
             jmp L00449f56
             mov edx, dword ptr [esi - 0x10]
-            mov edi, dword ptr ds:[gScreen_wobble_y]
+            mov edi, dword ptr [gScreen_wobble_y]
             mov eax, dword ptr [esi - 0x3c]
             push 1
             neg edx
@@ -5969,7 +6127,7 @@ void C2_NAKED C2_HOOK_FASTCALL DoHeadups(tU32 pThe_time) {
             je L00449eb0
             dec eax
             jne L00449f56
-            mov ecx, dword ptr ds:[gFrame_period]
+            mov ecx, dword ptr [gFrame_period]
             mov ebp, dword ptr [esi + 0x10c]
             mov eax, ecx
             shl eax, 6
@@ -6005,7 +6163,7 @@ void C2_NAKED C2_HOOK_FASTCALL DoHeadups(tU32 pThe_time) {
             push ecx
             jmp L00449f4e
     L00449eec:
-            mov ecx, dword ptr ds:[gFrame_period]
+            mov ecx, dword ptr [gFrame_period]
             mov eax, ecx
             shl eax, 6
             add eax, ecx
@@ -6336,9 +6494,9 @@ void C2_NAKED C2_HOOK_FASTCALL DoInstruments(tU32 pThe_time) {
             jle L0044b03c
             fld dword ptr [ecx + 0x4a4]
             fmul dword ptr [gFLOAT_00589d28]
-            fmul qword ptr [gFLOAT_00589d28+0x8]
+            fmul qword ptr [gMatchDouble_00589d30]
             fst qword ptr [esp + 0x30]
-            fcomp qword ptr [gFLOAT_00589d28+0x10]
+            fcomp qword ptr [gMatchData_00589d38]
             fnstsw ax
             test ah, 1
             je L0044ab22
@@ -6540,36 +6698,36 @@ void C2_NAKED C2_HOOK_FASTCALL DoInstruments(tU32 pThe_time) {
             fdivrp st(2), st(0)
             faddp st(1), st(0)
     L0044ad98:
-            fmul qword ptr [gFLOAT_00589d28+0x18]
-            fcom qword ptr [gFLOAT_00589d28+0x10]
+            fmul qword ptr [gMatchDouble_00589d40]
+            fcom qword ptr [gMatchData_00589d38]
             fnstsw ax
             test ah, 1
             je L0044adb3
-            fsub qword ptr [gFLOAT_00589d28+0x20]
+            fsub qword ptr [gMatchDouble_00589d48]
             jmp L0044adc6
     L0044adb3:
-            fcom qword ptr [gFLOAT_00589d28+0x28]
+            fcom qword ptr [gMatchDouble_00589d50]
             fnstsw ax
             test ah, 1
             jne L0044adc6
-            fsub qword ptr [gFLOAT_00589d28+0x28]
+            fsub qword ptr [gMatchDouble_00589d50]
     L0044adc6:
-            fld qword ptr [gFLOAT_00589d28+0x30]
+            fld qword ptr [gMatchDouble_00589d58]
             fsub st(0), st(1)
             fld st(0)
-            fcomp qword ptr [gFLOAT_00589d28+0x10]
+            fcomp qword ptr [gMatchData_00589d38]
             fnstsw ax
             test ah, 1
             je L0044ade3
-            fsub qword ptr [gFLOAT_00589d28+0x20]
+            fsub qword ptr [gMatchDouble_00589d48]
     L0044ade3:
-            fcom qword ptr [gFLOAT_00589d28+0x38]
+            fcom qword ptr [gMatchDouble_00589d60]
             fnstsw ax
             test ah, 0x41
             jne L0044ae13
-            fld qword ptr [gFLOAT_00589d28+0x28]
+            fld qword ptr [gMatchDouble_00589d50]
             fsub st(0), st(1)
-            fmul qword ptr [gFLOAT_00589d28+0x40]
+            fmul qword ptr [gMatchDouble_00589d68]
             call _ftol
             shl eax, 2
             mov edx, offset gCosine_array
@@ -6579,12 +6737,12 @@ void C2_NAKED C2_HOOK_FASTCALL DoInstruments(tU32 pThe_time) {
         _emit 0x02
             jmp L0044ae8a
     L0044ae13:
-            fcom qword ptr [gFLOAT_00589d28+0x48]
+            fcom qword ptr [gMatchDouble_00589d70]
             fnstsw ax
             test ah, 0x41
             jne L0044ae41
-            fsub qword ptr [gFLOAT_00589d28+0x48]
-            fmul qword ptr [gFLOAT_00589d28+0x40]
+            fsub qword ptr [gMatchDouble_00589d70]
+            fmul qword ptr [gMatchDouble_00589d68]
             call _ftol
             mov ecx, offset gCosine_array
             shl eax, 2
@@ -6594,13 +6752,13 @@ void C2_NAKED C2_HOOK_FASTCALL DoInstruments(tU32 pThe_time) {
             fchs
             jmp L0044ae8a
     L0044ae41:
-            fcom qword ptr [gFLOAT_00589d28+0x30]
+            fcom qword ptr [gMatchDouble_00589d58]
             fnstsw ax
             test ah, 0x41
             jne L0044ae73
-            fld qword ptr [gFLOAT_00589d28+0x48]
+            fld qword ptr [gMatchDouble_00589d70]
             fsub st(0), st(1)
-            fmul qword ptr [gFLOAT_00589d28+0x40]
+            fmul qword ptr [gMatchDouble_00589d68]
             call _ftol
             mov edx, offset gCosine_array
             shl eax, 2
@@ -6611,7 +6769,7 @@ void C2_NAKED C2_HOOK_FASTCALL DoInstruments(tU32 pThe_time) {
             fchs
             jmp L0044ae8a
     L0044ae73:
-            fmul qword ptr [gFLOAT_00589d28+0x40]
+            fmul qword ptr [gMatchDouble_00589d68]
             call _ftol
             shl eax, 2
             mov ecx, offset gCosine_array
@@ -6620,13 +6778,13 @@ void C2_NAKED C2_HOOK_FASTCALL DoInstruments(tU32 pThe_time) {
         _emit 0x01
     L0044ae8a:
             fld st(1)
-            fcomp qword ptr [gFLOAT_00589d28+0x38]
+            fcomp qword ptr [gMatchDouble_00589d60]
             fnstsw ax
             test ah, 0x41
             jne L0044aec1
-            fld qword ptr [gFLOAT_00589d28+0x28]
+            fld qword ptr [gMatchDouble_00589d50]
             fsub st(0), st(2)
-            fmul qword ptr [gFLOAT_00589d28+0x40]
+            fmul qword ptr [gMatchDouble_00589d68]
             call _ftol
             shl eax, 2
             mov edx, offset gCosine_array
@@ -6636,13 +6794,13 @@ void C2_NAKED C2_HOOK_FASTCALL DoInstruments(tU32 pThe_time) {
             jmp L0044af48
     L0044aec1:
             fld st(1)
-            fcomp qword ptr [gFLOAT_00589d28+0x48]
+            fcomp qword ptr [gMatchDouble_00589d70]
             fld st(1)
             fnstsw ax
             test ah, 0x41
             jne L0044aef7
-            fsub qword ptr [gFLOAT_00589d28+0x48]
-            fmul qword ptr [gFLOAT_00589d28+0x40]
+            fsub qword ptr [gMatchDouble_00589d70]
+            fmul qword ptr [gMatchDouble_00589d68]
             call _ftol
             mov ecx, offset gCosine_array
             shl eax, 2
@@ -6653,13 +6811,13 @@ void C2_NAKED C2_HOOK_FASTCALL DoInstruments(tU32 pThe_time) {
             fstp dword ptr [esp + 0x10]
             jmp L0044af48
     L0044aef7:
-            fcomp qword ptr [gFLOAT_00589d28+0x30]
+            fcomp qword ptr [gMatchDouble_00589d58]
             fnstsw ax
             test ah, 0x41
             jne L0044af2b
-            fld qword ptr [gFLOAT_00589d28+0x48]
+            fld qword ptr [gMatchDouble_00589d70]
             fsub st(0), st(2)
-            fmul qword ptr [gFLOAT_00589d28+0x40]
+            fmul qword ptr [gMatchDouble_00589d68]
             call _ftol
             mov edx, offset gCosine_array
             shl eax, 2
@@ -6671,7 +6829,7 @@ void C2_NAKED C2_HOOK_FASTCALL DoInstruments(tU32 pThe_time) {
             jmp L0044af48
     L0044af2b:
             fld st(1)
-            fmul qword ptr [gFLOAT_00589d28+0x40]
+            fmul qword ptr [gMatchDouble_00589d68]
             call _ftol
             shl eax, 2
             mov ecx, offset gCosine_array
@@ -6745,7 +6903,7 @@ void C2_NAKED C2_HOOK_FASTCALL DoInstruments(tU32 pThe_time) {
             call _ftol
             push eax
             lea ecx, [esp + 0x44]
-            push offset gPrev_ps_drawn_levels+0x1e4
+            push offset gMatchString_005915dc
             push ecx
             call sprintf
             add esp, 0xc
@@ -6763,6 +6921,18 @@ void C2_NAKED C2_HOOK_FASTCALL DoInstruments(tU32 pThe_time) {
             pop ebx
             add esp, 0x38
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -6825,46 +6995,46 @@ void C2_NAKED C2_HOOK_FASTCALL PoshDrawLine(br_pixelmap* pDest, int pX1, br_scal
             ret 0x14
     L0047c791:
             fld dword ptr [esp + 0x10]
-            fcomp qword ptr [gDouble_0058a068+0x150]
+            fcomp qword ptr [gMatchDouble_0058a1b8]
             push edi
             push ebp
             fnstsw ax
             test ah, 1
             jne L0047c8f1
             fld dword ptr [esp + 0x18]
-            fcomp qword ptr [gDouble_0058a068+0x158]
+            fcomp qword ptr [gMatchDouble_0058a1c0]
             fnstsw ax
             test ah, 0x41
             je L0047c8f1
             fld dword ptr [esp + 0x18]
-            fcomp qword ptr [gDouble_0058a068+0x160]
+            fcomp qword ptr [gMatchDouble_0058a1c8]
             fnstsw ax
             test ah, 0x41
             jne L0047c7e3
             fld dword ptr [esp + 0x18]
-            fcomp qword ptr [gDouble_0058a068+0x168]
+            fcomp qword ptr [gMatchDouble_0058a1d0]
             fnstsw ax
             test ah, 1
             jne L0047c8f1
     L0047c7e3:
             fld dword ptr [esp + 0x18]
-            fcomp qword ptr [gDouble_0058a068+0x150]
+            fcomp qword ptr [gMatchDouble_0058a1b8]
             fnstsw ax
             test ah, 0x41
             jne L0047c805
             fld dword ptr [esp + 0x18]
-            fcomp qword ptr [gDouble_0058a068+0x170]
+            fcomp qword ptr [gMatchDouble_0058a1d8]
             fnstsw ax
             test ah, 1
             jne L0047c827
     L0047c805:
             fld dword ptr [esp + 0x18]
-            fcomp qword ptr [gDouble_0058a068+0x168]
+            fcomp qword ptr [gMatchDouble_0058a1d0]
             fnstsw ax
             test ah, 0x41
             jne L0047c875
             fld dword ptr [esp + 0x18]
-            fcomp qword ptr [gDouble_0058a068+0x178]
+            fcomp qword ptr [gMatchDouble_0058a1e0]
             fnstsw ax
             test ah, 1
             je L0047c875
@@ -7014,6 +7184,15 @@ void C2_NAKED C2_HOOK_FASTCALL PoshDrawLine(br_pixelmap* pDest, int pX1, br_scal
             pop ebx
             pop ecx
             ret 0x14
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }

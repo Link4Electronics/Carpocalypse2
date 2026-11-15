@@ -78,6 +78,30 @@ extern int gS3_delta_time;
 extern int gS3_inside_cockpit;
 extern char rendererStateStoredDispatch[];
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gData_0058d4e4[];
+extern char gData_0058d4e8[];
+extern char gDouble_0058d4f0[];
+extern char gDouble_0058d500[];
+extern char gFloat_0058d4e0[];
+extern char gFloat_0058d4f8[];
+extern char gFloat_0058d508[];
+extern char gFloat_0058d50c[];
+extern char gFloat_0058d510[];
+extern char gFloat_0058d514[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchData_0058d4e4[];
+extern char gMatchData_0058d4e8[];
+extern char gMatchDouble_0058d4f0[];
+extern char gMatchDouble_0058d500[];
+extern char gMatchFloat_0058d4e0[];
+extern char gMatchFloat_0058d4f8[];
+extern char gMatchFloat_0058d508[];
+extern char gMatchFloat_0058d50c[];
+extern char gMatchFloat_0058d510[];
+extern char gMatchFloat_0058d514[];
+#endif
 // FUNCTION: CARMA2_HW 0x00567ab8
 void C2_HOOK_FASTCALL S3StopSoundSource(tS3_sound_source* src) {
     if (gS3_enabled) {
@@ -990,17 +1014,17 @@ void C2_NAKED C2_HOOK_FASTCALL S3UpdateListenerVectors(void) {
             fld dword ptr [gS3_listener_position_now]
             fsub dword ptr [gS3_listener_position_old]
             fimul dword ptr [gS3_delta_time]
-            fdiv dword ptr [rendererStateStoredDispatch+0xc48]
+            fdiv dword ptr [gMatchFloat_0058d4e0]
             fstp dword ptr [gS3_listener_vel_now]
             fld dword ptr [gS3_listener_position_now+0x4]
             fsub dword ptr [gS3_listener_position_old+0x4]
             fimul dword ptr [gS3_delta_time]
-            fdiv dword ptr [rendererStateStoredDispatch+0xc48]
+            fdiv dword ptr [gMatchFloat_0058d4e0]
             fstp dword ptr [gS3_listener_vel_now+0x4]
             fld dword ptr [gS3_listener_position_now+0x8]
             fsub dword ptr [gS3_listener_position_old+0x8]
             fimul dword ptr [gS3_delta_time]
-            fdiv dword ptr [rendererStateStoredDispatch+0xc48]
+            fdiv dword ptr [gMatchFloat_0058d4e0]
             fstp dword ptr [gS3_listener_vel_now+0x8]
             mov edx, dword ptr [gS3_listener_position_now]
             mov dword ptr [gS3_listener_position_old], edx
@@ -1019,7 +1043,7 @@ void C2_NAKED C2_HOOK_FASTCALL S3UpdateListenerVectors(void) {
             jmp L005676d8
     L005676b0:
             fld dword ptr [gS3_listener_position_now]
-            fsub dword ptr [rendererStateStoredDispatch+0xc74]
+            fsub dword ptr [gMatchFloat_0058d50c]
             fstp dword ptr [gS3_listener_left_now]
             mov eax, dword ptr [gS3_listener_position_now+0x4]
             mov dword ptr [gS3_listener_left_now+0x4], eax
@@ -1547,7 +1571,7 @@ int C2_NAKED C2_HOOK_FASTCALL S3Calculate3D(tS3_channel* pChannel, int pAmbient)
             fld dword ptr [ecx + 0x2c]
             fsub dword ptr [edx + 0x44]
             fimul dword ptr [gS3_delta_time]
-            fdiv dword ptr [rendererStateStoredDispatch+0xc48]
+            fdiv dword ptr [gMatchFloat_0058d4e0]
             mov eax, dword ptr [ebp - 0x4c]
             fstp dword ptr [eax + 0x38]
             mov ecx, dword ptr [ebp - 0x4c]
@@ -1555,7 +1579,7 @@ int C2_NAKED C2_HOOK_FASTCALL S3Calculate3D(tS3_channel* pChannel, int pAmbient)
             fld dword ptr [ecx + 0x30]
             fsub dword ptr [edx + 0x48]
             fimul dword ptr [gS3_delta_time]
-            fdiv dword ptr [rendererStateStoredDispatch+0xc48]
+            fdiv dword ptr [gMatchFloat_0058d4e0]
             mov eax, dword ptr [ebp - 0x4c]
             fstp dword ptr [eax + 0x3c]
             mov ecx, dword ptr [ebp - 0x4c]
@@ -1563,7 +1587,7 @@ int C2_NAKED C2_HOOK_FASTCALL S3Calculate3D(tS3_channel* pChannel, int pAmbient)
             fld dword ptr [ecx + 0x34]
             fsub dword ptr [edx + 0x4c]
             fimul dword ptr [gS3_delta_time]
-            fdiv dword ptr [rendererStateStoredDispatch+0xc48]
+            fdiv dword ptr [gMatchFloat_0058d4e0]
             mov eax, dword ptr [ebp - 0x4c]
             fstp dword ptr [eax + 0x40]
             mov ecx, dword ptr [ebp - 0x4c]
@@ -1603,7 +1627,7 @@ int C2_NAKED C2_HOOK_FASTCALL S3Calculate3D(tS3_channel* pChannel, int pAmbient)
             fmulp st(1), st(0)
             faddp st(1), st(0)
             fst dword ptr [ebp - 0x14]
-            fcomp dword ptr [rendererStateStoredDispatch+0xc4c]
+            fcomp dword ptr [gMatchData_0058d4e4]
             fnstsw ax
             test ah, 1
             je L00567283
@@ -1621,7 +1645,7 @@ int C2_NAKED C2_HOOK_FASTCALL S3Calculate3D(tS3_channel* pChannel, int pAmbient)
             jmp L00567571
     L0056729a:
             fld dword ptr [ebp - 0x14]
-            fcomp qword ptr [rendererStateStoredDispatch+0xc50]
+            fcomp qword ptr [gMatchData_0058d4e8]
             fnstsw ax
             test ah, 0x40
             jne L005672c0
@@ -1640,7 +1664,7 @@ int C2_NAKED C2_HOOK_FASTCALL S3Calculate3D(tS3_channel* pChannel, int pAmbient)
             cmp dword ptr [ebp - 0x50], 0
             je L0056738f
             fld dword ptr [ebp - 0x10]
-            fcomp dword ptr [rendererStateStoredDispatch+0xc4c]
+            fcomp dword ptr [gMatchData_0058d4e4]
             fnstsw ax
             test ah, 0x40
             jne L0056738f
@@ -1670,9 +1694,9 @@ int C2_NAKED C2_HOOK_FASTCALL S3Calculate3D(tS3_channel* pChannel, int pAmbient)
             fdiv dword ptr [ebp - 0x10]
             fst dword ptr [ebp - 0x3c]
             fdiv dword ptr [gFLOAT_006b2c68]
-            fsubr qword ptr [rendererStateStoredDispatch+0xc58]
+            fsubr qword ptr [gMatchDouble_0058d4f0]
             fst dword ptr [ebp - 0x40]
-            fcomp dword ptr [rendererStateStoredDispatch+0xc60]
+            fcomp dword ptr [gMatchFloat_0058d4f8]
             fnstsw ax
             test ah, 0x41
             jne L00567362
@@ -1680,7 +1704,7 @@ int C2_NAKED C2_HOOK_FASTCALL S3Calculate3D(tS3_channel* pChannel, int pAmbient)
             jmp L00567379
     L00567362:
             fld dword ptr [ebp - 0x40]
-            fcomp qword ptr [rendererStateStoredDispatch+0xc68]
+            fcomp qword ptr [gMatchDouble_0058d500]
             fnstsw ax
             test ah, 1
             je L00567379
@@ -1700,14 +1724,14 @@ int C2_NAKED C2_HOOK_FASTCALL S3Calculate3D(tS3_channel* pChannel, int pAmbient)
             mov dword ptr [edx + 0x10], ecx
     L0056739b:
             fld dword ptr [ebp - 0x10]
-            fdiv dword ptr [rendererStateStoredDispatch+0xc70]
-            fadd dword ptr [rendererStateStoredDispatch+0xc74]
-            fdivr dword ptr [rendererStateStoredDispatch+0xc74]
+            fdiv dword ptr [gMatchFloat_0058d508]
+            fadd dword ptr [gMatchFloat_0058d50c]
+            fdivr dword ptr [gMatchFloat_0058d50c]
             fstp dword ptr [ebp - 0x38]
             cmp dword ptr [gS3_inside_cockpit], 0
             jne L005673c8
             fld dword ptr [ebp - 0x38]
-            fmul dword ptr [rendererStateStoredDispatch+0xc78]
+            fmul dword ptr [gMatchFloat_0058d510]
             fstp dword ptr [ebp - 0x38]
     L005673c8:
             mov edx, dword ptr [ebp - 0x4c]
@@ -1745,12 +1769,12 @@ int C2_NAKED C2_HOOK_FASTCALL S3Calculate3D(tS3_channel* pChannel, int pAmbient)
             add esp, 8
             fst dword ptr [ebp - 0x54]
             fst dword ptr [ebp - 0x44]
-            fcomp dword ptr [rendererStateStoredDispatch+0xc7c]
+            fcomp dword ptr [gMatchFloat_0058d514]
             fnstsw ax
             test ah, 0x41
             jne L00567472
             fld dword ptr [ebp - 0x44]
-            fdivr qword ptr [rendererStateStoredDispatch+0xc58]
+            fdivr qword ptr [gMatchDouble_0058d4f0]
             fst dword ptr [ebp - 0x58]
             fstp dword ptr [ebp - 0x44]
             fld dword ptr [ebp - 0x24]
@@ -1788,12 +1812,12 @@ int C2_NAKED C2_HOOK_FASTCALL S3Calculate3D(tS3_channel* pChannel, int pAmbient)
             add esp, 8
             fst dword ptr [ebp - 0x5c]
             fst dword ptr [ebp - 0x48]
-            fcomp dword ptr [rendererStateStoredDispatch+0xc7c]
+            fcomp dword ptr [gMatchFloat_0058d514]
             fnstsw ax
             test ah, 0x41
             jne L005674f0
             fld dword ptr [ebp - 0x48]
-            fdivr qword ptr [rendererStateStoredDispatch+0xc58]
+            fdivr qword ptr [gMatchDouble_0058d4f0]
             fst dword ptr [ebp - 0x60]
             fstp dword ptr [ebp - 0x48]
             fld dword ptr [ebp - 0x30]

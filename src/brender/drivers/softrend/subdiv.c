@@ -93,6 +93,20 @@ br_uint_32 hitherYonTable[16] = {
 extern rend_block_soft rend;
 extern char rendererStateStoredTemplateEntries[];
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gData_00589010[];
+extern char gData_00589018[];
+extern char gData_0067080c[];
+extern char gFloat_00670800[];
+extern char gFloat_00670804[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchData_00589010[];
+extern char gMatchData_00589018[];
+extern char gMatchData_0067080c[];
+extern char gMatchFloat_00670800[];
+extern char gMatchFloat_00670804[];
+#endif
 // FUNCTION: CARMA2_HW 0x0054c400
 void C2_NAKED C2_HOOK_CDECL averageVerticesOnScreen(br_soft_renderer* renderer, brp_vertex* dest1, brp_vertex* dest2, brp_vertex* dest3, brp_vertex* src1, brp_vertex* src2, brp_vertex* src3) {
 #ifndef CARPOCALYPSE2_MATCHING
@@ -145,15 +159,15 @@ void C2_NAKED C2_HOOK_CDECL averageVerticesOnScreen(br_soft_renderer* renderer, 
             fld dword ptr [edi + 4]
             fadd dword ptr [esi + 4]
             fxch st(1)
-            fmul dword ptr ds:[0x670804]
+            fmul dword ptr [gMatchFloat_00670804]
             fld dword ptr [edx + 4]
             fxch st(2)
-            fmul dword ptr ds:[0x670804]
+            fmul dword ptr [gMatchFloat_00670804]
             fxch st(2)
             fadd dword ptr [esi + 4]
             fxch st(1)
             fstp dword ptr [ecx + 4]
-            fmul dword ptr ds:[0x670804]
+            fmul dword ptr [gMatchFloat_00670804]
             fxch st(1)
             fstp dword ptr [eax + 4]
             fstp dword ptr [ebx + 4]
@@ -162,15 +176,15 @@ void C2_NAKED C2_HOOK_CDECL averageVerticesOnScreen(br_soft_renderer* renderer, 
             fld dword ptr [edi + 8]
             fadd dword ptr [esi + 8]
             fxch st(1)
-            fmul dword ptr ds:[0x670804]
+            fmul dword ptr [gMatchFloat_00670804]
             fld dword ptr [edx + 8]
             fxch st(2)
-            fmul dword ptr ds:[0x670804]
+            fmul dword ptr [gMatchFloat_00670804]
             fxch st(2)
             fadd dword ptr [esi + 8]
             fxch st(1)
             fstp dword ptr [ecx + 8]
-            fmul dword ptr ds:[0x670804]
+            fmul dword ptr [gMatchFloat_00670804]
             fxch st(1)
             fstp dword ptr [eax + 8]
             fstp dword ptr [ebx + 8]
@@ -179,15 +193,15 @@ void C2_NAKED C2_HOOK_CDECL averageVerticesOnScreen(br_soft_renderer* renderer, 
             fld dword ptr [edi + 0xc]
             fadd dword ptr [esi + 0xc]
             fxch st(1)
-            fmul dword ptr ds:[0x670804]
+            fmul dword ptr [gMatchFloat_00670804]
             fld dword ptr [edx + 0xc]
             fxch st(2)
-            fmul dword ptr ds:[0x670804]
+            fmul dword ptr [gMatchFloat_00670804]
             fxch st(2)
             fadd dword ptr [esi + 0xc]
             fxch st(1)
             fstp dword ptr [ecx + 0xc]
-            fmul dword ptr ds:[0x670804]
+            fmul dword ptr [gMatchFloat_00670804]
             fxch st(1)
             fstp dword ptr [eax + 0xc]
             fstp dword ptr [ebx + 0xc]
@@ -196,15 +210,15 @@ void C2_NAKED C2_HOOK_CDECL averageVerticesOnScreen(br_soft_renderer* renderer, 
             fld dword ptr [edi + 0x10]
             fadd dword ptr [esi + 0x10]
             fxch st(1)
-            fmul dword ptr ds:[0x670804]
+            fmul dword ptr [gMatchFloat_00670804]
             fld dword ptr [edx + 0x10]
             fxch st(2)
-            fmul dword ptr ds:[0x670804]
+            fmul dword ptr [gMatchFloat_00670804]
             fxch st(2)
             fadd dword ptr [esi + 0x10]
             fxch st(1)
             fstp dword ptr [ecx + 0x10]
-            fmul dword ptr ds:[0x670804]
+            fmul dword ptr [gMatchFloat_00670804]
             fxch st(1)
             fstp dword ptr [eax + 0x10]
             fstp dword ptr [ebx + 0x10]
@@ -217,9 +231,9 @@ void C2_NAKED C2_HOOK_CDECL averageVerticesOnScreen(br_soft_renderer* renderer, 
             fld dword ptr [eax + 0x10]
             fmul dword ptr [ecx + 0x10]
             fxch st(1)
-            fdivr dword ptr ds:[0x670800]
+            fdivr dword ptr [gMatchFloat_00670800]
             push ebp
-            mov ebp, dword ptr ds:[0x79f9cc]
+            mov ebp, dword ptr [rend+0x4c]
             mov ebp, dword ptr [ebp + 0x20]
             and ebp, 0x3800
             pop ebp
@@ -230,15 +244,15 @@ void C2_NAKED C2_HOOK_CDECL averageVerticesOnScreen(br_soft_renderer* renderer, 
             fld dword ptr [edi + 0x2c]
             fadd dword ptr [esi + 0x2c]
             fxch st(1)
-            fmul dword ptr ds:[0x670804]
+            fmul dword ptr [gMatchFloat_00670804]
             fld dword ptr [edx + 0x2c]
             fxch st(2)
-            fmul dword ptr ds:[0x670804]
+            fmul dword ptr [gMatchFloat_00670804]
             fxch st(2)
             fadd dword ptr [esi + 0x2c]
             fxch st(1)
             fstp dword ptr [ecx + 0x2c]
-            fmul dword ptr ds:[0x670804]
+            fmul dword ptr [gMatchFloat_00670804]
             fxch st(1)
             fstp dword ptr [eax + 0x2c]
             fstp dword ptr [ebx + 0x2c]
@@ -247,15 +261,15 @@ void C2_NAKED C2_HOOK_CDECL averageVerticesOnScreen(br_soft_renderer* renderer, 
             fld dword ptr [edi + 0x30]
             fadd dword ptr [esi + 0x30]
             fxch st(1)
-            fmul dword ptr ds:[0x670804]
+            fmul dword ptr [gMatchFloat_00670804]
             fld dword ptr [edx + 0x30]
             fxch st(2)
-            fmul dword ptr ds:[0x670804]
+            fmul dword ptr [gMatchFloat_00670804]
             fxch st(2)
             fadd dword ptr [esi + 0x30]
             fxch st(1)
             fstp dword ptr [ecx + 0x30]
-            fmul dword ptr ds:[0x670804]
+            fmul dword ptr [gMatchFloat_00670804]
             fxch st(1)
             fstp dword ptr [eax + 0x30]
             fstp dword ptr [ebx + 0x30]
@@ -264,15 +278,15 @@ void C2_NAKED C2_HOOK_CDECL averageVerticesOnScreen(br_soft_renderer* renderer, 
             fld dword ptr [edi + 0x34]
             fadd dword ptr [esi + 0x34]
             fxch st(1)
-            fmul dword ptr ds:[0x670804]
+            fmul dword ptr [gMatchFloat_00670804]
             fld dword ptr [edx + 0x34]
             fxch st(2)
-            fmul dword ptr ds:[0x670804]
+            fmul dword ptr [gMatchFloat_00670804]
             fxch st(2)
             fadd dword ptr [esi + 0x34]
             fxch st(1)
             fstp dword ptr [ecx + 0x34]
-            fmul dword ptr ds:[0x670804]
+            fmul dword ptr [gMatchFloat_00670804]
             fxch st(1)
             fstp dword ptr [eax + 0x34]
             fstp dword ptr [ebx + 0x34]
@@ -282,15 +296,15 @@ void C2_NAKED C2_HOOK_CDECL averageVerticesOnScreen(br_soft_renderer* renderer, 
             fld dword ptr [edi + 0x28]
             fadd dword ptr [esi + 0x28]
             fxch st(1)
-            fmul dword ptr ds:[0x670804]
+            fmul dword ptr [gMatchFloat_00670804]
             fld dword ptr [edx + 0x28]
             fxch st(2)
-            fmul dword ptr ds:[0x670804]
+            fmul dword ptr [gMatchFloat_00670804]
             fxch st(2)
             fadd dword ptr [esi + 0x28]
             fxch st(1)
             fstp dword ptr [ecx + 0x28]
-            fmul dword ptr ds:[0x670804]
+            fmul dword ptr [gMatchFloat_00670804]
             fxch st(1)
             fstp dword ptr [eax + 0x28]
             fstp dword ptr [ebx + 0x28]
@@ -299,15 +313,15 @@ void C2_NAKED C2_HOOK_CDECL averageVerticesOnScreen(br_soft_renderer* renderer, 
             fld dword ptr [edi + 0x20]
             fadd dword ptr [esi + 0x20]
             fxch st(1)
-            fmul dword ptr ds:[0x670804]
+            fmul dword ptr [gMatchFloat_00670804]
             fld dword ptr [edx + 0x20]
             fxch st(2)
-            fmul dword ptr ds:[0x670804]
+            fmul dword ptr [gMatchFloat_00670804]
             fxch st(2)
             fadd dword ptr [esi + 0x20]
             fxch st(1)
             fstp dword ptr [ecx + 0x20]
-            fmul dword ptr ds:[0x670804]
+            fmul dword ptr [gMatchFloat_00670804]
             fxch st(1)
             fstp dword ptr [eax + 0x20]
             fstp dword ptr [ebx + 0x20]
@@ -316,15 +330,15 @@ void C2_NAKED C2_HOOK_CDECL averageVerticesOnScreen(br_soft_renderer* renderer, 
             fld dword ptr [edi + 0x24]
             fadd dword ptr [esi + 0x24]
             fxch st(1)
-            fmul dword ptr ds:[0x670804]
+            fmul dword ptr [gMatchFloat_00670804]
             fld dword ptr [edx + 0x24]
             fxch st(2)
-            fmul dword ptr ds:[0x670804]
+            fmul dword ptr [gMatchFloat_00670804]
             fxch st(2)
             fadd dword ptr [esi + 0x24]
             fxch st(1)
             fstp dword ptr [ecx + 0x24]
-            fmul dword ptr ds:[0x670804]
+            fmul dword ptr [gMatchFloat_00670804]
             fxch st(1)
             fstp dword ptr [eax + 0x24]
             fstp dword ptr [ebx + 0x24]
@@ -520,15 +534,15 @@ void C2_NAKED C2_HOOK_CDECL averageVertices(br_soft_renderer* renderer, brp_vert
             fld dword ptr [edi + 4]
             fadd dword ptr [esi + 4]
             fxch st(1)
-            fmul dword ptr ds:[0x670804]
+            fmul dword ptr [gMatchFloat_00670804]
             fld dword ptr [edx + 4]
             fxch st(2)
-            fmul dword ptr ds:[0x670804]
+            fmul dword ptr [gMatchFloat_00670804]
             fxch st(2)
             fadd dword ptr [esi + 4]
             fxch st(1)
             fstp dword ptr [ecx + 4]
-            fmul dword ptr ds:[0x670804]
+            fmul dword ptr [gMatchFloat_00670804]
             fxch st(1)
             fstp dword ptr [eax + 4]
             fstp dword ptr [ebx + 4]
@@ -537,15 +551,15 @@ void C2_NAKED C2_HOOK_CDECL averageVertices(br_soft_renderer* renderer, brp_vert
             fld dword ptr [edi + 8]
             fadd dword ptr [esi + 8]
             fxch st(1)
-            fmul dword ptr ds:[0x670804]
+            fmul dword ptr [gMatchFloat_00670804]
             fld dword ptr [edx + 8]
             fxch st(2)
-            fmul dword ptr ds:[0x670804]
+            fmul dword ptr [gMatchFloat_00670804]
             fxch st(2)
             fadd dword ptr [esi + 8]
             fxch st(1)
             fstp dword ptr [ecx + 8]
-            fmul dword ptr ds:[0x670804]
+            fmul dword ptr [gMatchFloat_00670804]
             fxch st(1)
             fstp dword ptr [eax + 8]
             fstp dword ptr [ebx + 8]
@@ -554,15 +568,15 @@ void C2_NAKED C2_HOOK_CDECL averageVertices(br_soft_renderer* renderer, brp_vert
             fld dword ptr [edi + 0xc]
             fadd dword ptr [esi + 0xc]
             fxch st(1)
-            fmul dword ptr ds:[0x670804]
+            fmul dword ptr [gMatchFloat_00670804]
             fld dword ptr [edx + 0xc]
             fxch st(2)
-            fmul dword ptr ds:[0x670804]
+            fmul dword ptr [gMatchFloat_00670804]
             fxch st(2)
             fadd dword ptr [esi + 0xc]
             fxch st(1)
             fstp dword ptr [ecx + 0xc]
-            fmul dword ptr ds:[0x670804]
+            fmul dword ptr [gMatchFloat_00670804]
             fxch st(1)
             fstp dword ptr [eax + 0xc]
             fstp dword ptr [ebx + 0xc]
@@ -571,15 +585,15 @@ void C2_NAKED C2_HOOK_CDECL averageVertices(br_soft_renderer* renderer, brp_vert
             fld dword ptr [edi + 0x10]
             fadd dword ptr [esi + 0x10]
             fxch st(1)
-            fmul dword ptr ds:[0x670804]
+            fmul dword ptr [gMatchFloat_00670804]
             fld dword ptr [edx + 0x10]
             fxch st(2)
-            fmul dword ptr ds:[0x670804]
+            fmul dword ptr [gMatchFloat_00670804]
             fxch st(2)
             fadd dword ptr [esi + 0x10]
             fxch st(1)
             fstp dword ptr [ecx + 0x10]
-            fmul dword ptr ds:[0x670804]
+            fmul dword ptr [gMatchFloat_00670804]
             fxch st(1)
             fstp dword ptr [eax + 0x10]
             fstp dword ptr [ebx + 0x10]
@@ -588,15 +602,15 @@ void C2_NAKED C2_HOOK_CDECL averageVertices(br_soft_renderer* renderer, brp_vert
             fld dword ptr [edi + 0x2c]
             fadd dword ptr [esi + 0x2c]
             fxch st(1)
-            fmul dword ptr ds:[0x670804]
+            fmul dword ptr [gMatchFloat_00670804]
             fld dword ptr [edx + 0x2c]
             fxch st(2)
-            fmul dword ptr ds:[0x670804]
+            fmul dword ptr [gMatchFloat_00670804]
             fxch st(2)
             fadd dword ptr [esi + 0x2c]
             fxch st(1)
             fstp dword ptr [ecx + 0x2c]
-            fmul dword ptr ds:[0x670804]
+            fmul dword ptr [gMatchFloat_00670804]
             fxch st(1)
             fstp dword ptr [eax + 0x2c]
             fstp dword ptr [ebx + 0x2c]
@@ -605,15 +619,15 @@ void C2_NAKED C2_HOOK_CDECL averageVertices(br_soft_renderer* renderer, brp_vert
             fld dword ptr [edi + 0x30]
             fadd dword ptr [esi + 0x30]
             fxch st(1)
-            fmul dword ptr ds:[0x670804]
+            fmul dword ptr [gMatchFloat_00670804]
             fld dword ptr [edx + 0x30]
             fxch st(2)
-            fmul dword ptr ds:[0x670804]
+            fmul dword ptr [gMatchFloat_00670804]
             fxch st(2)
             fadd dword ptr [esi + 0x30]
             fxch st(1)
             fstp dword ptr [ecx + 0x30]
-            fmul dword ptr ds:[0x670804]
+            fmul dword ptr [gMatchFloat_00670804]
             fxch st(1)
             fstp dword ptr [eax + 0x30]
             fstp dword ptr [ebx + 0x30]
@@ -622,15 +636,15 @@ void C2_NAKED C2_HOOK_CDECL averageVertices(br_soft_renderer* renderer, brp_vert
             fld dword ptr [edi + 0x34]
             fadd dword ptr [esi + 0x34]
             fxch st(1)
-            fmul dword ptr ds:[0x670804]
+            fmul dword ptr [gMatchFloat_00670804]
             fld dword ptr [edx + 0x34]
             fxch st(2)
-            fmul dword ptr ds:[0x670804]
+            fmul dword ptr [gMatchFloat_00670804]
             fxch st(2)
             fadd dword ptr [esi + 0x34]
             fxch st(1)
             fstp dword ptr [ecx + 0x34]
-            fmul dword ptr ds:[0x670804]
+            fmul dword ptr [gMatchFloat_00670804]
             fxch st(1)
             fstp dword ptr [eax + 0x34]
             fstp dword ptr [ebx + 0x34]
@@ -639,15 +653,15 @@ void C2_NAKED C2_HOOK_CDECL averageVertices(br_soft_renderer* renderer, brp_vert
             fld dword ptr [edi + 0x28]
             fadd dword ptr [esi + 0x28]
             fxch st(1)
-            fmul dword ptr ds:[0x670804]
+            fmul dword ptr [gMatchFloat_00670804]
             fld dword ptr [edx + 0x28]
             fxch st(2)
-            fmul dword ptr ds:[0x670804]
+            fmul dword ptr [gMatchFloat_00670804]
             fxch st(2)
             fadd dword ptr [esi + 0x28]
             fxch st(1)
             fstp dword ptr [ecx + 0x28]
-            fmul dword ptr ds:[0x670804]
+            fmul dword ptr [gMatchFloat_00670804]
             fxch st(1)
             fstp dword ptr [eax + 0x28]
             fstp dword ptr [ebx + 0x28]
@@ -656,15 +670,15 @@ void C2_NAKED C2_HOOK_CDECL averageVertices(br_soft_renderer* renderer, brp_vert
             fld dword ptr [edi + 0x20]
             fadd dword ptr [esi + 0x20]
             fxch st(1)
-            fmul dword ptr ds:[0x670804]
+            fmul dword ptr [gMatchFloat_00670804]
             fld dword ptr [edx + 0x20]
             fxch st(2)
-            fmul dword ptr ds:[0x670804]
+            fmul dword ptr [gMatchFloat_00670804]
             fxch st(2)
             fadd dword ptr [esi + 0x20]
             fxch st(1)
             fstp dword ptr [ecx + 0x20]
-            fmul dword ptr ds:[0x670804]
+            fmul dword ptr [gMatchFloat_00670804]
             fxch st(1)
             fstp dword ptr [eax + 0x20]
             fstp dword ptr [ebx + 0x20]
@@ -673,15 +687,15 @@ void C2_NAKED C2_HOOK_CDECL averageVertices(br_soft_renderer* renderer, brp_vert
             fld dword ptr [edi + 0x24]
             fadd dword ptr [esi + 0x24]
             fxch st(1)
-            fmul dword ptr ds:[0x670804]
+            fmul dword ptr [gMatchFloat_00670804]
             fld dword ptr [edx + 0x24]
             fxch st(2)
-            fmul dword ptr ds:[0x670804]
+            fmul dword ptr [gMatchFloat_00670804]
             fxch st(2)
             fadd dword ptr [esi + 0x24]
             fxch st(1)
             fstp dword ptr [ecx + 0x24]
-            fmul dword ptr ds:[0x670804]
+            fmul dword ptr [gMatchFloat_00670804]
             fxch st(1)
             fstp dword ptr [eax + 0x24]
             fstp dword ptr [ebx + 0x24]
@@ -897,7 +911,7 @@ void C2_NAKED C2_HOOK_CDECL averageVertices(br_soft_renderer* renderer, brp_vert
             mov eax, dword ptr [ebp + 0xc]
             mov ebx, dword ptr [ebp + 0x10]
             mov ebp, dword ptr [ebp + 8]
-            mov edx, dword ptr ds:[0x79fb10]
+            mov edx, dword ptr [scache+0x110]
             mov edi, 5
             test edx, edx
             je L0054cde4
@@ -921,8 +935,8 @@ void C2_NAKED C2_HOOK_CDECL averageVertices(br_soft_renderer* renderer, brp_vert
             faddp st(2), st(0)
             faddp st(2), st(0)
             faddp st(1), st(0)
-            fstp dword ptr ds:[0x67080c]
-            mov edx, dword ptr ds:[0x67080c]
+            fstp dword ptr [gMatchData_0067080c]
+            mov edx, dword ptr [gMatchData_0067080c]
             mov esi, dword ptr [eax]
             test edx, 0x80000000
             je L0054cd4e
@@ -949,8 +963,8 @@ void C2_NAKED C2_HOOK_CDECL averageVertices(br_soft_renderer* renderer, brp_vert
             faddp st(2), st(0)
             faddp st(2), st(0)
             faddp st(1), st(0)
-            fstp dword ptr ds:[0x67080c]
-            mov edx, dword ptr ds:[0x67080c]
+            fstp dword ptr [gMatchData_0067080c]
+            mov edx, dword ptr [gMatchData_0067080c]
             mov esi, dword ptr [ebx]
             test edx, 0x80000000
             je L0054cd4e
@@ -976,8 +990,8 @@ void C2_NAKED C2_HOOK_CDECL averageVertices(br_soft_renderer* renderer, brp_vert
             faddp st(2), st(0)
             faddp st(2), st(0)
             faddp st(1), st(0)
-            fstp dword ptr ds:[0x67080c]
-            mov edx, dword ptr ds:[0x67080c]
+            fstp dword ptr [gMatchData_0067080c]
+            mov edx, dword ptr [gMatchData_0067080c]
             mov esi, dword ptr [ecx]
             test edx, 0x80000000
             je L0054cd4e
@@ -1013,7 +1027,7 @@ void C2_NAKED C2_HOOK_CDECL averageVertices(br_soft_renderer* renderer, brp_vert
             fld dword ptr [eax + 0x10]
             fmul dword ptr [ecx + 0x10]
             fxch st(1)
-            fdivr dword ptr ds:[0x670800]
+            fdivr dword ptr [gMatchFloat_00670800]
             fmul st(2), st(0)
             fmul st(1), st(0)
             fmulp st(3), st(0)
@@ -1095,7 +1109,7 @@ void C2_NAKED C2_HOOK_CDECL averageVertices(br_soft_renderer* renderer, brp_vert
             mov edx, dword ptr [eax]
             test edx, 0xfff
             jne L0054cf7b
-            fld dword ptr ds:[0x670800]
+            fld dword ptr [gMatchFloat_00670800]
             fdiv dword ptr [eax + 0x10]
             fld dword ptr [eax + 4]
             fmul st(0), st(1)
@@ -1122,7 +1136,7 @@ void C2_NAKED C2_HOOK_CDECL averageVertices(br_soft_renderer* renderer, brp_vert
             mov edx, dword ptr [ebx]
             test edx, 0xfff
             jne L0054cfd6
-            fld dword ptr ds:[0x670800]
+            fld dword ptr [gMatchFloat_00670800]
             fdiv dword ptr [ebx + 0x10]
             fld dword ptr [ebx + 4]
             fmul st(0), st(1)
@@ -1149,7 +1163,7 @@ void C2_NAKED C2_HOOK_CDECL averageVertices(br_soft_renderer* renderer, brp_vert
             mov edx, dword ptr [ecx]
             test edx, 0xfff
             jne L0054d031
-            fld dword ptr ds:[0x670800]
+            fld dword ptr [gMatchFloat_00670800]
             fdiv dword ptr [ecx + 0x10]
             fld dword ptr [ecx + 4]
             fmul st(0), st(1)
@@ -1178,8 +1192,8 @@ void C2_NAKED C2_HOOK_CDECL averageVertices(br_soft_renderer* renderer, brp_vert
             pop ebx
             pop ebp
             ret
-            jmp dword ptr ds:[0x589018]
-            jmp dword ptr ds:[0x589010]
+            jmp dword ptr [gMatchData_00589018]
+            jmp dword ptr [gMatchData_00589010]
     }
 #endif
 }

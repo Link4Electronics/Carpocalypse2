@@ -161,6 +161,12 @@ extern br_vector3 gVector3_006a4688;
 extern float gYon_squared;
 extern br_vector3 gZero_vector__smash;
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gString_00660084[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchString_00660084[];
+#endif
 // FUNCTION: CARMA2_HW 0x004ca830
 void C2_NAKED C2_HOOK_FASTCALL WorkerPedPos(tPedestrian* pPed, br_vector3* pVec) {
 #ifndef CARPOCALYPSE2_MATCHING
@@ -356,7 +362,8 @@ void C2_HOOK_FASTCALL WorkerExtendedSplash(int field_0x0, tU8 field_0x4, int fie
 }
 
 // FUNCTION: CARMA2_HW 0x004ca900
-void C2_HOOK_FASTCALL WorkerPedDismember(int field_0x0, int field_0x4, int field_0x7) {
+void C2_NAKED C2_HOOK_FASTCALL WorkerPedDismember(int field_0x0, int field_0x4, int field_0x7) {
+#ifndef CARPOCALYPSE2_MATCHING
     tPedestrian* ped;
     tPed_character_instance* character;
     br_actor* actor;
@@ -370,6 +377,65 @@ void C2_HOOK_FASTCALL WorkerPedDismember(int field_0x0, int field_0x4, int field
     if (actor->parent == NULL && (field_0x4 == 0 || (gPow2_array[field_0x4] & character->field_0xc) != 0)) {
         BrActorAdd(gNon_track_actor, actor);
     }
+#else
+    __asm {
+            push ebx
+            push esi
+            push edi
+            mov edi, edx
+            mov esi, ecx
+            push 0
+            lea ebx, [edi*4]
+            push 1
+            mov eax, dword ptr [esi]
+            mov ecx, dword ptr [ebx + gPow2_array]
+            mov edx, dword ptr [eax + 0xc]
+            or edx, ecx
+            mov dword ptr [eax + 0xc], edx
+            mov edx, dword ptr [esi]
+            mov al, byte ptr [esp + 0x18]
+            mov byte ptr [edx + 6], al
+            mov ecx, dword ptr [esi]
+            mov edx, edi
+            call MakeCharacterPhysicsForBone
+            mov esi, dword ptr [esi]
+            mov edx, dword ptr [esi]
+            movsx ecx, byte ptr [esi + 4]
+            mov eax, dword ptr [edx + 0x28]
+            mov edx, dword ptr [eax + 0x30]
+            mov eax, dword ptr [edx + ecx*8 + 4]
+            mov eax, dword ptr [eax + ebx]
+            mov ecx, dword ptr [eax + 0xc]
+            test ecx, ecx
+            jne L004ca971
+            test edi, edi
+            je L004ca961
+            mov ecx, dword ptr [esi + 0xc]
+            mov edx, dword ptr [ebx + gPow2_array]
+            test ecx, edx
+            je L004ca971
+    L004ca961:
+            mov edx, dword ptr [gNon_track_actor]
+            push eax
+            push edx
+            call BrActorAdd
+            add esp, 8
+    L004ca971:
+            pop edi
+            pop esi
+            pop ebx
+            ret 4
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x004ca980
@@ -1319,7 +1385,7 @@ void C2_NAKED C2_HOOK_FASTCALL WorkerShrapnelShower(int pOwner, int* pShrapnel_s
             push edi
             mov edi, edx
             mov ebp, ecx
-            mov edx, dword ptr ds:[gPed_676914]
+            mov edx, dword ptr [gPed_676914]
             mov dword ptr [esp + 0x1c], ebp
             test edx, edx
             je L004ec153
@@ -1328,17 +1394,17 @@ void C2_NAKED C2_HOOK_FASTCALL WorkerShrapnelShower(int pOwner, int* pShrapnel_s
             push eax
             push ecx
             call BrMatrix34Copy
-            mov edx, dword ptr ds:[gPed_676914]
+            mov edx, dword ptr [gPed_676914]
             add esp, 8
     L004eb92b:
-            mov ecx, dword ptr ds:[gINT_006a3334]
+            mov ecx, dword ptr [gINT_006a3334]
     L004eb931:
             mov eax, dword ptr [edi]
             mov ebx, dword ptr [esp + 0xf0]
             cmp eax, 3
             ja L004ec079
             jmp dword ptr [eax*4 + 0x4ec35c]
-            mov ecx, dword ptr ds:[gYon_squared]
+            mov ecx, dword ptr [gYon_squared]
             test edx, edx
             mov dword ptr [esp + 0x10], ecx
             jne L004eb96f
@@ -1363,14 +1429,14 @@ void C2_NAKED C2_HOOK_FASTCALL WorkerShrapnelShower(int pOwner, int* pShrapnel_s
             push ecx
             mov ecx, dword ptr [esp + 0xf4]
             mov edx, offset gZero_vector__smash
-            fmul dword ptr ds:[gFloat_0058aee0]
+            fmul dword ptr [gFloat_0058aee0]
             _emit 0xd9
         _emit 0x1c
         _emit 0x24
             push eax
             call FUN_004f8b50
             jmp L004ec079
-            mov eax, dword ptr ds:[gYon_squared]
+            mov eax, dword ptr [gYon_squared]
             test edx, edx
             mov dword ptr [esp + 0x10], eax
             jne L004eb9d5
@@ -1434,7 +1500,7 @@ void C2_NAKED C2_HOOK_FASTCALL WorkerShrapnelShower(int pOwner, int* pShrapnel_s
             mov edx, dword ptr [esp + 0x114]
             call CreateSmashedGlassFragments
             jmp L004ec075
-            mov eax, dword ptr ds:[gYon_squared]
+            mov eax, dword ptr [gYon_squared]
             test edx, edx
             mov dword ptr [esp + 0x10], eax
             jne L004eba74
@@ -1444,7 +1510,7 @@ void C2_NAKED C2_HOOK_FASTCALL WorkerShrapnelShower(int pOwner, int* pShrapnel_s
             call PointOutOfSight
             test eax, eax
             jne L004ec079
-            mov ecx, dword ptr ds:[gINT_006a3334]
+            mov ecx, dword ptr [gINT_006a3334]
     L004eba74:
             neg ecx
             sbb ecx, ecx
@@ -1476,46 +1542,46 @@ void C2_NAKED C2_HOOK_FASTCALL WorkerShrapnelShower(int pOwner, int* pShrapnel_s
             mov dword ptr [esp + 0x18], eax
             je L004ebc18
             fld dword ptr [edi + 0x44]
-            fcomp dword ptr ds:[gFloat_0058aec0]
+            fcomp dword ptr [gFloat_0058aec0]
             fnstsw ax
             test ah, 0x40
             jne L004ebc18
             fld dword ptr [edi + 0x48]
-            fcomp dword ptr ds:[gFloat_0058aec0]
+            fcomp dword ptr [gFloat_0058aec0]
             fnstsw ax
             test ah, 0x40
             jne L004ebc18
-            fld dword ptr ds:[0x6b78b0]
-            fld dword ptr ds:[0x6b78ac]
-            fsub dword ptr ds:[gMatrix34_006b78a0]
+            fld dword ptr [gMatrix34_006b78a0+0x10]
+            fld dword ptr [gMatrix34_006b78a0+0xc]
+            fsub dword ptr [gMatrix34_006b78a0]
             fxch st(1)
-            fsub dword ptr ds:[0x6b78a4]
-            fld dword ptr ds:[0x6b78b4]
-            fsub dword ptr ds:[0x6b78a8]
+            fsub dword ptr [gMatrix34_006b78a0+0x4]
+            fld dword ptr [gMatrix34_006b78a0+0x14]
+            fsub dword ptr [gMatrix34_006b78a0+0x8]
             fxch st(2)
             fst dword ptr [esp + 0x20]
             fld st(1)
             fxch st(1)
             fmul dword ptr [esp + 0x20]
-            fld dword ptr ds:[0x6b78b8]
+            fld dword ptr [gMatrix34_006b78a0+0x18]
             fxch st(2)
             fmul st(0), st(3)
-            fld dword ptr ds:[0x6b78bc]
+            fld dword ptr [gMatrix34_006b78a0+0x1c]
             fxch st(5)
             fst dword ptr [esp + 0x28]
             fxch st(3)
-            fsub dword ptr ds:[gMatrix34_006b78a0]
+            fsub dword ptr [gMatrix34_006b78a0]
             fxch st(5)
-            fsub dword ptr ds:[0x6b78a4]
+            fsub dword ptr [gMatrix34_006b78a0+0x4]
             fxch st(3)
             fmul dword ptr [esp + 0x28]
-            fld dword ptr ds:[0x6b78c0]
+            fld dword ptr [gMatrix34_006b78a0+0x20]
             fxch st(6)
             fst dword ptr [esp + 0x20]
             fxch st(4)
             fst dword ptr [esp + 0x24]
             fxch st(6)
-            fsub dword ptr ds:[0x6b78a8]
+            fsub dword ptr [gMatrix34_006b78a0+0x8]
             fst dword ptr [esp + 0x28]
             fxch st(2)
             faddp st(3), st(0)
@@ -1531,7 +1597,7 @@ void C2_NAKED C2_HOOK_FASTCALL WorkerShrapnelShower(int pOwner, int* pShrapnel_s
             faddp st(2), st(0)
             fst dword ptr [esp + 0x10]
             fst dword ptr [esp + 0x10]
-            fcomp qword ptr ds:[gDouble_0058aee8]
+            fcomp qword ptr [gDouble_0058aee8]
             fxch st(2)
             fmul dword ptr [esp + 0x28]
             faddp st(2), st(0)
@@ -1543,7 +1609,7 @@ void C2_NAKED C2_HOOK_FASTCALL WorkerShrapnelShower(int pOwner, int* pShrapnel_s
             fstp dword ptr [esp + 0x14]
             jne L004ec075
             fld dword ptr [esp + 0x14]
-            fcomp qword ptr ds:[gDouble_0058aee8]
+            fcomp qword ptr [gDouble_0058aee8]
             fnstsw ax
             test ah, 1
             jne L004ec075
@@ -1657,7 +1723,7 @@ void C2_NAKED C2_HOOK_FASTCALL WorkerShrapnelShower(int pOwner, int* pShrapnel_s
             call srand
             add esp, 4
             jmp L004ec075
-            mov eax, dword ptr ds:[gNet_mode]
+            mov eax, dword ptr [gNet_mode]
             lea edx, [esp + 0x38]
             neg ecx
             sbb ecx, ecx
@@ -1667,7 +1733,7 @@ void C2_NAKED C2_HOOK_FASTCALL WorkerShrapnelShower(int pOwner, int* pShrapnel_s
             mov dword ptr [esp + 0x34], ecx
             mov dword ptr [esp + 0x18], esi
             jne L004ebd41
-            mov eax, dword ptr ds:[gINT_006a8294]
+            mov eax, dword ptr [gINT_006a8294]
             test eax, eax
             je L004ec079
     L004ebd41:
@@ -1690,13 +1756,13 @@ void C2_NAKED C2_HOOK_FASTCALL WorkerShrapnelShower(int pOwner, int* pShrapnel_s
             jle L004ec079
     L004ebd74:
             call rand
-            mov ecx, dword ptr ds:[gMax_count_non_cars]
+            mov ecx, dword ptr [gMax_count_non_cars]
             mov ebp, eax
-            mov eax, dword ptr ds:[0x75d73c]
+            mov eax, dword ptr [gProgram_state+0x1bbc]
             mov dword ptr [esp + 0x68], ebp
             cmp eax, ecx
             jge L004ec075
-            cmp dword ptr ds:[gNet_mode], 2
+            cmp dword ptr [gNet_mode], 2
             jne L004ebdb8
             xor edx, edx
             mov cl, 0x22
@@ -1704,7 +1770,7 @@ void C2_NAKED C2_HOOK_FASTCALL WorkerShrapnelShower(int pOwner, int* pShrapnel_s
             mov esi, eax
             mov dword ptr [esp + 0x18], esi
             mov dword ptr [esi + 0x1c], ebp
-            mov cx, word ptr ds:[0x75d73c]
+            mov cx, word ptr [gProgram_state+0x1bbc]
             mov word ptr [esi + 0x20], cx
     L004ebdb8:
             mov eax, dword ptr [esp + 0x30]
@@ -1722,7 +1788,7 @@ void C2_NAKED C2_HOOK_FASTCALL WorkerShrapnelShower(int pOwner, int* pShrapnel_s
             mov ecx, dword ptr [edi + 0x44]
             mov eax, dword ptr [ecx + eax*4]
     L004ebddd:
-            cmp dword ptr ds:[gNet_mode], 2
+            cmp dword ptr [gNet_mode], 2
             jne L004ebdf1
             mov edx, dword ptr [eax + 0x14]
             mov cx, word ptr [edx + 1]
@@ -1730,23 +1796,23 @@ void C2_NAKED C2_HOOK_FASTCALL WorkerShrapnelShower(int pOwner, int* pShrapnel_s
     L004ebdf1:
             mov ecx, eax
             call CloneActor
-            mov edx, dword ptr ds:[0x75d73c]
+            mov edx, dword ptr [gProgram_state+0x1bbc]
             mov esi, eax
             push edx
-            push 0x660084
+            push offset gMatchString_00660084
             mov eax, dword ptr [esi + 0x14]
             add eax, 4
             push eax
             call sprintf
-            mov ecx, dword ptr ds:[0x75d73c]
-            mov edx, dword ptr ds:[0x75d740]
+            mov ecx, dword ptr [gProgram_state+0x1bbc]
+            mov edx, dword ptr [gProgram_state+0x1bc0]
             add esp, 0xc
             mov dword ptr [edx + ecx*4], esi
-            mov eax, dword ptr ds:[0x75d73c]
+            mov eax, dword ptr [gProgram_state+0x1bbc]
             inc eax
             push esi
-            mov dword ptr ds:[0x75d73c], eax
-            mov eax, dword ptr ds:[gDont_render_actor]
+            mov dword ptr [gProgram_state+0x1bbc], eax
+            mov eax, dword ptr [gDont_render_actor]
             push eax
             call BrActorAdd
             mov ecx, dword ptr [esp + 0x3c]
@@ -1790,29 +1856,29 @@ void C2_NAKED C2_HOOK_FASTCALL WorkerShrapnelShower(int pOwner, int* pShrapnel_s
             mov dword ptr [esp + 0x44], eax
             call ApplyInitialMovement
             fld dword ptr [esp + 0x20]
-            fmul qword ptr ds:[gDouble_0058aeb8]
+            fmul qword ptr [gDouble_0058aeb8]
             mov ecx, dword ptr [ebp + 8]
             mov eax, dword ptr [esp + 0x68]
             push eax
             fstp dword ptr [ecx + 0x68]
             fld dword ptr [esp + 0x28]
-            fmul qword ptr ds:[gDouble_0058aeb8]
+            fmul qword ptr [gDouble_0058aeb8]
             mov edx, dword ptr [ebp + 8]
             fstp dword ptr [edx + 0x6c]
             fld dword ptr [esp + 0x2c]
-            fmul qword ptr ds:[gDouble_0058aeb8]
+            fmul qword ptr [gDouble_0058aeb8]
             mov eax, dword ptr [ebp + 8]
             fstp dword ptr [eax + 0x70]
             fld dword ptr [esp + 0x70]
-            fmul qword ptr ds:[gDouble_0058aef0]
+            fmul qword ptr [gDouble_0058aef0]
             mov ecx, dword ptr [ebp + 8]
             fstp dword ptr [ecx + 0x74]
             fld dword ptr [esp + 0x74]
-            fmul qword ptr ds:[gDouble_0058aef0]
+            fmul qword ptr [gDouble_0058aef0]
             mov edx, dword ptr [ebp + 8]
             fstp dword ptr [edx + 0x78]
             fld dword ptr [esp + 0x78]
-            fmul qword ptr ds:[gDouble_0058aef0]
+            fmul qword ptr [gDouble_0058aef0]
             mov eax, dword ptr [ebp + 8]
             fstp dword ptr [eax + 0x7c]
             mov ecx, dword ptr [ebp + 8]
@@ -1851,7 +1917,7 @@ void C2_NAKED C2_HOOK_FASTCALL WorkerShrapnelShower(int pOwner, int* pShrapnel_s
             cmp ebx, eax
             jl L004ebf52
     L004ebf91:
-            mov eax, dword ptr ds:[gNet_mode]
+            mov eax, dword ptr [gNet_mode]
             mov ebx, 2
             cmp eax, ebx
             jne L004ec005
@@ -1893,12 +1959,12 @@ void C2_NAKED C2_HOOK_FASTCALL WorkerShrapnelShower(int pOwner, int* pShrapnel_s
     L004ec005:
             mov esi, dword ptr [esp + 0x18]
     L004ec009:
-            mov eax, dword ptr ds:[0x75d73c]
+            mov eax, dword ptr [gProgram_state+0x1bbc]
             lea ecx, [eax - 1]
             call FUN_004c8940
-            cmp dword ptr ds:[gNet_mode], ebx
+            cmp dword ptr [gNet_mode], ebx
             jne L004ec02d
-            mov ecx, dword ptr ds:[gCurrent_net_game]
+            mov ecx, dword ptr [gCurrent_net_game]
             push 0
             mov edx, esi
             call NetGuaranteedSendMessageToAllPlayers
@@ -1921,10 +1987,10 @@ void C2_NAKED C2_HOOK_FASTCALL WorkerShrapnelShower(int pOwner, int* pShrapnel_s
             add esp, 4
             push esi
             call BrActorFree
-            mov eax, dword ptr ds:[0x75d73c]
+            mov eax, dword ptr [gProgram_state+0x1bbc]
             add esp, 4
             dec eax
-            mov dword ptr ds:[0x75d73c], eax
+            mov dword ptr [gProgram_state+0x1bbc], eax
     L004ec075:
             mov ebp, dword ptr [esp + 0x1c]
     L004ec079:
@@ -1985,7 +2051,7 @@ void C2_NAKED C2_HOOK_FASTCALL WorkerShrapnelShower(int pOwner, int* pShrapnel_s
             mov ecx, dword ptr [esp + 0x128]
             mov edx, ebx
             call PipeSingleShrapnelShower
-            inc dword ptr ds:[gCount_shrapnel_shower_calls]
+            inc dword ptr [gCount_shrapnel_shower_calls]
     L004ec146:
             pop edi
             pop esi
@@ -2002,16 +2068,16 @@ void C2_NAKED C2_HOOK_FASTCALL WorkerShrapnelShower(int pOwner, int* pShrapnel_s
     L004ec163:
             cmp dword ptr [edi + 0x28], 2
             jne L004eb92b
-            mov ecx, dword ptr ds:[gINT_006a3334]
+            mov ecx, dword ptr [gINT_006a3334]
             test ecx, ecx
             je L004eb931
-            fld dword ptr ds:[0x6b78b0]
-            fld dword ptr ds:[0x6b78ac]
-            fsub dword ptr ds:[gMatrix34_006b78a0]
+            fld dword ptr [gMatrix34_006b78a0+0x10]
+            fld dword ptr [gMatrix34_006b78a0+0xc]
+            fsub dword ptr [gMatrix34_006b78a0]
             fxch st(1)
-            fsub dword ptr ds:[0x6b78a4]
-            fld dword ptr ds:[0x6b78b4]
-            fsub dword ptr ds:[0x6b78a8]
+            fsub dword ptr [gMatrix34_006b78a0+0x4]
+            fld dword ptr [gMatrix34_006b78a0+0x14]
+            fsub dword ptr [gMatrix34_006b78a0+0x8]
             fld st(2)
             fld st(2)
             fxch st(1)
@@ -2024,11 +2090,11 @@ void C2_NAKED C2_HOOK_FASTCALL WorkerShrapnelShower(int pOwner, int* pShrapnel_s
             faddp st(2), st(0)
             faddp st(1), st(0)
             fsqrt
-            fcom dword ptr ds:[gFloat_0058aec4]
+            fcom dword ptr [gFloat_0058aec4]
             fnstsw ax
             test ah, 0x41
             jne L004ec1f4
-            fdivr qword ptr ds:[gDouble_0058aec8]
+            fdivr qword ptr [gDouble_0058aec8]
             fld st(0)
             fld st(1)
             fxch st(1)
@@ -2055,13 +2121,13 @@ void C2_NAKED C2_HOOK_FASTCALL WorkerShrapnelShower(int pOwner, int* pShrapnel_s
             mov dword ptr [esp + 0x3c], 0
             mov dword ptr [esp + 0x40], 0
     L004ec214:
-            fld dword ptr ds:[0x6b78bc]
-            fld dword ptr ds:[0x6b78b8]
-            fsub dword ptr ds:[gMatrix34_006b78a0]
+            fld dword ptr [gMatrix34_006b78a0+0x1c]
+            fld dword ptr [gMatrix34_006b78a0+0x18]
+            fsub dword ptr [gMatrix34_006b78a0]
             fxch st(1)
-            fsub dword ptr ds:[0x6b78a4]
-            fld dword ptr ds:[0x6b78c0]
-            fsub dword ptr ds:[0x6b78a8]
+            fsub dword ptr [gMatrix34_006b78a0+0x4]
+            fld dword ptr [gMatrix34_006b78a0+0x20]
+            fsub dword ptr [gMatrix34_006b78a0+0x8]
             fld st(2)
             fld st(2)
             fxch st(1)
@@ -2074,11 +2140,11 @@ void C2_NAKED C2_HOOK_FASTCALL WorkerShrapnelShower(int pOwner, int* pShrapnel_s
             faddp st(2), st(0)
             faddp st(1), st(0)
             fsqrt
-            fcom dword ptr ds:[gFloat_0058aec4]
+            fcom dword ptr [gFloat_0058aec4]
             fnstsw ax
             test ah, 0x41
             jne L004ec28d
-            fdivr qword ptr ds:[gDouble_0058aec8]
+            fdivr qword ptr [gDouble_0058aec8]
             fld st(0)
             fld st(1)
             fxch st(1)
@@ -2105,32 +2171,32 @@ void C2_NAKED C2_HOOK_FASTCALL WorkerShrapnelShower(int pOwner, int* pShrapnel_s
             mov dword ptr [esp + 0x48], 0
             mov dword ptr [esp + 0x4c], 0
     L004ec2ad:
-            fld dword ptr ds:[0x6a468c]
-            fld dword ptr ds:[gVector3_006a4688]
-            fmul dword ptr ds:[gVector3_006a4688]
-            fld dword ptr ds:[0x6a4690]
+            fld dword ptr [gVector3_006a4688+0x4]
+            fld dword ptr [gVector3_006a4688]
+            fmul dword ptr [gVector3_006a4688]
+            fld dword ptr [gVector3_006a4688+0x8]
             fxch st(2)
-            fmul dword ptr ds:[0x6a468c]
+            fmul dword ptr [gVector3_006a4688+0x4]
             fxch st(2)
-            fmul dword ptr ds:[0x6a4690]
+            fmul dword ptr [gVector3_006a4688+0x8]
             fxch st(2)
             faddp st(1), st(0)
             fxch st(1)
             faddp st(1), st(0)
             fsqrt
-            fcom dword ptr ds:[gFloat_0058aec4]
+            fcom dword ptr [gFloat_0058aec4]
             fnstsw ax
             test ah, 0x41
             jne L004ec320
-            fdivr qword ptr ds:[gDouble_0058aec8]
+            fdivr qword ptr [gDouble_0058aec8]
             fld st(0)
             fld st(1)
             fxch st(1)
-            fmul dword ptr ds:[gVector3_006a4688]
+            fmul dword ptr [gVector3_006a4688]
             fxch st(1)
-            fmul dword ptr ds:[0x6a468c]
+            fmul dword ptr [gVector3_006a4688+0x4]
             fxch st(2)
-            fmul dword ptr ds:[0x6a4690]
+            fmul dword ptr [gVector3_006a4688+0x8]
             fxch st(1)
             fstp dword ptr [esp + 0x50]
             fxch st(1)
@@ -2143,11 +2209,11 @@ void C2_NAKED C2_HOOK_FASTCALL WorkerShrapnelShower(int pOwner, int* pShrapnel_s
             mov dword ptr [esp + 0x54], 0
             mov dword ptr [esp + 0x58], 0
     L004ec33a:
-            mov eax, dword ptr ds:[0x6b78ac]
+            mov eax, dword ptr [gMatrix34_006b78a0+0xc]
             mov dword ptr [esp + 0x5c], eax
-            mov eax, dword ptr ds:[0x6b78b0]
+            mov eax, dword ptr [gMatrix34_006b78a0+0x10]
             mov dword ptr [esp + 0x60], eax
-            mov eax, dword ptr ds:[0x6b78b4]
+            mov eax, dword ptr [gMatrix34_006b78a0+0x14]
             mov dword ptr [esp + 0x64], eax
             jmp L004eb931
             mov edi, edi

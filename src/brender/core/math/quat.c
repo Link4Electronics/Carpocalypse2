@@ -15,6 +15,26 @@ extern void __cdecl _CIacos();
 extern br_uint_8 _CombineTransforms[7][7];
 extern void __cdecl _ftol();
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gData_0058b920[];
+extern char gData_0066cc20[];
+extern char gDouble_0058b928[];
+extern char gDouble_0058b930[];
+extern char gFloat_0058b918[];
+extern char gFloat_0058b91c[];
+extern char gFloat_0058b924[];
+extern char gFloat_0058b93c[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchData_0058b920[];
+extern char gMatchData_0066cc20[];
+extern char gMatchDouble_0058b928[];
+extern char gMatchDouble_0058b930[];
+extern char gMatchFloat_0058b918[];
+extern char gMatchFloat_0058b91c[];
+extern char gMatchFloat_0058b924[];
+extern char gMatchFloat_0058b93c[];
+#endif
 // FUNCTION: CARMA2_HW 0x005355e0
 C2_NAKED br_quat* C2_HOOK_CDECL BrQuatMul(br_quat* q, const br_quat* l, const br_quat* r) {
 #ifndef CARPOCALYPSE2_MATCHING
@@ -124,7 +144,7 @@ C2_NAKED br_quat* C2_HOOK_CDECL BrQuatMul(br_quat* q, const br_quat* l, const br
             fld dword ptr [ecx + 8]
             fxch st(3)
             fadd dword ptr [esp + 0x1c]
-            fmul dword ptr [IID_IDirectInputDevice2A+0x580]
+            fmul dword ptr [gMatchFloat_0058b918]
             fld st(0)
             fxch st(2)
             fsubp st(3), st(0)
@@ -162,6 +182,20 @@ C2_NAKED br_quat* C2_HOOK_CDECL BrQuatMul(br_quat* q, const br_quat* l, const br
             fstp dword ptr [eax + 8]
             add esp, 0x14
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -208,7 +242,7 @@ C2_NAKED br_quat* C2_HOOK_CDECL BrQuatNormalise(br_quat* q, const br_quat* qq) {
             fxch st(1)
             fsqrt
             fstp st(1)
-            fdivr dword ptr [IID_IDirectInputDevice2A+0x584]
+            fdivr dword ptr [gMatchFloat_0058b91c]
             fld st(0)
             _emit 0xd8
         _emit 0x09
@@ -341,7 +375,7 @@ C2_NAKED br_quat* C2_HOOK_CDECL BrQuatSlerp(br_quat* q, const br_quat* l, const 
             faddp st(2), st(0)
             faddp st(1), st(0)
             fst dword ptr [esp + 0x1c]
-            fcomp dword ptr [IID_IDirectInputDevice2A+0x588]
+            fcomp dword ptr [gMatchData_0058b920]
             fnstsw ax
             test ah, 1
             je L00535834
@@ -372,15 +406,15 @@ C2_NAKED br_quat* C2_HOOK_CDECL BrQuatSlerp(br_quat* q, const br_quat* l, const 
             fstp dword ptr [esp + 0x10]
             mov dword ptr [esp + 4], eax
     L0053584f:
-            fld dword ptr [IID_IDirectInputDevice2A+0x584]
+            fld dword ptr [gMatchFloat_0058b91c]
             fsub dword ptr [esp + 0x1c]
-            fcomp dword ptr [IID_IDirectInputDevice2A+0x58c]
+            fcomp dword ptr [gMatchFloat_0058b924]
             fnstsw ax
             test ah, 0x41
             jne L0053591c
             fld dword ptr [esp + 0x1c]
             call _CIacos
-            fmul qword ptr [IID_IDirectInputDevice2A+0x590]
+            fmul qword ptr [gMatchDouble_0058b928]
             call _ftol
             and eax, 0xffff
             mov ecx, eax
@@ -390,7 +424,7 @@ C2_NAKED br_quat* C2_HOOK_CDECL BrQuatSlerp(br_quat* q, const br_quat* l, const 
             fild dword ptr [esp + 0x1c]
             fild dword ptr [esp + 0x20]
             fxch st(1)
-            fmul qword ptr [IID_IDirectInputDevice2A+0x598]
+            fmul qword ptr [gMatchDouble_0058b930]
             fxch st(1)
             fxch st(1)
             fsin
@@ -414,7 +448,7 @@ C2_NAKED br_quat* C2_HOOK_CDECL BrQuatSlerp(br_quat* q, const br_quat* l, const 
             and eax, 0xffff
             mov dword ptr [esp + 0x28], eax
             fild dword ptr [esp + 0x28]
-            fmul qword ptr [IID_IDirectInputDevice2A+0x598]
+            fmul qword ptr [gMatchDouble_0058b930]
             fxch st(1)
             fxch st(1)
             fsin
@@ -425,12 +459,12 @@ C2_NAKED br_quat* C2_HOOK_CDECL BrQuatSlerp(br_quat* q, const br_quat* l, const 
             and eax, 0xffff
             mov dword ptr [esp + 0x24], eax
             fild dword ptr [esp + 0x24]
-            fmul qword ptr [IID_IDirectInputDevice2A+0x598]
+            fmul qword ptr [gMatchDouble_0058b930]
             fsin
             fdivrp st(1), st(0)
             jmp L00535930
     L0053591c:
-            fld dword ptr [IID_IDirectInputDevice2A+0x584]
+            fld dword ptr [gMatchFloat_0058b91c]
             fsub dword ptr [esp + 0x24]
             fld dword ptr [esp + 0x24]
             fxch st(1)
@@ -477,6 +511,17 @@ C2_NAKED br_quat* C2_HOOK_CDECL BrQuatSlerp(br_quat* q, const br_quat* l, const 
             fstp st(0)
             add esp, 0x10
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -608,7 +653,7 @@ C2_NAKED br_matrix34* C2_HOOK_CDECL BrQuatToMatrix34(br_matrix34* mat, const br_
             fxch st(2)
             fmul dword ptr [esp + 0x24]
             fxch st(5)
-            fsubr dword ptr [IID_IDirectInputDevice2A+0x584]
+            fsubr dword ptr [gMatchFloat_0058b91c]
             fxch st(5)
             fstp dword ptr [esp + 0x24]
             mov eax, dword ptr [esp + 0x20]
@@ -641,9 +686,9 @@ C2_NAKED br_matrix34* C2_HOOK_CDECL BrQuatToMatrix34(br_matrix34* mat, const br_
             fxch st(2)
             fadd dword ptr [esp + 0x18]
             fxch st(4)
-            fsubr dword ptr [IID_IDirectInputDevice2A+0x584]
+            fsubr dword ptr [gMatchFloat_0058b91c]
             fxch st(3)
-            fsubr dword ptr [IID_IDirectInputDevice2A+0x584]
+            fsubr dword ptr [gMatchFloat_0058b91c]
             fxch st(3)
             fstp dword ptr [eax + 0x10]
             fstp dword ptr [eax + 0x1c]
@@ -656,6 +701,18 @@ C2_NAKED br_matrix34* C2_HOOK_CDECL BrQuatToMatrix34(br_matrix34* mat, const br_
             mov dword ptr [eax + 0x2c], ecx
             add esp, 0x1c
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -698,12 +755,12 @@ C2_NAKED br_quat* C2_HOOK_CDECL BrMatrix34ToQuat(br_quat* q, const br_matrix34* 
         _emit 0x01
             fadd dword ptr [ecx + 0x20]
             fadd dword ptr [ecx + 0x10]
-            fcom dword ptr [IID_IDirectInputDevice2A+0x588]
+            fcom dword ptr [gMatchData_0058b920]
             fnstsw ax
             test ah, 1
             jne L00535b4f
-            fsub dword ptr [IID_IDirectInputDevice2A+0x5a4]
-            fld dword ptr [IID_IDirectInputDevice2A+0x580]
+            fsub dword ptr [gMatchFloat_0058b93c]
+            fld dword ptr [gMatchFloat_0058b918]
             fxch st(1)
             fsqrt
             mov eax, dword ptr [esp + 0x18]
@@ -721,7 +778,7 @@ C2_NAKED br_quat* C2_HOOK_CDECL BrMatrix34ToQuat(br_quat* q, const br_matrix34* 
         _emit 0x44
         _emit 0x24
         _emit 0x00
-            fmul dword ptr [IID_IDirectInputDevice2A+0x580]
+            fmul dword ptr [gMatchFloat_0058b918]
             fstp dword ptr [eax + 0xc]
             fld dword ptr [ecx + 0x14]
             fsub dword ptr [ecx + 0x1c]
@@ -769,16 +826,16 @@ C2_NAKED br_quat* C2_HOOK_CDECL BrMatrix34ToQuat(br_quat* q, const br_matrix34* 
             lea eax, [edx*4]
             mov edi, edx
             mov dword ptr [esp + 0x1c], eax
-            mov eax, dword ptr [eax + _CombineTransforms+0xb8]
+            mov eax, dword ptr [eax + gMatchData_0066cc20]
             mov dword ptr [esp + 0x18], eax
             lea edx, [eax*4]
             mov dword ptr [esp + 0x20], edx
-            mov edx, dword ptr [edx + _CombineTransforms+0xb8]
+            mov edx, dword ptr [edx + gMatchData_0066cc20]
             mov dword ptr [esp + 0x14], edx
             shl edx, 4
             shl eax, 4
             fld dword ptr [edx + ecx]
-            fld dword ptr [IID_IDirectInputDevice2A+0x580]
+            fld dword ptr [gMatchFloat_0058b918]
             fxch st(1)
             fadd dword ptr [eax + ecx]
             mov eax, dword ptr [esp + 0x18]
@@ -786,7 +843,7 @@ C2_NAKED br_quat* C2_HOOK_CDECL BrMatrix34ToQuat(br_quat* q, const br_matrix34* 
             fsubr dword ptr [edi + ecx]
             mov ecx, dword ptr [esp + 0x14]
             lea esi, [eax + eax*2]
-            fsub dword ptr [IID_IDirectInputDevice2A+0x5a4]
+            fsub dword ptr [gMatchFloat_0058b93c]
             lea edx, [ecx + esi]
             lea edi, [ecx + ecx*2]
             mov dword ptr [esp + 0x18], edx
@@ -805,7 +862,7 @@ C2_NAKED br_quat* C2_HOOK_CDECL BrMatrix34ToQuat(br_quat* q, const br_matrix34* 
             fstp dword ptr [esp + 0x10]
             fdiv dword ptr [esp + 0x10]
             fld dword ptr [esp + 0x10]
-            fmul dword ptr [IID_IDirectInputDevice2A+0x580]
+            fmul dword ptr [gMatchFloat_0058b918]
             fstp dword ptr [ecx + eax]
             mov eax, dword ptr [esp + 0x18]
             mov ecx, dword ptr [esp + 0x2c]
@@ -831,6 +888,21 @@ C2_NAKED br_quat* C2_HOOK_CDECL BrMatrix34ToQuat(br_quat* q, const br_matrix34* 
             fstp st(0)
             add esp, 0x14
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }

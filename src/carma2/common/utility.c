@@ -140,6 +140,58 @@ extern char gQuickTime_call_component_with_storage[];
 #ifdef CARPOCALYPSE2_MATCHING
 extern int gScan_code[256];
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gData_0058b2c0[];
+extern char gData_006b5f1f[];
+extern char gDouble_0058b288[];
+extern char gDouble_0058b290[];
+extern char gDouble_0058b298[];
+extern char gDouble_0058b2a0[];
+extern char gDouble_0058b2a8[];
+extern char gDouble_0058b2b0[];
+extern char gFloat_0058b268[];
+extern char gFloat_0058b2b8[];
+extern char gFloat_0058b2c8[];
+extern char gFloat_0058b2cc[];
+extern char gFloat_0058b2d4[];
+extern char gFloat_0058b2d8[];
+extern char gFloat_0058b2dc[];
+extern char gFloat_0058b2e0[];
+extern char gFloat_0058b2e4[];
+extern char gFloat_0058b2e8[];
+extern char gFloat_0058b2ec[];
+extern char gFloat_0058b2f0[];
+extern char gFloat_0058b2f4[];
+extern char gFloat_0058b2f8[];
+extern char gFloat_0058b2fc[];
+extern char gFloat_0058b300[];
+extern char gFloat_sine_table[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchData_0058b2c0[];
+extern char gMatchData_006b5f1f[];
+extern char gMatchDouble_0058b288[];
+extern char gMatchDouble_0058b290[];
+extern char gMatchDouble_0058b298[];
+extern char gMatchDouble_0058b2a0[];
+extern char gMatchDouble_0058b2a8[];
+extern char gMatchDouble_0058b2b0[];
+extern char gMatchFloat_0058b268[];
+extern char gMatchFloat_0058b2b8[];
+extern char gMatchFloat_0058b2cc[];
+extern char gMatchFloat_0058b2d4[];
+extern char gMatchFloat_0058b2d8[];
+extern char gMatchFloat_0058b2dc[];
+extern char gMatchFloat_0058b2e0[];
+extern char gMatchFloat_0058b2e4[];
+extern char gMatchFloat_0058b2e8[];
+extern char gMatchFloat_0058b2ec[];
+extern char gMatchFloat_0058b2f0[];
+extern char gMatchFloat_0058b2f4[];
+extern char gMatchFloat_0058b2f8[];
+extern char gMatchFloat_0058b2fc[];
+extern char gMatchFloat_0058b300[];
+#endif
 // FUNCTION: CARMA2_HW 0x00515910
 void C2_HOOK_FASTCALL StringTransformToLower(char* pStr) {
     int i;
@@ -303,7 +355,7 @@ void C2_NAKED C2_HOOK_FASTCALL DumpVisibleActors(br_actor* pActor, const char* p
             push esi
             push edx
             mov esi, ecx
-            push 0x6617a8
+            push offset gFloat_sine_table+0x410
             call printf
             add esp, 8
             push 0
@@ -311,7 +363,7 @@ void C2_NAKED C2_HOOK_FASTCALL DumpVisibleActors(br_actor* pActor, const char* p
             push esi
             call BrActorEnum
             add esp, 0xc
-            push 0x661780
+            push offset gFloat_sine_table+0x3e8
             call printf
             add esp, 4
             push 0x6737f0
@@ -319,6 +371,9 @@ void C2_NAKED C2_HOOK_FASTCALL DumpVisibleActors(br_actor* pActor, const char* p
             add esp, 4
             pop esi
             ret
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -452,7 +507,7 @@ int C2_NAKED C2_HOOK_FASTCALL LoadTextureTryAllLocations(char* pName, br_pixelma
             and ecx, 3
             rep movsb
     L00513aef:
-            mov esi, offset gSplit_triangle_vertex_orders+0x200
+            mov esi, 0x660108
             mov eax, offset gCurrent_load_directory
     L00513af9:
             mov dl, byte ptr [eax]
@@ -477,7 +532,7 @@ int C2_NAKED C2_HOOK_FASTCALL LoadTextureTryAllLocations(char* pName, br_pixelma
             sbb ebp, -1
     L00513b22:
             mov dword ptr [esp + 0x14], ebp
-            mov esi, offset gFrontend_QUIT+0xb900
+            mov esi, 0x6556f0
             mov eax, offset gCurrent_load_directory
     L00513b30:
             mov dl, byte ptr [eax]
@@ -888,7 +943,7 @@ int C2_NAKED C2_HOOK_FASTCALL LoadTextureTryAllLocations(char* pName, br_pixelma
             xor eax, eax
             and ecx, 3
             rep movsb
-            mov edi, offset gLast_key_down+0xa4
+            mov edi, 0x6572b0
             or ecx, 0xffffffff
             repne scasb
             not ecx
@@ -913,7 +968,7 @@ int C2_NAKED C2_HOOK_FASTCALL LoadTextureTryAllLocations(char* pName, br_pixelma
             lea edx, [esp + 0x124]
             and ecx, 3
             rep movsb
-            mov edi, offset gLast_key_down+0xa4
+            mov edi, 0x6572b0
             or ecx, 0xffffffff
             repne scasb
             not ecx
@@ -952,7 +1007,7 @@ int C2_NAKED C2_HOOK_FASTCALL LoadTextureTryAllLocations(char* pName, br_pixelma
             xor eax, eax
             and ecx, 3
             rep movsb
-            mov edi, offset gLast_key_down+0x84
+            mov edi, 0x657290
             or ecx, 0xffffffff
             repne scasb
             not ecx
@@ -977,7 +1032,7 @@ int C2_NAKED C2_HOOK_FASTCALL LoadTextureTryAllLocations(char* pName, br_pixelma
             lea edx, [esp + 0x324]
             and ecx, 3
             rep movsb
-            mov edi, offset gLast_key_down+0x84
+            mov edi, 0x657290
             or ecx, 0xffffffff
             repne scasb
             not ecx
@@ -1016,7 +1071,7 @@ int C2_NAKED C2_HOOK_FASTCALL LoadTextureTryAllLocations(char* pName, br_pixelma
             xor eax, eax
             and ecx, 3
             rep movsb
-            mov edi, offset gLast_key_down+0x9c
+            mov edi, 0x6572a8
             or ecx, 0xffffffff
             repne scasb
             not ecx
@@ -1041,7 +1096,7 @@ int C2_NAKED C2_HOOK_FASTCALL LoadTextureTryAllLocations(char* pName, br_pixelma
             lea edx, [esp + 0x124]
             and ecx, 3
             rep movsb
-            mov edi, offset gLast_key_down+0x9c
+            mov edi, 0x6572a8
             or ecx, 0xffffffff
             repne scasb
             not ecx
@@ -1080,7 +1135,7 @@ int C2_NAKED C2_HOOK_FASTCALL LoadTextureTryAllLocations(char* pName, br_pixelma
             xor eax, eax
             and ecx, 3
             rep movsb
-            mov edi, offset gLast_key_down+0x7c
+            mov edi, 0x657288
             or ecx, 0xffffffff
             repne scasb
             not ecx
@@ -1105,7 +1160,7 @@ int C2_NAKED C2_HOOK_FASTCALL LoadTextureTryAllLocations(char* pName, br_pixelma
             lea edx, [esp + 0x324]
             and ecx, 3
             rep movsb
-            mov edi, offset gLast_key_down+0x7c
+            mov edi, 0x657288
             or ecx, 0xffffffff
             repne scasb
             not ecx
@@ -1177,7 +1232,7 @@ int C2_NAKED C2_HOOK_FASTCALL LoadTextureTryAllLocations(char* pName, br_pixelma
             xor eax, eax
             and ecx, 3
             rep movsb
-            mov edi, offset gLast_key_down+0xa4
+            mov edi, 0x6572b0
             or ecx, 0xffffffff
             repne scasb
             not ecx
@@ -1202,7 +1257,7 @@ int C2_NAKED C2_HOOK_FASTCALL LoadTextureTryAllLocations(char* pName, br_pixelma
             lea edx, [esp + 0x124]
             and ecx, 3
             rep movsb
-            mov edi, offset gLast_key_down+0xa4
+            mov edi, 0x6572b0
             or ecx, 0xffffffff
             repne scasb
             not ecx
@@ -1241,7 +1296,7 @@ int C2_NAKED C2_HOOK_FASTCALL LoadTextureTryAllLocations(char* pName, br_pixelma
             xor eax, eax
             and ecx, 3
             rep movsb
-            mov edi, offset gLast_key_down+0x84
+            mov edi, 0x657290
             or ecx, 0xffffffff
             repne scasb
             not ecx
@@ -1266,7 +1321,7 @@ int C2_NAKED C2_HOOK_FASTCALL LoadTextureTryAllLocations(char* pName, br_pixelma
             lea edx, [esp + 0x324]
             and ecx, 3
             rep movsb
-            mov edi, offset gLast_key_down+0x84
+            mov edi, 0x657290
             or ecx, 0xffffffff
             repne scasb
             not ecx
@@ -1305,7 +1360,7 @@ int C2_NAKED C2_HOOK_FASTCALL LoadTextureTryAllLocations(char* pName, br_pixelma
             xor eax, eax
             and ecx, 3
             rep movsb
-            mov edi, offset gLast_key_down+0x9c
+            mov edi, 0x6572a8
             or ecx, 0xffffffff
             repne scasb
             not ecx
@@ -1330,7 +1385,7 @@ int C2_NAKED C2_HOOK_FASTCALL LoadTextureTryAllLocations(char* pName, br_pixelma
             lea edx, [esp + 0x124]
             and ecx, 3
             rep movsb
-            mov edi, offset gLast_key_down+0x9c
+            mov edi, 0x6572a8
             or ecx, 0xffffffff
             repne scasb
             not ecx
@@ -1369,7 +1424,7 @@ int C2_NAKED C2_HOOK_FASTCALL LoadTextureTryAllLocations(char* pName, br_pixelma
             xor eax, eax
             and ecx, 3
             rep movsb
-            mov edi, offset gLast_key_down+0x7c
+            mov edi, 0x657288
             or ecx, 0xffffffff
             repne scasb
             not ecx
@@ -1394,7 +1449,7 @@ int C2_NAKED C2_HOOK_FASTCALL LoadTextureTryAllLocations(char* pName, br_pixelma
             lea edx, [esp + 0x324]
             and ecx, 3
             rep movsb
-            mov edi, offset gLast_key_down+0x7c
+            mov edi, 0x657288
             or ecx, 0xffffffff
             repne scasb
             not ecx
@@ -1458,6 +1513,13 @@ int C2_NAKED C2_HOOK_FASTCALL LoadTextureTryAllLocations(char* pName, br_pixelma
             pop ebx
             add esp, 0x4298
             ret 4
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -1553,7 +1615,7 @@ tU16 C2_NAKED C2_HOOK_FASTCALL Colour24BitTo16Bit(br_colour pColour) {
             je L00517094
             dec eax
             je L00517071
-            push offset gVector3_00661678+0xa8
+            push offset gFloat_sine_table+0x388
             call BrFailure
             add esp, 4
             ret
@@ -1581,6 +1643,15 @@ tU16 C2_NAKED C2_HOOK_FASTCALL Colour24BitTo16Bit(br_colour pColour) {
             or eax, ecx
             shr eax, 3
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -1727,9 +1798,19 @@ float C2_NAKED C2_HOOK_STDCALL FRandomBetween(float pA, float pB) {
             fild dword ptr [esp + 8]
             fxch st(1)
             fmulp st(1), st(0)
-            fmul dword ptr [gNegative_half+0x6c]
+            fmul dword ptr [gMatchFloat_0058b268]
             fsubr dword ptr [esp + 4]
             ret 8
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -1758,13 +1839,27 @@ float C2_NAKED C2_HOOK_STDCALL FRandomPosNeg(float pN) {
             fild dword ptr [esp + 8]
             fxch st(1)
             fmulp st(1), st(0)
-            fmul dword ptr [gNegative_half+0x6c]
+            fmul dword ptr [gMatchFloat_0058b268]
             _emit 0xd8
         _emit 0x6c
         _emit 0x24
         _emit 0x00
             pop ecx
             ret 4
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -1783,9 +1878,19 @@ br_scalar C2_NAKED C2_HOOK_STDCALL SRandomBetween(br_scalar pA, br_scalar pB) {
             fild dword ptr [esp + 8]
             fxch st(1)
             fmulp st(1), st(0)
-            fmul dword ptr [gNegative_half+0x6c]
+            fmul dword ptr [gMatchFloat_0058b268]
             fsubr dword ptr [esp + 4]
             ret 8
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -1814,13 +1919,27 @@ br_scalar C2_NAKED C2_HOOK_STDCALL SRandomPosNeg(br_scalar pN) {
             fild dword ptr [esp + 8]
             fxch st(1)
             fmulp st(1), st(0)
-            fmul dword ptr [gNegative_half+0x6c]
+            fmul dword ptr [gMatchFloat_0058b268]
             _emit 0xd8
         _emit 0x6c
         _emit 0x24
         _emit 0x00
             pop ecx
             ret 4
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -1979,7 +2098,7 @@ int C2_NAKED C2_HOOK_FASTCALL DRPixelmapLoadMany(const char* texturePathNoExt, b
             and ecx, 3
             lea edx, [esp + 0x14]
             rep movsb
-            mov edi, offset gFrontend_QUIT+0xbbac
+            mov edi, 0x65599c
             or ecx, 0xffffffff
             repne scasb
             not ecx
@@ -2082,6 +2201,10 @@ int C2_NAKED C2_HOOK_FASTCALL DRPixelmapLoadMany(const char* texturePathNoExt, b
             pop ebx
             add esp, 0x304
             ret 4
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -2664,7 +2787,7 @@ C2_NAKED br_pixelmap* C2_HOOK_FASTCALL GenerateDarkenedShadeTable(int pHeight, b
             and edx, 0xf
             push edi
             add eax, edx
-            mov edi, offset gMaterial_shading_for_callback+0x4
+            mov edi, 0x660cbc
             sar eax, 4
             add al, 0x41
             mov byte ptr [esp + 0x38], 0x73
@@ -2754,7 +2877,7 @@ C2_NAKED br_pixelmap* C2_HOOK_FASTCALL GenerateDarkenedShadeTable(int pHeight, b
             xor eax, eax
             and ecx, 3
             rep movsb
-            mov edi, offset gSwap_depth_effect_type+0xdc
+            mov edi, 0x59126c
             or ecx, 0xffffffff
             repne scasb
             not ecx
@@ -2779,7 +2902,7 @@ C2_NAKED br_pixelmap* C2_HOOK_FASTCALL GenerateDarkenedShadeTable(int pHeight, b
             lea edx, [esp + 0xb8]
             and ecx, 3
             rep movsb
-            mov edi, offset gSwap_depth_effect_type+0xdc
+            mov edi, 0x59126c
             or ecx, 0xffffffff
             repne scasb
             not ecx
@@ -2917,7 +3040,7 @@ C2_NAKED br_pixelmap* C2_HOOK_FASTCALL GenerateDarkenedShadeTable(int pHeight, b
             mov dword ptr [esp + 0x6c], eax
             mov dword ptr [esp + 0x60], edi
             jne L005151bb
-            fld qword ptr [gFloatZero_0058b280+0x8]
+            fld qword ptr [gMatchDouble_0058b288]
             jmp L005151c6
     L005151bb:
             lea eax, [ebx - 1]
@@ -2951,55 +3074,55 @@ C2_NAKED br_pixelmap* C2_HOOK_FASTCALL GenerateDarkenedShadeTable(int pHeight, b
     L00515217:
             fild dword ptr [esp + 0x18]
             fdiv st(0), st(4)
-            fcom qword ptr [gFloatZero_0058b280+0x10]
+            fcom qword ptr [gMatchDouble_0058b290]
             fnstsw ax
             test ah, 1
             je L00515263
-            fcom qword ptr [gFloatZero_0058b280+0x18]
+            fcom qword ptr [gMatchDouble_0058b298]
             fnstsw ax
             test ah, 1
             je L00515242
             fmul dword ptr [ebp + 0x14]
-            fmul qword ptr [gFloatZero_0058b280+0x20]
+            fmul qword ptr [gMatchDouble_0058b2a0]
             jmp L005152b0
     L00515242:
             fld dword ptr [ebp + 0x18]
             fsub dword ptr [ebp + 0x14]
             fxch st(1)
-            fsub qword ptr [gFloatZero_0058b280+0x18]
+            fsub qword ptr [gMatchDouble_0058b298]
             fld dword ptr [ebp + 0x14]
             fxch st(1)
             fmulp st(2), st(0)
             fxch st(1)
-            fmul qword ptr [gFloatZero_0058b280+0x28]
+            fmul qword ptr [gMatchDouble_0058b2a8]
             fsubp st(1), st(0)
             jmp L005152b0
     L00515263:
-            fcom qword ptr [gFloatZero_0058b280+0x30]
+            fcom qword ptr [gMatchDouble_0058b2b0]
             fnstsw ax
             test ah, 1
             je L00515291
             fld dword ptr [ebp + 0x1c]
             fsub dword ptr [ebp + 0x18]
             fxch st(1)
-            fsub qword ptr [gFloatZero_0058b280+0x10]
+            fsub qword ptr [gMatchDouble_0058b290]
             fld dword ptr [ebp + 0x18]
             fxch st(1)
             fmulp st(2), st(0)
             fxch st(1)
-            fmul qword ptr [gFloatZero_0058b280+0x28]
+            fmul qword ptr [gMatchDouble_0058b2a8]
             fsubp st(1), st(0)
             jmp L005152b0
     L00515291:
-            fld dword ptr [gFloatZero_0058b280+0x38]
-            fld qword ptr [gFloatZero_0058b280+0x8]
+            fld dword ptr [gMatchFloat_0058b2b8]
+            fld qword ptr [gMatchDouble_0058b288]
             fsubrp st(2), st(0)
             fsub dword ptr [ebp + 0x1c]
             fmulp st(1), st(0)
-            fmul qword ptr [gFloatZero_0058b280+0x20]
-            fsubr qword ptr [gFloatZero_0058b280+0x8]
+            fmul qword ptr [gMatchDouble_0058b2a0]
+            fsubr qword ptr [gMatchDouble_0058b288]
     L005152b0:
-            fld qword ptr [gFloatZero_0058b280+0x8]
+            fld qword ptr [gMatchDouble_0058b288]
             fsub st(0), st(1)
             fld st(1)
             fld st(4)
@@ -3030,7 +3153,7 @@ C2_NAKED br_pixelmap* C2_HOOK_FASTCALL GenerateDarkenedShadeTable(int pHeight, b
             mov edx, dword ptr [esp + 0x58]
             mov dword ptr [esp + 0x9c], eax
             fstp st(0)
-            fld qword ptr [gFloatZero_0058b280+0x40]
+            fld qword ptr [gMatchData_0058b2c0]
             mov edi, dword ptr [edx + 8]
             mov dword ptr [esp + 0x1c], 0x7f
             fstp qword ptr [esp + 0x70]
@@ -3111,7 +3234,7 @@ C2_NAKED br_pixelmap* C2_HOOK_FASTCALL GenerateDarkenedShadeTable(int pHeight, b
             mov dl, byte ptr [esp + 0x14]
             mov byte ptr [esp + 0x3e], al
             mov byte ptr [esp + 0x3f], cl
-            mov edi, offset gMaterial_shading_for_callback+0x4
+            mov edi, 0x660cbc
             or ecx, 0xffffffff
             xor eax, eax
             repne scasb
@@ -3152,7 +3275,7 @@ C2_NAKED br_pixelmap* C2_HOOK_FASTCALL GenerateDarkenedShadeTable(int pHeight, b
             xor eax, eax
             and ecx, 3
             rep movsb
-            mov edi, offset gSwap_depth_effect_type+0xdc
+            mov edi, 0x59126c
             or ecx, 0xffffffff
             repne scasb
             not ecx
@@ -3177,7 +3300,7 @@ C2_NAKED br_pixelmap* C2_HOOK_FASTCALL GenerateDarkenedShadeTable(int pHeight, b
             lea ebx, [esp + 0xb8]
             and ecx, 3
             rep movsb
-            mov edi, offset gSwap_depth_effect_type+0xdc
+            mov edi, 0x59126c
             or ecx, 0xffffffff
             repne scasb
             not ecx
@@ -4442,12 +4565,19 @@ tU16 C2_NAKED C2_HOOK_FASTCALL DRScalarToU16(float pValue, float pMin, float pMa
             fld dword ptr [esp + 0xc]
             fsub dword ptr [esp + 8]
             fxch st(1)
-            fmul dword ptr [gFloatZero_0058b280+0x48]
+            _emit 0xd8
+        _emit 0x0d
+        _emit 0xc8
+        _emit 0xb2
+        _emit 0x58
+        _emit 0x00
             fxch st(1)
             fdivp st(1), st(0)
-            fsub dword ptr [gFloatZero_0058b280+0x4c]
+            fsub dword ptr [gMatchFloat_0058b2cc]
             call _ftol
             ret 0xc
+            nop
+            nop
     }
 #endif
 }
@@ -4573,9 +4703,14 @@ void C2_NAKED C2_HOOK_FASTCALL CompressVector3(tCompressed_vector3* pDest, const
             fld dword ptr [esp + 0x10]
             fsub dword ptr [esp + 0xc]
             fxch st(1)
-            fmul dword ptr [gFloatZero_0058b280+0x48]
+            _emit 0xd8
+        _emit 0x0d
+        _emit 0xc8
+        _emit 0xb2
+        _emit 0x58
+        _emit 0x00
             fdiv st(0), st(1)
-            fsub dword ptr [gFloatZero_0058b280+0x4c]
+            fsub dword ptr [gMatchFloat_0058b2cc]
             call _ftol
             mov word ptr [edi], ax
             fld dword ptr [esi + 4]
@@ -4595,9 +4730,14 @@ void C2_NAKED C2_HOOK_FASTCALL CompressVector3(tCompressed_vector3* pDest, const
             fld dword ptr [esp + 0x10]
     L00516507:
             fsub dword ptr [esp + 0xc]
-            fmul dword ptr [gFloatZero_0058b280+0x48]
+            _emit 0xd8
+        _emit 0x0d
+        _emit 0xc8
+        _emit 0xb2
+        _emit 0x58
+        _emit 0x00
             fdiv st(0), st(1)
-            fsub dword ptr [gFloatZero_0058b280+0x4c]
+            fsub dword ptr [gMatchFloat_0058b2cc]
             call _ftol
             mov word ptr [edi + 2], ax
             fld dword ptr [esi + 8]
@@ -4617,9 +4757,14 @@ void C2_NAKED C2_HOOK_FASTCALL CompressVector3(tCompressed_vector3* pDest, const
             fld dword ptr [esp + 0x10]
     L00516549:
             fsub dword ptr [esp + 0xc]
-            fmul dword ptr [gFloatZero_0058b280+0x48]
+            _emit 0xd8
+        _emit 0x0d
+        _emit 0xc8
+        _emit 0xb2
+        _emit 0x58
+        _emit 0x00
             fdiv st(0), st(1)
-            fsub dword ptr [gFloatZero_0058b280+0x4c]
+            fsub dword ptr [gMatchFloat_0058b2cc]
             call _ftol
             mov word ptr [edi + 4], ax
             pop edi
@@ -4654,7 +4799,12 @@ void C2_NAKED C2_HOOK_FASTCALL ExpandVector3(br_vector3* pDest, const tCompresse
             xor eax, eax
             fild dword ptr [esp + 0xc]
             fmul st(0), st(1)
-            fmul dword ptr [gFloatZero_0058b280+0x50]
+            _emit 0xd8
+        _emit 0x0d
+        _emit 0xd0
+        _emit 0xb2
+        _emit 0x58
+        _emit 0x00
             fadd dword ptr [esp + 8]
             _emit 0xd9
         _emit 0x19
@@ -4662,7 +4812,12 @@ void C2_NAKED C2_HOOK_FASTCALL ExpandVector3(br_vector3* pDest, const tCompresse
             mov dword ptr [esp + 0xc], eax
             fild dword ptr [esp + 0xc]
             fmul st(0), st(1)
-            fmul dword ptr [gFloatZero_0058b280+0x50]
+            _emit 0xd8
+        _emit 0x0d
+        _emit 0xd0
+        _emit 0xb2
+        _emit 0x58
+        _emit 0x00
             fadd dword ptr [esp + 8]
             fstp dword ptr [ecx + 4]
             mov si, word ptr [edx + 4]
@@ -4670,11 +4825,28 @@ void C2_NAKED C2_HOOK_FASTCALL ExpandVector3(br_vector3* pDest, const tCompresse
             pop esi
             fild dword ptr [esp + 8]
             fmul st(0), st(1)
-            fmul dword ptr [gFloatZero_0058b280+0x50]
+            _emit 0xd8
+        _emit 0x0d
+        _emit 0xd0
+        _emit 0xb2
+        _emit 0x58
+        _emit 0x00
             fadd dword ptr [esp + 4]
             fstp dword ptr [ecx + 8]
             fstp st(0)
             ret 8
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -4705,7 +4877,7 @@ void C2_NAKED C2_HOOK_FASTCALL CompressMatrix34(tCompressed_matrix3* pCompressed
             push edi
             mov edi, ecx
             fld dword ptr [esi + 0x24]
-            fcomp dword ptr ds:[0x58b2d4]
+            fcomp dword ptr [gMatchFloat_0058b2d4]
             fnstsw ax
             test ah, 1
             jne L00516634
@@ -4714,11 +4886,11 @@ void C2_NAKED C2_HOOK_FASTCALL CompressMatrix34(tCompressed_matrix3* pCompressed
             fld dword ptr [esi + 0x28]
             fld dword ptr [esi + 0x2c]
             fxch st(2)
-            fsub dword ptr ds:[0x58b2d8]
+            fsub dword ptr [gMatchFloat_0058b2d8]
             fxch st(1)
-            fsub dword ptr ds:[0x58b2d8]
+            fsub dword ptr [gMatchFloat_0058b2d8]
             fxch st(2)
-            fsub dword ptr ds:[0x58b2d8]
+            fsub dword ptr [gMatchFloat_0058b2d8]
             fxch st(1)
             fstp dword ptr [esp + 8]
             fxch st(1)
@@ -4736,134 +4908,134 @@ void C2_NAKED C2_HOOK_FASTCALL CompressMatrix34(tCompressed_matrix3* pCompressed
     L0051664f:
             _emit 0xd9
         _emit 0x06
-            fcom dword ptr ds:[0x58b2dc]
+            fcom dword ptr [gMatchFloat_0058b2dc]
             fnstsw ax
             test ah, 1
             je L00516668
             fstp st(0)
-            fld dword ptr ds:[0x58b2dc]
+            fld dword ptr [gMatchFloat_0058b2dc]
             jmp L0051667d
     L00516668:
-            fcom dword ptr ds:[0x58b2e0]
+            fcom dword ptr [gMatchFloat_0058b2e0]
             fnstsw ax
             test ah, 0x41
             jne L0051667d
             fstp st(0)
-            fld dword ptr ds:[0x58b2e0]
+            fld dword ptr [gMatchFloat_0058b2e0]
     L0051667d:
-            fsub dword ptr ds:[0x58b2dc]
-            fmul dword ptr ds:[0x58b2e4]
-            fsub dword ptr ds:[0x58b2cc]
+            fsub dword ptr [gMatchFloat_0058b2dc]
+            fmul dword ptr [gMatchFloat_0058b2e4]
+            fsub dword ptr [gMatchFloat_0058b2cc]
             call _ftol
             mov word ptr [edi], ax
             fld dword ptr [esi + 4]
-            fcom dword ptr ds:[0x58b2dc]
+            fcom dword ptr [gMatchFloat_0058b2dc]
             fnstsw ax
             test ah, 1
             je L005166b1
             fstp st(0)
-            fld dword ptr ds:[0x58b2dc]
+            fld dword ptr [gMatchFloat_0058b2dc]
             jmp L005166c6
     L005166b1:
-            fcom dword ptr ds:[0x58b2e0]
+            fcom dword ptr [gMatchFloat_0058b2e0]
             fnstsw ax
             test ah, 0x41
             jne L005166c6
             fstp st(0)
-            fld dword ptr ds:[0x58b2e0]
+            fld dword ptr [gMatchFloat_0058b2e0]
     L005166c6:
-            fsub dword ptr ds:[0x58b2dc]
-            fmul dword ptr ds:[0x58b2e4]
-            fsub dword ptr ds:[0x58b2cc]
+            fsub dword ptr [gMatchFloat_0058b2dc]
+            fmul dword ptr [gMatchFloat_0058b2e4]
+            fsub dword ptr [gMatchFloat_0058b2cc]
             call _ftol
             mov word ptr [edi + 2], ax
             fld dword ptr [esi + 8]
-            fcom dword ptr ds:[0x58b2dc]
+            fcom dword ptr [gMatchFloat_0058b2dc]
             fnstsw ax
             test ah, 1
             je L005166fb
             fstp st(0)
-            fld dword ptr ds:[0x58b2dc]
+            fld dword ptr [gMatchFloat_0058b2dc]
             jmp L00516710
     L005166fb:
-            fcom dword ptr ds:[0x58b2e0]
+            fcom dword ptr [gMatchFloat_0058b2e0]
             fnstsw ax
             test ah, 0x41
             jne L00516710
             fstp st(0)
-            fld dword ptr ds:[0x58b2e0]
+            fld dword ptr [gMatchFloat_0058b2e0]
     L00516710:
-            fsub dword ptr ds:[0x58b2dc]
-            fmul dword ptr ds:[0x58b2e4]
-            fsub dword ptr ds:[0x58b2cc]
+            fsub dword ptr [gMatchFloat_0058b2dc]
+            fmul dword ptr [gMatchFloat_0058b2e4]
+            fsub dword ptr [gMatchFloat_0058b2cc]
             call _ftol
             add esi, 0xc
             mov word ptr [edi + 4], ax
             _emit 0xd9
         _emit 0x06
-            fcom dword ptr ds:[0x58b2dc]
+            fcom dword ptr [gMatchFloat_0058b2dc]
             fnstsw ax
             test ah, 1
             je L00516747
             fstp st(0)
-            fld dword ptr ds:[0x58b2dc]
+            fld dword ptr [gMatchFloat_0058b2dc]
             jmp L0051675c
     L00516747:
-            fcom dword ptr ds:[0x58b2e0]
+            fcom dword ptr [gMatchFloat_0058b2e0]
             fnstsw ax
             test ah, 0x41
             jne L0051675c
             fstp st(0)
-            fld dword ptr ds:[0x58b2e0]
+            fld dword ptr [gMatchFloat_0058b2e0]
     L0051675c:
-            fsub dword ptr ds:[0x58b2dc]
-            fmul dword ptr ds:[0x58b2e4]
-            fsub dword ptr ds:[0x58b2cc]
+            fsub dword ptr [gMatchFloat_0058b2dc]
+            fmul dword ptr [gMatchFloat_0058b2e4]
+            fsub dword ptr [gMatchFloat_0058b2cc]
             call _ftol
             mov word ptr [edi + 6], ax
             fld dword ptr [esi + 4]
-            fcom dword ptr ds:[0x58b2dc]
+            fcom dword ptr [gMatchFloat_0058b2dc]
             fnstsw ax
             test ah, 1
             je L00516791
             fstp st(0)
-            fld dword ptr ds:[0x58b2dc]
+            fld dword ptr [gMatchFloat_0058b2dc]
             jmp L005167a6
     L00516791:
-            fcom dword ptr ds:[0x58b2e0]
+            fcom dword ptr [gMatchFloat_0058b2e0]
             fnstsw ax
             test ah, 0x41
             jne L005167a6
             fstp st(0)
-            fld dword ptr ds:[0x58b2e0]
+            fld dword ptr [gMatchFloat_0058b2e0]
     L005167a6:
-            fsub dword ptr ds:[0x58b2dc]
-            fmul dword ptr ds:[0x58b2e4]
-            fsub dword ptr ds:[0x58b2cc]
+            fsub dword ptr [gMatchFloat_0058b2dc]
+            fmul dword ptr [gMatchFloat_0058b2e4]
+            fsub dword ptr [gMatchFloat_0058b2cc]
             call _ftol
             mov word ptr [edi + 8], ax
             fld dword ptr [esi + 8]
-            fcom dword ptr ds:[0x58b2dc]
+            fcom dword ptr [gMatchFloat_0058b2dc]
             fnstsw ax
             test ah, 1
             je L005167db
             fstp st(0)
-            fld dword ptr ds:[0x58b2dc]
+            fld dword ptr [gMatchFloat_0058b2dc]
             jmp L005167f0
     L005167db:
-            fcom dword ptr ds:[0x58b2e0]
+            fcom dword ptr [gMatchFloat_0058b2e0]
             fnstsw ax
             test ah, 0x41
             jne L005167f0
             fstp st(0)
-            fld dword ptr ds:[0x58b2e0]
+            fld dword ptr [gMatchFloat_0058b2e0]
     L005167f0:
-            fsub dword ptr ds:[0x58b2dc]
-            fmul dword ptr ds:[0x58b2e4]
-            fsub dword ptr ds:[0x58b2cc]
+            fsub dword ptr [gMatchFloat_0058b2dc]
+            fmul dword ptr [gMatchFloat_0058b2e4]
+            fsub dword ptr [gMatchFloat_0058b2cc]
             call _ftol
             fld dword ptr [esp + 8]
-            fcomp dword ptr ds:[0x58b2e8]
+            fcomp dword ptr [gMatchFloat_0058b2e8]
             fld dword ptr [esp + 8]
             mov word ptr [edi + 0xa], ax
             lea esi, [edi + 0xc]
@@ -4871,72 +5043,74 @@ void C2_NAKED C2_HOOK_FASTCALL CompressMatrix34(tCompressed_matrix3* pCompressed
             test ah, 1
             je L0051682d
             fstp st(0)
-            fld dword ptr ds:[0x58b2e8]
+            fld dword ptr [gMatchFloat_0058b2e8]
             jmp L00516846
     L0051682d:
             fld dword ptr [esp + 8]
-            fcomp dword ptr ds:[0x58b2ec]
+            fcomp dword ptr [gMatchFloat_0058b2ec]
             fnstsw ax
             test ah, 0x41
             jne L00516846
             fstp st(0)
-            fld dword ptr ds:[0x58b2ec]
+            fld dword ptr [gMatchFloat_0058b2ec]
     L00516846:
-            fsub dword ptr ds:[0x58b2e8]
-            fmul dword ptr ds:[0x58b2f0]
-            fsub dword ptr ds:[0x58b2cc]
+            fsub dword ptr [gMatchFloat_0058b2e8]
+            fmul dword ptr [gMatchFloat_0058b2f0]
+            fsub dword ptr [gMatchFloat_0058b2cc]
             call _ftol
             fld dword ptr [esp + 0xc]
-            fcomp dword ptr ds:[0x58b2e8]
+            fcomp dword ptr [gMatchFloat_0058b2e8]
             fld dword ptr [esp + 0xc]
             mov word ptr [esi], ax
             fnstsw ax
             test ah, 1
             je L0051687f
             fstp st(0)
-            fld dword ptr ds:[0x58b2e8]
+            fld dword ptr [gMatchFloat_0058b2e8]
             jmp L00516898
     L0051687f:
             fld dword ptr [esp + 0xc]
-            fcomp dword ptr ds:[0x58b2ec]
+            fcomp dword ptr [gMatchFloat_0058b2ec]
             fnstsw ax
             test ah, 0x41
             jne L00516898
             fstp st(0)
-            fld dword ptr ds:[0x58b2ec]
+            fld dword ptr [gMatchFloat_0058b2ec]
     L00516898:
-            fsub dword ptr ds:[0x58b2e8]
-            fmul dword ptr ds:[0x58b2f0]
-            fsub dword ptr ds:[0x58b2cc]
+            fsub dword ptr [gMatchFloat_0058b2e8]
+            fmul dword ptr [gMatchFloat_0058b2f0]
+            fsub dword ptr [gMatchFloat_0058b2cc]
             call _ftol
             fld dword ptr [esp + 0x10]
-            fcomp dword ptr ds:[0x58b2e8]
+            fcomp dword ptr [gMatchFloat_0058b2e8]
             fld dword ptr [esp + 0x10]
             mov word ptr [esi + 2], ax
             fnstsw ax
             test ah, 1
             je L005168d2
             fstp st(0)
-            fld dword ptr ds:[0x58b2e8]
+            fld dword ptr [gMatchFloat_0058b2e8]
             jmp L005168eb
     L005168d2:
             fld dword ptr [esp + 0x10]
-            fcomp dword ptr ds:[0x58b2ec]
+            fcomp dword ptr [gMatchFloat_0058b2ec]
             fnstsw ax
             test ah, 0x41
             jne L005168eb
             fstp st(0)
-            fld dword ptr ds:[0x58b2ec]
+            fld dword ptr [gMatchFloat_0058b2ec]
     L005168eb:
-            fsub dword ptr ds:[0x58b2e8]
-            fmul dword ptr ds:[0x58b2f0]
-            fsub dword ptr ds:[0x58b2cc]
+            fsub dword ptr [gMatchFloat_0058b2e8]
+            fmul dword ptr [gMatchFloat_0058b2f0]
+            fsub dword ptr [gMatchFloat_0058b2cc]
             call _ftol
             mov word ptr [esi + 4], ax
             pop edi
             pop esi
             add esp, 0xc
             ret 4
+            nop
+            nop
     }
 #endif
 }
@@ -4971,8 +5145,8 @@ void C2_NAKED C2_HOOK_FASTCALL ExpandMatrix34(br_matrix34* pMatrix, const tCompr
             xor esi, esi
             push edi
             mov edi, 0x3f800000
-            fmul dword ptr ds:[0x58b2f4]
-            fsub dword ptr ds:[0x58b2e0]
+            fmul dword ptr [gMatchFloat_0058b2f4]
+            fsub dword ptr [gMatchFloat_0058b2e0]
             _emit 0xd9
         _emit 0x19
             mov ax, word ptr [edx + 2]
@@ -4980,10 +5154,10 @@ void C2_NAKED C2_HOOK_FASTCALL ExpandMatrix34(br_matrix34* pMatrix, const tCompr
         _emit 0x01
             mov dword ptr [esp + 0x10], eax
             fild dword ptr [esp + 0x10]
-            fmul dword ptr ds:[0x58b2f4]
+            fmul dword ptr [gMatchFloat_0058b2f4]
             fld st(1)
             fxch st(1)
-            fsub dword ptr ds:[0x58b2e0]
+            fsub dword ptr [gMatchFloat_0058b2e0]
             fxch st(1)
             fmul st(0), st(2)
             fxch st(1)
@@ -4993,11 +5167,11 @@ void C2_NAKED C2_HOOK_FASTCALL ExpandMatrix34(br_matrix34* pMatrix, const tCompr
             mov dword ptr [esp + 0x10], esi
             xor esi, esi
             fild dword ptr [esp + 0x10]
-            fmul dword ptr ds:[0x58b2f4]
+            fmul dword ptr [gMatchFloat_0058b2f4]
             fxch st(1)
             fst dword ptr [esp + 0xc]
             fxch st(1)
-            fsub dword ptr ds:[0x58b2e0]
+            fsub dword ptr [gMatchFloat_0058b2e0]
             fxch st(1)
             fmul dword ptr [esp + 0xc]
             fxch st(1)
@@ -5012,11 +5186,11 @@ void C2_NAKED C2_HOOK_FASTCALL ExpandMatrix34(br_matrix34* pMatrix, const tCompr
             faddp st(1), st(0)
             fsqrt
             fstp st(1)
-            fcom dword ptr ds:[0x58b2f8]
+            fcom dword ptr [gMatchFloat_0058b2f8]
             fnstsw ax
             test ah, 0x41
             jne L005169e2
-            fdivr qword ptr ds:[0x58b288]
+            fdivr qword ptr [gMatchDouble_0058b288]
             fld dword ptr [ecx + 8]
             fld dword ptr [ecx + 4]
             fld st(2)
@@ -5046,20 +5220,20 @@ void C2_NAKED C2_HOOK_FASTCALL ExpandMatrix34(br_matrix34* pMatrix, const tCompr
             mov dword ptr [esp + 0x10], eax
             xor eax, eax
             fild dword ptr [esp + 0x10]
-            fmul dword ptr ds:[0x58b2f4]
-            fsub dword ptr ds:[0x58b2e0]
+            fmul dword ptr [gMatchFloat_0058b2f4]
+            fsub dword ptr [gMatchFloat_0058b2e0]
             fstp dword ptr [ecx + 0xc]
             mov ax, word ptr [edx + 8]
             mov dword ptr [esp + 0x10], eax
             fild dword ptr [esp + 0x10]
-            fmul dword ptr ds:[0x58b2f4]
-            fsub dword ptr ds:[0x58b2e0]
+            fmul dword ptr [gMatchFloat_0058b2f4]
+            fsub dword ptr [gMatchFloat_0058b2e0]
             fstp dword ptr [ecx + 0x10]
             mov bx, word ptr [edx + 0xa]
             mov dword ptr [esp + 0x10], ebx
             fild dword ptr [esp + 0x10]
-            fmul dword ptr ds:[0x58b2f4]
-            fsub dword ptr ds:[0x58b2e0]
+            fmul dword ptr [gMatchFloat_0058b2f4]
+            fsub dword ptr [gMatchFloat_0058b2e0]
             fstp dword ptr [ecx + 0x14]
             fld dword ptr [ecx + 0xc]
             fld dword ptr [ecx + 0x10]
@@ -5081,11 +5255,11 @@ void C2_NAKED C2_HOOK_FASTCALL ExpandMatrix34(br_matrix34* pMatrix, const tCompr
             fxch st(1)
             fsqrt
             fstp st(1)
-            fcom dword ptr ds:[0x58b2f8]
+            fcom dword ptr [gMatchFloat_0058b2f8]
             fnstsw ax
             test ah, 0x41
             jne L00516ab3
-            fdivr qword ptr ds:[0x58b288]
+            fdivr qword ptr [gMatchDouble_0058b288]
             fld dword ptr [ecx + 0xc]
             fld dword ptr [ecx + 0x10]
             fld dword ptr [ecx + 0x14]
@@ -5156,11 +5330,11 @@ void C2_NAKED C2_HOOK_FASTCALL ExpandMatrix34(br_matrix34* pMatrix, const tCompr
             faddp st(2), st(0)
             fstp dword ptr [ecx + 0x20]
             fsqrt
-            fcom dword ptr ds:[0x58b2f8]
+            fcom dword ptr [gMatchFloat_0058b2f8]
             fnstsw ax
             test ah, 0x41
             jne L00516b69
-            fdivr qword ptr ds:[0x58b288]
+            fdivr qword ptr [gMatchDouble_0058b288]
             fld dword ptr [ecx + 0x1c]
             fld dword ptr [ecx + 0x18]
             fld st(2)
@@ -5191,29 +5365,29 @@ void C2_NAKED C2_HOOK_FASTCALL ExpandMatrix34(br_matrix34* pMatrix, const tCompr
             xor edx, edx
             fild dword ptr [esp + 0x10]
             cmp ebx, esi
-            fmul dword ptr ds:[0x58b2fc]
-            fsub dword ptr ds:[0x58b2ec]
+            fmul dword ptr [gMatchFloat_0058b2fc]
+            fsub dword ptr [gMatchFloat_0058b2ec]
             fstp dword ptr [ecx + 0x24]
             mov dx, word ptr [eax + 2]
             mov dword ptr [esp + 0x18], edx
             fild dword ptr [esp + 0x18]
-            fmul dword ptr ds:[0x58b2fc]
-            fsub dword ptr ds:[0x58b2ec]
+            fmul dword ptr [gMatchFloat_0058b2fc]
+            fsub dword ptr [gMatchFloat_0058b2ec]
             fstp dword ptr [ecx + 0x28]
             mov di, word ptr [eax + 4]
             mov dword ptr [esp + 0x18], edi
             fild dword ptr [esp + 0x18]
-            fmul dword ptr ds:[0x58b2fc]
-            fsub dword ptr ds:[0x58b2ec]
+            fmul dword ptr [gMatchFloat_0058b2fc]
+            fsub dword ptr [gMatchFloat_0058b2ec]
             fstp dword ptr [ecx + 0x2c]
             je L00516bfd
             fld dword ptr [ecx + 0x24]
-            fsub dword ptr ds:[0x58b300]
+            fsub dword ptr [gMatchFloat_0058b300]
             fld dword ptr [ecx + 0x2c]
             fld dword ptr [ecx + 0x28]
-            fsub dword ptr ds:[0x58b300]
+            fsub dword ptr [gMatchFloat_0058b300]
             fxch st(1)
-            fsub dword ptr ds:[0x58b300]
+            fsub dword ptr [gMatchFloat_0058b300]
             fxch st(2)
             fstp dword ptr [ecx + 0x24]
             fstp dword ptr [ecx + 0x28]
@@ -5322,7 +5496,7 @@ C2_NAKED __inline br_pixelmap* C2_HOOK_FASTCALL PaletteOf16Bits(br_pixelmap* pSr
             mov dword ptr [g16bit_palette], eax
             test eax, eax
             jne L005170fe
-            push offset gVector3_00661678+0xc8
+            push offset gFloat_sine_table+0x3a8
             push 0x5e
             call FatalError
             mov eax, dword ptr [g16bit_palette]
@@ -5346,7 +5520,7 @@ C2_NAKED __inline br_pixelmap* C2_HOOK_FASTCALL PaletteOf16Bits(br_pixelmap* pSr
             je L0051715c
             dec ecx
             je L00517142
-            push offset gVector3_00661678+0xa8
+            push offset gFloat_sine_table+0x388
             call BrFailure
             add esp, 4
             xor eax, eax
@@ -5387,6 +5561,14 @@ C2_NAKED __inline br_pixelmap* C2_HOOK_FASTCALL PaletteOf16Bits(br_pixelmap* pSr
             pop esi
             pop ebx
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -5432,7 +5614,7 @@ void C2_NAKED C2_HOOK_FASTCALL Copy8BitTo16Bit(br_pixelmap* pDst, br_pixelmap* p
             mov dword ptr [g16bit_palette], eax
             test eax, eax
             jne L005171f4
-            push offset gVector3_00661678+0xc8
+            push offset gFloat_sine_table+0x3a8
             push 0x5e
             call FatalError
             mov eax, dword ptr [g16bit_palette]
@@ -5457,7 +5639,7 @@ void C2_NAKED C2_HOOK_FASTCALL Copy8BitTo16Bit(br_pixelmap* pDst, br_pixelmap* p
             je L00517256
             dec ecx
             je L0051723c
-            push offset gVector3_00661678+0xa8
+            push offset gFloat_sine_table+0x388
             call BrFailure
             add esp, 4
             xor eax, eax
@@ -5574,7 +5756,7 @@ void C2_NAKED C2_HOOK_FASTCALL Copy8BitTo16Bit(br_pixelmap* pDst, br_pixelmap* p
             mov dword ptr [g16bit_palette], eax
             test eax, eax
             jne L0051735b
-            push offset gVector3_00661678+0xc8
+            push offset gFloat_sine_table+0x3a8
             push 0x5e
             call FatalError
             mov eax, dword ptr [g16bit_palette]
@@ -5599,7 +5781,7 @@ void C2_NAKED C2_HOOK_FASTCALL Copy8BitTo16Bit(br_pixelmap* pDst, br_pixelmap* p
             je L005173c5
             dec ecx
             je L005173a3
-            push offset gVector3_00661678+0xa8
+            push offset gFloat_sine_table+0x388
             call BrFailure
             add esp, 4
             xor eax, eax
@@ -5832,7 +6014,7 @@ void C2_NAKED C2_HOOK_FASTCALL Copy8BitTo16Bit(br_pixelmap* pDst, br_pixelmap* p
             cmp eax, ebp
             mov dword ptr [g16bit_palette], eax
             jne L0051763b
-            push offset gVector3_00661678+0xc8
+            push offset gFloat_sine_table+0x3a8
             push 0x5e
             call FatalError
             mov eax, dword ptr [g16bit_palette]
@@ -5857,7 +6039,7 @@ void C2_NAKED C2_HOOK_FASTCALL Copy8BitTo16Bit(br_pixelmap* pDst, br_pixelmap* p
             je L005176a5
             dec ecx
             je L00517683
-            push offset gVector3_00661678+0xa8
+            push offset gFloat_sine_table+0x388
             call BrFailure
             add esp, 4
             xor eax, eax
@@ -6084,7 +6266,7 @@ void C2_NAKED C2_HOOK_FASTCALL Copy8BitTo16Bit(br_pixelmap* pDst, br_pixelmap* p
             mov dword ptr [g16bit_palette], eax
             test eax, eax
             jne L005178fb
-            push offset gVector3_00661678+0xc8
+            push offset gFloat_sine_table+0x3a8
             push 0x5e
             call FatalError
             mov eax, dword ptr [g16bit_palette]
@@ -6109,7 +6291,7 @@ void C2_NAKED C2_HOOK_FASTCALL Copy8BitTo16Bit(br_pixelmap* pDst, br_pixelmap* p
             je L0051795d
             dec ecx
             je L00517943
-            push offset gVector3_00661678+0xa8
+            push offset gFloat_sine_table+0x388
             call BrFailure
             add esp, 4
             xor eax, eax
@@ -6250,7 +6432,7 @@ void C2_NAKED C2_HOOK_FASTCALL Copy8BitTo16Bit(br_pixelmap* pDst, br_pixelmap* p
             mov dword ptr [g16bit_palette], eax
             test eax, eax
             jne L00517adb
-            push offset gVector3_00661678+0xc8
+            push offset gFloat_sine_table+0x3a8
             push 0x5e
             call FatalError
             mov eax, dword ptr [g16bit_palette]
@@ -6275,7 +6457,7 @@ void C2_NAKED C2_HOOK_FASTCALL Copy8BitTo16Bit(br_pixelmap* pDst, br_pixelmap* p
             je L00517b45
             dec ecx
             je L00517b23
-            push offset gVector3_00661678+0xa8
+            push offset gFloat_sine_table+0x388
             call BrFailure
             add esp, 4
             xor eax, eax
@@ -6531,8 +6713,8 @@ void C2_NAKED C2_HOOK_FASTCALL DRPixelmapCopy(br_pixelmap* dst, br_pixelmap* src
             je L00517f0a
             cmp cl, 3
             jne L00517f0a
-            mov eax, dword ptr ds:[g16bit_palette]
-            mov ebp, dword ptr ds:[gCurrent_palette]
+            mov eax, dword ptr [g16bit_palette]
+            mov ebp, dword ptr [gCurrent_palette]
             test eax, eax
             jne L00517df9
             push eax
@@ -6542,26 +6724,26 @@ void C2_NAKED C2_HOOK_FASTCALL DRPixelmapCopy(br_pixelmap* dst, br_pixelmap* src
             push 5
             call BrPixelmapAllocate
             add esp, 0x14
-            mov dword ptr ds:[g16bit_palette], eax
+            mov dword ptr [g16bit_palette], eax
             test eax, eax
             jne L00517df9
-            push 0x661740
+            push offset gFloat_sine_table+0x3a8
             push 0x5e
             call FatalError
-            mov eax, dword ptr ds:[g16bit_palette]
+            mov eax, dword ptr [g16bit_palette]
             add esp, 8
     L00517df9:
-            mov ecx, dword ptr ds:[gPalette_changed]
+            mov ecx, dword ptr [gPalette_changed]
             test ecx, ecx
             je L00517e0f
-            cmp dword ptr ds:[gPalette_source], ebp
+            cmp dword ptr [gPalette_source], ebp
             je L00517e9f
     L00517e0f:
             mov eax, dword ptr [eax + 8]
             xor esi, esi
             mov ebx, eax
     L00517e16:
-            mov edx, dword ptr ds:[gBack_screen]
+            mov edx, dword ptr [gBack_screen]
             mov eax, dword ptr [ebp + 8]
             xor ecx, ecx
             mov cl, byte ptr [edx + 0x2c]
@@ -6569,7 +6751,7 @@ void C2_NAKED C2_HOOK_FASTCALL DRPixelmapCopy(br_pixelmap* dst, br_pixelmap* src
             je L00517e57
             dec ecx
             je L00517e3d
-            push 0x661720
+            push offset gFloat_sine_table+0x388
             call BrFailure
             add esp, 4
             xor eax, eax
@@ -6602,9 +6784,9 @@ void C2_NAKED C2_HOOK_FASTCALL DRPixelmapCopy(br_pixelmap* dst, br_pixelmap* src
             add ebx, 2
             cmp esi, 0x400
             jl L00517e16
-            mov eax, dword ptr ds:[g16bit_palette]
-            mov dword ptr ds:[gPalette_changed], 1
-            mov dword ptr ds:[gPalette_source], ebp
+            mov eax, dword ptr [g16bit_palette]
+            mov dword ptr [gPalette_changed], 1
+            mov dword ptr [gPalette_source], ebp
     L00517e9f:
             mov ebx, dword ptr [eax + 8]
             xor ebp, ebp
@@ -6660,69 +6842,6 @@ void C2_NAKED C2_HOOK_FASTCALL DRPixelmapCopy(br_pixelmap* dst, br_pixelmap* src
             pop ebp
             pop ebx
             pop ecx
-            ret
-            sub esp, 8
-            push ebx
-            push ebp
-            mov ebp, edx
-            mov ebx, ecx
-            push esi
-            push edi
-            test ebp, ebp
-            mov dword ptr [esp + 0x10], ebx
-            je L00517f8b
-            jmp L00517f29
-    L00517f25:
-            mov ebx, dword ptr [esp + 0x10]
-    L00517f29:
-            mov edi, dword ptr [ebp + 4]
-            movsx eax, byte ptr [edi]
-            push eax
-            call tolower
-            movsx ecx, byte ptr [ebx]
-            add esp, 4
-            mov esi, eax
-            push ecx
-            call tolower
-            mov dword ptr [esp + 0x18], esi
-            mov esi, eax
-            mov edx, dword ptr [esp + 0x18]
-            add esp, 4
-            sub esi, edx
-            jne L00517f80
-    L00517f54:
-            mov al, byte ptr [ebx]
-            inc ebx
-            test al, al
-            je L00517f80
-            mov cl, byte ptr [edi]
-            inc edi
-            test cl, cl
-            je L00517f80
-            movsx edx, byte ptr [ebx]
-            push edx
-            call tolower
-            mov esi, eax
-            add esp, 4
-            movsx eax, byte ptr [edi]
-            push eax
-            call tolower
-            add esp, 4
-            sub esi, eax
-            je L00517f54
-    L00517f80:
-            test esi, esi
-            je L00517f8b
-            mov ebp, dword ptr [ebp]
-            test ebp, ebp
-            jne L00517f25
-    L00517f8b:
-            pop edi
-            mov eax, ebp
-            pop esi
-            pop ebp
-            pop ebx
-            add esp, 8
             ret
     }
 #endif
@@ -6989,7 +7108,7 @@ LAB_005180d2:
             mov dword ptr [g16bit_palette], eax
             test eax, eax
             jne L0051805c
-            push offset gVector3_00661678+0xc8
+            push offset gFloat_sine_table+0x3a8
             push 0x5e
             call FatalError
             mov eax, dword ptr [g16bit_palette]
@@ -7013,7 +7132,7 @@ LAB_005180d2:
             je L005180ba
             dec ecx
             je L005180a0
-            push offset gVector3_00661678+0xa8
+            push offset gFloat_sine_table+0x388
             call BrFailure
             add esp, 4
             xor eax, eax
@@ -7241,7 +7360,8 @@ LAB_005180d2:
 }
 
 // FUNCTION: CARMA2_HW 0x005182f0
-void C2_HOOK_FASTCALL GlorifyMaterial(br_material** pMaterials, int pCount, tRendererShadingType pShading) {
+void C2_NAKED C2_HOOK_FASTCALL GlorifyMaterial(br_material** pMaterials, int pCount, tRendererShadingType pShading) {
+#ifndef CARPOCALYPSE2_MATCHING
     int i;
     tMaterial_exception *material_exception;
 
@@ -7303,6 +7423,200 @@ void C2_HOOK_FASTCALL GlorifyMaterial(br_material** pMaterials, int pCount, tRen
             break;
         }
     }
+#else
+    __asm {
+            sub esp, 0xc
+            push edi
+            xor edi, edi
+            cmp edx, edi
+            jle L0051849d
+            push esi
+            push ebp
+            push ebx
+            mov esi, ecx
+            mov dword ptr [esp + 0x14], edx
+    L00518307:
+            mov eax, dword ptr [esi]
+            mov ecx, dword ptr [eax + 0x40]
+            cmp ecx, edi
+            je L005183f5
+            mov eax, dword ptr [gMaterial_exceptions]
+            mov ebx, dword ptr [ecx + 4]
+            cmp eax, edi
+            mov dword ptr [esp + 0x10], eax
+            mov dword ptr [esp + 0x18], ebx
+            je L0051839a
+            jmp L00518332
+    L0051832a:
+            mov ebx, dword ptr [esp + 0x18]
+            mov eax, dword ptr [esp + 0x10]
+    L00518332:
+            movsx ecx, byte ptr [ebx]
+            mov ebp, dword ptr [eax + 4]
+            push ecx
+            call tolower
+            movsx edx, byte ptr [ebp]
+            add esp, 4
+            mov edi, eax
+            push edx
+            call tolower
+            add esp, 4
+            sub edi, eax
+            jne L00518382
+    L00518354:
+            mov al, byte ptr [ebx]
+            inc ebx
+            test al, al
+            je L00518382
+            mov cl, byte ptr [ebp]
+            inc ebp
+            test cl, cl
+            je L00518382
+            movsx edx, byte ptr [ebx]
+            push edx
+            call tolower
+            mov edi, eax
+            add esp, 4
+            movsx eax, byte ptr [ebp]
+            push eax
+            call tolower
+            add esp, 4
+            sub edi, eax
+            je L00518354
+    L00518382:
+            test edi, edi
+            je L00518394
+            mov ecx, dword ptr [esp + 0x10]
+            mov eax, dword ptr [ecx]
+            test eax, eax
+            mov dword ptr [esp + 0x10], eax
+            jne L0051832a
+    L00518394:
+            mov eax, dword ptr [esp + 0x10]
+            xor edi, edi
+    L0051839a:
+            cmp dword ptr [gEnable_texture_interpolation], edi
+            je L005183d6
+            cmp eax, edi
+            je L005183ac
+            test byte ptr [eax + 8], 1
+            jne L005183b5
+    L005183ac:
+            mov ecx, dword ptr [esi]
+            or dword ptr [ecx + 0x20], 0x20000
+    L005183b5:
+            cmp dword ptr [gEnable_texture_interpolation], edi
+            je L005183d6
+            cmp eax, edi
+            je L005183d6
+            test byte ptr [eax + 8], 8
+            je L005183d6
+            mov edx, dword ptr [esi]
+            mov eax, 0x3ca3d70a
+            mov dword ptr [edx + 0x34], eax
+            mov ecx, dword ptr [esi]
+            mov dword ptr [ecx + 0x38], eax
+    L005183d6:
+            cmp dword ptr [gEnable_texture_antialiasing], edi
+            je L005183e7
+            mov eax, dword ptr [esi]
+            or dword ptr [eax + 0x20], 0x10000
+    L005183e7:
+            cmp dword ptr [gEnable_perspective_maps], edi
+            je L005183f5
+            mov eax, dword ptr [esi]
+            or dword ptr [eax + 0x20], 0x20
+    L005183f5:
+            mov edx, dword ptr [esp + 0x20]
+            lea eax, [edx - 1]
+            cmp eax, 3
+            ja L00518475
+            jmp dword ptr [eax*4 + 0x5184a4]
+            mov eax, dword ptr [esi]
+            mov dword ptr [eax + 0x10], 0x3f800000
+            mov ecx, dword ptr [esi]
+            mov dword ptr [ecx + 0x14], edi
+            jmp L00518452
+            mov eax, dword ptr [esi]
+            mov dword ptr [eax + 0x10], 0x3ecccccd
+            jmp L00518449
+            mov eax, dword ptr [esi]
+            mov dword ptr [eax + 0x10], 0x3f19999a
+            mov ecx, dword ptr [esi]
+            mov dword ptr [ecx + 0x14], 0x3e4ccccd
+            mov edx, dword ptr [esi]
+            mov dword ptr [edx + 0x18], 0x3f4ccccd
+            jmp L00518457
+            mov eax, dword ptr [esi]
+            mov dword ptr [eax + 0x10], 0x3e4ccccd
+    L00518449:
+            mov ecx, dword ptr [esi]
+            mov dword ptr [ecx + 0x14], 0x3f4ccccd
+    L00518452:
+            mov edx, dword ptr [esi]
+            mov dword ptr [edx + 0x18], edi
+    L00518457:
+            mov eax, dword ptr [esi]
+            mov ebx, dword ptr [eax + 0x20]
+            and ebx, 0xfffffffd
+            mov dword ptr [eax + 0x20], ebx
+            mov eax, dword ptr [esi]
+            mov edx, dword ptr [eax + 0x20]
+            or edx, 1
+            mov dword ptr [eax + 0x20], edx
+            mov eax, dword ptr [esi]
+            or dword ptr [eax + 0x20], 4
+            jmp L00518488
+    L00518475:
+            mov eax, dword ptr [esi]
+            mov dword ptr [eax + 0x10], 0x3f800000
+            mov ecx, dword ptr [esi]
+            mov dword ptr [ecx + 0x14], edi
+            mov edx, dword ptr [esi]
+            mov dword ptr [edx + 0x18], edi
+    L00518488:
+            mov eax, dword ptr [esp + 0x14]
+            add esi, 4
+            dec eax
+            mov dword ptr [esp + 0x14], eax
+            jne L00518307
+            pop ebx
+            pop ebp
+            pop esi
+    L0051849d:
+            pop edi
+            add esp, 0xc
+            ret 4
+            _emit 0x40
+            _emit 0x84
+            _emit 0x51
+            _emit 0x00
+            _emit 0x23
+            _emit 0x84
+            _emit 0x51
+            _emit 0x00
+            _emit 0x18
+            _emit 0x84
+            _emit 0x51
+            _emit 0x00
+            _emit 0x08
+            _emit 0x84
+            _emit 0x51
+            _emit 0x00
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x005184c0
@@ -7478,7 +7792,7 @@ void C2_NAKED C2_HOOK_FASTCALL PrintScreen(void) {
             xor eax, eax
             and ecx, 3
             rep movsb
-            mov edi, offset gVector3_00661678+0x100
+            mov edi, offset gFloat_sine_table+0x3e0
             or ecx, 0xffffffff
             repne scasb
             not ecx
@@ -7503,7 +7817,7 @@ void C2_NAKED C2_HOOK_FASTCALL PrintScreen(void) {
             lea edx, [esp + 0x14]
             and ecx, 3
             rep movsb
-            mov edi, offset gVector3_00661678+0x100
+            mov edi, offset gFloat_sine_table+0x3e0
             or ecx, 0xffffffff
             repne scasb
             not ecx
@@ -7524,17 +7838,17 @@ void C2_NAKED C2_HOOK_FASTCALL PrintScreen(void) {
             lea edi, [esp + 0x14]
             or ecx, 0xffffffff
             xor eax, eax
-            push offset gVector3_00661678+0xfc
+            push offset gFloat_sine_table+0x3dc
             repne scasb
             not ecx
             dec ecx
             push ebx
-            push offset gVector3_00661678+0x58
+            push offset gFloat_sine_table+0x338
             lea eax, [esp + ecx + 0x20]
             push eax
             call sprintf
             add esp, 0x10
-            mov edx, offset gNext_crush_actor_id+0x180
+            mov edx, 0x58f9e0
             lea ecx, [esp + 0x14]
             call DRfopen
             test eax, eax
@@ -7736,11 +8050,25 @@ void C2_NAKED C2_HOOK_FASTCALL PrintScreen(void) {
             add esp, 0x104
             ret
     L00518a9d:
-            mov edx, offset gFrontend_QUIT+0xbcc4
+            mov edx, 0x655ab4
             lea ecx, [esp + 0x14]
             call DRfopen
             mov esi, eax
             jmp L0051886e
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -7946,7 +8274,7 @@ C2_NAKED char* C2_HOOK_FASTCALL MungeCommas(int pValue) {
             push esi
             push edi
             push ecx
-            push offset gFrontend_QUIT+0xbcb0
+            push 0x655aa0
             push eax
             call sprintf
             lea edi, [esp + 0x14]
@@ -7975,11 +8303,11 @@ C2_NAKED char* C2_HOOK_FASTCALL MungeCommas(int pValue) {
             mov edx, dword ptr [gMisc_strings+0x498]
             inc edi
             mov al, byte ptr [edx]
-            mov byte ptr [edi + gScan_code+0x2aaf], al
+            mov byte ptr [edi + gMatchData_006b5f1f], al
     L00518f73:
             mov dl, byte ptr [esp + esi + 0x10]
             inc esi
-            mov byte ptr [edi + gScan_code+0x2ab0], dl
+            mov byte ptr [edi + 0x6b5f20], dl
             dec ebx
             inc edi
             cmp esi, ecx
@@ -7987,12 +8315,20 @@ C2_NAKED char* C2_HOOK_FASTCALL MungeCommas(int pValue) {
             pop ebx
             pop ebp
     L00518f86:
-            mov byte ptr [edi + gScan_code+0x2ab0], 0
+            mov byte ptr [edi + 0x6b5f20], 0
             pop edi
-            mov eax, offset gScan_code+0x2ab0
+            mov eax, 0x6b5f20
             pop esi
             add esp, 0x20
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -8203,7 +8539,7 @@ void C2_NAKED C2_HOOK_FASTCALL MungeMetaCharactersNum(char* pText, char pMeta, i
             push edi
             push eax
             lea ecx, [esp + 0x1c]
-            push offset gPed_flags_0058f2e4+0x134
+            push 0x58f418
             mov byte ptr [esp + 0x1b], dl
             push ecx
             call sprintf
@@ -8270,6 +8606,18 @@ void C2_NAKED C2_HOOK_FASTCALL MungeMetaCharactersNum(char* pText, char pMeta, i
             pop ebx
             add esp, 0x18
             ret 4
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }

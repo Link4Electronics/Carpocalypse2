@@ -156,6 +156,14 @@ extern void C2_HOOK_FASTCALL PDMouseButtons(int* pLeftButtonDown, int* pRightBut
 extern void C2_HOOK_FASTCALL PollKeys(void);
 extern int gJoystick_deadzone;
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gData_0068c1e4[];
+extern char gData_0074b384[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchData_0068c1e4[];
+extern char gMatchData_0074b384[];
+#endif
 // FUNCTION: CARMA2_HW 0x00482590
 tKey_down_result C2_NAKED C2_HOOK_FASTCALL EdgeTriggeryKey(int pKey_index, int pReset) {
 #ifndef CARPOCALYPSE2_MATCHING
@@ -241,7 +249,7 @@ tKey_down_result C2_NAKED C2_HOOK_FASTCALL EdgeTriggeryKey(int pKey_index, int p
             cmp ecx, 0x23c
             mov dword ptr [ecx + gKey_array], ebx
             jle L00482608
-            mov dword ptr [ecx + gActor_array+0x784], eax
+            mov dword ptr [ecx + gMatchData_0074b384], eax
     L00482608:
             add ecx, 4
             cmp ecx, 0x25c
@@ -622,7 +630,7 @@ void C2_NAKED C2_HOOK_FASTCALL CyclePollKeys(void) {
             cmp eax, 0x23c
             mov dword ptr [eax + gKey_array], edx
             jle L00482189
-            mov dword ptr [eax + gActor_array+0x784], esi
+            mov dword ptr [eax + gMatchData_0074b384], esi
     L00482189:
             add eax, 4
             cmp eax, 0x25c
@@ -630,6 +638,11 @@ void C2_NAKED C2_HOOK_FASTCALL CyclePollKeys(void) {
             mov dword ptr [gKey_poll_counter], edx
             pop esi
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -686,7 +699,7 @@ void C2_NAKED C2_HOOK_FASTCALL CheckKeysForMouldiness(void) {
             cmp eax, 0x23c
             mov dword ptr [eax + gKey_array], ebp
             jle L0048221e
-            mov dword ptr [eax + gActor_array+0x784], ebx
+            mov dword ptr [eax + gMatchData_0074b384], ebx
     L0048221e:
             add eax, 4
             cmp eax, 0x25c
@@ -896,6 +909,8 @@ void C2_NAKED C2_HOOK_FASTCALL CheckKeysForMouldiness(void) {
             pop edi
     L004824bd:
             ret
+            nop
+            nop
     }
 #endif
 }
@@ -973,7 +988,7 @@ int C2_NAKED C2_HOOK_FASTCALL PDAnyKeyDown(void) {
             push esi
             push edi
             call PDGetTotalTime
-            mov edx, dword ptr ds:[gLast_poll_keys]
+            mov edx, dword ptr [gLast_poll_keys]
             xor ebp, ebp
             sub eax, edx
             cmp eax, 0x1f4
@@ -987,7 +1002,7 @@ int C2_NAKED C2_HOOK_FASTCALL PDAnyKeyDown(void) {
             mov eax, ebx
             mov edi, offset gJoy_array
             rep stosd
-            mov ecx, dword ptr ds:[gKey_poll_counter]
+            mov ecx, dword ptr [gKey_poll_counter]
             xor eax, eax
     L00482a45:
             cmp dword ptr [eax + gKey_array], ecx
@@ -995,19 +1010,19 @@ int C2_NAKED C2_HOOK_FASTCALL PDAnyKeyDown(void) {
             cmp eax, 0x23c
             mov dword ptr [eax + gKey_array], ebp
             jle L00482a60
-            mov dword ptr [eax + 0x74b384], ebx
+            mov dword ptr [eax + gMatchData_0074b384], ebx
     L00482a60:
             add eax, 4
             cmp eax, 0x25c
             jl L00482a45
             mov edx, 1
             mov ecx, offset gKey_array
-            mov dword ptr ds:[gKey_poll_counter], edx
+            mov dword ptr [gKey_poll_counter], edx
             call PDSetKeyArray
-            mov esi, dword ptr ds:[gKey_poll_counter]
+            mov esi, dword ptr [gKey_poll_counter]
             mov ecx, 0x2c
             xor eax, eax
-            mov edi, 0x68c08c
+            mov edi, offset gKey_array+0x1ac
             rep stosd
             call PDReadJoysticks
             mov ecx, 8
@@ -1016,59 +1031,59 @@ int C2_NAKED C2_HOOK_FASTCALL PDAnyKeyDown(void) {
             rep stosd
             mov ecx, 0x24
             xor eax, eax
-            mov edi, 0x68c08c
+            mov edi, offset gKey_array+0x1ac
             rep stosd
-            cmp dword ptr ds:[gINT_006621e4], ebp
+            cmp dword ptr [gINT_006621e4], ebp
             jne L00482ac4
-            cmp dword ptr ds:[gINT_006621e8], ebp
+            cmp dword ptr [gINT_006621e8], ebp
             je L00482b00
     L00482ac4:
             call PDGetJoy1Button1
             test eax, eax
             je L00482ad3
-            mov dword ptr ds:[0x68c08c], esi
+            mov dword ptr [gKey_array+0x1ac], esi
     L00482ad3:
             call PDGetJoy1Button2
             test eax, eax
             je L00482ae2
-            mov dword ptr ds:[0x68c090], esi
+            mov dword ptr [gKey_array+0x1b0], esi
     L00482ae2:
             call PDGetJoy1Button3
             test eax, eax
             je L00482af1
-            mov dword ptr ds:[0x68c094], esi
+            mov dword ptr [gKey_array+0x1b4], esi
     L00482af1:
             call PDGetJoy1Button4
             test eax, eax
             je L00482b00
-            mov dword ptr ds:[0x68c098], esi
+            mov dword ptr [gKey_array+0x1b8], esi
     L00482b00:
-            cmp dword ptr ds:[gINT_006621ec], ebp
+            cmp dword ptr [gINT_006621ec], ebp
             jne L00482b10
-            cmp dword ptr ds:[gINT_006621f0], ebp
+            cmp dword ptr [gINT_006621f0], ebp
             je L00482b4c
     L00482b10:
             call PDGetJoy2Button1
             test eax, eax
             je L00482b1f
-            mov dword ptr ds:[0x68c10c], esi
+            mov dword ptr [gKey_array+0x22c], esi
     L00482b1f:
             call PDGetJoy2Button2
             test eax, eax
             je L00482b2e
-            mov dword ptr ds:[0x68c110], esi
+            mov dword ptr [gKey_array+0x230], esi
     L00482b2e:
             call PDGetJoy2Button3
             test eax, eax
             je L00482b3d
-            mov dword ptr ds:[0x68c114], esi
+            mov dword ptr [gKey_array+0x234], esi
     L00482b3d:
             call PDGetJoy2Button4
             test eax, eax
             je L00482b4c
-            mov dword ptr ds:[0x68c118], esi
+            mov dword ptr [gKey_array+0x238], esi
     L00482b4c:
-            mov eax, dword ptr ds:[gINT_006621e4]
+            mov eax, dword ptr [gINT_006621e4]
             mov edi, 0x4000
             cmp eax, ebp
             mov ebx, 0xc000
@@ -1080,28 +1095,28 @@ int C2_NAKED C2_HOOK_FASTCALL PDAnyKeyDown(void) {
             jge L00482b93
             cmp eax, edi
             jge L00482b82
-            cmp dword ptr ds:[gJoy1_x], edi
+            cmp dword ptr [gJoy1_x], edi
             jl L00482b82
-            mov dword ptr ds:[0x68c11c], esi
+            mov dword ptr [gKey_array+0x23c], esi
     L00482b82:
             mov ecx, 0x8000
             sub ecx, eax
             shl ecx, 1
-            mov dword ptr ds:[gJoy_array], ecx
+            mov dword ptr [gJoy_array], ecx
             jmp L00482bb2
     L00482b93:
             cmp eax, ebx
             jle L00482ba5
-            cmp dword ptr ds:[gJoy1_x], ebx
+            cmp dword ptr [gJoy1_x], ebx
             jg L00482ba5
-            mov dword ptr ds:[0x68c120], esi
+            mov dword ptr [gKey_array+0x240], esi
     L00482ba5:
             lea edx, [eax + eax - 0x10000]
-            mov dword ptr ds:[0x74b5c4], edx
+            mov dword ptr [gJoy_array+0x4], edx
     L00482bb2:
-            mov dword ptr ds:[gJoy1_x], eax
+            mov dword ptr [gJoy1_x], eax
     L00482bb7:
-            cmp dword ptr ds:[gINT_006621e8], ebp
+            cmp dword ptr [gINT_006621e8], ebp
             je L00482c17
             call PDGetJoy1Y
             cmp eax, -1
@@ -1110,28 +1125,28 @@ int C2_NAKED C2_HOOK_FASTCALL PDAnyKeyDown(void) {
             jge L00482bf3
             cmp eax, edi
             jge L00482be2
-            cmp dword ptr ds:[gJoy1_y], edi
+            cmp dword ptr [gJoy1_y], edi
             jl L00482be2
-            mov dword ptr ds:[0x68c124], esi
+            mov dword ptr [gKey_array+0x244], esi
     L00482be2:
             mov ecx, 0x8000
             sub ecx, eax
             shl ecx, 1
-            mov dword ptr ds:[0x74b5c8], ecx
+            mov dword ptr [gJoy_array+0x8], ecx
             jmp L00482c12
     L00482bf3:
             cmp eax, ebx
             jle L00482c05
-            cmp dword ptr ds:[gJoy1_y], ebx
+            cmp dword ptr [gJoy1_y], ebx
             jg L00482c05
-            mov dword ptr ds:[0x68c128], esi
+            mov dword ptr [gKey_array+0x248], esi
     L00482c05:
             lea edx, [eax + eax - 0x10000]
-            mov dword ptr ds:[0x74b5cc], edx
+            mov dword ptr [gJoy_array+0xc], edx
     L00482c12:
-            mov dword ptr ds:[gJoy1_y], eax
+            mov dword ptr [gJoy1_y], eax
     L00482c17:
-            cmp dword ptr ds:[gINT_006621ec], ebp
+            cmp dword ptr [gINT_006621ec], ebp
             je L00482c77
             call PDGetJoy2X
             cmp eax, -1
@@ -1140,28 +1155,28 @@ int C2_NAKED C2_HOOK_FASTCALL PDAnyKeyDown(void) {
             jge L00482c53
             cmp eax, edi
             jge L00482c42
-            cmp dword ptr ds:[gJoy2_x], edi
+            cmp dword ptr [gJoy2_x], edi
             jl L00482c42
-            mov dword ptr ds:[0x68c12c], esi
+            mov dword ptr [gKey_array+0x24c], esi
     L00482c42:
             mov ecx, 0x8000
             sub ecx, eax
             shl ecx, 1
-            mov dword ptr ds:[0x74b5d0], ecx
+            mov dword ptr [gJoy_array+0x10], ecx
             jmp L00482c72
     L00482c53:
             cmp eax, ebx
             jle L00482c65
-            cmp dword ptr ds:[gJoy2_x], ebx
+            cmp dword ptr [gJoy2_x], ebx
             jg L00482c65
-            mov dword ptr ds:[0x68c130], esi
+            mov dword ptr [gKey_array+0x250], esi
     L00482c65:
             lea edx, [eax + eax - 0x10000]
-            mov dword ptr ds:[0x74b5d4], edx
+            mov dword ptr [gJoy_array+0x14], edx
     L00482c72:
-            mov dword ptr ds:[gJoy2_x], eax
+            mov dword ptr [gJoy2_x], eax
     L00482c77:
-            cmp dword ptr ds:[gINT_006621f0], ebp
+            cmp dword ptr [gINT_006621f0], ebp
             je L00482ce7
             call PDGetJoy2Y
             cmp eax, -1
@@ -1170,44 +1185,44 @@ int C2_NAKED C2_HOOK_FASTCALL PDAnyKeyDown(void) {
             jge L00482cb3
             cmp eax, edi
             jge L00482ca2
-            cmp dword ptr ds:[gJoy2_y], edi
+            cmp dword ptr [gJoy2_y], edi
             jl L00482ca2
-            mov dword ptr ds:[0x68c134], esi
+            mov dword ptr [gKey_array+0x254], esi
     L00482ca2:
             mov ecx, 0x8000
             sub ecx, eax
             shl ecx, 1
-            mov dword ptr ds:[0x74b5d8], ecx
+            mov dword ptr [gJoy_array+0x18], ecx
             jmp L00482ce2
     L00482cb3:
-            mov edx, dword ptr ds:[gJoystick_deadzone]
+            mov edx, dword ptr [gJoystick_deadzone]
             add edx, 0x8000
             cmp eax, edx
             jle L00482ce2
             cmp eax, ebx
             jle L00482cd5
-            cmp dword ptr ds:[gJoy2_y], ebx
+            cmp dword ptr [gJoy2_y], ebx
             jg L00482cd5
-            mov dword ptr ds:[0x68c138], esi
+            mov dword ptr [gKey_array+0x258], esi
     L00482cd5:
             lea ecx, [eax + eax - 0x10000]
-            mov dword ptr ds:[0x74b5dc], ecx
+            mov dword ptr [gJoy_array+0x1c], ecx
     L00482ce2:
-            mov dword ptr ds:[gJoy2_y], eax
+            mov dword ptr [gJoy2_y], eax
     L00482ce7:
             mov ecx, offset gKey_array
             call PDSetKeysFromJoystick
             call PDGetTotalTime
-            mov dword ptr ds:[gLast_poll_keys], eax
+            mov dword ptr [gLast_poll_keys], eax
     L00482cfb:
             mov edi, 0x8e
-            mov esi, 0x68c118
+            mov esi, offset gKey_array+0x238
     L00482d05:
             cmp dword ptr [esi], ebp
             je L00482d2e
-            cmp esi, 0x68bef0
+            cmp esi, offset gKey_array+0x10
             je L00482d2e
-            cmp dword ptr ds:[gEdge_trigger_mode], ebp
+            cmp dword ptr [gEdge_trigger_mode], ebp
             je L00482d56
             xor edx, edx
             mov ecx, edi
@@ -1220,7 +1235,7 @@ int C2_NAKED C2_HOOK_FASTCALL PDAnyKeyDown(void) {
             dec edi
             cmp esi, offset gKey_array
             jge L00482d05
-            cmp dword ptr ds:[gEdge_trigger_mode], ebp
+            cmp dword ptr [gEdge_trigger_mode], ebp
             je L00482d4e
             mov edx, 1
             xor ecx, ecx
@@ -1275,7 +1290,7 @@ int C2_NAKED C2_HOOK_FASTCALL AnyKeyDown(void) {
             push esi
             push edi
             call PDGetTotalTime
-            mov edx, dword ptr ds:[gLast_poll_keys]
+            mov edx, dword ptr [gLast_poll_keys]
             or ebp, 0xffffffff
             sub eax, edx
             xor ebx, ebx
@@ -1289,7 +1304,7 @@ int C2_NAKED C2_HOOK_FASTCALL AnyKeyDown(void) {
             mov eax, ebp
             mov edi, offset gJoy_array
             rep stosd
-            mov ecx, dword ptr ds:[gKey_poll_counter]
+            mov ecx, dword ptr [gKey_poll_counter]
             xor eax, eax
     L00482db8:
             cmp dword ptr [eax + gKey_array], ecx
@@ -1297,31 +1312,31 @@ int C2_NAKED C2_HOOK_FASTCALL AnyKeyDown(void) {
             cmp eax, 0x23c
             mov dword ptr [eax + gKey_array], ebx
             jle L00482dd3
-            mov dword ptr [eax + 0x74b384], ebp
+            mov dword ptr [eax + gMatchData_0074b384], ebp
     L00482dd3:
             add eax, 4
             cmp eax, 0x25c
             jl L00482db8
             mov edx, 1
             mov ecx, offset gKey_array
-            mov dword ptr ds:[gKey_poll_counter], edx
+            mov dword ptr [gKey_poll_counter], edx
             call PDSetKeyArray
-            mov edx, dword ptr ds:[gKey_poll_counter]
+            mov edx, dword ptr [gKey_poll_counter]
             mov ecx, offset gKey_array
             call SetJoystickArrays
             mov ecx, offset gKey_array
             call PDSetKeysFromJoystick
             call PDGetTotalTime
-            mov dword ptr ds:[gLast_poll_keys], eax
+            mov dword ptr [gLast_poll_keys], eax
     L00482e16:
             mov edi, 0x8e
-            mov esi, 0x68c118
+            mov esi, offset gKey_array+0x238
     L00482e20:
             cmp dword ptr [esi], ebx
             je L00482e49
-            cmp esi, 0x68bef0
+            cmp esi, offset gKey_array+0x10
             je L00482e49
-            cmp dword ptr ds:[gEdge_trigger_mode], ebx
+            cmp dword ptr [gEdge_trigger_mode], ebx
             je L00482e6b
             xor edx, edx
             mov ecx, edi
@@ -1334,7 +1349,7 @@ int C2_NAKED C2_HOOK_FASTCALL AnyKeyDown(void) {
             dec edi
             cmp esi, offset gKey_array
             jge L00482e20
-            cmp dword ptr ds:[gEdge_trigger_mode], ebx
+            cmp dword ptr [gEdge_trigger_mode], ebx
             je L00482e69
             mov edx, 1
             xor ecx, ecx
@@ -1347,8 +1362,8 @@ int C2_NAKED C2_HOOK_FASTCALL AnyKeyDown(void) {
             cmp edi, 4
             jne L00482ee5
     L00482e74:
-            mov esi, dword ptr ds:[gCurrent_mouse_position]
-            mov edi, dword ptr ds:[gLast_mouse_y_coord]
+            mov esi, dword ptr [gCurrent_mouse_position]
+            mov edi, dword ptr [gLast_mouse_y_coord]
             lea edx, [esp + 0x14]
             lea ecx, [esp + 0x10]
             call GetMousePosition
@@ -1481,16 +1496,26 @@ C2_NAKED tU32* C2_HOOK_FASTCALL KevKeyService(void) {
 #else
     __asm {
             push esi
-            mov esi, dword ptr ds:[gKeys_pressed]
+            mov esi, dword ptr [gKeys_pressed]
             push edi
             xor edi, edi
             cmp esi, 0x6b
-            mov dword ptr ds:[0x68c1e0], edi
-            mov dword ptr ds:[0x68c1e4], edi
+            _emit 0x89
+        _emit 0x3d
+        _emit 0xe0
+        _emit 0xc1
+        _emit 0x68
+        _emit 0x00
+            mov dword ptr [gMatchData_0068c1e4], edi
             jb L00482f75
             cmp esi, 0x6b00
             ja L00482f61
-            mov ecx, dword ptr ds:[0x657214]
+            _emit 0x8b
+        _emit 0x0d
+        _emit 0x14
+        _emit 0x72
+        _emit 0x65
+        _emit 0x00
             mov eax, esi
             and eax, 0xff
             cmp ecx, eax
@@ -1511,24 +1536,56 @@ C2_NAKED tU32* C2_HOOK_FASTCALL KevKeyService(void) {
             mov esi, eax
             jmp L00482f7b
     L00482f61:
-            mov dword ptr ds:[0x68c1d4], edi
-            mov dword ptr ds:[0x68c1d8], edi
+            _emit 0x89
+        _emit 0x3d
+        _emit 0xd4
+        _emit 0xc1
+        _emit 0x68
+        _emit 0x00
+            _emit 0x89
+        _emit 0x3d
+        _emit 0xd8
+        _emit 0xc1
+        _emit 0x68
+        _emit 0x00
             mov eax, 0x68c1e0
             pop edi
             pop esi
             ret
     L00482f75:
-            mov dword ptr ds:[0x657214], esi
+            _emit 0x89
+        _emit 0x35
+        _emit 0x14
+        _emit 0x72
+        _emit 0x65
+        _emit 0x00
     L00482f7b:
-            cmp esi, dword ptr ds:[0x657210]
+            _emit 0x3b
+        _emit 0x35
+        _emit 0x10
+        _emit 0x72
+        _emit 0x65
+        _emit 0x00
             je L00482fdf
             cmp esi, edi
             jbe L00482fdf
-            mov eax, dword ptr ds:[0x68c1d4]
+            _emit 0xa1
+        _emit 0xd4
+        _emit 0xc1
+        _emit 0x68
+        _emit 0x00
             mov ecx, esi
             add eax, esi
-            mov dword ptr ds:[0x68c1d4], eax
-            mov eax, dword ptr ds:[0x68c1d8]
+            _emit 0xa3
+        _emit 0xd4
+        _emit 0xc1
+        _emit 0x68
+        _emit 0x00
+            _emit 0xa1
+        _emit 0xd8
+        _emit 0xc1
+        _emit 0x68
+        _emit 0x00
             shl ecx, 0xb
             add eax, ecx
             mov ecx, esi
@@ -1537,38 +1594,105 @@ C2_NAKED tU32* C2_HOOK_FASTCALL KevKeyService(void) {
             shl edx, 4
             shr eax, 0x11
             add edx, eax
-            mov eax, dword ptr ds:[0x68c1dc]
-            mov dword ptr ds:[0x68c1d8], edx
+            _emit 0xa1
+        _emit 0xdc
+        _emit 0xc1
+        _emit 0x68
+        _emit 0x00
+            _emit 0x89
+        _emit 0x15
+        _emit 0xd8
+        _emit 0xc1
+        _emit 0x68
+        _emit 0x00
             lea edx, [ecx + eax*8]
             shr eax, 0x1d
             add edx, eax
-            mov dword ptr ds:[0x68c1dc], edx
+            _emit 0x89
+        _emit 0x15
+        _emit 0xdc
+        _emit 0xc1
+        _emit 0x68
+        _emit 0x00
             call PDGetTotalTime
-            mov dword ptr ds:[0x68be8c], eax
-            mov dword ptr ds:[0x657210], esi
+            _emit 0xa3
+        _emit 0x8c
+        _emit 0xbe
+        _emit 0x68
+        _emit 0x00
+            _emit 0x89
+        _emit 0x35
+        _emit 0x10
+        _emit 0x72
+        _emit 0x65
+        _emit 0x00
             mov eax, 0x68c1e0
             pop edi
             pop esi
             ret
     L00482fdf:
             call PDGetTotalTime
-            mov ecx, dword ptr ds:[0x68be8c]
+            _emit 0x8b
+        _emit 0x0d
+        _emit 0x8c
+        _emit 0xbe
+        _emit 0x68
+        _emit 0x00
             add ecx, 0x3e8
             cmp eax, ecx
             jbe L0048302b
-            mov edx, dword ptr ds:[0x68c1d4]
-            mov eax, dword ptr ds:[0x68c1d8]
-            mov ecx, dword ptr ds:[0x68c1dc]
-            mov dword ptr ds:[0x68c1d8], edi
+            _emit 0x8b
+        _emit 0x15
+        _emit 0xd4
+        _emit 0xc1
+        _emit 0x68
+        _emit 0x00
+            _emit 0xa1
+        _emit 0xd8
+        _emit 0xc1
+        _emit 0x68
+        _emit 0x00
+            _emit 0x8b
+        _emit 0x0d
+        _emit 0xdc
+        _emit 0xc1
+        _emit 0x68
+        _emit 0x00
+            _emit 0x89
+        _emit 0x3d
+        _emit 0xd8
+        _emit 0xc1
+        _emit 0x68
+        _emit 0x00
             shl edx, 0x15
             shr eax, 0xb
             add edx, eax
-            mov dword ptr ds:[0x68c1e4], ecx
-            mov dword ptr ds:[0x68c1e0], edx
-            mov dword ptr ds:[0x68c1dc], edi
-            mov dword ptr ds:[0x68c1d4], edi
+            mov dword ptr [gMatchData_0068c1e4], ecx
+            _emit 0x89
+        _emit 0x15
+        _emit 0xe0
+        _emit 0xc1
+        _emit 0x68
+        _emit 0x00
+            _emit 0x89
+        _emit 0x3d
+        _emit 0xdc
+        _emit 0xc1
+        _emit 0x68
+        _emit 0x00
+            _emit 0x89
+        _emit 0x3d
+        _emit 0xd4
+        _emit 0xc1
+        _emit 0x68
+        _emit 0x00
     L0048302b:
-            mov dword ptr ds:[0x657210], esi
+            _emit 0x89
+        _emit 0x35
+        _emit 0x10
+        _emit 0x72
+        _emit 0x65
+        _emit 0x00
             pop edi
             mov eax, 0x68c1e0
             pop esi
@@ -1634,7 +1758,7 @@ int C2_NAKED C2_HOOK_FASTCALL KeyIsDown(int pKey_index) {
             cmp eax, 0x23c
             mov dword ptr [eax + gKey_array], ebp
             jle L004830a7
-            mov dword ptr [eax + gActor_array+0x784], ebx
+            mov dword ptr [eax + gMatchData_0074b384], ebx
     L004830a7:
             add eax, 4
             cmp eax, 0x25c
@@ -1884,6 +2008,10 @@ int C2_NAKED C2_HOOK_FASTCALL KeyIsDown(int pKey_index) {
             pop ebx
             pop ecx
             ret
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -1910,7 +2038,7 @@ void C2_NAKED C2_HOOK_FASTCALL WaitForNoKeys(void) {
     L004833bc:
             call CheckQuit
             call PDGetTotalTime
-            sub eax, dword ptr ds:[gLast_poll_keys]
+            sub eax, dword ptr [gLast_poll_keys]
             cmp eax, 0x1f4
             jbe L00483459
             mov ecx, 0x97
@@ -1921,7 +2049,7 @@ void C2_NAKED C2_HOOK_FASTCALL WaitForNoKeys(void) {
             mov eax, ebp
             mov edi, offset gJoy_array
             rep stosd
-            mov ecx, dword ptr ds:[gKey_poll_counter]
+            mov ecx, dword ptr [gKey_poll_counter]
             xor eax, eax
     L004833fb:
             cmp dword ptr [eax + gKey_array], ecx
@@ -1929,31 +2057,31 @@ void C2_NAKED C2_HOOK_FASTCALL WaitForNoKeys(void) {
             cmp eax, 0x23c
             mov dword ptr [eax + gKey_array], ebx
             jle L00483416
-            mov dword ptr [eax + 0x74b384], ebp
+            mov dword ptr [eax + gMatchData_0074b384], ebp
     L00483416:
             add eax, 4
             cmp eax, 0x25c
             jl L004833fb
             mov edx, 1
             mov ecx, offset gKey_array
-            mov dword ptr ds:[gKey_poll_counter], edx
+            mov dword ptr [gKey_poll_counter], edx
             call PDSetKeyArray
-            mov edx, dword ptr ds:[gKey_poll_counter]
+            mov edx, dword ptr [gKey_poll_counter]
             mov ecx, offset gKey_array
             call SetJoystickArrays
             mov ecx, offset gKey_array
             call PDSetKeysFromJoystick
             call PDGetTotalTime
-            mov dword ptr ds:[gLast_poll_keys], eax
+            mov dword ptr [gLast_poll_keys], eax
     L00483459:
             mov edi, 0x8e
-            mov esi, 0x68c118
+            mov esi, offset gKey_array+0x238
     L00483463:
             cmp dword ptr [esi], ebx
             je L0048348c
-            cmp esi, 0x68bef0
+            cmp esi, offset gKey_array+0x10
             je L0048348c
-            cmp dword ptr ds:[gEdge_trigger_mode], ebx
+            cmp dword ptr [gEdge_trigger_mode], ebx
             je L004834ae
             xor edx, edx
             mov ecx, edi
@@ -1966,7 +2094,7 @@ void C2_NAKED C2_HOOK_FASTCALL WaitForNoKeys(void) {
             dec edi
             cmp esi, offset gKey_array
             jge L00483463
-            cmp dword ptr ds:[gEdge_trigger_mode], ebx
+            cmp dword ptr [gEdge_trigger_mode], ebx
             je L004834ac
             mov edx, 1
             xor ecx, ecx
@@ -1979,8 +2107,8 @@ void C2_NAKED C2_HOOK_FASTCALL WaitForNoKeys(void) {
             cmp edi, 4
             jne L00483522
     L004834b7:
-            mov esi, dword ptr ds:[gCurrent_mouse_position]
-            mov edi, dword ptr ds:[gLast_mouse_y_coord]
+            mov esi, dword ptr [gCurrent_mouse_position]
+            mov edi, dword ptr [gLast_mouse_y_coord]
             lea edx, [esp + 0x14]
             lea ecx, [esp + 0x10]
             call GetMousePosition
@@ -2016,8 +2144,8 @@ void C2_NAKED C2_HOOK_FASTCALL WaitForNoKeys(void) {
     L00483527:
             cmp eax, ebx
             jne L004833bc
-            mov esi, dword ptr ds:[gCurrent_mouse_position]
-            mov edi, dword ptr ds:[gLast_mouse_y_coord]
+            mov esi, dword ptr [gCurrent_mouse_position]
+            mov edi, dword ptr [gLast_mouse_y_coord]
             lea edx, [esp + 0x1c]
             lea ecx, [esp + 0x18]
             call GetMousePosition
@@ -2402,7 +2530,7 @@ mouse_activity_found:
     L004835d5:
             call CheckQuit
             call PDGetTotalTime
-            sub eax, dword ptr ds:[gLast_poll_keys]
+            sub eax, dword ptr [gLast_poll_keys]
             cmp eax, 0x1f4
             jbe L00483649
             mov ecx, 0x97
@@ -2414,27 +2542,27 @@ mouse_activity_found:
             mov edi, offset gJoy_array
             rep stosd
             call CyclePollKeys
-            mov edx, dword ptr ds:[gKey_poll_counter]
+            mov edx, dword ptr [gKey_poll_counter]
             mov ecx, offset gKey_array
             inc edx
-            mov dword ptr ds:[gKey_poll_counter], edx
+            mov dword ptr [gKey_poll_counter], edx
             call PDSetKeyArray
-            mov edx, dword ptr ds:[gKey_poll_counter]
+            mov edx, dword ptr [gKey_poll_counter]
             mov ecx, offset gKey_array
             call SetJoystickArrays
             mov ecx, offset gKey_array
             call PDSetKeysFromJoystick
             call PDGetTotalTime
-            mov dword ptr ds:[gLast_poll_keys], eax
+            mov dword ptr [gLast_poll_keys], eax
     L00483649:
             mov edi, 0x8e
-            mov esi, 0x68c118
+            mov esi, offset gKey_array+0x238
     L00483653:
             cmp dword ptr [esi], 0
             je L0048367e
-            cmp esi, 0x68bef0
+            cmp esi, offset gKey_array+0x10
             je L0048367e
-            mov eax, dword ptr ds:[gEdge_trigger_mode]
+            mov eax, dword ptr [gEdge_trigger_mode]
             test eax, eax
             je L004836a2
             xor edx, edx
@@ -2448,7 +2576,7 @@ mouse_activity_found:
             dec edi
             cmp esi, offset gKey_array
             jge L00483653
-            mov eax, dword ptr ds:[gEdge_trigger_mode]
+            mov eax, dword ptr [gEdge_trigger_mode]
             test eax, eax
             je L0048369f
             mov edx, 1
@@ -2462,8 +2590,8 @@ mouse_activity_found:
             cmp edi, 4
             jne L0048379f
     L004836b0:
-            mov esi, dword ptr ds:[gCurrent_mouse_position]
-            mov edi, dword ptr ds:[gLast_mouse_y_coord]
+            mov esi, dword ptr [gCurrent_mouse_position]
+            mov edi, dword ptr [gLast_mouse_y_coord]
             lea edx, [esp + 0xc]
             lea ecx, [esp + 8]
             call GetMousePosition
@@ -2494,8 +2622,8 @@ mouse_activity_found:
             mov eax, dword ptr [esp + 0x24]
             test eax, eax
             jne L0048379f
-            mov esi, dword ptr ds:[gCurrent_mouse_position]
-            mov edi, dword ptr ds:[gLast_mouse_y_coord]
+            mov esi, dword ptr [gCurrent_mouse_position]
+            mov edi, dword ptr [gLast_mouse_y_coord]
             lea edx, [esp + 0x14]
             lea ecx, [esp + 0x10]
             call GetMousePosition
@@ -2535,7 +2663,7 @@ mouse_activity_found:
     L004837a4:
             call CheckQuit
             call PDGetTotalTime
-            sub eax, dword ptr ds:[gLast_poll_keys]
+            sub eax, dword ptr [gLast_poll_keys]
             cmp eax, 0x1f4
             jbe L004837e2
             mov ecx, 0x97
@@ -2550,13 +2678,13 @@ mouse_activity_found:
             call PollKeys
     L004837e2:
             mov edi, 0x8e
-            mov esi, 0x68c118
+            mov esi, offset gKey_array+0x238
     L004837ec:
             cmp dword ptr [esi], 0
             je L00483817
-            cmp esi, 0x68bef0
+            cmp esi, offset gKey_array+0x10
             je L00483817
-            mov eax, dword ptr ds:[gEdge_trigger_mode]
+            mov eax, dword ptr [gEdge_trigger_mode]
             test eax, eax
             je L0048383b
             xor edx, edx
@@ -2570,7 +2698,7 @@ mouse_activity_found:
             dec edi
             cmp esi, offset gKey_array
             jge L004837ec
-            mov eax, dword ptr ds:[gEdge_trigger_mode]
+            mov eax, dword ptr [gEdge_trigger_mode]
             test eax, eax
             je L00483838
             mov edx, 1
@@ -2584,8 +2712,8 @@ mouse_activity_found:
             cmp edi, 4
             jne L004838b4
     L00483845:
-            mov esi, dword ptr ds:[gCurrent_mouse_position]
-            mov edi, dword ptr ds:[gLast_mouse_y_coord]
+            mov esi, dword ptr [gCurrent_mouse_position]
+            mov edi, dword ptr [gLast_mouse_y_coord]
             lea edx, [esp + 0x10]
             lea ecx, [esp + 0x14]
             call GetMousePosition
@@ -2623,8 +2751,8 @@ mouse_activity_found:
     L004838b9:
             test eax, eax
             jne L004837a4
-            mov esi, dword ptr ds:[gCurrent_mouse_position]
-            mov edi, dword ptr ds:[gLast_mouse_y_coord]
+            mov esi, dword ptr [gCurrent_mouse_position]
+            mov edi, dword ptr [gLast_mouse_y_coord]
             lea edx, [esp + 8]
             lea ecx, [esp + 0xc]
             call GetMousePosition

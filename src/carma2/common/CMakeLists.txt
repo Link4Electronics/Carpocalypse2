@@ -174,6 +174,7 @@ add_library(c2_common STATIC
     mainloop.h
     mainmenu.c
     mainmenu.h
+    matching_globals.c
     menuoptions.c
     menuoptions.h
     movie.c

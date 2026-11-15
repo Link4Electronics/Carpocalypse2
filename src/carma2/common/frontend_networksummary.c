@@ -47,6 +47,18 @@ extern tStruct_00686508* gPTR_00686508;
 extern char gPed_flags_0058f2e4[];
 extern int gScore_winner;
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gData_00655b44[];
+extern char gData_00655b48[];
+extern char gString_00655b1c[];
+extern char gString_00655b3c[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchData_00655b44[];
+extern char gMatchData_00655b48[];
+extern char gMatchString_00655b1c[];
+extern char gMatchString_00655b3c[];
+#endif
 // FUNCTION: CARMA2_HW 0x004743c0
 static int C2_NAKED C2_HOOK_CDECL SortScores(const void* pArg1, const void* pArg2) {
 #ifndef CARPOCALYPSE2_MATCHING
@@ -340,7 +352,7 @@ int C2_NAKED C2_HOOK_FASTCALL NetSummary_Infunc(tFrontend_spec* pFrontend) {
             mov eax, dword ptr [ebx + 0x20]
             test eax, eax
             je L004741de
-            mov edi, offset gFrontend_QUIT+0xbd58
+            mov edi, offset gMatchData_00655b48
             or ecx, 0xffffffff
             xor eax, eax
             repne scasb
@@ -381,7 +393,7 @@ int C2_NAKED C2_HOOK_FASTCALL NetSummary_Infunc(tFrontend_spec* pFrontend) {
             mov ecx, edx
             and ecx, 3
             rep movsb
-            mov edi, offset gFrontend_QUIT+0xbd54
+            mov edi, offset gMatchData_00655b44
             or ecx, 0xffffffff
             repne scasb
             not ecx
@@ -402,21 +414,21 @@ int C2_NAKED C2_HOOK_FASTCALL NetSummary_Infunc(tFrontend_spec* pFrontend) {
             mov eax, dword ptr [ebx + 0x7c]
             lea ecx, [ebp + 0x2d]
             push eax
-            push offset gPed_flags_0058f2e4+0x134
+            push 0x58f418
             push ecx
             call sprintf
             mov edx, dword ptr [ebx + 0x88]
             add esp, 0xc
             lea eax, [ebp + 0x104d]
             push edx
-            push offset gPed_flags_0058f2e4+0x134
+            push 0x58f418
             push eax
             call sprintf
             mov ecx, dword ptr [ebx + 0x90]
             add esp, 0xc
             lea edx, [ebp + 0x206d]
             push ecx
-            push offset gPed_flags_0058f2e4+0x134
+            push 0x58f418
             push edx
             call sprintf
             fild dword ptr [ebx + 0x90]
@@ -424,11 +436,16 @@ int C2_NAKED C2_HOOK_FASTCALL NetSummary_Infunc(tFrontend_spec* pFrontend) {
             add esp, 0xc
             fdivp st(1), st(0)
             fidiv dword ptr [gScore_winner]
-            fmul qword ptr [gDouble_0058a068+0x90]
+            _emit 0xdc
+        _emit 0x0d
+        _emit 0xf8
+        _emit 0xa0
+        _emit 0x58
+        _emit 0x00
             call _ftol
             push eax
             lea eax, [ebp + 0x308d]
-            push offset gFrontend_QUIT+0xbd4c
+            push offset gMatchString_00655b3c
             push eax
             call sprintf
             mov eax, dword ptr [esp + 0x20]
@@ -486,7 +503,7 @@ int C2_NAKED C2_HOOK_FASTCALL NetSummary_Infunc(tFrontend_spec* pFrontend) {
             call GetMiscString
             push eax
             lea eax, [ebp + 0x6a59]
-            push offset gFrontend_QUIT+0xbd2c
+            push offset gMatchString_00655b1c
             push eax
             jmp L00474365
     L00474331:
@@ -502,7 +519,7 @@ int C2_NAKED C2_HOOK_FASTCALL NetSummary_Infunc(tFrontend_spec* pFrontend) {
             call GetMiscString
             lea edx, [ebp + 0x6a59]
             push eax
-            push offset gFrontend_QUIT+0xbd2c
+            push offset gMatchString_00655b1c
             push edx
     L00474365:
             call sprintf
@@ -531,6 +548,17 @@ int C2_NAKED C2_HOOK_FASTCALL NetSummary_Infunc(tFrontend_spec* pFrontend) {
             pop ebx
             add esp, 0x10
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }

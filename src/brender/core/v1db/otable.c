@@ -14,6 +14,14 @@ extern char IID_IDirectInputDevice2A[];
 extern void __cdecl _ftol();
 extern br_v1db_state v1db;
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gData_0058b7f8[];
+extern char gFloat_0058b7e8[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchData_0058b7f8[];
+extern char gMatchFloat_0058b7e8[];
+#endif
 // FUNCTION: CARMA2_HW 0x00526300
 br_order_table* C2_HOOK_CDECL BrZsOrderTableAllocate(br_uint_16 size, br_uint_32 flags, br_uint_16 type) {
     br_order_table* order_table;
@@ -206,7 +214,7 @@ br_uint_16 C2_NAKED C2_HOOK_CDECL BrZsPrimitiveBucketSelect(br_scalar* z, br_uin
             fld dword ptr [ecx + 8]
             fadd dword ptr [ecx + 4]
             faddp st(1), st(0)
-            fmul dword ptr [IID_IDirectInputDevice2A+0x450]
+            fmul dword ptr [gMatchFloat_0058b7e8]
             jmp L005264e5
     L00526490:
             mov eax, dword ptr [esp + 0x1c]
@@ -239,7 +247,12 @@ br_uint_16 C2_NAKED C2_HOOK_CDECL BrZsPrimitiveBucketSelect(br_scalar* z, br_uin
             jmp L005264e5
     L005264ce:
             fadd dword ptr [ecx + 4]
-            fmul dword ptr [IID_IDirectInputDevice2A+0x454]
+            _emit 0xd8
+        _emit 0x0d
+        _emit 0xec
+        _emit 0xb7
+        _emit 0x58
+        _emit 0x00
             jmp L005264e5
     L005264d9:
             mov eax, dword ptr [esp + 8]
@@ -252,7 +265,12 @@ br_uint_16 C2_NAKED C2_HOOK_CDECL BrZsPrimitiveBucketSelect(br_scalar* z, br_uin
             fld dword ptr [esp + 0x14]
             fsub dword ptr [esp + 0x10]
             mov esi, dword ptr [esp + 0x18]
-            fcom dword ptr [IID_IDirectInputDevice2A+0x458]
+            _emit 0xd8
+        _emit 0x15
+        _emit 0xf0
+        _emit 0xb7
+        _emit 0x58
+        _emit 0x00
             fnstsw ax
             test ah, 0x41
             jne L00526518
@@ -269,12 +287,12 @@ br_uint_16 C2_NAKED C2_HOOK_CDECL BrZsPrimitiveBucketSelect(br_scalar* z, br_uin
             mov dword ptr [esp + 8], 0x447a0000
     L00526522:
             fsub dword ptr [esp + 0x10]
-            fcom dword ptr [IID_IDirectInputDevice2A+0x460]
+            fcom dword ptr [gMatchData_0058b7f8]
             fnstsw ax
             test ah, 1
             je L0052653b
             fstp st(0)
-            fld dword ptr [IID_IDirectInputDevice2A+0x460]
+            fld dword ptr [gMatchData_0058b7f8]
     L0052653b:
             fld dword ptr [esp + 8]
             fmul st(0), st(1)
@@ -406,7 +424,7 @@ void C2_NAKED C2_HOOK_STDCALL SetOrderTableBounds(br_bounds* bounds, br_order_ta
     L0052663e:
             _emit 0xd9
         _emit 0x02
-            fcom dword ptr [IID_IDirectInputDevice2A+0x460]
+            fcom dword ptr [gMatchData_0058b7f8]
             fnstsw ax
             test ah, 0x41
             jne L00526654
@@ -436,7 +454,12 @@ void C2_NAKED C2_HOOK_STDCALL SetOrderTableBounds(br_bounds* bounds, br_order_ta
             fld dword ptr [ebx + 0x10]
             fsub dword ptr [ebx + 0xc]
             fst dword ptr [esp + 0x14]
-            fcomp dword ptr [IID_IDirectInputDevice2A+0x458]
+            _emit 0xd8
+        _emit 0x1d
+        _emit 0xf0
+        _emit 0xb7
+        _emit 0x58
+        _emit 0x00
             fnstsw ax
             test ah, 0x41
             jne L005266a9
@@ -472,7 +495,12 @@ void C2_NAKED C2_HOOK_STDCALL SetOrderTableBounds(br_bounds* bounds, br_order_ta
             test al, 0x20
             je L005266e7
             fld dword ptr [esp + 0x14]
-            fmul dword ptr [IID_IDirectInputDevice2A+0x454]
+            _emit 0xd8
+        _emit 0x0d
+        _emit 0xec
+        _emit 0xb7
+        _emit 0x58
+        _emit 0x00
             fadd dword ptr [ebx + 0xc]
             fstp dword ptr [ebx + 0x14]
     L005266e7:

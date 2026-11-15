@@ -193,6 +193,18 @@ void C2_NAKED C2_HOOK_FASTCALL GetOrientationFromMatrix(tU16* pOrientation, cons
             pop esi
             add esp, 0x10
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -433,13 +445,13 @@ int C2_NAKED C2_HOOK_FASTCALL GetSingleMatrixFromNetworkData(tU8* pNet_data, br_
             push ecx
             fild dword ptr [esp + 0x18]
             fxch st(3)
-            fmul dword ptr ds:[gFLOAT_0058a40c]
+            fmul dword ptr [gFLOAT_0058a40c]
             fxch st(2)
-            fmul dword ptr ds:[gFLOAT_0058a40c]
+            fmul dword ptr [gFLOAT_0058a40c]
             fxch st(1)
-            fmul dword ptr ds:[gFLOAT_0058a40c]
+            fmul dword ptr [gFLOAT_0058a40c]
             fxch st(3)
-            fmul dword ptr ds:[gFLOAT_0058a40c]
+            fmul dword ptr [gFLOAT_0058a40c]
             fxch st(2)
             fadd st(0), st(0)
             fxch st(1)
@@ -449,13 +461,13 @@ int C2_NAKED C2_HOOK_FASTCALL GetSingleMatrixFromNetworkData(tU8* pNet_data, br_
             fxch st(2)
             fadd st(0), st(0)
             fxch st(1)
-            fsub dword ptr ds:[gFLOAT_0058a3f8]
+            fsub dword ptr [gFLOAT_0058a3f8]
             fxch st(3)
-            fsub dword ptr ds:[gFLOAT_0058a3f8]
+            fsub dword ptr [gFLOAT_0058a3f8]
             fxch st(2)
-            fsub dword ptr ds:[gFLOAT_0058a3f8]
+            fsub dword ptr [gFLOAT_0058a3f8]
             fxch st(1)
-            fsub dword ptr ds:[gFLOAT_0058a3f8]
+            fsub dword ptr [gFLOAT_0058a3f8]
             fxch st(3)
             fstp dword ptr [esp + 0x1c]
             fxch st(1)
@@ -501,13 +513,13 @@ int C2_NAKED C2_HOOK_FASTCALL GetSingleMatrixFromNetworkData(tU8* pNet_data, br_
             lea ecx, [esp + 0x18]
             fild dword ptr [esp + 0x14]
             fxch st(3)
-            fmul dword ptr ds:[gFLOAT_0058a40c]
+            fmul dword ptr [gFLOAT_0058a40c]
             fxch st(2)
-            fmul dword ptr ds:[gFLOAT_0058a40c]
+            fmul dword ptr [gFLOAT_0058a40c]
             fxch st(1)
-            fmul dword ptr ds:[gFLOAT_0058a40c]
+            fmul dword ptr [gFLOAT_0058a40c]
             fxch st(3)
-            fmul dword ptr ds:[gFLOAT_0058a40c]
+            fmul dword ptr [gFLOAT_0058a40c]
             fxch st(2)
             fadd st(0), st(0)
             fxch st(1)
@@ -517,13 +529,13 @@ int C2_NAKED C2_HOOK_FASTCALL GetSingleMatrixFromNetworkData(tU8* pNet_data, br_
             fxch st(2)
             fadd st(0), st(0)
             fxch st(1)
-            fsub dword ptr ds:[gFLOAT_0058a3f8]
+            fsub dword ptr [gFLOAT_0058a3f8]
             fxch st(3)
-            fsub dword ptr ds:[gFLOAT_0058a3f8]
+            fsub dword ptr [gFLOAT_0058a3f8]
             fxch st(2)
-            fsub dword ptr ds:[gFLOAT_0058a3f8]
+            fsub dword ptr [gFLOAT_0058a3f8]
             fxch st(1)
-            fsub dword ptr ds:[gFLOAT_0058a3f8]
+            fsub dword ptr [gFLOAT_0058a3f8]
             fxch st(3)
             fstp dword ptr [esp + 0x18]
             fxch st(1)
@@ -564,13 +576,13 @@ int C2_NAKED C2_HOOK_FASTCALL GetSingleMatrixFromNetworkData(tU8* pNet_data, br_
             lea edx, [esp + 0x18]
             fild dword ptr [esp + 0x14]
             fxch st(3)
-            fmul dword ptr ds:[gFLOAT_0058a40c]
+            fmul dword ptr [gFLOAT_0058a40c]
             fxch st(2)
-            fmul dword ptr ds:[gFLOAT_0058a40c]
+            fmul dword ptr [gFLOAT_0058a40c]
             fxch st(1)
-            fmul dword ptr ds:[gFLOAT_0058a40c]
+            fmul dword ptr [gFLOAT_0058a40c]
             fxch st(3)
-            fmul dword ptr ds:[gFLOAT_0058a40c]
+            fmul dword ptr [gFLOAT_0058a40c]
             fxch st(2)
             fadd st(0), st(0)
             fxch st(1)
@@ -580,13 +592,13 @@ int C2_NAKED C2_HOOK_FASTCALL GetSingleMatrixFromNetworkData(tU8* pNet_data, br_
             fxch st(2)
             fadd st(0), st(0)
             fxch st(1)
-            fsub dword ptr ds:[gFLOAT_0058a3f8]
+            fsub dword ptr [gFLOAT_0058a3f8]
             fxch st(3)
-            fsub dword ptr ds:[gFLOAT_0058a3f8]
+            fsub dword ptr [gFLOAT_0058a3f8]
             fxch st(2)
-            fsub dword ptr ds:[gFLOAT_0058a3f8]
+            fsub dword ptr [gFLOAT_0058a3f8]
             fxch st(1)
-            fsub dword ptr ds:[gFLOAT_0058a3f8]
+            fsub dword ptr [gFLOAT_0058a3f8]
             fxch st(3)
             fstp dword ptr [esp + 0x18]
             fxch st(1)

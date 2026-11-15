@@ -30,6 +30,12 @@ extern char gNet_avail_names[];
 extern tPixelFlags gPixelFlags;
 extern br_pixelmap* gRender_palette;
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gString_00657d10[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchString_00657d10[];
+#endif
 // FUNCTION: CARMA2_HW 0x0048ea40
 int C2_HOOK_FASTCALL LoadBunchOfPixies(const char* pathRoot, const char* textureName, br_pixelmap** textureBuffer, size_t bufferCapacity) {
     tPath_name tempPath;
@@ -140,7 +146,7 @@ C2_NAKED br_pixelmap* C2_HOOK_FASTCALL RealLoadPixelmap(const char* pPath_name) 
             cmp eax, 4
             jne L0048ec6c
             mov ecx, eax
-            mov edi, offset gNet_avail_names+0x7b8
+            mov edi, offset gMatchString_00657d10
             mov esi, ebx
             xor eax, eax
             repe cmpsb
@@ -162,7 +168,7 @@ C2_NAKED br_pixelmap* C2_HOOK_FASTCALL RealLoadPixelmap(const char* pPath_name) 
             call PathCat
             lea edx, [esp + 0x10]
             lea ecx, [esp + 0x10]
-            push offset gNet_avail_names+0x4c0
+            push 0x657a18
             call PathCat
             mov edi, ebx
             or ecx, 0xffffffff
@@ -272,6 +278,14 @@ C2_NAKED br_pixelmap* C2_HOOK_FASTCALL RealLoadPixelmap(const char* pPath_name) 
             pop ebx
             add esp, 0x11a4
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }

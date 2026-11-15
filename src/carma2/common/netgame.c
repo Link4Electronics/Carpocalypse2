@@ -224,6 +224,21 @@ extern tU32 gRace_finished;
 extern tRace_over_reason gRace_over_reason;
 extern int gSynch_race_start;
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gData_00658990[];
+extern char gData_00659c64[];
+extern char gData_00659c6c[];
+extern char gFloat_00659c38[];
+extern char gFloat_00659c4c[];
+extern char gPixelmap_copy_buffer[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchData_00658990[];
+extern char gMatchData_00659c64[];
+extern char gMatchData_00659c6c[];
+extern char gMatchFloat_00659c38[];
+extern char gMatchFloat_00659c4c[];
+#endif
 // FUNCTION: CARMA2_HW 0x00499260
 
 void C2_HOOK_FASTCALL DisableCar(tCar_spec* pCar) {
@@ -313,7 +328,7 @@ void C2_NAKED C2_HOOK_FASTCALL InitPlayers(void) {
     gWinner_declared = 0;
 #else
     __asm {
-            mov eax, dword ptr ds:[gNumber_of_net_players]
+            mov eax, dword ptr [gNumber_of_net_players]
             push ebx
             push esi
             push edi
@@ -321,10 +336,10 @@ void C2_NAKED C2_HOOK_FASTCALL InitPlayers(void) {
             xor ebx, ebx
             cmp eax, edi
             jle L0049b783
-            mov esi, 0x74bd24
+            mov esi, offset gNet_players+0x64
     L0049b735:
             call PossibleService
-            mov ecx, dword ptr ds:[gCurrent_net_game]
+            mov ecx, dword ptr [gCurrent_net_game]
             mov eax, dword ptr [ecx + 0x74]
             cmp eax, 7
             ja L0049b761
@@ -338,7 +353,7 @@ void C2_NAKED C2_HOOK_FASTCALL InitPlayers(void) {
             mov eax, dword ptr [ecx + 0x58]
             mov dword ptr [esi + 8], edi
             mov dword ptr [esi + 4], eax
-            mov eax, dword ptr ds:[gNumber_of_net_players]
+            mov eax, dword ptr [gNumber_of_net_players]
             mov dword ptr [esi - 0x4c], edi
             mov dword ptr [esi + 0x6c], edi
             mov dword ptr [esi + 0x1c], edi
@@ -347,18 +362,18 @@ void C2_NAKED C2_HOOK_FASTCALL InitPlayers(void) {
             cmp ebx, eax
             jl L0049b735
     L0049b783:
-            mov eax, dword ptr ds:[gNet_mode]
-            mov dword ptr ds:[gIt_or_fox], 0xffffffff
+            mov eax, dword ptr [gNet_mode]
+            mov dword ptr [gIt_or_fox], 0xffffffff
             cmp eax, 2
             jne L0049b7a3
-            mov dword ptr ds:[gLast_it_change], edi
-            mov dword ptr ds:[gLast_lepper], edi
+            mov dword ptr [gLast_it_change], edi
+            mov dword ptr [gLast_lepper], edi
     L0049b7a3:
-            mov dword ptr ds:[gTime_for_punishment], edi
-            mov dword ptr ds:[gWinner_declared], edi
+            mov dword ptr [gTime_for_punishment], edi
+            mov dword ptr [gWinner_declared], edi
             pop edi
             pop esi
-            mov dword ptr ds:[gNot_shown_race_type_headup], 1
+            mov dword ptr [gNot_shown_race_type_headup], 1
             pop ebx
             ret
             lea ecx, [ecx]
@@ -620,7 +635,7 @@ void C2_NAKED C2_HOOK_FASTCALL DeclareWinner(int pWinner_index) {
             lea edx, [esp + 0x18]
             push eax
             push ecx
-            push offset gCar_map_colours+0x10
+            push 0x659b50
             push edx
             call sprintf
             mov ebp, dword ptr [gNumber_of_net_players]
@@ -726,6 +741,10 @@ void C2_NAKED C2_HOOK_FASTCALL DeclareWinner(int pWinner_index) {
             pop ebx
             add esp, 0x108
             ret
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -1071,26 +1090,26 @@ select_wasted_it:
             push edi
             call GetTotalTime
             mov dword ptr [esp + 0x1c], eax
-            mov eax, dword ptr ds:[gCurrent_net_game]
+            mov eax, dword ptr [gCurrent_net_game]
             mov ebp, 0
             mov eax, dword ptr [eax + 0x74]
             sub eax, 2
             je L0049ad3b
             sub eax, 5
             jne L0049ada1
-            mov ecx, dword ptr ds:[gIt_or_fox]
+            mov ecx, dword ptr [gIt_or_fox]
             cmp ecx, ebp
             jge L0049acb9
-            mov edx, dword ptr ds:[gNumber_of_net_players]
+            mov edx, dword ptr [gNumber_of_net_players]
             xor eax, eax
             cmp edx, ebp
-            mov dword ptr ds:[gLast_lepper], ebp
+            mov dword ptr [gLast_lepper], ebp
             jle L0049ac64
             xor ecx, ecx
     L0049ac44:
             cmp ecx, 0xffffff2c
             je L0049ac59
-            mov edi, dword ptr [ecx + 0x74bd54]
+            mov edi, dword ptr [ecx + gNet_players+0x94]
             lea esi, [edx - 1]
             cmp edi, esi
             je L0049ac9d
@@ -1110,10 +1129,10 @@ select_wasted_it:
             lea edx, [ecx + ecx*8]
             shl edx, 1
             sub edx, eax
-            mov ecx, dword ptr [edx*4 + 0x74bd88]
+            mov ecx, dword ptr [edx*4 + gNet_players+0xc8]
             cmp dword ptr [ecx + 0x1d4], ebp
             jne L0049ac9d
-            mov edx, dword ptr ds:[gNumber_of_net_players]
+            mov edx, dword ptr [gNumber_of_net_players]
             xor ecx, ecx
             dec edx
             call IRandomBetween
@@ -1126,9 +1145,9 @@ select_wasted_it:
             sub ecx, eax
             lea ecx, [ecx*4 + gNet_players]
             call PlayerIsIt
-            mov ecx, dword ptr ds:[gIt_or_fox]
+            mov ecx, dword ptr [gIt_or_fox]
     L0049acb9:
-            mov eax, dword ptr ds:[gLast_lepper]
+            mov eax, dword ptr [gLast_lepper]
             cmp eax, ebp
             je L0049ada1
             cmp ecx, ebp
@@ -1142,7 +1161,7 @@ select_wasted_it:
             fxch st(1)
             sub edx, ecx
             lea ecx, [edx*4 + gNet_players]
-            mov ecx, dword ptr [edx*4 + 0x74bd88]
+            mov ecx, dword ptr [edx*4 + gNet_players+0xc8]
             fsub dword ptr [ecx + 0x4c]
             fxch st(1)
             fsub dword ptr [ecx + 0x50]
@@ -1161,20 +1180,20 @@ select_wasted_it:
             fxch st(1)
             faddp st(2), st(0)
             faddp st(1), st(0)
-            fcomp qword ptr ds:[gDOUBLE_0058a3f0]
+            fcomp qword ptr [gDOUBLE_0058a3f0]
             fnstsw ax
             test ah, 1
             fstp st(0)
             jne L0049ada1
-            mov dword ptr ds:[gLast_lepper], ebp
+            mov dword ptr [gLast_lepper], ebp
             jmp L0049ada1
     L0049ad3b:
-            mov eax, dword ptr ds:[gNumber_of_net_players]
+            mov eax, dword ptr [gNumber_of_net_players]
             xor esi, esi
             xor edi, edi
             cmp eax, ebp
             jle L0049ad6a
-            mov ecx, 0x74bd24
+            mov ecx, offset gNet_players+0x64
             mov edx, eax
     L0049ad4f:
             mov eax, dword ptr [ecx]
@@ -1195,22 +1214,22 @@ select_wasted_it:
             mov ecx, 1
             call GetRuntimeVariable
             lea ecx, [edi + esi]
-            mov esi, dword ptr ds:[gCount_smashable_race_targets]
+            mov esi, dword ptr [gCount_smashable_race_targets]
             add ecx, esi
             sub ecx, eax
             mov eax, ecx
             cdq
             sub eax, edx
-            mov edx, dword ptr ds:[gCurrent_net_game]
+            mov edx, dword ptr [gCurrent_net_game]
             sar eax, 1
             inc eax
-            mov dword ptr ds:[gINT_0068d920], eax
+            mov dword ptr [gINT_0068d920], eax
             mov ecx, dword ptr [edx + 0x60]
             cmp eax, ecx
             jle L0049ada1
-            mov dword ptr ds:[gINT_0068d920], ecx
+            mov dword ptr [gINT_0068d920], ecx
     L0049ada1:
-            mov ebx, dword ptr ds:[gNumber_of_net_players]
+            mov ebx, dword ptr [gNumber_of_net_players]
             xor edi, edi
             xor ecx, ecx
             cmp ebx, ebp
@@ -1227,20 +1246,20 @@ select_wasted_it:
             shl esi, 1
             sub esi, ecx
             shl esi, 2
-            mov eax, dword ptr [esi + 0x74bcd8]
-            mov ebx, dword ptr [esi + 0x74bd88]
+            mov eax, dword ptr [esi + gNet_players+0x18]
+            mov ebx, dword ptr [esi + gNet_players+0xc8]
             cmp eax, ebp
             je L0049af3e
             cmp dword ptr [esp + 0x1c], eax
             jl L0049af3e
-            cmp dword ptr ds:[gRace_finished], ebp
+            cmp dword ptr [gRace_finished], ebp
             je L0049ae09
-            cmp dword ptr ds:[gRace_over_reason], -1
+            cmp dword ptr [gRace_over_reason], -1
             jne L0049af3e
     L0049ae09:
-            mov eax, dword ptr ds:[gCurrent_net_game]
-            mov dword ptr [esi + 0x74bd2c], ebp
-            mov dword ptr [esi + 0x74bcd8], ebp
+            mov eax, dword ptr [gCurrent_net_game]
+            mov dword ptr [esi + gNet_players+0x6c], ebp
+            mov dword ptr [esi + gNet_players+0x18], ebp
             mov eax, dword ptr [eax + 0x74]
             cmp eax, 2
             je L0049ae45
@@ -1248,15 +1267,15 @@ select_wasted_it:
             je L0049ae45
             cmp eax, 4
             je L0049ae45
-            mov ecx, dword ptr [esi + 0x74bd10]
-            mov edx, dword ptr [esi + 0x74bd1c]
+            mov ecx, dword ptr [esi + gNet_players+0x50]
+            mov edx, dword ptr [esi + gNet_players+0x5c]
             push ecx
             mov ecx, offset gCurrent_race
             call SetInitialPosition
             jmp L0049ae5b
     L0049ae45:
             mov eax, dword ptr [ebx + 0x10]
-            lea edx, [esi + 0x74bd58]
+            lea edx, [esi + gNet_players+0x98]
             add eax, 0x2c
             push edx
             push eax
@@ -1277,7 +1296,7 @@ select_wasted_it:
             jne L0049ae95
             call PDGetTotalTime
             add eax, 0x7d0
-            mov dword ptr ds:[gTime_for_punishment], eax
+            mov dword ptr [gTime_for_punishment], eax
             call EmptyInventory
     L0049ae95:
             mov ecx, ebx
@@ -1288,30 +1307,30 @@ select_wasted_it:
             xor edx, edx
             mov dword ptr [ecx + 0x49c], eax
             mov cl, 0x32
-            mov dword ptr ds:[gSynch_race_start], ebp
-            mov dword ptr ds:[gINT_0074b780], 1
+            mov dword ptr [gSynch_race_start], ebp
+            mov dword ptr [gINT_0074b780], 1
             call NetBuildGuaranteedMessage
-            mov edx, dword ptr ds:[0x75bba8]
+            mov edx, dword ptr [gProgram_state+0x28]
             mov edi, eax
             mov al, byte ptr [esp + 0x10]
             mov dword ptr [edi + 0x1c], edx
-            mov dword ptr [esi + 0x74bcdc], ebp
-            mov dword ptr [esi + 0x74bd30], ebp
+            mov dword ptr [esi + gNet_players+0x1c], ebp
+            mov dword ptr [esi + gNet_players+0x70], ebp
             mov byte ptr [edi + 0x24], al
-            mov ecx, dword ptr [esi + 0x74bd1c]
+            mov ecx, dword ptr [esi + gNet_players+0x5c]
             shl ecx, 4
-            mov edx, dword ptr [ecx + 0x763090]
+            mov edx, dword ptr [ecx + gCurrent_race+0xcf0]
             lea ecx, [edi + 0x26]
             mov eax, dword ptr [edx + 0x10]
             lea edx, [edi + 0x20]
             add eax, 0x2c
             push eax
             call CompressMatrix34
-            mov ecx, dword ptr ds:[gCurrent_net_game]
+            mov ecx, dword ptr [gCurrent_net_game]
             mov edx, edi
             push ebp
             call NetGuaranteedSendMessageToAllPlayers
-            cmp dword ptr ds:[0x75bba8], ebp
+            cmp dword ptr [gProgram_state+0x28], ebp
             je L0049af20
             call SendCurrentPowerups
     L0049af20:
@@ -1320,14 +1339,14 @@ select_wasted_it:
             cmp dword ptr [ebx + 0xc], 8
             jne L0049af3e
             call CancelPendingCunningStunt
-            mov ecx, dword ptr ds:[gCurrent_net_game]
+            mov ecx, dword ptr [gCurrent_net_game]
             mov edx, dword ptr [ecx + 0x58]
-            mov dword ptr ds:[gProgram_state], edx
+            mov dword ptr [gProgram_state], edx
     L0049af3e:
-            mov eax, dword ptr [esi + 0x74bcdc]
+            mov eax, dword ptr [esi + gNet_players+0x1c]
             cmp eax, ebp
             je L0049afa9
-            cmp dword ptr [esi + 0x74bd30], ebp
+            cmp dword ptr [esi + gNet_players+0x70], ebp
             jne L0049afa9
             mov ecx, dword ptr [esp + 0x1c]
             sub ecx, eax
@@ -1335,20 +1354,20 @@ select_wasted_it:
             jle L0049afa9
             mov ecx, 0xac
             call GetMiscString
-            lea edx, [esi + 0x74bce8]
+            lea edx, [esi + gNet_players+0x28]
             push eax
             push edx
             lea eax, [esp + 0x38]
             push 0x659b50
             push eax
             call sprintf
-            mov ecx, dword ptr ds:[gCurrent_net_game]
-            mov dword ptr [esi + 0x74bcdc], ebp
-            mov dword ptr [esi + 0x74bd30], ebp
+            mov ecx, dword ptr [gCurrent_net_game]
+            mov dword ptr [esi + gNet_players+0x1c], ebp
+            mov dword ptr [esi + gNet_players+0x70], ebp
             add esp, 0x10
             cmp dword ptr [ecx + 0x74], 1
             jne L0049afa0
-            dec dword ptr [esi + 0x74bd24]
+            dec dword ptr [esi + gNet_players+0x64]
     L0049afa0:
             lea ecx, [esp + 0x30]
             call NetSendHeadupToEverybody
@@ -1357,30 +1376,30 @@ select_wasted_it:
             call SetKnackeredFlag
             cmp dword ptr [ebx + 0x1d4], ebp
             je L0049b0b6
-            cmp dword ptr [esi + 0x74bd2c], ebp
+            cmp dword ptr [esi + gNet_players+0x6c], ebp
             jne L0049b0b6
             xor edx, edx
             mov cl, 0x19
-            mov dword ptr [esi + 0x74bd2c], 1
+            mov dword ptr [esi + gNet_players+0x6c], 1
             call NetBuildGuaranteedMessage
-            mov edx, dword ptr [esi + 0x74bce4]
+            mov edx, dword ptr [esi + gNet_players+0x24]
             mov dword ptr [eax + 0x20], 0xffffffff
             mov dword ptr [eax + 0x1c], edx
-            mov ecx, dword ptr ds:[gCurrent_net_game]
+            mov ecx, dword ptr [gCurrent_net_game]
             push ebp
             mov edx, eax
             call NetGuaranteedSendMessageToEverybody
-            mov eax, dword ptr ds:[gCurrent_net_game]
+            mov eax, dword ptr [gCurrent_net_game]
             mov eax, dword ptr [eax + 0x74]
             cmp eax, 7
             ja L0049b0b6
             jmp dword ptr [eax*4 + 0x49b4f4]
-            mov edi, dword ptr ds:[gNumber_of_net_players]
+            mov edi, dword ptr [gNumber_of_net_players]
             xor ecx, ecx
             xor eax, eax
             cmp edi, ebp
             jle L0049b03a
-            mov edx, 0x74bd2c
+            mov edx, offset gNet_players+0x6c
     L0049b024:
             cmp dword ptr [edx], ebp
             jne L0049b02f
@@ -1393,14 +1412,14 @@ select_wasted_it:
             cmp eax, edi
             jl L0049b024
     L0049b03a:
-            mov edi, dword ptr [esi + 0x74bd50]
+            mov edi, dword ptr [esi + gNet_players+0x90]
             lea edx, [ecx*4]
             mov eax, offset gScore_winner
             sub eax, edx
             mov edx, dword ptr [eax]
             add edi, edx
             cmp ecx, 1
-            mov dword ptr [esi + 0x74bd50], edi
+            mov dword ptr [esi + gNet_players+0x90], edi
             jne L0049b068
             mov ecx, dword ptr [esp + 0x20]
             call DeclareWinner
@@ -1408,11 +1427,11 @@ select_wasted_it:
     L0049b068:
             cmp ecx, ebp
             jg L0049b0b4
-            mov eax, dword ptr ds:[gNumber_of_net_players]
+            mov eax, dword ptr [gNumber_of_net_players]
             xor ebp, ebp
             test eax, eax
             jle L0049b0b4
-            mov edi, 0x74bd3c
+            mov edi, offset gNet_players+0x7c
     L0049b07c:
             mov edx, dword ptr [edi]
             mov cl, 0xa
@@ -1424,10 +1443,10 @@ select_wasted_it:
             mov ecx, dword ptr [edi - 0x58]
             push 0
             push ecx
-            mov ecx, dword ptr ds:[gCurrent_net_game]
+            mov ecx, dword ptr [gCurrent_net_game]
             mov edx, eax
             call NetGuaranteedSendMessageToPlayer
-            mov eax, dword ptr ds:[gNumber_of_net_players]
+            mov eax, dword ptr [gNumber_of_net_players]
             inc ebp
             add edi, 0xd4
             cmp ebp, eax
@@ -1435,31 +1454,31 @@ select_wasted_it:
     L0049b0b4:
             xor ebp, ebp
     L0049b0b6:
-            mov edx, dword ptr ds:[gCurrent_net_game]
+            mov edx, dword ptr [gCurrent_net_game]
             mov eax, dword ptr [edx + 0x74]
             cmp eax, 7
             ja L0049b1c2
             jmp dword ptr [eax*4 + 0x49b514]
             cmp dword ptr [ebx + 0x1d4], ebp
             je L0049b0e6
-            mov dword ptr [esi + 0x74bd24], 0xfff0bdc0
+            mov dword ptr [esi + gNet_players+0x64], 0xfff0bdc0
             jmp L0049b1c2
     L0049b0e6:
             mov ecx, ebx
             call GetAverageCrushLevel
-            mov dword ptr [esi + 0x74bd24], eax
+            mov dword ptr [esi + gNet_players+0x64], eax
             jmp L0049b1c2
-            mov eax, dword ptr [esi + 0x74bd24]
-            mov ecx, dword ptr ds:[gINT_0068d920]
+            mov eax, dword ptr [esi + gNet_players+0x64]
+            mov ecx, dword ptr [gINT_0068d920]
             cmp eax, ecx
             jl L0049b1c2
             jmp L0049b148
-            mov eax, dword ptr [esi + 0x74bd24]
-            mov edi, dword ptr ds:[0x7623a8]
+            mov eax, dword ptr [esi + gNet_players+0x64]
+            mov edi, dword ptr [gCurrent_race+0x8]
             xor ecx, ecx
             and eax, 0xffff
             cmp edi, ebp
-            mov dword ptr [esi + 0x74bd24], eax
+            mov dword ptr [esi + gNet_players+0x64], eax
             mov edx, eax
             jle L0049b137
     L0049b12d:
@@ -1475,14 +1494,14 @@ select_wasted_it:
             shl eax, 0x10
             or eax, edx
             cmp ecx, ebp
-            mov dword ptr [esi + 0x74bd24], eax
+            mov dword ptr [esi + gNet_players+0x64], eax
             jne L0049b1c2
     L0049b148:
-            cmp dword ptr ds:[gRace_finished], ebp
+            cmp dword ptr [gRace_finished], ebp
             jne L0049b1c2
             mov ecx, dword ptr [esp + 0x10]
             jmp L0049b1bd
-            mov eax, dword ptr [esi + 0x74bd24]
+            mov eax, dword ptr [esi + gNet_players+0x64]
             cmp eax, ebp
             jl L0049b1c2
             mov ecx, dword ptr [esp + 0x18]
@@ -1497,18 +1516,18 @@ select_wasted_it:
             mov dword ptr [esp + 0x14], ebp
             jmp L0049b1c2
             mov ecx, dword ptr [esp + 0x10]
-            mov eax, dword ptr ds:[gIt_or_fox]
+            mov eax, dword ptr [gIt_or_fox]
             cmp ecx, eax
             jne L0049b1c2
-            cmp dword ptr ds:[gCountdown], ebp
+            cmp dword ptr [gCountdown], ebp
             jne L0049b1c2
-            cmp dword ptr ds:[gRace_finished], ebp
+            cmp dword ptr [gRace_finished], ebp
             jne L0049b1c2
-            mov edx, dword ptr ds:[gFrame_period]
-            mov edi, dword ptr [esi + 0x74bd24]
-            mov eax, dword ptr ds:[gCurrent_net_game]
+            mov edx, dword ptr [gFrame_period]
+            mov edi, dword ptr [esi + gNet_players+0x64]
+            mov eax, dword ptr [gCurrent_net_game]
             add edi, edx
-            mov dword ptr [esi + 0x74bd24], edi
+            mov dword ptr [esi + gNet_players+0x64], edi
             mov esi, edi
             cmp esi, dword ptr [eax + 0x60]
             jl L0049b1c2
@@ -1516,7 +1535,7 @@ select_wasted_it:
             call DeclareWinner
     L0049b1c2:
             mov eax, dword ptr [esp + 0x10]
-            mov ecx, dword ptr ds:[gNumber_of_net_players]
+            mov ecx, dword ptr [gNumber_of_net_players]
             inc eax
             cmp eax, ecx
             mov dword ptr [esp + 0x10], eax
@@ -1524,7 +1543,7 @@ select_wasted_it:
             mov edi, dword ptr [esp + 0x14]
             mov ebx, ecx
     L0049b1df:
-            mov ecx, dword ptr ds:[gCurrent_net_game]
+            mov ecx, dword ptr [gCurrent_net_game]
             cmp dword ptr [ecx + 0x74], 4
             jne L0049b339
             cmp edi, ebp
@@ -1569,11 +1588,11 @@ select_wasted_it:
             cmp ecx, -1
             mov dword ptr [edi + 0x90], edx
             jne L0049b2cd
-            mov eax, dword ptr ds:[gNumber_of_net_players]
+            mov eax, dword ptr [gNumber_of_net_players]
             xor edi, edi
             cmp eax, ebp
             jle L0049b339
-            mov esi, 0x74bd3c
+            mov esi, offset gNet_players+0x7c
     L0049b28b:
             mov edx, dword ptr [esi]
             mov cl, 0xa
@@ -1585,10 +1604,10 @@ select_wasted_it:
             mov ecx, dword ptr [esi - 0x58]
             push ebp
             push ecx
-            mov ecx, dword ptr ds:[gCurrent_net_game]
+            mov ecx, dword ptr [gCurrent_net_game]
             mov edx, eax
             call NetGuaranteedSendMessageToPlayer
-            mov eax, dword ptr ds:[gNumber_of_net_players]
+            mov eax, dword ptr [gNumber_of_net_players]
             inc edi
             add esi, 0xd4
             cmp edi, eax
@@ -1619,7 +1638,7 @@ select_wasted_it:
             mov dword ptr [eax + 0x24], ebp
             mov dword ptr [eax + 0x28], ebp
             mov dword ptr [eax + 0x2c], ebp
-            mov ecx, dword ptr ds:[gCurrent_net_game]
+            mov ecx, dword ptr [gCurrent_net_game]
             push ebp
             push esi
             mov edx, eax
@@ -1643,8 +1662,8 @@ select_wasted_it:
             pop ebx
             add esp, 0x120
             ret
-            mov edx, dword ptr [esi + 0x74bd24]
-            mov eax, dword ptr ds:[0x7623a8]
+            mov edx, dword ptr [esi + gNet_players+0x64]
+            mov eax, dword ptr [gCurrent_race+0x8]
             sar edx, 0x10
             cmp edx, eax
             je L0049b39a
@@ -1652,12 +1671,12 @@ select_wasted_it:
             xor ecx, ecx
             call IRandomBetween
             mov ecx, eax
-            mov eax, dword ptr [esi + 0x74bd24]
+            mov eax, dword ptr [esi + gNet_players+0x64]
             mov edx, 1
             shl edx, cl
             test edx, eax
             je L0049b38b
-            mov edx, dword ptr ds:[0x7623a8]
+            mov edx, dword ptr [gCurrent_race+0x8]
     L0049b379:
             inc ecx
             cmp ecx, edx
@@ -1672,16 +1691,16 @@ select_wasted_it:
             mov edx, 1
             shl edx, cl
             or edx, eax
-            mov dword ptr [esi + 0x74bd24], edx
+            mov dword ptr [esi + gNet_players+0x64], edx
     L0049b39a:
             call GetTotalTime
             add eax, 0x1388
-            mov dword ptr [esi + 0x74bcd8], eax
+            mov dword ptr [esi + gNet_players+0x18], eax
             jmp L0049b0b6
             call GetTotalTime
             add eax, 0x1388
-            mov dword ptr [esi + 0x74bcd8], eax
-            mov eax, dword ptr [esi + 0x74bd40]
+            mov dword ptr [esi + gNet_players+0x18], eax
+            mov eax, dword ptr [esi + gNet_players+0x80]
             cmp eax, ebp
             jne L0049b0b6
             lea ecx, [esi + gNet_players]
@@ -1689,34 +1708,34 @@ select_wasted_it:
             jmp L0049b0b6
             call GetTotalTime
             add eax, 0x1388
-            mov ecx, dword ptr ds:[gNumber_of_net_players]
-            mov dword ptr [esi + 0x74bcd8], eax
-            mov eax, dword ptr [esi + 0x74bd24]
+            mov ecx, dword ptr [gNumber_of_net_players]
+            mov dword ptr [esi + gNet_players+0x18], eax
+            mov eax, dword ptr [esi + gNet_players+0x64]
             cdq
             sub eax, edx
             sar eax, 1
             cmp ecx, 1
-            mov dword ptr [esi + 0x74bd24], eax
+            mov dword ptr [esi + gNet_players+0x64], eax
             jle L0049b0b6
             mov eax, dword ptr [esp + 0x10]
-            mov edx, dword ptr ds:[gIt_or_fox]
+            mov edx, dword ptr [gIt_or_fox]
             cmp eax, edx
             jne L0049b0b6
             xor eax, eax
             cmp ecx, ebp
-            mov dword ptr ds:[gLast_lepper], ebp
+            mov dword ptr [gLast_lepper], ebp
             jle L0049b475
-            mov ecx, 0x74bd54
+            mov ecx, offset gNet_players+0x94
     L0049b430:
             cmp eax, dword ptr [esp + 0x10]
             je L0049b443
-            mov edx, dword ptr ds:[gNumber_of_net_players]
+            mov edx, dword ptr [gNumber_of_net_players]
             mov edi, dword ptr [ecx]
             dec edx
             cmp edi, edx
             je L0049b45a
     L0049b443:
-            mov edx, dword ptr ds:[gNumber_of_net_players]
+            mov edx, dword ptr [gNumber_of_net_players]
             inc eax
             add ecx, 0xd4
             cmp eax, edx
@@ -1743,10 +1762,10 @@ select_wasted_it:
             lea edx, [ecx + ecx*8]
             shl edx, 1
             sub edx, eax
-            mov ecx, dword ptr [edx*4 + 0x74bd88]
+            mov ecx, dword ptr [edx*4 + gNet_players+0xc8]
             cmp dword ptr [ecx + 0x1d4], ebp
             jne L0049b4b2
-            mov edx, dword ptr ds:[gNumber_of_net_players]
+            mov edx, dword ptr [gNumber_of_net_players]
             xor ecx, ecx
             dec edx
             call IRandomBetween
@@ -1762,12 +1781,12 @@ select_wasted_it:
             jmp L0049b0b6
             call GetTotalTime
             add eax, 0x1388
-            mov dword ptr [esi + 0x74bcd8], eax
-            mov eax, dword ptr [esi + 0x74bd24]
+            mov dword ptr [esi + gNet_players+0x18], eax
+            mov eax, dword ptr [esi + gNet_players+0x64]
             cdq
             sub eax, edx
             sar eax, 1
-            mov dword ptr [esi + 0x74bd24], eax
+            mov dword ptr [esi + gNet_players+0x64], eax
             jmp L0049b0b6
             nop
             _emit 0x11
@@ -1945,7 +1964,7 @@ void C2_NAKED C2_HOOK_FASTCALL PlayerIsInfected(tNet_game_player_info* pPlayer) 
             call GetMiscString
             push eax
             lea eax, [esp + 0x10]
-            push offset gCancel_recover+0xbc
+            push 0x59101c
             push eax
             call sprintf
             mov edx, dword ptr [esi + 0x24]
@@ -1967,7 +1986,7 @@ void C2_NAKED C2_HOOK_FASTCALL PlayerIsInfected(tNet_game_player_info* pPlayer) 
             push eax
             push edx
             lea eax, [esp + 0x14]
-            push offset gCar_map_colours+0x10
+            push 0x659b50
             push eax
             call sprintf
             mov edx, dword ptr [edi]
@@ -3060,12 +3079,12 @@ void C2_NAKED C2_HOOK_FASTCALL DoNetworkHeadups(int pCredits) {
             mov edx, dword ptr [gCurrent_net_game]
             fild dword ptr [gProgram_state]
             mov eax, dword ptr [edx + 0x74]
-            fcomp dword ptr [eax*4 + 0x7634cc]
+            fcomp dword ptr [eax*4 + gRecovery_cost+0xc]
             fnstsw ax
             test ah, 1
             je L00499450
-            push 0x68d948
-            mov edx, 0x68d944
+            push offset gPixelmap_copy_buffer+0x30
+            mov edx, offset gPixelmap_copy_buffer+0x2c
             mov ecx, 0xc8
             call Flash
             test eax, eax
@@ -3078,7 +3097,7 @@ void C2_NAKED C2_HOOK_FASTCALL DoNetworkHeadups(int pCredits) {
             lea ecx, [esp + 4]
             push eax
             push esi
-            push 0x658990
+            push offset gMatchData_00658990
             push ecx
             call sprintf
             add esp, 0x10
@@ -3098,7 +3117,7 @@ void C2_NAKED C2_HOOK_FASTCALL DoNetworkHeadups(int pCredits) {
             push eax
             mov eax, dword ptr [edx + 0x60]
             push eax
-            push 0x658990
+            push offset gMatchData_00658990
             jmp L00499529
             mov edx, dword ptr [gINT_0068d920]
             mov ecx, 0xb4
@@ -3106,7 +3125,7 @@ void C2_NAKED C2_HOOK_FASTCALL DoNetworkHeadups(int pCredits) {
             call GetMiscString
             push eax
             lea eax, [esp + 0xc]
-            push 0x659c6c
+            push offset gMatchData_00659c6c
             push eax
             call sprintf
             add esp, 0x10
@@ -3117,7 +3136,7 @@ void C2_NAKED C2_HOOK_FASTCALL DoNetworkHeadups(int pCredits) {
             call GetMiscString
             lea edx, [esp + 8]
             push eax
-            push 0x659c6c
+            push offset gMatchData_00659c6c
             push edx
             call sprintf
             add esp, 0x10
@@ -3133,7 +3152,7 @@ void C2_NAKED C2_HOOK_FASTCALL DoNetworkHeadups(int pCredits) {
             push eax
             call GetMiscString
             push eax
-            push 0x659c64
+            push offset gMatchData_00659c64
     L00499529:
             lea ecx, [esp + 0x10]
             push ecx
@@ -4369,7 +4388,7 @@ void C2_NAKED C2_HOOK_FASTCALL SendCarData(tU32 pNext_frame_time) {
             call GetHierarchyNetworkStuff
             cmp eax, ebx
             je L00497b09
-            push offset gScore_winner+0xc
+            push offset gMatchFloat_00659c38
             push 0x72
             call FatalError
             add esp, 8
@@ -4708,6 +4727,11 @@ void C2_NAKED C2_HOOK_FASTCALL SendCarData(tU32 pNext_frame_time) {
             pop ebx
             add esp, 0x268
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -4807,7 +4831,7 @@ void C2_NAKED C2_HOOK_FASTCALL SendNonCar(tNon_car_spec* pNon_car, tU32 pPlayer_
             call GetHierarchyNetworkStuff
             cmp eax, ebx
             je L00497fa5
-            push offset gScore_winner+0x20
+            push offset gMatchFloat_00659c4c
             push 0x72
             call FatalError
             add esp, 8
@@ -5126,7 +5150,7 @@ void C2_NAKED C2_HOOK_FASTCALL SendLocalCarData(tU32 pNext_frame_time) {
             call GetHierarchyNetworkStuff
             cmp eax, ebx
             je L004981f9
-            push offset gScore_winner+0xc
+            push offset gMatchFloat_00659c38
             push 0x72
             call FatalError
             add esp, 8
@@ -5252,6 +5276,14 @@ void C2_NAKED C2_HOOK_FASTCALL SendLocalCarData(tU32 pNext_frame_time) {
             pop ebx
             add esp, 0xc
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -5911,6 +5943,9 @@ void C2_NAKED C2_HOOK_FASTCALL CheckForNeedyEnvironmentRecipients(void) {
     L0049bac9:
             add esp, 8
             ret
+            nop
+            nop
+            nop
     }
 #endif
 }

@@ -178,7 +178,12 @@ int C2_NAKED C2_HOOK_FASTCALL Options_Infunc(tFrontend_spec* pFrontend) {
             mov dword ptr [gConnected_items], ebx
             cmp eax, 0x80
             mov dword ptr [gPTR_00686508], ebx
-            fmul qword ptr [gDouble_0058a068+0xa0]
+            _emit 0xdc
+        _emit 0x0d
+        _emit 0x08
+        _emit 0xa1
+        _emit 0x58
+        _emit 0x00
             mov byte ptr [gOptions_sound_slider], bl
             mov dword ptr [gOptions_sound_slider+0x4], 0xa
             mov dword ptr [gOptions_sound_slider+0x8], 6
@@ -230,6 +235,13 @@ int C2_NAKED C2_HOOK_FASTCALL Options_Infunc(tFrontend_spec* pFrontend) {
             pop esi
             pop ebx
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }

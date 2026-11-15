@@ -427,6 +427,188 @@ extern tProgram_state gProgram_state;
 extern int gSelected_drone_path_node_index;
 extern tBrender_storage* gStorage_for_callbacks;
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gData_0058a250[];
+extern char gData_0059478c[];
+extern char gData_0059479c[];
+extern char gData_00594db4[];
+extern char gData_00657d08[];
+extern char gData_007635b8[];
+extern char gDouble_00589e00[];
+extern char gDouble_00589e58[];
+extern char gDouble_0058a230[];
+extern char gDouble_0058a238[];
+extern char gDouble_0058a240[];
+extern char gDouble_0058a258[];
+extern char gDouble_0058a260[];
+extern char gDouble_0058a270[];
+extern char gDouble_0058a278[];
+extern char gDouble_0058a280[];
+extern char gDouble_0058a290[];
+extern char gDouble_0058a298[];
+extern char gDouble_0058a2a0[];
+extern char gDouble_0058a2b8[];
+extern char gFloat_0058a224[];
+extern char gFloat_0058a248[];
+extern char gFloat_0058a24c[];
+extern char gFloat_0058a254[];
+extern char gFloat_0058a268[];
+extern char gFloat_0058a288[];
+extern char gFloat_0058a2a8[];
+extern char gFloat_0058a2ac[];
+extern char gFloat_0058a2b0[];
+extern char gFloat_0058a2b4[];
+extern char gFloat_0058a2c0[];
+extern char gFloat_00594db6[];
+extern char gFloat_00594df4[];
+extern char gFloat_00594e2c[];
+extern char gFloat_00594e58[];
+extern char gFloat_00594e74[];
+extern char gFloat_00594eac[];
+extern char gFloat_00594ed0[];
+extern char gFloat_00594efc[];
+extern char gFloat_00594f30[];
+extern char gFloat_00594f4c[];
+extern char gFloat_00657a70[];
+extern char gFloat_00657aa0[];
+extern char gFloat_00657ab4[];
+extern char gFloat_00657ad8[];
+extern char gFloat_00657af0[];
+extern char gFloat_00657b04[];
+extern char gFloat_00657bd4[];
+extern char gFloat_00657c00[];
+extern char gFloat_00657c1c[];
+extern char gFloat_00657c30[];
+extern char gFloat_00657c5c[];
+extern char gFloat_00657c78[];
+extern char gFloat_00657ca0[];
+extern char gFloat_00657cc8[];
+extern char gString_00594d0c[];
+extern char gString_00594d1c[];
+extern char gString_00594d28[];
+extern char gString_00594d34[];
+extern char gString_00594d3c[];
+extern char gString_00594d44[];
+extern char gString_00594d50[];
+extern char gString_00594d5c[];
+extern char gString_00594d64[];
+extern char gString_00594d70[];
+extern char gString_00594d7c[];
+extern char gString_00594d84[];
+extern char gString_00594d8c[];
+extern char gString_00594da4[];
+extern char gString_00594ea4[];
+extern char gString_00657a58[];
+extern char gString_00657a60[];
+extern char gString_00657a88[];
+extern char gString_00657a94[];
+extern char gString_00657ac8[];
+extern char gString_00657b18[];
+extern char gString_00657b20[];
+extern char gString_00657b30[];
+extern char gString_00657bc0[];
+extern char gString_00657bc8[];
+extern char gString_00657bf0[];
+extern char gString_00657c94[];
+extern char gString_00657c9c[];
+extern char gString_00657cbc[];
+extern char gString_00657ce0[];
+extern char gString_00657cec[];
+extern char gString_00657cf4[];
+extern char gString_00657cf8[];
+extern char gString_00657d04[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchData_0058a250[];
+extern char gMatchData_0059478c[];
+extern char gMatchData_0059479c[];
+extern char gMatchData_00594db4[];
+extern char gMatchData_00657d08[];
+extern char gMatchData_007635b8[];
+extern char gMatchDouble_00589e00[];
+extern char gMatchDouble_00589e58[];
+extern char gMatchDouble_0058a230[];
+extern char gMatchDouble_0058a238[];
+extern char gMatchDouble_0058a240[];
+extern char gMatchDouble_0058a258[];
+extern char gMatchDouble_0058a260[];
+extern char gMatchDouble_0058a270[];
+extern char gMatchDouble_0058a278[];
+extern char gMatchDouble_0058a280[];
+extern char gMatchDouble_0058a290[];
+extern char gMatchDouble_0058a298[];
+extern char gMatchDouble_0058a2a0[];
+extern char gMatchDouble_0058a2b8[];
+extern char gMatchFloat_0058a224[];
+extern char gMatchFloat_0058a248[];
+extern char gMatchFloat_0058a24c[];
+extern char gMatchFloat_0058a254[];
+extern char gMatchFloat_0058a268[];
+extern char gMatchFloat_0058a288[];
+extern char gMatchFloat_0058a2a8[];
+extern char gMatchFloat_0058a2ac[];
+extern char gMatchFloat_0058a2b0[];
+extern char gMatchFloat_0058a2b4[];
+extern char gMatchFloat_0058a2c0[];
+extern char gMatchFloat_00594db6[];
+extern char gMatchFloat_00594df4[];
+extern char gMatchFloat_00594e2c[];
+extern char gMatchFloat_00594e58[];
+extern char gMatchFloat_00594e74[];
+extern char gMatchFloat_00594eac[];
+extern char gMatchFloat_00594ed0[];
+extern char gMatchFloat_00594efc[];
+extern char gMatchFloat_00594f30[];
+extern char gMatchFloat_00594f4c[];
+extern char gMatchFloat_00657a70[];
+extern char gMatchFloat_00657aa0[];
+extern char gMatchFloat_00657ab4[];
+extern char gMatchFloat_00657ad8[];
+extern char gMatchFloat_00657af0[];
+extern char gMatchFloat_00657b04[];
+extern char gMatchFloat_00657bd4[];
+extern char gMatchFloat_00657c00[];
+extern char gMatchFloat_00657c1c[];
+extern char gMatchFloat_00657c30[];
+extern char gMatchFloat_00657c5c[];
+extern char gMatchFloat_00657c78[];
+extern char gMatchFloat_00657ca0[];
+extern char gMatchFloat_00657cc8[];
+extern char gMatchString_00594d0c[];
+extern char gMatchString_00594d1c[];
+extern char gMatchString_00594d28[];
+extern char gMatchString_00594d34[];
+extern char gMatchString_00594d3c[];
+extern char gMatchString_00594d44[];
+extern char gMatchString_00594d50[];
+extern char gMatchString_00594d5c[];
+extern char gMatchString_00594d64[];
+extern char gMatchString_00594d70[];
+extern char gMatchString_00594d7c[];
+extern char gMatchString_00594d84[];
+extern char gMatchString_00594d8c[];
+extern char gMatchString_00594da4[];
+extern char gMatchString_00594ea4[];
+extern char gMatchString_00657a58[];
+extern char gMatchString_00657a60[];
+extern char gMatchString_00657a88[];
+extern char gMatchString_00657a94[];
+extern char gMatchString_00657ac8[];
+extern char gMatchString_00657b18[];
+extern char gMatchString_00657b20[];
+extern char gMatchString_00657b30[];
+extern char gMatchString_00657bc0[];
+extern char gMatchString_00657bc8[];
+extern char gMatchString_00657bf0[];
+extern char gMatchString_00657c94[];
+extern char gMatchString_00657c9c[];
+extern char gMatchString_00657cbc[];
+extern char gMatchString_00657ce0[];
+extern char gMatchString_00657cec[];
+extern char gMatchString_00657cf4[];
+extern char gMatchString_00657cf8[];
+extern char gMatchString_00657d04[];
+#endif
 // FUNCTION: CARMA2_HW 0x00457590
 void C2_HOOK_FASTCALL ConfigureZombiePedSoundPath(void) {
     gPed_sound_path = "ZOMSOUND";
@@ -686,6 +868,8 @@ void C2_NAKED C2_HOOK_FASTCALL GetFiveScalars(FILE* pF, br_scalar* pS1, br_scala
         _emit 0x18
             add esp, 0x114
             ret 0x10
+            nop
+            nop
     }
 #endif
 }
@@ -788,8 +972,11 @@ void C2_NAKED C2_HOOK_FASTCALL DRclearerr(FILE* pFile) {
             ret
     L004b4c6f:
             shl ecx, 4
-            mov dword ptr [ecx + 0x69207c], 0
+            mov dword ptr [ecx + gTwatVfsFiles+0xc], 0
             ret
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -1270,7 +1457,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadPanGameDroneInfo(void) {
             repne scasb
             not ecx
             sub edi, ecx
-            push offset gDefault_drone_direction+0x5f0
+            push 0x594db0
             mov eax, ecx
             mov esi, edi
             mov edi, edx
@@ -1284,9 +1471,9 @@ void C2_NAKED C2_HOOK_FASTCALL LoadPanGameDroneInfo(void) {
             call PathCat
             lea edx, [esp + 0x22c]
             lea ecx, [esp + 0x22c]
-            push offset gDefault_drone_direction+0x5e4
+            push offset gMatchString_00594da4
             call PathCat
-            mov edx, offset gNext_crush_actor_id+0x180
+            mov edx, 0x58f9e0
             lea ecx, [esp + 0x22c]
             call DRfopen
             mov ebp, eax
@@ -1303,11 +1490,11 @@ void C2_NAKED C2_HOOK_FASTCALL LoadPanGameDroneInfo(void) {
             mov ecx, ebp
             call GetALineAndDontArgue
             lea edx, [esp + 0x2c]
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push edx
             call strtok
             add esp, 8
-            mov esi, offset gDefault_drone_direction+0x5dc
+            mov esi, 0x594d9c
             lea eax, [esp + 0x2c]
     L0044edc9:
             mov dl, byte ptr [eax]
@@ -1335,13 +1522,13 @@ void C2_NAKED C2_HOOK_FASTCALL LoadPanGameDroneInfo(void) {
     L0044edf6:
             test eax, eax
             jne L0044ee2a
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push eax
             call strtok
             add esp, 8
             lea ecx, [esp + 0x28]
             push ecx
-            push offset gPed_flags_0058f2e4+0x134
+            push 0x58f418
             push eax
             call sscanf
             add esp, 0xc
@@ -1369,7 +1556,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadPanGameDroneInfo(void) {
             cmp dword ptr [gCount_drone_forms], 0x40
             jge L0044f623
     L0044ee6f:
-            mov esi, offset gDefault_drone_direction+0x5cc
+            mov esi, offset gMatchString_00594d8c
             lea eax, [esp + 0x2c]
     L0044ee78:
             mov dl, byte ptr [eax]
@@ -1410,7 +1597,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadPanGameDroneInfo(void) {
             mov eax, ecx
             mov esi, edi
             mov edi, edx
-            push offset gDefault_drone_direction+0x5f0
+            push 0x594db0
             shr ecx, 2
             rep movsd
             mov ecx, eax
@@ -1442,11 +1629,11 @@ void C2_NAKED C2_HOOK_FASTCALL LoadPanGameDroneInfo(void) {
             mov dword ptr [esp + 0x14], ebp
             call GetALineAndDontArgue
             lea eax, [esp + 0x12c]
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push eax
             call strtok
             add esp, 8
-            mov esi, offset gDefault_drone_direction+0x5dc
+            mov esi, 0x594d9c
             lea eax, [esp + 0x12c]
     L0044ef80:
             mov dl, byte ptr [eax]
@@ -1474,13 +1661,13 @@ void C2_NAKED C2_HOOK_FASTCALL LoadPanGameDroneInfo(void) {
     L0044efad:
             test eax, eax
             jne L0044efde
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push eax
             call strtok
             add esp, 8
             lea ecx, [esp + 0x18]
             push ecx
-            push offset gPed_flags_0058f2e4+0x134
+            push 0x58f418
             push eax
             call sscanf
             add esp, 0xc
@@ -1509,7 +1696,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadPanGameDroneInfo(void) {
             mov ecx, edi
             call GetALineAndDontArgue
             lea edx, [esp + 0x12c]
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push edx
             call strtok
             add esp, 8
@@ -1557,7 +1744,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadPanGameDroneInfo(void) {
             mov ecx, edi
             call GetALineAndDontArgue
             lea edx, [esp + 0x12c]
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push edx
             call strtok
             add esp, 8
@@ -1624,12 +1811,12 @@ void C2_NAKED C2_HOOK_FASTCALL LoadPanGameDroneInfo(void) {
             mov ecx, esi
             call GetALineAndDontArgue
             lea eax, [esp + 0x12c]
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push eax
             call strtok
             mov edi, eax
             add esp, 8
-            mov esi, offset gDefault_drone_direction+0x5c4
+            mov esi, offset gMatchString_00594d84
             mov ecx, edi
     L0044f15f:
             mov al, byte ptr [ecx]
@@ -1660,7 +1847,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadPanGameDroneInfo(void) {
             mov dword ptr [ebx + 0x2c], eax
             jmp L0044f1e6
     L0044f196:
-            mov esi, offset gDefault_drone_direction+0x5bc
+            mov esi, offset gMatchString_00594d7c
             mov eax, edi
     L0044f19d:
             mov dl, byte ptr [eax]
@@ -1701,12 +1888,12 @@ void C2_NAKED C2_HOOK_FASTCALL LoadPanGameDroneInfo(void) {
             lea edx, [esp + 0x12c]
             call GetALineAndDontArgue
             lea ecx, [esp + 0x12c]
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push ecx
             call strtok
             mov edi, eax
             add esp, 8
-            mov esi, offset gDefault_drone_direction+0x5b0
+            mov esi, offset gMatchString_00594d70
             mov ecx, edi
     L0044f214:
             mov al, byte ptr [ecx]
@@ -1738,7 +1925,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadPanGameDroneInfo(void) {
             fstp dword ptr [ebx + 0x18]
             jmp L0044f2c6
     L0044f251:
-            mov esi, offset gDefault_drone_direction+0x5a4
+            mov esi, offset gMatchString_00594d64
             mov eax, edi
     L0044f258:
             mov dl, byte ptr [eax]
@@ -1811,12 +1998,12 @@ void C2_NAKED C2_HOOK_FASTCALL LoadPanGameDroneInfo(void) {
             mov ecx, esi
             call GetALineAndDontArgue
             lea ecx, [esp + 0x12c]
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push ecx
             call strtok
             mov edi, eax
             add esp, 8
-            mov esi, offset gDefault_drone_direction+0x59c
+            mov esi, offset gMatchString_00594d5c
             mov ecx, edi
     L0044f333:
             mov al, byte ptr [ecx]
@@ -1847,7 +2034,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadPanGameDroneInfo(void) {
             mov dword ptr [ebx + 0x2c], eax
             jmp L0044f3ba
     L0044f36a:
-            mov esi, offset gDefault_drone_direction+0x590
+            mov esi, offset gMatchString_00594d50
             mov eax, edi
     L0044f371:
             mov dl, byte ptr [eax]
@@ -1888,12 +2075,12 @@ void C2_NAKED C2_HOOK_FASTCALL LoadPanGameDroneInfo(void) {
             lea edx, [esp + 0x12c]
             call GetALineAndDontArgue
             lea ecx, [esp + 0x12c]
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push ecx
             call strtok
             mov edi, eax
             add esp, 8
-            mov esi, offset gDefault_drone_direction+0x584
+            mov esi, offset gMatchString_00594d44
             mov ecx, edi
     L0044f3e8:
             mov al, byte ptr [ecx]
@@ -1924,7 +2111,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadPanGameDroneInfo(void) {
             mov dword ptr [ebx + 0x2c], eax
             jmp L0044f46f
     L0044f41f:
-            mov esi, offset gDefault_drone_direction+0x57c
+            mov esi, offset gMatchString_00594d3c
             mov eax, edi
     L0044f426:
             mov dl, byte ptr [eax]
@@ -1965,12 +2152,12 @@ void C2_NAKED C2_HOOK_FASTCALL LoadPanGameDroneInfo(void) {
             lea edx, [esp + 0x12c]
             call GetALineAndDontArgue
             lea ecx, [esp + 0x12c]
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push ecx
             call strtok
             mov edi, eax
             add esp, 8
-            mov esi, offset gDefault_drone_direction+0x574
+            mov esi, offset gMatchString_00594d34
             mov ecx, edi
     L0044f49d:
             mov al, byte ptr [ecx]
@@ -2001,7 +2188,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadPanGameDroneInfo(void) {
             mov dword ptr [ebx + 0x2c], eax
             jmp L0044f524
     L0044f4d4:
-            mov esi, offset gDefault_drone_direction+0x568
+            mov esi, offset gMatchString_00594d28
             mov eax, edi
     L0044f4db:
             mov dl, byte ptr [eax]
@@ -2049,12 +2236,12 @@ void C2_NAKED C2_HOOK_FASTCALL LoadPanGameDroneInfo(void) {
             lea edx, [esp + 0x12c]
             call GetALineAndDontArgue
             lea ecx, [esp + 0x12c]
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push ecx
             call strtok
             mov edi, eax
             add esp, 8
-            mov esi, offset gDefault_drone_direction+0x55c
+            mov esi, offset gMatchString_00594d1c
             mov ecx, edi
     L0044f56c:
             mov al, byte ptr [ecx]
@@ -2085,7 +2272,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadPanGameDroneInfo(void) {
             mov dword ptr [ebx + 0x2c], eax
             jmp L0044f5ee
     L0044f5a3:
-            mov esi, offset gDefault_drone_direction+0x54c
+            mov esi, offset gMatchString_00594d0c
             mov eax, edi
     L0044f5aa:
             mov dl, byte ptr [eax]
@@ -2142,6 +2329,17 @@ void C2_NAKED C2_HOOK_FASTCALL LoadPanGameDroneInfo(void) {
             pop ebx
             add esp, 0x41c
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -3489,8 +3687,8 @@ void C2_NAKED C2_HOOK_FASTCALL LoadCar(const char* pCar_name, tDriver pDriver, t
             and ecx, 3
             rep movsb
     L00488fce:
-            mov eax, dword ptr [gNet_avail_names+0x7ac]
-            mov cl, byte ptr [gNet_avail_names+0x7b0]
+            mov eax, dword ptr [gMatchString_00657d04]
+            mov cl, byte ptr [gMatchData_00657d08]
             mov edi, dword ptr [esp + 0x1c]
             mov byte ptr [gCurrent_load_directory+0x4], cl
             mov dword ptr [gCurrent_load_directory], eax
@@ -3577,7 +3775,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadCar(const char* pCar_name, tDriver pDriver, t
             je L00489106
             add eax, 4
             inc ecx
-            cmp eax, offset gFunk_groove_flags+0x78
+            cmp eax, offset gMatchData_007635b8
             jl L004890f4
             jmp L00489123
     L00489106:
@@ -3595,7 +3793,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadCar(const char* pCar_name, tDriver pDriver, t
             add esp, 4
     L00489131:
             mov edi, dword ptr [esp + 0x1c]
-            mov esi, offset gNet_avail_names+0x7a0
+            mov esi, offset gMatchString_00657cf8
             mov eax, edi
     L0048913c:
             mov dl, byte ptr [eax]
@@ -3623,17 +3821,17 @@ void C2_NAKED C2_HOOK_FASTCALL LoadCar(const char* pCar_name, tDriver pDriver, t
     L00489169:
             test eax, eax
             je L00489175
-            fld dword ptr [gDouble_0058a068+0x1e8]
+            fld dword ptr [gMatchData_0058a250]
             jmp L0048917b
     L00489175:
-            fld dword ptr [gDouble_0058a068+0x200]
+            fld dword ptr [gMatchFloat_0058a268]
     L0048917b:
             fstp dword ptr [ebp + 0x170c]
             push edi
             lea edx, [esp + 0x278]
             lea ecx, [esp + 0x178]
             call PathCat
-            mov edx, offset gNext_crush_actor_id+0x180
+            mov edx, 0x58f9e0
             lea ecx, [esp + 0x174]
             call DRfopen
             test eax, eax
@@ -3672,7 +3870,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadCar(const char* pCar_name, tDriver pDriver, t
             lea ecx, [esp + 0x178]
             call PathCat
             call AllowOpenToFail
-            mov edx, offset gNext_crush_actor_id+0x180
+            mov edx, 0x58f9e0
             lea ecx, [esp + 0x174]
             call DRfopen
             mov ebx, eax
@@ -3680,7 +3878,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadCar(const char* pCar_name, tDriver pDriver, t
             call DoNotAllowOpenToFail
             test ebx, ebx
             jne L004892bf
-            push offset gNet_avail_names+0x7ac
+            push offset gMatchString_00657d04
             mov edx, offset gApplication_path
             lea ecx, [esp + 0x178]
             call PathCat
@@ -3696,7 +3894,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadCar(const char* pCar_name, tDriver pDriver, t
             lea ecx, [esp + 0x174]
             push offset gBasic_car_name
             call PathCat
-            mov edx, offset gNext_crush_actor_id+0x180
+            mov edx, 0x58f9e0
             lea ecx, [esp + 0x174]
             call DRfopen
             mov ebx, eax
@@ -3711,11 +3909,11 @@ void C2_NAKED C2_HOOK_FASTCALL LoadCar(const char* pCar_name, tDriver pDriver, t
             lea edx, [esp + 0x74]
             call GetALineAndDontArgue
             lea edx, [esp + 0x74]
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push edx
             call strtok
             add esp, 8
-            mov edi, offset gDefault_drone_direction+0x5dc
+            mov edi, 0x594d9c
             mov esi, eax
     L004892e5:
             mov cl, byte ptr [esi]
@@ -3743,13 +3941,13 @@ void C2_NAKED C2_HOOK_FASTCALL LoadCar(const char* pCar_name, tDriver pDriver, t
     L00489312:
             test eax, eax
             jne L00489346
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push eax
             call strtok
             add esp, 8
             lea ecx, [esp + 0x40]
             push ecx
-            push offset gPed_flags_0058f2e4+0x134
+            push 0x58f418
             push eax
             call sscanf
             mov ecx, dword ptr [esp + 0x1c]
@@ -3760,7 +3958,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadCar(const char* pCar_name, tDriver pDriver, t
     L00489346:
             mov dword ptr [esp + 0x40], 0
     L0048934e:
-            mov edi, offset gNet_avail_names+0x79c
+            mov edi, offset gMatchString_00657cf4
             lea esi, [esp + 0x74]
     L00489357:
             mov dl, byte ptr [esi]
@@ -3791,7 +3989,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadCar(const char* pCar_name, tDriver pDriver, t
             mov dword ptr [ebp + 0x18c4], eax
             jmp L004893d4
     L00489390:
-            mov edi, offset gNet_avail_names+0x794
+            mov edi, offset gMatchString_00657cec
             lea esi, [esp + 0x74]
     L00489399:
             mov dl, byte ptr [esi]
@@ -3902,7 +4100,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadCar(const char* pCar_name, tDriver pDriver, t
             mov ecx, ebx
             call GetALineAndDontArgue
             lea eax, [esp + 0x74]
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push eax
             call strtok
             add esp, 8
@@ -3911,42 +4109,42 @@ void C2_NAKED C2_HOOK_FASTCALL LoadCar(const char* pCar_name, tDriver pDriver, t
             mov dword ptr [esi - 0xa4], 0
             call GetALineAndDontArgue
             lea ecx, [esp + 0x74]
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push ecx
             call strtok
             add esp, 8
             push esi
-            push offset gPed_flags_0058f2e4+0x134
+            push 0x58f418
             push eax
             call sscanf
             add esp, 0xc
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push 0
             call strtok
             add esp, 8
             lea edx, [esi + 0xc]
             push edx
-            push offset gPed_flags_0058f2e4+0x134
+            push 0x58f418
             push eax
             call sscanf
             add esp, 0xc
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push 0
             call strtok
             add esp, 8
             lea ecx, [esi + 0x18]
             push ecx
-            push offset gPed_flags_0058f2e4+0x134
+            push 0x58f418
             push eax
             call sscanf
             add esp, 0xc
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push 0
             call strtok
             add esp, 8
             lea edx, [esi + 0x24]
             push edx
-            push offset gPed_flags_0058f2e4+0x134
+            push 0x58f418
             push eax
             call sscanf
             add esp, 0xc
@@ -3974,27 +4172,27 @@ void C2_NAKED C2_HOOK_FASTCALL LoadCar(const char* pCar_name, tDriver pDriver, t
             mov ecx, ebx
             call GetALineAndDontArgue
             lea eax, [esp + 0x474]
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push eax
             call strtok
             add esp, 8
             lea ecx, [ebp + 0x2dc]
             push ecx
-            push offset gPed_flags_0058f2e4+0x134
+            push 0x58f418
             push eax
             call sscanf
             add esp, 0xc
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push 0
             call strtok
             add esp, 8
             lea edx, [ebp + 0x2e4]
             push edx
-            push offset gPed_flags_0058f2e4+0x134
+            push 0x58f418
             push eax
             call sscanf
             add esp, 0xc
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push 0
             call strtok
             add esp, 8
@@ -4009,13 +4207,13 @@ void C2_NAKED C2_HOOK_FASTCALL LoadCar(const char* pCar_name, tDriver pDriver, t
             mov ecx, ebx
             call GetALineAndDontArgue
             lea eax, [esp + 0x74]
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push eax
             call strtok
             add esp, 8
             lea esi, [ebp + 0x360]
             push esi
-            push offset gPed_flags_0058f2e4+0x134
+            push 0x58f418
             push eax
             call sscanf
             mov eax, dword ptr [esi]
@@ -4029,53 +4227,53 @@ void C2_NAKED C2_HOOK_FASTCALL LoadCar(const char* pCar_name, tDriver pDriver, t
             mov ecx, ebx
             call GetALineAndDontArgue
             lea ecx, [esp + 0x74]
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push ecx
             call strtok
             add esp, 8
             lea edx, [esi - 0x1c]
             push edx
-            push offset gPed_flags_0058f2e4+0x134
+            push 0x58f418
             push eax
             call sscanf
             add esp, 0xc
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push 0
             call strtok
             add esp, 8
             push esi
-            push offset gPed_flags_0058f2e4+0x134
+            push 0x58f418
             push eax
             call sscanf
             add esp, 0xc
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push 0
             call strtok
             add esp, 8
             mov ecx, eax
             call LoadPixelmap
             mov dword ptr [esi - 0x1a0], eax
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push 0
             call strtok
             add esp, 8
             lea ecx, [esi + 0x1c]
             push ecx
-            push offset gPed_flags_0058f2e4+0x134
+            push 0x58f418
             push eax
             call sscanf
             add esp, 0xc
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push 0
             call strtok
             add esp, 8
             lea edx, [esi + 0x38]
             push edx
-            push offset gPed_flags_0058f2e4+0x134
+            push 0x58f418
             push eax
             call sscanf
             add esp, 0xc
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push 0
             call strtok
             add esp, 8
@@ -4092,33 +4290,33 @@ void C2_NAKED C2_HOOK_FASTCALL LoadCar(const char* pCar_name, tDriver pDriver, t
             mov dword ptr [ebp + 0x2ec], 0x1f40
             call GetALineAndDontArgue
             lea eax, [esp + 0x74]
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push eax
             call strtok
             add esp, 8
             lea ecx, [ebp + 0x47c]
             push ecx
-            push offset gMini_map_glowing_line_animation_indices+0x7dc
+            push 0x65718c
             push eax
             call sscanf
             add esp, 0xc
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push 0
             call strtok
             add esp, 8
             lea edx, [ebp + 0x480]
             push edx
-            push offset gMini_map_glowing_line_animation_indices+0x7dc
+            push 0x65718c
             push eax
             call sscanf
             add esp, 0xc
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push 0
             call strtok
             add esp, 8
             lea ecx, [ebp + 0x484]
             push ecx
-            push offset gMini_map_glowing_line_animation_indices+0x7dc
+            push 0x65718c
             push eax
             call sscanf
             add esp, 0xc
@@ -4126,23 +4324,23 @@ void C2_NAKED C2_HOOK_FASTCALL LoadCar(const char* pCar_name, tDriver pDriver, t
             mov ecx, esi
             call GetALineAndDontArgue
             lea edx, [esp + 0x74]
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push edx
             call strtok
             add esp, 8
             lea ecx, [ebp + 0x498]
             push ecx
-            push offset gMini_map_glowing_line_animation_indices+0x7dc
+            push 0x65718c
             push eax
             call sscanf
             add esp, 0xc
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push 0
             call strtok
             add esp, 8
             lea edx, [ebp + 0x49c]
             push edx
-            push offset gMini_map_glowing_line_animation_indices+0x7dc
+            push 0x65718c
             push eax
             call sscanf
             add esp, 0xc
@@ -4150,43 +4348,43 @@ void C2_NAKED C2_HOOK_FASTCALL LoadCar(const char* pCar_name, tDriver pDriver, t
             mov ecx, esi
             call GetALineAndDontArgue
             lea eax, [esp + 0x74]
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push eax
             call strtok
             add esp, 8
             lea ecx, [ebp + 0x488]
             push ecx
-            push offset gMini_map_glowing_line_animation_indices+0x7dc
+            push 0x65718c
             push eax
             call sscanf
             add esp, 0xc
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push 0
             call strtok
             add esp, 8
             lea edx, [ebp + 0x48c]
             push edx
-            push offset gMini_map_glowing_line_animation_indices+0x7dc
+            push 0x65718c
             push eax
             call sscanf
             add esp, 0xc
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push 0
             call strtok
             add esp, 8
             lea ecx, [ebp + 0x490]
             push ecx
-            push offset gMini_map_glowing_line_animation_indices+0x7dc
+            push 0x65718c
             push eax
             call sscanf
             add esp, 0xc
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push 0
             call strtok
             add esp, 8
             lea edx, [ebp + 0x494]
             push edx
-            push offset gMini_map_glowing_line_animation_indices+0x7dc
+            push 0x65718c
             push eax
             call sscanf
             add esp, 0xc
@@ -4194,43 +4392,43 @@ void C2_NAKED C2_HOOK_FASTCALL LoadCar(const char* pCar_name, tDriver pDriver, t
             mov ecx, ebx
             call GetALineAndDontArgue
             lea eax, [esp + 0x74]
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push eax
             call strtok
             add esp, 8
             lea ecx, [ebp + 0x20c]
             push ecx
-            push offset gPed_flags_0058f2e4+0x134
+            push 0x58f418
             push eax
             call sscanf
             add esp, 0xc
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push 0
             call strtok
             add esp, 8
             lea edx, [ebp + 0x210]
             push edx
-            push offset gPed_flags_0058f2e4+0x134
+            push 0x58f418
             push eax
             call sscanf
             add esp, 0xc
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push 0
             call strtok
             add esp, 8
             lea ecx, [ebp + 0x214]
             push ecx
-            push offset gPed_flags_0058f2e4+0x134
+            push 0x58f418
             push eax
             call sscanf
             add esp, 0xc
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push 0
             call strtok
             add esp, 8
             lea edx, [ebp + 0x218]
             push edx
-            push offset gPed_flags_0058f2e4+0x134
+            push 0x58f418
             push eax
             call sscanf
             add esp, 0xc
@@ -4238,43 +4436,43 @@ void C2_NAKED C2_HOOK_FASTCALL LoadCar(const char* pCar_name, tDriver pDriver, t
             mov ecx, ebx
             call GetALineAndDontArgue
             lea eax, [esp + 0x74]
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push eax
             call strtok
             add esp, 8
             lea ecx, [ebp + 0x21c]
             push ecx
-            push offset gPed_flags_0058f2e4+0x134
+            push 0x58f418
             push eax
             call sscanf
             add esp, 0xc
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push 0
             call strtok
             add esp, 8
             lea edx, [ebp + 0x220]
             push edx
-            push offset gPed_flags_0058f2e4+0x134
+            push 0x58f418
             push eax
             call sscanf
             add esp, 0xc
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push 0
             call strtok
             add esp, 8
             lea ecx, [ebp + 0x224]
             push ecx
-            push offset gPed_flags_0058f2e4+0x134
+            push 0x58f418
             push eax
             call sscanf
             add esp, 0xc
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push 0
             call strtok
             add esp, 8
             lea edx, [ebp + 0x228]
             push edx
-            push offset gPed_flags_0058f2e4+0x134
+            push 0x58f418
             push eax
             call sscanf
             add esp, 0xc
@@ -4283,28 +4481,28 @@ void C2_NAKED C2_HOOK_FASTCALL LoadCar(const char* pCar_name, tDriver pDriver, t
             call GetALineAndDontArgue
             call PossibleService
             lea eax, [esp + 0x74]
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push eax
             call strtok
             add esp, 8
             mov ecx, eax
             call LoadPixelmap
             mov dword ptr [ebp + 0x144], eax
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push 0
             call strtok
             add esp, 8
             mov ecx, eax
             call LoadPixelmap
             mov dword ptr [ebp + 0x148], eax
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push 0
             call strtok
             add esp, 8
             mov ecx, eax
             call LoadPixelmap
             mov dword ptr [ebp + 0x14c], eax
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push 0
             call strtok
             add esp, 8
@@ -4320,7 +4518,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadCar(const char* pCar_name, tDriver pDriver, t
             lea edx, [esp + 0x74]
             call GetALineAndDontArgue
             lea ecx, [esp + 0x74]
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push ecx
             call strtok
             lea edx, [esi + esi*4]
@@ -4329,36 +4527,36 @@ void C2_NAKED C2_HOOK_FASTCALL LoadCar(const char* pCar_name, tDriver pDriver, t
             lea edi, [ebp + ecx*4]
             lea edx, [edi + 0x4d8]
             push edx
-            push offset gPed_flags_0058f2e4+0x134
+            push 0x58f418
             push eax
             call sscanf
             add esp, 0xc
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push 0
             call strtok
             add esp, 8
             lea ecx, [edi + 0x4dc]
             push ecx
-            push offset gPed_flags_0058f2e4+0x134
+            push 0x58f418
             push eax
             call sscanf
             add esp, 0xc
             lea ebx, [edi + 0x4ec]
             mov dword ptr [esp + 0x20], 5
     L00489b37:
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push 0
             call strtok
             add esp, 8
             lea edx, [esp + 0x64]
             push edx
-            push offset gMini_map_glowing_line_animation_indices+0x7dc
+            push 0x65718c
             push eax
             call sscanf
             fld dword ptr [esp + 0x70]
-            fdivr qword ptr [gDouble_0058a068+0x208]
+            fdivr qword ptr [gMatchDouble_0058a270]
             add esp, 0xc
-            fmul qword ptr [gDouble_0058a068+0x210]
+            fmul qword ptr [gMatchDouble_0058a278]
             call _ftol
             mov dword ptr [ebx], eax
             mov eax, dword ptr [esp + 0x20]
@@ -4366,7 +4564,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadCar(const char* pCar_name, tDriver pDriver, t
             dec eax
             mov dword ptr [esp + 0x20], eax
             jne L00489b37
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push 0
             call strtok
             add esp, 8
@@ -4394,47 +4592,47 @@ void C2_NAKED C2_HOOK_FASTCALL LoadCar(const char* pCar_name, tDriver pDriver, t
             mov ecx, esi
             call GetALineAndDontArgue
             lea edx, [esp + 0x74]
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push edx
             call strtok
             add esp, 8
             lea ecx, [ebp + 0x368]
             push ecx
-            push offset gPed_flags_0058f2e4+0x134
+            push 0x58f418
             push eax
             call sscanf
             add esp, 0xc
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push 0
             call strtok
             add esp, 8
             lea edx, [ebp + 0x36c]
             push edx
-            push offset gPed_flags_0058f2e4+0x134
+            push 0x58f418
             push eax
             call sscanf
             add esp, 0xc
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push 0
             call strtok
             add esp, 8
             lea ecx, [ebp + 0x370]
             push ecx
-            push offset gPed_flags_0058f2e4+0x134
+            push 0x58f418
             push eax
             call sscanf
             add esp, 0xc
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push 0
             call strtok
             add esp, 8
             lea edx, [ebp + 0x374]
             push edx
-            push offset gPed_flags_0058f2e4+0x134
+            push 0x58f418
             push eax
             call sscanf
             add esp, 0xc
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push 0
             call strtok
             add esp, 8
@@ -4487,9 +4685,9 @@ void C2_NAKED C2_HOOK_FASTCALL LoadCar(const char* pCar_name, tDriver pDriver, t
             call PathCat
             lea edx, [esp + 0x174]
             lea ecx, [esp + 0x174]
-            push offset gNet_avail_names+0x788
+            push offset gMatchString_00657ce0
             call PathCat
-            mov edx, offset gNext_crush_actor_id+0x180
+            mov edx, 0x58f9e0
             lea ecx, [esp + 0x174]
             call DRfopen
             mov esi, eax
@@ -4634,7 +4832,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadCar(const char* pCar_name, tDriver pDriver, t
             call PFfeof
             test eax, eax
             jne L00489fa5
-            mov esi, offset gNet_avail_names+0x770
+            mov esi, offset gMatchFloat_00657cc8
             lea eax, [esp + 0x74]
     L00489f74:
             mov dl, byte ptr [eax]
@@ -4677,7 +4875,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadCar(const char* pCar_name, tDriver pDriver, t
             lea edx, [esp + 0x74]
             mov ecx, esi
             call GetAString
-            mov esi, offset gNet_avail_names+0x764
+            mov esi, offset gMatchString_00657cbc
             lea eax, [esp + 0x74]
     L00489fe7:
             mov dl, byte ptr [eax]
@@ -4736,7 +4934,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadCar(const char* pCar_name, tDriver pDriver, t
             mov ecx, ebx
             call GetALineAndDontArgue
             lea edx, [esp + 0x74]
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push edx
             call strtok
             mov edi, eax
@@ -4750,7 +4948,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadCar(const char* pCar_name, tDriver pDriver, t
             mov eax, ecx
             mov esi, edi
             mov edi, edx
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             shr ecx, 2
             rep movsd
             mov ecx, eax
@@ -4769,7 +4967,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadCar(const char* pCar_name, tDriver pDriver, t
             mov eax, ecx
             mov esi, edi
             mov edi, edx
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             shr ecx, 2
             rep movsd
             mov ecx, eax
@@ -4811,13 +5009,13 @@ void C2_NAKED C2_HOOK_FASTCALL LoadCar(const char* pCar_name, tDriver pDriver, t
             mov ecx, ebx
             call GetALineAndDontArgue
             lea edx, [esp + 0x74]
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push edx
             call strtok
             add esp, 8
             lea ebx, [ebp + 0xe14]
             push ebx
-            push offset gPed_flags_0058f2e4+0x134
+            push 0x58f418
             push eax
             call sscanf
             mov ecx, dword ptr [ebx]
@@ -4827,7 +5025,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadCar(const char* pCar_name, tDriver pDriver, t
             mov dword ptr [ebx], ecx
             cmp eax, 2
             jle L0048a19c
-            mov ecx, offset gNet_avail_names+0x748
+            mov ecx, offset gMatchFloat_00657ca0
             call PDFatalError
     L0048a19c:
             mov dword ptr [ebp + 0xe1c], 0
@@ -4859,7 +5057,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadCar(const char* pCar_name, tDriver pDriver, t
             lea edx, [esp + 0x74]
             call GetALineAndDontArgue
             lea eax, [esp + 0x74]
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push eax
             call strtok
             add esp, 8
@@ -4883,7 +5081,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadCar(const char* pCar_name, tDriver pDriver, t
             lea edi, [esp + 0x174]
             or ecx, 0xffffffff
             xor eax, eax
-            mov edx, dword ptr [gNet_avail_names+0x744]
+            mov edx, dword ptr [gMatchString_00657c9c]
             repne scasb
             mov eax, dword ptr [esp + 0x988]
             push esi
@@ -4916,7 +5114,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadCar(const char* pCar_name, tDriver pDriver, t
             push eax
             lea ecx, [esp + 0x67c]
             call PathCat
-            mov edi, offset gDefault_drone_direction+0x6dc
+            mov edi, 0x594e9c
             or ecx, 0xffffffff
             xor eax, eax
             lea edx, [esp + 0x678]
@@ -4984,7 +5182,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadCar(const char* pCar_name, tDriver pDriver, t
             mov dword ptr [esp + 0x14], eax
     L0048a3b7:
             mov ecx, dword ptr [eax]
-            mov esi, offset gNet_avail_names+0x73c
+            mov esi, offset gMatchString_00657c94
             mov eax, dword ptr [ecx + 4]
     L0048a3c1:
             mov bl, byte ptr [eax]
@@ -5036,7 +5234,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadCar(const char* pCar_name, tDriver pDriver, t
             mov dword ptr [eax + 0x18], ecx
             jmp L0048a445
     L0048a43b:
-            mov ecx, offset gNet_avail_names+0x720
+            mov ecx, offset gMatchFloat_00657c78
             call PDFatalError
     L0048a445:
             mov edx, dword ptr [ebp + 0xe0c]
@@ -5108,13 +5306,13 @@ void C2_NAKED C2_HOOK_FASTCALL LoadCar(const char* pCar_name, tDriver pDriver, t
             lea edx, [esp + 0x74]
             call GetALineAndDontArgue
             lea edx, [esp + 0x74]
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push edx
             call strtok
             add esp, 8
             lea edi, [ebp + 0x404]
             push edi
-            push offset gPed_flags_0058f2e4+0x134
+            push 0x58f418
             push eax
             call sscanf
             mov eax, dword ptr [edi]
@@ -5128,12 +5326,12 @@ void C2_NAKED C2_HOOK_FASTCALL LoadCar(const char* pCar_name, tDriver pDriver, t
             lea edx, [esp + 0x74]
             call GetALineAndDontArgue
             lea eax, [esp + 0x74]
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push eax
             call strtok
             add esp, 8
             push esi
-            push offset gPed_flags_0058f2e4+0x134
+            push 0x58f418
             push eax
             call sscanf
             mov eax, dword ptr [esi]
@@ -5155,7 +5353,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadCar(const char* pCar_name, tDriver pDriver, t
             mov ecx, ebx
             call GetALineAndDontArgue
             lea edx, [esp + 0x74]
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push edx
             call strtok
             add esp, 8
@@ -5163,7 +5361,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadCar(const char* pCar_name, tDriver pDriver, t
             mov edi, 4
     L0048a5c5:
             push esi
-            push offset gPed_flags_0058f2e4+0x134
+            push 0x58f418
             push eax
             call sscanf
             mov eax, dword ptr [esi]
@@ -5174,7 +5372,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadCar(const char* pCar_name, tDriver pDriver, t
             add ecx, eax
             mov dword ptr [esi], ecx
     L0048a5e4:
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push 0
             call strtok
             add esp, 8
@@ -5186,7 +5384,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadCar(const char* pCar_name, tDriver pDriver, t
             mov ecx, ebx
             call GetALineAndDontArgue
             lea edx, [esp + 0x74]
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push edx
             call strtok
             add esp, 8
@@ -5194,7 +5392,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadCar(const char* pCar_name, tDriver pDriver, t
             mov edi, 4
     L0048a626:
             push esi
-            push offset gPed_flags_0058f2e4+0x134
+            push 0x58f418
             push eax
             call sscanf
             mov eax, dword ptr [esi]
@@ -5205,7 +5403,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadCar(const char* pCar_name, tDriver pDriver, t
             add ecx, eax
             mov dword ptr [esi], ecx
     L0048a645:
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push 0
             call strtok
             add esp, 8
@@ -5216,7 +5414,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadCar(const char* pCar_name, tDriver pDriver, t
             mov ecx, ebx
             call GetALineAndDontArgue
             lea edx, [esp + 0x74]
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push edx
             call strtok
             add esp, 8
@@ -5224,7 +5422,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadCar(const char* pCar_name, tDriver pDriver, t
             mov edi, 2
     L0048a682:
             push esi
-            push offset gPed_flags_0058f2e4+0x134
+            push 0x58f418
             push eax
             call sscanf
             mov eax, dword ptr [esi]
@@ -5235,7 +5433,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadCar(const char* pCar_name, tDriver pDriver, t
             add ecx, eax
             mov dword ptr [esi], ecx
     L0048a6a1:
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push 0
             call strtok
             add esp, 8
@@ -5246,7 +5444,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadCar(const char* pCar_name, tDriver pDriver, t
             mov ecx, ebx
             call GetALineAndDontArgue
             lea edx, [esp + 0x74]
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push edx
             call strtok
             add esp, 8
@@ -5254,7 +5452,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadCar(const char* pCar_name, tDriver pDriver, t
             mov edi, 2
     L0048a6de:
             push esi
-            push offset gPed_flags_0058f2e4+0x134
+            push 0x58f418
             push eax
             call sscanf
             mov eax, dword ptr [esi]
@@ -5265,7 +5463,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadCar(const char* pCar_name, tDriver pDriver, t
             add ecx, eax
             mov dword ptr [esi], ecx
     L0048a6fd:
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push 0
             call strtok
             add esp, 8
@@ -5354,13 +5552,13 @@ void C2_NAKED C2_HOOK_FASTCALL LoadCar(const char* pCar_name, tDriver pDriver, t
             mov ecx, esi
             call GetALineAndDontArgue
             lea edx, [esp + 0x74]
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push edx
             call strtok
             add esp, 8
             lea ecx, [esp + 0x48]
             push ecx
-            push offset gMini_map_glowing_line_animation_indices+0x7dc
+            push 0x65718c
             push eax
             call sscanf
             fld dword ptr [esp + 0x54]
@@ -5368,17 +5566,17 @@ void C2_NAKED C2_HOOK_FASTCALL LoadCar(const char* pCar_name, tDriver pDriver, t
             add esp, 0xc
             lea edx, [esp + 0x74]
             mov ecx, esi
-            fmul qword ptr [gDouble_0058a068+0x218]
+            fmul qword ptr [gMatchDouble_0058a280]
             fstp dword ptr [ebp + 0x4b8]
             call GetALineAndDontArgue
             lea edx, [esp + 0x74]
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push edx
             call strtok
             add esp, 8
             lea ecx, [esp + 0x48]
             push ecx
-            push offset gMini_map_glowing_line_animation_indices+0x7dc
+            push 0x65718c
             push eax
             call sscanf
             fld dword ptr [esp + 0x54]
@@ -5388,7 +5586,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadCar(const char* pCar_name, tDriver pDriver, t
             xor edx, edx
             cmp edi, 8
             setne dl
-            fmul qword ptr [gDouble_0058a068+0x218]
+            fmul qword ptr [gMatchDouble_0058a280]
             mov dword ptr [ebp + 0x400], edx
             fstp dword ptr [ebp + 0x4bc]
             call PossibleService
@@ -5440,28 +5638,28 @@ void C2_NAKED C2_HOOK_FASTCALL LoadCar(const char* pCar_name, tDriver pDriver, t
             fld dword ptr [ecx + 0x38]
             fld dword ptr [ecx + 0x3c]
             fxch st(2)
-            fmul dword ptr [gDouble_0058a068+0x220]
+            fmul dword ptr [gMatchFloat_0058a288]
             fxch st(1)
             fadd dword ptr [ecx + 0x44]
             fxch st(2)
             fadd dword ptr [ecx + 0x48]
             fld st(1)
-            fcomp dword ptr [gDouble_0058a068+0x1e8]
+            fcomp dword ptr [gMatchData_0058a250]
             fxch st(2)
-            fmul dword ptr [gDouble_0058a068+0x220]
+            fmul dword ptr [gMatchFloat_0058a288]
             fxch st(2)
-            fmul dword ptr [gDouble_0058a068+0x220]
+            fmul dword ptr [gMatchFloat_0058a288]
             fnstsw ax
             fstp dword ptr [esp + 0x34]
             test ah, 0x40
             fxch st(1)
             je L0048a990
-            fcom dword ptr [gDouble_0058a068+0x1e8]
+            fcom dword ptr [gMatchData_0058a250]
             fnstsw ax
             test ah, 0x40
             je L0048a990
             fld dword ptr [esp + 0x34]
-            fcomp dword ptr [gDouble_0058a068+0x1e8]
+            fcomp dword ptr [gMatchData_0058a250]
             fnstsw ax
             test ah, 0x40
             jne L0048aa32
@@ -5584,7 +5782,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadCar(const char* pCar_name, tDriver pDriver, t
             mov dword ptr [esp + 0x24], eax
             je L0048ab05
             lea esi, [esp + 0x74]
-            mov ecx, offset gNet_avail_names+0x704
+            mov ecx, offset gMatchFloat_00657c5c
     L0048aad0:
             mov al, byte ptr [ecx]
             mov dl, al
@@ -5613,7 +5811,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadCar(const char* pCar_name, tDriver pDriver, t
             cmp eax, edi
             jne L0048ab1c
     L0048ab05:
-            mov ecx, offset gNet_avail_names+0x6d8
+            mov ecx, offset gMatchFloat_00657c30
             call PDFatalError
             jmp L0048ab1c
     L0048ab11:
@@ -5641,7 +5839,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadCar(const char* pCar_name, tDriver pDriver, t
             mov ebx, dword ptr [esp + 0x10]
             mov ecx, ebx
             call GetAScalar
-            fdivr qword ptr [gDouble_0058a068+0x1f0]
+            fdivr qword ptr [gMatchDouble_0058a258]
             mov ecx, ebx
             fstp dword ptr [ebp + 0x1258]
             call GetAScalar
@@ -5733,17 +5931,17 @@ void C2_NAKED C2_HOOK_FASTCALL LoadCar(const char* pCar_name, tDriver pDriver, t
             fmulp st(2), st(0)
             fxch st(3)
             fmulp st(2), st(0)
-            fmul dword ptr [gDouble_0058a068+0x1e4]
+            fmul dword ptr [gMatchFloat_0058a24c]
             fxch st(2)
             fadd dword ptr [esp + 0x18]
             fxch st(1)
-            fmul dword ptr [gDouble_0058a068+0x1e4]
+            fmul dword ptr [gMatchFloat_0058a24c]
             fxch st(2)
             fstp dword ptr [esi + 0x10]
             fxch st(1)
             fstp dword ptr [esi + 0xc]
             fmul dword ptr [esi + 4]
-            fmul dword ptr [gDouble_0058a068+0x1e4]
+            fmul dword ptr [gMatchFloat_0058a24c]
             fstp dword ptr [esi + 8]
             call GetAScalar
             fstp dword ptr [edi + 0x12a4]
@@ -5776,7 +5974,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadCar(const char* pCar_name, tDriver pDriver, t
             mov ecx, ebx
             call GetThreeFloats
             fld dword ptr [esp + 0x14]
-            fcomp dword ptr [gDouble_0058a068+0x1e8]
+            fcomp dword ptr [gMatchData_0058a250]
             mov eax, dword ptr [esp + 0x18]
             mov edx, dword ptr [esp + 0x14]
             mov ecx, dword ptr [esp + 0x20]
@@ -5787,12 +5985,12 @@ void C2_NAKED C2_HOOK_FASTCALL LoadCar(const char* pCar_name, tDriver pDriver, t
             test ah, 0x40
             je L0048ae19
             fld dword ptr [esp + 0x18]
-            fcomp dword ptr [gDouble_0058a068+0x1e8]
+            fcomp dword ptr [gMatchData_0058a250]
             fnstsw ax
             test ah, 0x40
             je L0048ae19
             fld dword ptr [esp + 0x20]
-            fcomp dword ptr [gDouble_0058a068+0x1e8]
+            fcomp dword ptr [gMatchData_0058a250]
             fnstsw ax
             test ah, 0x40
             je L0048ae19
@@ -5894,7 +6092,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadCar(const char* pCar_name, tDriver pDriver, t
             xor ecx, ecx
     L0048aebb:
             fld dword ptr [esp + 0x2c]
-            fcomp dword ptr [gDouble_0058a068+0x1e8]
+            fcomp dword ptr [gMatchData_0058a250]
             fnstsw ax
             test ah, 0x41
             jne L0048aecd
@@ -5928,53 +6126,53 @@ void C2_NAKED C2_HOOK_FASTCALL LoadCar(const char* pCar_name, tDriver pDriver, t
             mov ecx, dword ptr [ebp + 8]
             call UpdateCollisionObject
             fld dword ptr [esp + 0x5c]
-            fmul qword ptr [gDouble_0058a068+0x1d8]
+            fmul qword ptr [gMatchDouble_0058a240]
             fld dword ptr [esp + 0x6c]
-            fmul qword ptr [gDouble_0058a068+0x1d8]
+            fmul qword ptr [gMatchDouble_0058a240]
             fxch st(1)
             fptan
             mov ecx, dword ptr [ebp + 8]
             fxch st(2)
             fptan
             fld dword ptr [ebp + 0x1258]
-            fmul qword ptr [gDouble_0058a068+0x228]
+            fmul qword ptr [gMatchDouble_0058a290]
             fld dword ptr [esp + 0x54]
             fxch st(1)
             fstp dword ptr [ebp + 0x1258]
             fld dword ptr [ecx + 0x28]
-            fsub qword ptr [gDouble_0058a068+0x230]
+            fsub qword ptr [gMatchDouble_0058a298]
             fld st(0)
-            fmul qword ptr [gDouble_0058a068+0x238]
+            fmul qword ptr [gMatchDouble_0058a2a0]
             fstp dword ptr [ebp + 0x1220]
             mov edx, dword ptr [ecx + 4]
             mov dword ptr [esp + 0x1c], edx
             fld dword ptr [esp + 0x1c]
             fld dword ptr [ebp + 0x12ac]
             fmul dword ptr [esp + 0x1c]
-            fmul dword ptr [gDouble_0058a068+0x240]
+            fmul dword ptr [gMatchFloat_0058a2a8]
             fstp dword ptr [ebp + 0x12ac]
             fld dword ptr [ebp + 0x12b0]
             fmul dword ptr [esp + 0x1c]
-            fmul dword ptr [gDouble_0058a068+0x240]
+            fmul dword ptr [gMatchFloat_0058a2a8]
             fstp dword ptr [ebp + 0x12b0]
             fld dword ptr [ecx + 0x14]
-            fmul dword ptr [gDouble_0058a068+0x244]
+            fmul dword ptr [gMatchFloat_0058a2ac]
             fstp dword ptr [ebp + 0x58]
             fld dword ptr [ecx + 0x18]
-            fmul dword ptr [gDouble_0058a068+0x244]
+            fmul dword ptr [gMatchFloat_0058a2ac]
             fstp dword ptr [ebp + 0x5c]
             fld dword ptr [ecx + 0x1c]
-            fmul dword ptr [gDouble_0058a068+0x244]
+            fmul dword ptr [gMatchFloat_0058a2ac]
             fstp dword ptr [ebp + 0x60]
             fild dword ptr [ebp + 0x1364]
             fstp dword ptr [esp + 0x24]
             fxch st(2)
-            fmul dword ptr [gDouble_0058a068+0x248]
+            fmul dword ptr [gMatchFloat_0058a2b0]
             fdiv dword ptr [esp + 0x24]
-            fmul dword ptr [gDouble_0058a068+0x24c]
+            fmul dword ptr [gMatchFloat_0058a2b4]
             fstp dword ptr [ebp + 0x1368]
             fxch st(4)
-            fmul qword ptr [gDouble_0058a068+0x250]
+            fmul qword ptr [gMatchDouble_0058a2b8]
             fxch st(5)
             fstp st(0)
             fmul dword ptr [esp + 0x44]
@@ -5983,7 +6181,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadCar(const char* pCar_name, tDriver pDriver, t
             fxch st(4)
             fmul dword ptr [esp + 0x24]
             fxch st(2)
-            fmul qword ptr [gDouble_0058a068+0x250]
+            fmul qword ptr [gMatchDouble_0058a2b8]
             fxch st(4)
             fst dword ptr [esp + 0x28]
             fxch st(2)
@@ -5996,14 +6194,14 @@ void C2_NAKED C2_HOOK_FASTCALL LoadCar(const char* pCar_name, tDriver pDriver, t
             fstp st(1)
             fstp st(0)
             fld dword ptr [esp + 0x38]
-            fmul qword ptr [gDouble_0058a068+0x1d8]
+            fmul qword ptr [gMatchDouble_0058a240]
             fld dword ptr [esp + 0x44]
             fxch st(1)
             fptan
             lea eax, [ebp + 0x122c]
             mov edx, 4
             fxch st(1)
-            fmul qword ptr [gDouble_0058a068+0x250]
+            fmul qword ptr [gMatchDouble_0058a2b8]
             fld dword ptr [ebp + 0x1244]
             fxch st(3)
             fstp dword ptr [esp + 0x24]
@@ -6024,7 +6222,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadCar(const char* pCar_name, tDriver pDriver, t
             fxch st(3)
             fdiv dword ptr [esp + 0x14]
             fxch st(3)
-            fmul dword ptr [gDouble_0058a068+0x258]
+            fmul dword ptr [gMatchFloat_0058a2c0]
             _emit 0xd9
         _emit 0x00
             fxch st(1)
@@ -6061,16 +6259,16 @@ void C2_NAKED C2_HOOK_FASTCALL LoadCar(const char* pCar_name, tDriver pDriver, t
             fstp st(0)
     L0048b120:
             fld dword ptr [eax - 8]
-            fmul qword ptr [gDouble_0058a068+0x238]
+            fmul qword ptr [gMatchDouble_0058a2a0]
             fstp dword ptr [eax - 8]
             fld dword ptr [eax - 4]
             lea ecx, [eax - 4]
             add eax, 0xc
-            fmul qword ptr [gDouble_0058a068+0x238]
+            fmul qword ptr [gMatchDouble_0058a2a0]
             _emit 0xd9
         _emit 0x19
             fld dword ptr [eax - 0xc]
-            fmul qword ptr [gDouble_0058a068+0x238]
+            fmul qword ptr [gMatchDouble_0058a2a0]
             fstp dword ptr [eax - 0xc]
             mov esi, dword ptr [ebp + 0x1220]
             dec edx
@@ -6236,12 +6434,12 @@ void C2_NAKED C2_HOOK_FASTCALL LoadCar(const char* pCar_name, tDriver pDriver, t
             lea edx, [esp + 0x374]
             mov ecx, esi
             call GetAString
-            mov edx, offset gNet_avail_names+0x5e8
+            mov edx, 0x657b40
             lea ecx, [esp + 0x374]
             call DRStricmp
             test eax, eax
             je L0048b442
-            mov edx, offset gNet_avail_names+0x6c4
+            mov edx, offset gMatchFloat_00657c1c
             lea ecx, [esp + 0x374]
             call DRStricmp
             test eax, eax
@@ -6254,7 +6452,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadCar(const char* pCar_name, tDriver pDriver, t
             call GetAVector3
             jmp L0048b42d
     L0048b37a:
-            mov edx, offset gNet_avail_names+0x6a8
+            mov edx, offset gMatchFloat_00657c00
             lea ecx, [esp + 0x374]
             call DRStricmp
             test eax, eax
@@ -6329,7 +6527,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadCar(const char* pCar_name, tDriver pDriver, t
             call InitPhysModCrushData
             mov ecx, dword ptr [esp + 0x4c]
             call ClosePackFileAndSetTiffLoading
-            push offset gNet_avail_names+0x698
+            push offset gMatchString_00657bf0
             call BrMaterialAllocate
             mov edi, dword ptr [esp + 0x98c]
             mov esi, eax
@@ -6813,7 +7011,7 @@ C2_NAKED br_material* C2_HOOK_FASTCALL GetSimpleMaterial(char* pName, tRendererS
             mov ebp, edx
             cmp byte ptr [esi], 0x4d
             jne L00488e46
-            push offset gPed_flags_0058f2e4+0x138
+            push 0x58f41c
             push esi
             call strtok
             movsx eax, byte ptr [esi + 1]
@@ -6839,7 +7037,7 @@ C2_NAKED br_material* C2_HOOK_FASTCALL GetSimpleMaterial(char* pName, tRendererS
             mov eax, dword ptr [esi*4 + gSimple_material_colours]
             test eax, eax
             jne L00488e37
-            mov ecx, offset gNet_avail_names+0x67c
+            mov ecx, offset gMatchFloat_00657bd4
             call PDFatalError
     L00488e37:
             mov ebx, dword ptr [esi*4 + gSimple_material_colours]
@@ -6852,7 +7050,7 @@ C2_NAKED br_material* C2_HOOK_FASTCALL GetSimpleMaterial(char* pName, tRendererS
             lea edx, [esp + 0x14]
             push ecx
             push edx
-            push offset gNet_avail_names+0x670
+            push offset gMatchString_00657bc8
             push esi
             call sscanf
             mov ebx, dword ptr [esp + 0x24]
@@ -6880,7 +7078,7 @@ C2_NAKED br_material* C2_HOOK_FASTCALL GetSimpleMaterial(char* pName, tRendererS
     L00488e99:
             cmp edi, 0x20
             jge L00488ee4
-            push offset gNet_avail_names+0x668
+            push offset gMatchString_00657bc0
             call BrMaterialAllocate
             lea esi, [edi*4 + gSimple_materials]
             add esp, 4
@@ -7330,7 +7528,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReadNonCarMechanicsData(FILE* pF, tNon_car_spec* 
             mov edx, dword ptr [ebp]
             lea eax, [esp + 0x174]
             push edx
-            push offset gPed_flags_0058f2e4+0x134
+            push 0x58f418
             push eax
             call sprintf
             add esp, 0xc
@@ -7372,16 +7570,16 @@ void C2_NAKED C2_HOOK_FASTCALL ReadNonCarMechanicsData(FILE* pF, tNon_car_spec* 
             mov ecx, ebx
             call GetAScalar
             fst dword ptr [esp + 0x14]
-            fmul qword ptr [gDouble_0058a068+0x1c8]
+            fmul qword ptr [gMatchDouble_0058a230]
             call _ftol
             and eax, 0xffff
             mov ecx, ebx
             mov dword ptr [esp + 0x20], eax
             fild dword ptr [esp + 0x20]
             fld dword ptr [esp + 0x14]
-            fmul qword ptr [gDouble_0058a068+0x1d8]
+            fmul qword ptr [gMatchDouble_0058a240]
             fxch st(1)
-            fmul qword ptr [gDouble_0058a068+0x1d0]
+            fmul qword ptr [gMatchDouble_0058a238]
             fcos
             fld st(1)
             fmul st(0), st(2)
@@ -7395,7 +7593,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReadNonCarMechanicsData(FILE* pF, tNon_car_spec* 
             fld dword ptr [esp + 0x18]
             fxch st(2)
             fst dword ptr [esp + 0x20]
-            fmul dword ptr [gDouble_0058a068+0x1e0]
+            fmul dword ptr [gMatchFloat_0058a248]
             fld dword ptr [esp + 0x1c]
             fxch st(2)
             fmul dword ptr [esp + 0x10]
@@ -7421,11 +7619,11 @@ void C2_NAKED C2_HOOK_FASTCALL ReadNonCarMechanicsData(FILE* pF, tNon_car_spec* 
             fxch st(2)
             fadd dword ptr [esp + 0x10]
             fxch st(1)
-            fmul dword ptr [gDouble_0058a068+0x1e4]
+            fmul dword ptr [gMatchFloat_0058a24c]
             fxch st(2)
-            fmul dword ptr [gDouble_0058a068+0x1e4]
+            fmul dword ptr [gMatchFloat_0058a24c]
             fxch st(1)
-            fmul dword ptr [gDouble_0058a068+0x1e4]
+            fmul dword ptr [gMatchFloat_0058a24c]
             fxch st(3)
             fst dword ptr [esp + 0x10]
             fstp dword ptr [ebp + 0xd4]
@@ -7439,7 +7637,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReadNonCarMechanicsData(FILE* pF, tNon_car_spec* 
             mov ecx, dword ptr [ebp + 8]
             add esp, 8
             fld dword ptr [esp + 0x14]
-            fcomp dword ptr [gDouble_0058a068+0x1e8]
+            fcomp dword ptr [gMatchData_0058a250]
             mov dword ptr [ecx + 0x20], eax
             mov edx, dword ptr [ebp + 8]
             mov ecx, 6
@@ -7551,17 +7749,17 @@ void C2_NAKED C2_HOOK_FASTCALL ReadNonCarMechanicsData(FILE* pF, tNon_car_spec* 
             mov ecx, ebx
             call GetAScalar
             fst dword ptr [esp + 0x14]
-            fmul qword ptr [gDouble_0058a068+0x1c8]
+            fmul qword ptr [gMatchDouble_0058a230]
             call _ftol
             and eax, 0xffff
             mov ecx, ebx
             mov dword ptr [esp + 0x28], eax
             fild dword ptr [esp + 0x28]
-            fmul qword ptr [gDouble_0058a068+0x1d0]
+            fmul qword ptr [gMatchDouble_0058a238]
             fcos
             fstp dword ptr [ebp + 0xd8]
             fld dword ptr [esp + 0x14]
-            fmul qword ptr [gDouble_0058a068+0x1d8]
+            fmul qword ptr [gMatchDouble_0058a240]
             fld st(0)
             fmul st(0), st(1)
             fstp dword ptr [ebp + 0x18]
@@ -7570,7 +7768,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReadNonCarMechanicsData(FILE* pF, tNon_car_spec* 
             fld dword ptr [esp + 0x10]
             fld dword ptr [esp + 0x18]
             fxch st(2)
-            fmul dword ptr [gDouble_0058a068+0x1e0]
+            fmul dword ptr [gMatchFloat_0058a248]
             fld dword ptr [esp + 0x1c]
             fxch st(2)
             fmul dword ptr [esp + 0x10]
@@ -7595,7 +7793,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReadNonCarMechanicsData(FILE* pF, tNon_car_spec* 
             fxch st(4)
             fadd dword ptr [esp + 0x14]
             fxch st(1)
-            fcomp dword ptr [gDouble_0058a068+0x1e8]
+            fcomp dword ptr [gMatchData_0058a250]
             fxch st(3)
             fstp dword ptr [esp + 0x10]
             mov ecx, dword ptr [esp + 0x18]
@@ -7603,11 +7801,11 @@ void C2_NAKED C2_HOOK_FASTCALL ReadNonCarMechanicsData(FILE* pF, tNon_car_spec* 
             fxch st(1)
             fadd dword ptr [esp + 0x10]
             fxch st(2)
-            fmul dword ptr [gDouble_0058a068+0x1e4]
+            fmul dword ptr [gMatchFloat_0058a24c]
             fxch st(1)
-            fmul dword ptr [gDouble_0058a068+0x1e4]
+            fmul dword ptr [gMatchFloat_0058a24c]
             fxch st(2)
-            fmul dword ptr [gDouble_0058a068+0x1e4]
+            fmul dword ptr [gMatchFloat_0058a24c]
             fxch st(2)
             fstp dword ptr [ebp + 0xec]
             fxch st(1)
@@ -7700,12 +7898,12 @@ void C2_NAKED C2_HOOK_FASTCALL ReadNonCarMechanicsData(FILE* pF, tNon_car_spec* 
             lea edx, [esp + 0x74]
             mov ecx, ebx
             call GetAString
-            mov edx, offset gNet_avail_names+0x5e8
+            mov edx, 0x657b40
             lea ecx, [esp + 0x74]
             call DRStricmp
             test eax, eax
             je L004881f2
-            mov edx, offset gNet_avail_names+0x5d8
+            mov edx, offset gMatchString_00657b30
             lea ecx, [esp + 0x74]
             call DRStricmp
             test eax, eax
@@ -7713,11 +7911,11 @@ void C2_NAKED C2_HOOK_FASTCALL ReadNonCarMechanicsData(FILE* pF, tNon_car_spec* 
             mov ecx, ebx
             call GetAScalar
             mov ecx, dword ptr [ebp + 8]
-            fsub dword ptr [gDouble_0058a068+0x1bc]
+            fsub dword ptr [gMatchFloat_0058a224]
             fstp dword ptr [ecx + 0x60]
             jmp L004884b9
     L00488501:
-            mov edx, offset gNet_avail_names+0x5c8
+            mov edx, offset gMatchString_00657b20
             lea ecx, [esp + 0x74]
             call DRStricmp
             test eax, eax
@@ -7725,11 +7923,11 @@ void C2_NAKED C2_HOOK_FASTCALL ReadNonCarMechanicsData(FILE* pF, tNon_car_spec* 
             mov ecx, ebx
             call GetAScalar
             mov edx, dword ptr [ebp + 8]
-            fsub dword ptr [gDouble_0058a068+0x1bc]
+            fsub dword ptr [gMatchFloat_0058a224]
             fstp dword ptr [edx + 0x64]
             jmp L004884b9
     L00488528:
-            mov edx, offset gNet_avail_names+0x5c0
+            mov edx, offset gMatchString_00657b18
             lea ecx, [esp + 0x74]
             call DRStricmp
             test eax, eax
@@ -7739,11 +7937,11 @@ void C2_NAKED C2_HOOK_FASTCALL ReadNonCarMechanicsData(FILE* pF, tNon_car_spec* 
             fstp dword ptr [ebp + 0xdc]
             mov ecx, ebx
             call GetAScalar
-            fmul dword ptr [gDouble_0058a068+0x1e0]
+            fmul dword ptr [gMatchFloat_0058a248]
             fstp dword ptr [ebp + 0xe0]
             jmp L004884b9
     L0048855f:
-            mov edx, offset gNet_avail_names+0x5ac
+            mov edx, offset gMatchFloat_00657b04
             lea ecx, [esp + 0x74]
             call DRStricmp
             test eax, eax
@@ -7783,7 +7981,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReadNonCarMechanicsData(FILE* pF, tNon_car_spec* 
             mov dword ptr [edx], 3
             jmp L004884b9
     L004885ff:
-            mov edx, offset gNet_avail_names+0x598
+            mov edx, offset gMatchFloat_00657af0
             lea ecx, [esp + 0x74]
             call DRStricmp
             test eax, eax
@@ -7830,7 +8028,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReadNonCarMechanicsData(FILE* pF, tNon_car_spec* 
             mov dword ptr [edx], 3
             jmp L004884b9
     L004886b4:
-            mov edx, offset gNet_avail_names+0x580
+            mov edx, offset gMatchFloat_00657ad8
             lea ecx, [esp + 0x74]
             call DRStricmp
             test eax, eax
@@ -7950,11 +8148,11 @@ void C2_NAKED C2_HOOK_FASTCALL ReadNonCarMechanicsData(FILE* pF, tNon_car_spec* 
             faddp st(1), st(0)
             fsqrt
             fstp st(1)
-            fcom dword ptr [gDouble_0058a068+0x1ec]
+            fcom dword ptr [gMatchFloat_0058a254]
             fnstsw ax
             test ah, 0x41
             jne L00488865
-            fdivr qword ptr [gDouble_0058a068+0x1f0]
+            fdivr qword ptr [gMatchDouble_0058a258]
             fld dword ptr [ecx + 8]
             fld dword ptr [ecx + 4]
             fld st(2)
@@ -8046,7 +8244,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReadNonCarMechanicsData(FILE* pF, tNon_car_spec* 
             mov eax, dword ptr [ebp + 0xf4]
             fld dword ptr [eax + 8]
             fchs
-            fmul qword ptr [gDouble_0058a068+0x1f8]
+            fmul qword ptr [gMatchDouble_0058a260]
             fldl2e
             fmulp st(1), st(0)
             fld st(0)
@@ -8062,7 +8260,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReadNonCarMechanicsData(FILE* pF, tNon_car_spec* 
             mov eax, dword ptr [ebp + 0xf4]
             fld dword ptr [eax + 0xc]
             fchs
-            fmul qword ptr [gDouble_0058a068+0x1f8]
+            fmul qword ptr [gMatchDouble_0058a260]
             fldl2e
             fmulp st(1), st(0)
             fld st(0)
@@ -8077,7 +8275,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReadNonCarMechanicsData(FILE* pF, tNon_car_spec* 
             fstp dword ptr [eax + 0xc]
             jmp L004884b9
     L004889c4:
-            mov edx, offset gNet_avail_names+0x570
+            mov edx, offset gMatchString_00657ac8
             lea ecx, [esp + 0x74]
             call DRStricmp
             test eax, eax
@@ -8085,7 +8283,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReadNonCarMechanicsData(FILE* pF, tNon_car_spec* 
             or dword ptr [ebp + 0x100], 0x20000
             jmp L004884b9
     L004889e5:
-            mov edx, offset gNet_avail_names+0x55c
+            mov edx, offset gMatchFloat_00657ab4
             lea ecx, [esp + 0x74]
             call DRStricmp
             test eax, eax
@@ -8093,7 +8291,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReadNonCarMechanicsData(FILE* pF, tNon_car_spec* 
             or dword ptr [ebp + 0x100], 0x40000
             jmp L004884b9
     L00488a06:
-            mov edx, offset gNet_avail_names+0x548
+            mov edx, offset gMatchFloat_00657aa0
             lea ecx, [esp + 0x74]
             call DRStricmp
             test eax, eax
@@ -8103,7 +8301,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReadNonCarMechanicsData(FILE* pF, tNon_car_spec* 
             mov byte ptr [ebp + 0xfd], al
             jmp L004884b9
     L00488a2a:
-            mov edx, offset gNet_avail_names+0x53c
+            mov edx, offset gMatchString_00657a94
             lea ecx, [esp + 0x74]
             call DRStricmp
             test eax, eax
@@ -8112,7 +8310,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReadNonCarMechanicsData(FILE* pF, tNon_car_spec* 
             mov byte ptr [edx + 0x4d4], 1
             jmp L004884b9
     L00488a4b:
-            mov edx, offset gNet_avail_names+0x530
+            mov edx, offset gMatchString_00657a88
             lea ecx, [esp + 0x74]
             call DRStricmp
             test eax, eax
@@ -8123,7 +8321,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReadNonCarMechanicsData(FILE* pF, tNon_car_spec* 
             mov dword ptr [eax + 0x19c], ecx
             jmp L004884b9
     L00488a74:
-            mov edx, offset gNet_avail_names+0x518
+            mov edx, offset gMatchFloat_00657a70
             lea ecx, [esp + 0x74]
             call DRStricmp
             test eax, eax
@@ -8134,7 +8332,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReadNonCarMechanicsData(FILE* pF, tNon_car_spec* 
             mov dword ptr [eax + 0x19c], ecx
             jmp L004884b9
     L00488a9d:
-            mov edx, offset gNet_avail_names+0x508
+            mov edx, offset gMatchString_00657a60
             lea ecx, [esp + 0x74]
             call DRStricmp
             test eax, eax
@@ -8142,7 +8340,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReadNonCarMechanicsData(FILE* pF, tNon_car_spec* 
             or dword ptr [ebp + 0x100], 0x80000
             jmp L004884b9
     L00488abe:
-            mov edx, offset gNet_avail_names+0x500
+            mov edx, offset gMatchString_00657a58
             lea ecx, [esp + 0x74]
             call DRStricmp
             test eax, eax
@@ -8154,6 +8352,21 @@ void C2_NAKED C2_HOOK_FASTCALL ReadNonCarMechanicsData(FILE* pF, tNon_car_spec* 
             call FatalError
             add esp, 4
             jmp L004884b9
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -8335,9 +8548,14 @@ void C2_NAKED C2_HOOK_FASTCALL LoadDroneActorsModels(tDrone_spec* pDrone) {
             add esp, 4
             mov dword ptr [ebx + 0xec], esi
     L004501e1:
-            mov ecx, dword ptr [gDefault_drone_direction+0x5f0]
-            mov dx, word ptr [gDefault_drone_direction+0x5f4]
-            mov al, byte ptr [gDefault_drone_direction+0x5f6]
+            _emit 0x8b
+        _emit 0x0d
+        _emit 0xb0
+        _emit 0x4d
+        _emit 0x59
+        _emit 0x00
+            mov dx, word ptr [gMatchData_00594db4]
+            mov al, byte ptr [gMatchFloat_00594db6]
             mov dword ptr [gCurrent_load_directory], ecx
             mov word ptr [gCurrent_load_directory+0x4], dx
             mov byte ptr [gCurrent_load_directory+0x6], al
@@ -8382,7 +8600,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadDroneActorsModels(tDrone_spec* pDrone) {
             mov eax, dword ptr [ecx + 0x70]
             test eax, eax
             jge L004503d6
-            mov edx, offset gDefault_drone_direction+0x73c
+            mov edx, offset gMatchFloat_00594efc
             xor ecx, ecx
             call PrintMemoryDump
             lea edx, [esp + 0x4c]
@@ -8477,14 +8695,14 @@ void C2_NAKED C2_HOOK_FASTCALL LoadDroneActorsModels(tDrone_spec* pDrone) {
             push eax
             push eax
             lea eax, [esp + 0x154]
-            push offset gDefault_drone_direction+0x710
+            push offset gMatchFloat_00594ed0
             push eax
             call sprintf
             add esp, 0x10
             lea ecx, [esp + 0x14c]
             call PDFatalError
     L004503ca:
-            mov edx, offset gDefault_drone_direction+0x6ec
+            mov edx, offset gMatchFloat_00594eac
             xor ecx, ecx
             call PrintMemoryDump
     L004503d6:
@@ -8502,7 +8720,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadDroneActorsModels(tDrone_spec* pDrone) {
             add esp, 8
             lea eax, [esp + 0x14c]
             push edx
-            push offset gDefault_drone_direction+0x6e4
+            push offset gMatchString_00594ea4
             push eax
             call sprintf
             mov edx, dword ptr [ebx + 0xec]
@@ -8525,7 +8743,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadDroneActorsModels(tDrone_spec* pDrone) {
             push ecx
             lea ecx, [esp + 0x250]
             call PathCat
-            mov edi, offset gDefault_drone_direction+0x6dc
+            mov edi, 0x594e9c
             or ecx, 0xffffffff
             xor eax, eax
             lea edx, [esp + 0x24c]
@@ -8554,7 +8772,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadDroneActorsModels(tDrone_spec* pDrone) {
             mov ecx, dword ptr [ebx + 4]
             lea edx, [esp + 0x14c]
             push ecx
-            push offset gDefault_drone_direction+0x6b4
+            push offset gMatchFloat_00594e74
             push edx
             call sprintf
             add esp, 0xc
@@ -8593,13 +8811,13 @@ void C2_NAKED C2_HOOK_FASTCALL LoadDroneActorsModels(tDrone_spec* pDrone) {
             _emit 0xd8
         _emit 0x20
             fxch st(1)
-            fmul qword ptr [gDrone_select_max_distance_squared+0x84]
+            fmul qword ptr [gMatchDouble_00589e58]
             _emit 0xd9
         _emit 0x00
             fxch st(1)
             fmulp st(2), st(0)
             fld dword ptr [ecx + 0x4c]
-            fmul qword ptr [gDrone_select_max_distance_squared+0x84]
+            fmul qword ptr [gMatchDouble_00589e58]
             fxch st(1)
             faddp st(2), st(0)
             fxch st(1)
@@ -8610,7 +8828,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadDroneActorsModels(tDrone_spec* pDrone) {
             fxch st(2)
             fmulp st(1), st(0)
             fxch st(1)
-            fmul qword ptr [gDrone_select_max_distance_squared+0x84]
+            fmul qword ptr [gMatchDouble_00589e58]
             fxch st(1)
             fadd dword ptr [eax + 4]
             fld dword ptr [ecx + 0x48]
@@ -8619,14 +8837,14 @@ void C2_NAKED C2_HOOK_FASTCALL LoadDroneActorsModels(tDrone_spec* pDrone) {
             fld dword ptr [eax + 0x14]
             fsub dword ptr [eax + 8]
             fxch st(1)
-            fmul qword ptr [gDrone_select_max_distance_squared+0x84]
+            fmul qword ptr [gMatchDouble_00589e58]
             fxch st(2)
             fmulp st(1), st(0)
             fld dword ptr [ecx + 0x50]
             fxch st(1)
             fadd dword ptr [eax + 8]
             fxch st(1)
-            fmul qword ptr [gDrone_select_max_distance_squared+0x84]
+            fmul qword ptr [gMatchDouble_00589e58]
             fld dword ptr [ecx + 0x3c]
             fxch st(2)
             fstp dword ptr [ecx + 0x5c]
@@ -8637,7 +8855,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadDroneActorsModels(tDrone_spec* pDrone) {
             fxch st(4)
             fmulp st(1), st(0)
             fxch st(2)
-            fmul qword ptr [gDrone_select_max_distance_squared+0x84]
+            fmul qword ptr [gMatchDouble_00589e58]
             fxch st(2)
             fsubp st(3), st(0)
             fxch st(2)
@@ -8665,6 +8883,16 @@ void C2_NAKED C2_HOOK_FASTCALL LoadDroneActorsModels(tDrone_spec* pDrone) {
             pop ebx
             add esp, 0x33c
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -8888,7 +9116,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadFunksAndGrooves(tDrone_spec* pDrone, FILE* pF
             lea edx, [esp + 0x118]
             mov ecx, edi
             call GetALineAndDontArgue
-            mov esi, offset gDefault_drone_direction+0x78c
+            mov esi, offset gMatchFloat_00594f4c
             lea eax, [esp + 0x118]
     L004506bb:
             mov dl, byte ptr [eax]
@@ -8939,7 +9167,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadFunksAndGrooves(tDrone_spec* pDrone, FILE* pF
             lea edx, [esp + 0x18]
             mov ecx, edi
             call GetALineAndDontArgue
-            mov esi, offset gDefault_drone_direction+0x770
+            mov esi, offset gMatchFloat_00594f30
             lea eax, [esp + 0x18]
     L0045073e:
             mov dl, byte ptr [eax]
@@ -9021,7 +9249,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadFunksAndGrooves(tDrone_spec* pDrone, FILE* pF
             je L00450b1d
             add edi, 4
             inc ebp
-            cmp edi, offset gGroove_funk_type_names+0xc
+            cmp edi, offset gMatchData_0059478c
             jb L004507c2
             or eax, 0xffffffff
     L00450808:
@@ -9162,7 +9390,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadFunksAndGrooves(tDrone_spec* pDrone, FILE* pF
             je L00450979
             add ebp, 4
             inc esi
-            cmp ebp, offset gAxis_names+0xc
+            cmp ebp, offset gMatchData_0059479c
             jb L00450936
             or esi, 0xffffffff
     L00450979:
@@ -9293,7 +9521,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadFunksAndGrooves(tDrone_spec* pDrone, FILE* pF
             or esi, edx
             mov dword ptr [ebx + 0xc], esi
             call GetAScalar
-            fmul qword ptr [gDrone_select_max_distance_squared+0x2c]
+            fmul qword ptr [gMatchDouble_00589e00]
             fstp dword ptr [ebx + 8]
     L00450ab8:
             mov eax, dword ptr [esp + 0x10]
@@ -9304,7 +9532,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadFunksAndGrooves(tDrone_spec* pDrone, FILE* pF
             mov dword ptr [eax], ecx
             mov ecx, dword ptr [esp + 0x14]
             call GetALineAndDontArgue
-            mov esi, offset gDefault_drone_direction+0x770
+            mov esi, offset gMatchFloat_00594f30
             lea eax, [esp + 0x18]
     L00450add:
             mov dl, byte ptr [eax]
@@ -9342,6 +9570,18 @@ void C2_NAKED C2_HOOK_FASTCALL LoadFunksAndGrooves(tDrone_spec* pDrone, FILE* pF
     L00450b1d:
             mov eax, ebp
             jmp L00450808
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -9499,7 +9739,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadPerRaceDroneStuff(void) {
     L0044fdfe:
             mov eax, dword ptr [gDrone_specs]
             mov edi, offset gApplication_path
-            push offset gDefault_drone_direction+0x5f0
+            push 0x594db0
             mov eax, dword ptr [eax + ecx + 4]
             mov edx, dword ptr [eax + 0x6c]
             inc edx
@@ -9544,7 +9784,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadPerRaceDroneStuff(void) {
             mov eax, ecx
             mov esi, edi
             mov edi, edx
-            push offset gDefault_drone_direction+0x5f0
+            push 0x594db0
             shr ecx, 2
             rep movsd
             mov ecx, eax
@@ -9561,7 +9801,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadPerRaceDroneStuff(void) {
             lea ecx, [esp + 0x1c]
             push ebp
             call PathCat
-            mov edi, offset gDefault_drone_direction+0x5f8
+            mov edi, 0x594db8
             or ecx, 0xffffffff
             xor eax, eax
             lea edx, [esp + 0x1c]
@@ -9579,7 +9819,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadPerRaceDroneStuff(void) {
             rep movsd
             mov ecx, ebp
             and ecx, 3
-            mov edx, offset gNext_crush_actor_id+0x180
+            mov edx, 0x58f9e0
             rep movsb
             lea ecx, [esp + 0x1c]
             call DRfopen
@@ -9600,7 +9840,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadPerRaceDroneStuff(void) {
             lea edx, [esp + 0x21c]
             mov ecx, edi
             call GetALineAndDontArgue
-            mov esi, offset gDefault_drone_direction+0x698
+            mov esi, offset gMatchFloat_00594e58
             lea eax, [esp + 0x21c]
     L0044ff56:
             mov dl, byte ptr [eax]
@@ -9760,12 +10000,12 @@ void C2_NAKED C2_HOOK_FASTCALL LoadPerRaceDroneStuff(void) {
             add esp, 0x30c
             ret
     L00450108:
-            push offset gDefault_drone_direction+0x66c
+            push offset gMatchFloat_00594e2c
             call DoNotDprintf
             mov eax, dword ptr [ebx + 4]
             add esp, 4
             push eax
-            push offset gDefault_drone_direction+0x634
+            push offset gMatchFloat_00594df4
             call DoNotDprintf
             lea esi, [ebx + 0x118]
             add esp, 8
@@ -9776,6 +10016,15 @@ void C2_NAKED C2_HOOK_FASTCALL LoadPerRaceDroneStuff(void) {
             je L0044ffa3
             mov byte ptr [ebx + 0x46], 1
             jmp L0044ffa3
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }

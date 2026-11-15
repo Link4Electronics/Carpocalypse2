@@ -133,7 +133,13 @@ br_boolean C2_NAKED C2_HOOK_CDECL BrIsAlpha(int c) {
     return isalpha(c);
 #else
     __asm {
-            cmp dword ptr [gQuickTime_call_component_with_storage+0x5a0], 1
+            _emit 0x83
+        _emit 0x3d
+        _emit 0x5c
+        _emit 0x3c
+        _emit 0x67
+        _emit 0x00
+        _emit 0x01
             jle L0053f2ec
             mov eax, dword ptr [esp + 4]
             push 0x103
@@ -143,7 +149,12 @@ br_boolean C2_NAKED C2_HOOK_CDECL BrIsAlpha(int c) {
             ret
     L0053f2ec:
             mov ecx, dword ptr [esp + 4]
-            mov edx, dword ptr [gQuickTime_call_component_with_storage+0x394]
+            _emit 0x8b
+        _emit 0x15
+        _emit 0x50
+        _emit 0x3a
+        _emit 0x67
+        _emit 0x00
             mov ax, word ptr [edx + ecx*2]
             and eax, 0x103
             ret
@@ -158,7 +169,13 @@ br_boolean C2_NAKED C2_HOOK_CDECL BrIsDigit(int c) {
     return isdigit(c);
 #else
     __asm {
-            cmp dword ptr [gQuickTime_call_component_with_storage+0x5a0], 1
+            _emit 0x83
+        _emit 0x3d
+        _emit 0x5c
+        _emit 0x3c
+        _emit 0x67
+        _emit 0x00
+        _emit 0x01
             jle L0053f319
             mov eax, dword ptr [esp + 4]
             push 4
@@ -168,10 +185,21 @@ br_boolean C2_NAKED C2_HOOK_CDECL BrIsDigit(int c) {
             ret
     L0053f319:
             mov ecx, dword ptr [esp + 4]
-            mov edx, dword ptr [gQuickTime_call_component_with_storage+0x394]
+            _emit 0x8b
+        _emit 0x15
+        _emit 0x50
+        _emit 0x3a
+        _emit 0x67
+        _emit 0x00
             mov al, byte ptr [edx + ecx*2]
             and eax, 4
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -183,7 +211,13 @@ br_boolean C2_NAKED C2_HOOK_CDECL BrIsSpace(int c) {
     return isspace(c);
 #else
     __asm {
-            cmp dword ptr [gQuickTime_call_component_with_storage+0x5a0], 1
+            _emit 0x83
+        _emit 0x3d
+        _emit 0x5c
+        _emit 0x3c
+        _emit 0x67
+        _emit 0x00
+        _emit 0x01
             jle L0053f349
             mov eax, dword ptr [esp + 4]
             push 8
@@ -193,10 +227,21 @@ br_boolean C2_NAKED C2_HOOK_CDECL BrIsSpace(int c) {
             ret
     L0053f349:
             mov ecx, dword ptr [esp + 4]
-            mov edx, dword ptr [gQuickTime_call_component_with_storage+0x394]
+            _emit 0x8b
+        _emit 0x15
+        _emit 0x50
+        _emit 0x3a
+        _emit 0x67
+        _emit 0x00
             mov al, byte ptr [edx + ecx*2]
             and eax, 8
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -208,7 +253,13 @@ br_boolean C2_NAKED C2_HOOK_CDECL BrIsPrint(int c) {
     return isprint(c);
 #else
     __asm {
-            cmp dword ptr [gQuickTime_call_component_with_storage+0x5a0], 1
+            _emit 0x83
+        _emit 0x3d
+        _emit 0x5c
+        _emit 0x3c
+        _emit 0x67
+        _emit 0x00
+        _emit 0x01
             jle L0053f37c
             mov eax, dword ptr [esp + 4]
             push 0x157
@@ -218,7 +269,12 @@ br_boolean C2_NAKED C2_HOOK_CDECL BrIsPrint(int c) {
             ret
     L0053f37c:
             mov ecx, dword ptr [esp + 4]
-            mov edx, dword ptr [gQuickTime_call_component_with_storage+0x394]
+            _emit 0x8b
+        _emit 0x15
+        _emit 0x50
+        _emit 0x3a
+        _emit 0x67
+        _emit 0x00
             mov ax, word ptr [edx + ecx*2]
             and eax, 0x157
             ret

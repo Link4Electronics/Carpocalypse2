@@ -926,6 +926,226 @@ extern void C2_HOOK_FASTCALL InitialiseExternalCamera(void);
 extern int C2_HOOK_FASTCALL PDKeyDown(int pKey_index);
 extern void C2_HOOK_FASTCALL UpdateChildTransforms(tPhysics_object* pObject, br_matrix34* pParent_matrix);
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gData_006792fc[];
+extern char gData_0067933c[];
+extern char gData_00679340[];
+extern char gDouble_00589468[];
+extern char gDouble_005894a0[];
+extern char gDouble_005894b0[];
+extern char gDouble_005894b8[];
+extern char gDouble_005894c8[];
+extern char gDouble_005894d0[];
+extern char gDouble_005894d8[];
+extern char gDouble_005894e8[];
+extern char gDouble_00589500[];
+extern char gDouble_00589580[];
+extern char gDouble_005895b8[];
+extern char gDouble_005895d8[];
+extern char gDouble_005895e0[];
+extern char gDouble_00589600[];
+extern char gDouble_00589608[];
+extern char gDouble_00589610[];
+extern char gDouble_00589648[];
+extern char gDouble_00589658[];
+extern char gDouble_00589670[];
+extern char gDouble_00589678[];
+extern char gDouble_00589680[];
+extern char gDouble_005896c0[];
+extern char gDouble_005896e0[];
+extern char gDouble_005896f8[];
+extern char gDouble_00589700[];
+extern char gDouble_00589708[];
+extern char gDouble_00589710[];
+extern char gDouble_00589718[];
+extern char gDouble_00589720[];
+extern char gDouble_00589730[];
+extern char gDouble_00589748[];
+extern char gDouble_00589750[];
+extern char gDouble_00589758[];
+extern char gDouble_00589768[];
+extern char gDouble_00589770[];
+extern char gDouble_00589778[];
+extern char gDouble_00589780[];
+extern char gDouble_00589890[];
+extern char gDouble_005898b0[];
+extern char gDouble_005898b8[];
+extern char gDouble_005898c0[];
+extern char gDouble_005898c8[];
+extern char gDouble_005898d8[];
+extern char gDouble_005898e0[];
+extern char gDouble_005898e8[];
+extern char gFloat_00589420[];
+extern char gFloat_00589470[];
+extern char gFloat_00589480[];
+extern char gFloat_00589484[];
+extern char gFloat_00589488[];
+extern char gFloat_00589494[];
+extern char gFloat_00589498[];
+extern char gFloat_0058949c[];
+extern char gFloat_005894c0[];
+extern char gFloat_005894e0[];
+extern char gFloat_005894f8[];
+extern char gFloat_005894fc[];
+extern char gFloat_00589514[];
+extern char gFloat_00589518[];
+extern char gFloat_0058951c[];
+extern char gFloat_00589520[];
+extern char gFloat_00589524[];
+extern char gFloat_00589570[];
+extern char gFloat_00589574[];
+extern char gFloat_00589578[];
+extern char gFloat_0058957c[];
+extern char gFloat_00589588[];
+extern char gFloat_00589590[];
+extern char gFloat_00589594[];
+extern char gFloat_00589598[];
+extern char gFloat_0058959c[];
+extern char gFloat_005895a0[];
+extern char gFloat_005895b4[];
+extern char gFloat_005895c8[];
+extern char gFloat_005895cc[];
+extern char gFloat_005895d4[];
+extern char gFloat_005895fc[];
+extern char gFloat_00589620[];
+extern char gFloat_00589624[];
+extern char gFloat_00589654[];
+extern char gFloat_00589660[];
+extern char gFloat_00589664[];
+extern char gFloat_00589690[];
+extern char gFloat_005896b0[];
+extern char gFloat_005896c8[];
+extern char gFloat_005896cc[];
+extern char gFloat_005896e8[];
+extern char gFloat_005896ec[];
+extern char gFloat_005896f0[];
+extern char gFloat_00589764[];
+extern char gFloat_0058978c[];
+extern char gFloat_00589804[];
+extern char gFloat_00589898[];
+extern char gFloat_005898a0[];
+extern char gFloat_005898a4[];
+extern char gFloat_005898a8[];
+extern char gFloat_005898ac[];
+extern char gFloat_005898d0[];
+extern char gFloat_005898f0[];
+extern char gFloat_005898f4[];
+extern char gFloat_005898f8[];
+extern char gFloat_005898fc[];
+extern char gFloat_00589900[];
+extern char gFloat_00589904[];
+extern char gFloat_00589938[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchData_006792fc[];
+extern char gMatchData_0067933c[];
+extern char gMatchData_00679340[];
+extern char gMatchDouble_00589468[];
+extern char gMatchDouble_005894a0[];
+extern char gMatchDouble_005894b0[];
+extern char gMatchDouble_005894b8[];
+extern char gMatchDouble_005894c8[];
+extern char gMatchDouble_005894d0[];
+extern char gMatchDouble_005894d8[];
+extern char gMatchDouble_005894e8[];
+extern char gMatchDouble_00589500[];
+extern char gMatchDouble_00589580[];
+extern char gMatchDouble_005895b8[];
+extern char gMatchDouble_005895d8[];
+extern char gMatchDouble_005895e0[];
+extern char gMatchDouble_00589600[];
+extern char gMatchDouble_00589608[];
+extern char gMatchDouble_00589610[];
+extern char gMatchDouble_00589648[];
+extern char gMatchDouble_00589658[];
+extern char gMatchDouble_00589670[];
+extern char gMatchDouble_00589678[];
+extern char gMatchDouble_00589680[];
+extern char gMatchDouble_005896c0[];
+extern char gMatchDouble_005896e0[];
+extern char gMatchDouble_005896f8[];
+extern char gMatchDouble_00589700[];
+extern char gMatchDouble_00589708[];
+extern char gMatchDouble_00589710[];
+extern char gMatchDouble_00589718[];
+extern char gMatchDouble_00589720[];
+extern char gMatchDouble_00589730[];
+extern char gMatchDouble_00589748[];
+extern char gMatchDouble_00589750[];
+extern char gMatchDouble_00589758[];
+extern char gMatchDouble_00589768[];
+extern char gMatchDouble_00589770[];
+extern char gMatchDouble_00589778[];
+extern char gMatchDouble_00589780[];
+extern char gMatchDouble_00589890[];
+extern char gMatchDouble_005898b0[];
+extern char gMatchDouble_005898b8[];
+extern char gMatchDouble_005898c0[];
+extern char gMatchDouble_005898c8[];
+extern char gMatchDouble_005898d8[];
+extern char gMatchDouble_005898e0[];
+extern char gMatchDouble_005898e8[];
+extern char gMatchFloat_00589420[];
+extern char gMatchFloat_00589470[];
+extern char gMatchFloat_00589480[];
+extern char gMatchFloat_00589484[];
+extern char gMatchFloat_00589488[];
+extern char gMatchFloat_00589494[];
+extern char gMatchFloat_00589498[];
+extern char gMatchFloat_0058949c[];
+extern char gMatchFloat_005894c0[];
+extern char gMatchFloat_005894e0[];
+extern char gMatchFloat_005894f8[];
+extern char gMatchFloat_005894fc[];
+extern char gMatchFloat_00589514[];
+extern char gMatchFloat_00589518[];
+extern char gMatchFloat_0058951c[];
+extern char gMatchFloat_00589520[];
+extern char gMatchFloat_00589524[];
+extern char gMatchFloat_00589570[];
+extern char gMatchFloat_00589574[];
+extern char gMatchFloat_00589578[];
+extern char gMatchFloat_0058957c[];
+extern char gMatchFloat_00589588[];
+extern char gMatchFloat_00589590[];
+extern char gMatchFloat_00589594[];
+extern char gMatchFloat_00589598[];
+extern char gMatchFloat_0058959c[];
+extern char gMatchFloat_005895a0[];
+extern char gMatchFloat_005895b4[];
+extern char gMatchFloat_005895c8[];
+extern char gMatchFloat_005895cc[];
+extern char gMatchFloat_005895d4[];
+extern char gMatchFloat_005895fc[];
+extern char gMatchFloat_00589620[];
+extern char gMatchFloat_00589624[];
+extern char gMatchFloat_00589654[];
+extern char gMatchFloat_00589660[];
+extern char gMatchFloat_00589664[];
+extern char gMatchFloat_00589690[];
+extern char gMatchFloat_005896b0[];
+extern char gMatchFloat_005896c8[];
+extern char gMatchFloat_005896cc[];
+extern char gMatchFloat_005896e8[];
+extern char gMatchFloat_005896ec[];
+extern char gMatchFloat_005896f0[];
+extern char gMatchFloat_00589764[];
+extern char gMatchFloat_0058978c[];
+extern char gMatchFloat_00589804[];
+extern char gMatchFloat_00589898[];
+extern char gMatchFloat_005898a0[];
+extern char gMatchFloat_005898a4[];
+extern char gMatchFloat_005898a8[];
+extern char gMatchFloat_005898ac[];
+extern char gMatchFloat_005898d0[];
+extern char gMatchFloat_005898f0[];
+extern char gMatchFloat_005898f4[];
+extern char gMatchFloat_005898f8[];
+extern char gMatchFloat_005898fc[];
+extern char gMatchFloat_00589900[];
+extern char gMatchFloat_00589904[];
+extern char gMatchFloat_00589938[];
+#endif
 // FUNCTION: CARMA2_HW 0x004105f0
 void C2_NAKED C2_HOOK_FASTCALL SetUpPanningCamera(tCar_spec* c) {
 #ifndef CARPOCALYPSE2_MATCHING
@@ -1077,7 +1297,7 @@ void C2_NAKED C2_HOOK_FASTCALL SetUpPanningCamera(tCar_spec* c) {
             fxch st(1)
             mov edi, eax
             faddp st(1), st(0)
-            fcomp qword ptr [gDOUBLE_005894a8+0x8]
+            fcomp qword ptr [gMatchDouble_005894b0]
             fnstsw ax
             test ah, 1
             jne L0041070a
@@ -1170,14 +1390,14 @@ void C2_NAKED C2_HOOK_FASTCALL SetUpPanningCamera(tCar_spec* c) {
             faddp st(1), st(0)
             fsqrt
             fst dword ptr [esp + 0x18]
-            fcomp dword ptr [gSwing_forward_speed_threshold+0x10]
+            fcomp dword ptr [gMatchFloat_00589470]
             fnstsw ax
             test ah, 1
             jne L00410bcc
             push 0x3f800000
             push 0x3eaaaaab
             call SRandomBetween
-            fld dword ptr [gDOUBLE_00589478+0xc]
+            fld dword ptr [gMatchFloat_00589484]
             fdiv dword ptr [esp + 0x18]
             push 0x3f800000
             push 0x3eaaaaab
@@ -1487,6 +1707,18 @@ void C2_NAKED C2_HOOK_FASTCALL SetUpPanningCamera(tCar_spec* c) {
             pop ebx
             add esp, 0x7c
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -1794,7 +2026,7 @@ int C2_NAKED C2_HOOK_FASTCALL CollideCamera2(br_vector3* car_pos, br_vector3* ca
             push edi
             xor edi, edi
             fld dword ptr [ecx + 8]
-            fmul dword ptr [gSwing_slow_max_degrees+0x10]
+            fmul dword ptr [gMatchFloat_00589578]
             mov esi, edx
             mov dword ptr [esp + 0x98], ebx
             mov dword ptr [gCamera_has_collided], edi
@@ -1832,7 +2064,7 @@ int C2_NAKED C2_HOOK_FASTCALL CollideCamera2(br_vector3* car_pos, br_vector3* ca
             lea eax, [esp + 0x94]
             push edx
             lea ecx, [esp + 0x2c]
-            fmul dword ptr [gSwing_slow_max_degrees+0x14]
+            fmul dword ptr [gMatchFloat_0058957c]
             fxch st(1)
             fsqrt
             push eax
@@ -1844,11 +2076,11 @@ int C2_NAKED C2_HOOK_FASTCALL CollideCamera2(br_vector3* car_pos, br_vector3* ca
             lea edx, [esp + 0x30]
             mov ecx, ebx
             fxch st(2)
-            fmul dword ptr [gSwing_slow_max_degrees+0x14]
+            fmul dword ptr [gMatchFloat_0058957c]
             fxch st(2)
             fstp dword ptr [esp + 0x48]
             fxch st(2)
-            fmul dword ptr [gSwing_slow_max_degrees+0x14]
+            fmul dword ptr [gMatchFloat_0058957c]
             fld dword ptr [esp + 0x48]
             fstp dword ptr [esp + 0x40]
             fxch st(2)
@@ -2109,7 +2341,7 @@ int C2_NAKED C2_HOOK_FASTCALL CollideCamera2(br_vector3* car_pos, br_vector3* ca
             test edi, edi
             jne L0041286c
             fld st(0)
-            fmul qword ptr [gSwing_slow_max_degrees+0x18]
+            fmul qword ptr [gMatchDouble_00589580]
             fld dword ptr [esp + 0x30]
             fxch st(2)
             fmul dword ptr [esp + 0x28]
@@ -2127,10 +2359,10 @@ int C2_NAKED C2_HOOK_FASTCALL CollideCamera2(br_vector3* car_pos, br_vector3* ca
             fnstsw ax
             test ah, 1
             je L0041270f
-            fsub dword ptr [gSwing_slow_max_degrees+0x10]
+            fsub dword ptr [gMatchFloat_00589578]
             jmp L00412715
     L0041270f:
-            fsub dword ptr [gSwing_slow_max_degrees+0x20]
+            fsub dword ptr [gMatchFloat_00589588]
     L00412715:
             fld dword ptr [esp + 0x4c]
             fld st(1)
@@ -2318,7 +2550,7 @@ int C2_NAKED C2_HOOK_FASTCALL CollideCamera2(br_vector3* car_pos, br_vector3* ca
             fxch st(1)
             fst dword ptr [esp + 0x34]
             fxch st(1)
-            fsub qword ptr [gDOUBLE_005894a8+0x20]
+            fsub qword ptr [gMatchDouble_005894c8]
             fxch st(1)
             fld st(1)
             fcompp
@@ -2395,7 +2627,12 @@ int C2_NAKED C2_HOOK_FASTCALL CollideCamera2(br_vector3* car_pos, br_vector3* ca
             fmul st(0), st(3)
             fxch st(2)
             fst dword ptr [esp + 0x14]
-            fsub dword ptr [gFLOAT_0058948c+0x4]
+            _emit 0xd8
+        _emit 0x25
+        _emit 0x90
+        _emit 0x94
+        _emit 0x58
+        _emit 0x00
             fxch st(1)
             fstp dword ptr [esp + 0x10]
             mov edx, dword ptr [gProgram_state+0xbc]
@@ -2454,7 +2691,7 @@ int C2_NAKED C2_HOOK_FASTCALL CollideCamera2(br_vector3* car_pos, br_vector3* ca
             fxch st(1)
             fmul dword ptr [esp + 0x44]
             fxch st(1)
-            fmul dword ptr [gSwing_slow_max_degrees+0x28]
+            fmul dword ptr [gMatchFloat_00589590]
             fsubp st(1), st(0)
             fst dword ptr [esp + 0x2c]
             fcomp dword ptr [gFLOAT_00589418]
@@ -2569,7 +2806,7 @@ int C2_NAKED C2_HOOK_FASTCALL CollideCamera2(br_vector3* car_pos, br_vector3* ca
             fxch st(1)
             faddp st(1), st(0)
             fst dword ptr [esp + 0x2c]
-            fcomp dword ptr [gSwing_slow_max_degrees+0x2c]
+            fcomp dword ptr [gMatchFloat_00589594]
             fnstsw ax
             test ah, 1
             je L00412d66
@@ -2626,11 +2863,11 @@ int C2_NAKED C2_HOOK_FASTCALL CollideCamera2(br_vector3* car_pos, br_vector3* ca
             faddp st(1), st(0)
             fxch st(1)
             faddp st(1), st(0)
-            fcom dword ptr [gSwing_slow_max_degrees+0x30]
+            fcom dword ptr [gMatchFloat_00589598]
             fnstsw ax
             test ah, 1
             je L00412d64
-            fld dword ptr [gSwing_slow_max_degrees+0x2c]
+            fld dword ptr [gMatchFloat_00589594]
             fsub dword ptr [esp + 0x2c]
             fdivrp st(1), st(0)
             fld st(0)
@@ -2794,7 +3031,7 @@ int C2_NAKED C2_HOOK_FASTCALL CollideCamera2(br_vector3* car_pos, br_vector3* ca
             lea edi, [esp + 0xa8]
             mov dword ptr [esp + 0x2c], ebx
     L00412efd:
-            fld dword ptr [gSwing_slow_max_degrees+0x34]
+            fld dword ptr [gMatchFloat_0058959c]
             xor ecx, ecx
             test ebp, ebp
             jle L00412f36
@@ -2821,7 +3058,7 @@ int C2_NAKED C2_HOOK_FASTCALL CollideCamera2(br_vector3* car_pos, br_vector3* ca
             cmp ecx, ebp
             jl L00412f10
     L00412f36:
-            fcomp dword ptr [gSwing_slow_max_degrees+0x34]
+            fcomp dword ptr [gMatchFloat_0058959c]
             fnstsw ax
             test ah, 0x40
             jne L00412f59
@@ -2940,7 +3177,7 @@ int C2_NAKED C2_HOOK_FASTCALL CollideCamera2(br_vector3* car_pos, br_vector3* ca
             fxch st(1)
             lea edi, [esp + eax + 0x14c]
             faddp st(1), st(0)
-            fcom dword ptr [gSwing_slow_max_degrees+0x38]
+            fcom dword ptr [gMatchFloat_005895a0]
             fnstsw ax
             test ah, 0x41
             jne L0041311c
@@ -2978,7 +3215,7 @@ int C2_NAKED C2_HOOK_FASTCALL CollideCamera2(br_vector3* car_pos, br_vector3* ca
             lea ecx, [esp + eax + 0x144]
             faddp st(1), st(0)
     L0041311c:
-            fcomp dword ptr [gSwing_slow_max_degrees+0x38]
+            fcomp dword ptr [gMatchFloat_005895a0]
             fnstsw ax
             test ah, 0x41
             je L00413233
@@ -3237,7 +3474,7 @@ int C2_NAKED C2_HOOK_FASTCALL CollideCamera2(br_vector3* car_pos, br_vector3* ca
             fxch st(2)
             fmul dword ptr [esp + 0x40]
             fxch st(3)
-            fcomp dword ptr [gFLOAT_0058948c+0x8]
+            fcomp dword ptr [gMatchFloat_00589494]
             fmul dword ptr [esp + 0x38]
             fxch st(2)
             faddp st(1), st(0)
@@ -3414,6 +3651,10 @@ int C2_NAKED C2_HOOK_FASTCALL CollideCamera2(br_vector3* car_pos, br_vector3* ca
             pop ebx
             add esp, 0x310
             ret 0xc
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -3494,17 +3735,17 @@ void C2_NAKED C2_HOOK_FAKE_THISCALL FlyCar(tCar_spec* c, undefined4 pArg2, br_sc
     L0041f525:
             xor ebp, ebp
     L0041f527:
-            mov edx, dword ptr ds:[0x75cefc]
-            mov ecx, dword ptr ds:[gFlyCarMode]
+            mov edx, dword ptr [gProgram_state+0x137c]
+            mov ecx, dword ptr [gFlyCarMode]
             test edx, 0x40000
             mov ebx, ecx
             jne L0041f66c
-            mov eax, dword ptr ds:[0x75cf08]
+            mov eax, dword ptr [gProgram_state+0x1388]
             test eax, eax
             jg L0041f66c
             test edx, 0x80000
             jne L0041f660
-            mov eax, dword ptr ds:[0x75cf0c]
+            mov eax, dword ptr [gProgram_state+0x138c]
             test eax, eax
             jg L0041f660
             test edx, 0x200000
@@ -3513,8 +3754,8 @@ void C2_NAKED C2_HOOK_FAKE_THISCALL FlyCar(tCar_spec* c, undefined4 pArg2, br_sc
             test eax, eax
             je L0041f593
             fld dword ptr [esp + 0x54]
-            fmul dword ptr ds:[gFlyCarPitchRate]
-            fld dword ptr ds:[gFlyCarAngularVelocity]
+            fmul dword ptr [gFlyCarPitchRate]
+            fld dword ptr [gFlyCarAngularVelocity]
             fxch st(1)
             mov ecx, 1
             jmp L0041f683
@@ -3525,8 +3766,8 @@ void C2_NAKED C2_HOOK_FAKE_THISCALL FlyCar(tCar_spec* c, undefined4 pArg2, br_sc
             test eax, eax
             je L0041f5bf
             fld dword ptr [esp + 0x54]
-            fmul dword ptr ds:[gFlyCarReversePitchRate]
-            fld dword ptr ds:[gFlyCarAngularVelocity]
+            fmul dword ptr [gFlyCarReversePitchRate]
+            fld dword ptr [gFlyCarAngularVelocity]
             fxch st(1)
             mov ecx, 1
             jmp L0041f683
@@ -3536,8 +3777,8 @@ void C2_NAKED C2_HOOK_FAKE_THISCALL FlyCar(tCar_spec* c, undefined4 pArg2, br_sc
             test ebp, ebp
             je L0041f5e4
             fld dword ptr [esp + 0x54]
-            fmul dword ptr ds:[gFlyCarReversePitchRate]
-            fld dword ptr ds:[gFlyCarAngularVelocity]
+            fmul dword ptr [gFlyCarReversePitchRate]
+            fld dword ptr [gFlyCarAngularVelocity]
             fxch st(1)
             xor ecx, ecx
             jmp L0041f683
@@ -3547,59 +3788,59 @@ void C2_NAKED C2_HOOK_FAKE_THISCALL FlyCar(tCar_spec* c, undefined4 pArg2, br_sc
             test ebp, ebp
             je L0041f606
             fld dword ptr [esp + 0x54]
-            fmul dword ptr ds:[gFlyCarPitchRate]
-            fld dword ptr ds:[gFlyCarAngularVelocity]
+            fmul dword ptr [gFlyCarPitchRate]
+            fld dword ptr [gFlyCarAngularVelocity]
             fxch st(1)
             xor ecx, ecx
             jmp L0041f683
     L0041f606:
             fld dword ptr [esp + 0x54]
-            fmul dword ptr ds:[gFlyCarPitchRate]
-            fcomp dword ptr ds:[gFlyCarAngularVelocity]
+            fmul dword ptr [gFlyCarPitchRate]
+            fcomp dword ptr [gFlyCarAngularVelocity]
             fnstsw ax
             test ah, 0x41
             jne L0041f640
             fld dword ptr [esp + 0x54]
-            fmul dword ptr ds:[gFlyCarReversePitchRate]
-            fcomp dword ptr ds:[gFlyCarAngularVelocity]
+            fmul dword ptr [gFlyCarReversePitchRate]
+            fcomp dword ptr [gFlyCarAngularVelocity]
             fnstsw ax
             test ah, 1
             je L0041f640
-            mov dword ptr ds:[gFlyCarAngularVelocity], 0
+            mov dword ptr [gFlyCarAngularVelocity], 0
             jmp L0041f697
     L0041f640:
-            fld dword ptr ds:[gFlyCarAngularVelocity]
+            fld dword ptr [gFlyCarAngularVelocity]
             fabs
-            fdivr dword ptr ds:[gFlyCarAngularVelocity]
+            fdivr dword ptr [gFlyCarAngularVelocity]
             fmul dword ptr [esp + 0x54]
-            fmul dword ptr ds:[gFlyCarPitchRate]
-            fsubr dword ptr ds:[gFlyCarAngularVelocity]
+            fmul dword ptr [gFlyCarPitchRate]
+            fsubr dword ptr [gFlyCarAngularVelocity]
             jmp L0041f691
     L0041f660:
             fld dword ptr [esp + 0x54]
-            fmul dword ptr ds:[gFlyCarAccelerationRate2]
+            fmul dword ptr [gFlyCarAccelerationRate2]
             jmp L0041f676
     L0041f66c:
             fld dword ptr [esp + 0x54]
-            fmul dword ptr ds:[gFlyCarAccelerationRate]
+            fmul dword ptr [gFlyCarAccelerationRate]
     L0041f676:
-            fld dword ptr ds:[gFlyCarAngularVelocity]
+            fld dword ptr [gFlyCarAngularVelocity]
             fxch st(1)
             mov ecx, 2
     L0041f683:
-            fmul qword ptr ds:[gDouble_00589688]
-            mov dword ptr ds:[gFlyCarMode], ecx
+            fmul qword ptr [gDouble_00589688]
+            mov dword ptr [gFlyCarMode], ecx
             fsubp st(1), st(0)
     L0041f691:
-            fstp dword ptr ds:[gFlyCarAngularVelocity]
+            fstp dword ptr [gFlyCarAngularVelocity]
     L0041f697:
             cmp ecx, ebx
             je L0041f6a5
-            mov dword ptr ds:[gFlyCarAngularVelocity], 0
+            mov dword ptr [gFlyCarAngularVelocity], 0
     L0041f6a5:
             test edx, 0x100000
             je L0041f6b7
-            mov dword ptr ds:[gFlyCarAngularVelocity], 0
+            mov dword ptr [gFlyCarAngularVelocity], 0
     L0041f6b7:
             mov eax, dword ptr [esp + 0x14]
             test eax, eax
@@ -3615,10 +3856,10 @@ void C2_NAKED C2_HOOK_FAKE_THISCALL FlyCar(tCar_spec* c, undefined4 pArg2, br_sc
             xor ebx, ebx
             mov dword ptr [edx + 0x7c], 0
     L0041f6df:
-            mov ecx, dword ptr ds:[0x75cefc]
+            mov ecx, dword ptr [gProgram_state+0x137c]
             test ecx, 0x10000
             jne L0041f6f5
-            cmp dword ptr ds:[0x75cf00], ebx
+            cmp dword ptr [gProgram_state+0x1380], ebx
             jle L0041f70c
     L0041f6f5:
             cmp ebp, ebx
@@ -3633,7 +3874,7 @@ void C2_NAKED C2_HOOK_FAKE_THISCALL FlyCar(tCar_spec* c, undefined4 pArg2, br_sc
     L0041f70c:
             test ecx, 0x20000
             jne L0041f71c
-            cmp dword ptr ds:[0x75cf04], ebx
+            cmp dword ptr [gProgram_state+0x1384], ebx
             jle L0041f733
     L0041f71c:
             cmp ebp, ebx
@@ -3649,7 +3890,7 @@ void C2_NAKED C2_HOOK_FAKE_THISCALL FlyCar(tCar_spec* c, undefined4 pArg2, br_sc
             mov ecx, dword ptr [edi + 8]
             mov dword ptr [ecx + eax*4 + 0x74], ebx
     L0041f73a:
-            mov eax, dword ptr ds:[0x75cefc]
+            mov eax, dword ptr [gProgram_state+0x137c]
             mov ebp, dword ptr [esp + 0x14]
             test eax, 0x200000
             je L0041f75d
@@ -3676,13 +3917,13 @@ void C2_NAKED C2_HOOK_FAKE_THISCALL FlyCar(tCar_spec* c, undefined4 pArg2, br_sc
     L0041f77d:
             mov ecx, dword ptr [edi + 8]
             fld dword ptr [ecx + 0x74]
-            fcomp dword ptr ds:[gFlyCarZero]
+            fcomp dword ptr [gFlyCarZero]
             fnstsw ax
             test ah, 0x40
             jne L0041f7ac
             fld dword ptr [ecx + 0x74]
             fmul dword ptr [esp + 0x54]
-            fmul qword ptr ds:[gFlyCarRadiansToAngle]
+            fmul qword ptr [gFlyCarRadiansToAngle]
             call _ftol
             push eax
             push esi
@@ -3691,7 +3932,7 @@ void C2_NAKED C2_HOOK_FAKE_THISCALL FlyCar(tCar_spec* c, undefined4 pArg2, br_sc
     L0041f7ac:
             mov eax, dword ptr [edi + 8]
             fld dword ptr [eax + 0x78]
-            fcomp dword ptr ds:[gFlyCarZero]
+            fcomp dword ptr [gFlyCarZero]
             fnstsw ax
             test ah, 0x40
             jne L0041f845
@@ -3717,7 +3958,7 @@ void C2_NAKED C2_HOOK_FAKE_THISCALL FlyCar(tCar_spec* c, undefined4 pArg2, br_sc
             mov edx, dword ptr [edi + 8]
             fld dword ptr [edx + 0x78]
             fmul dword ptr [esp + 0x54]
-            fmul qword ptr ds:[gFlyCarRadiansToAngle]
+            fmul qword ptr [gFlyCarRadiansToAngle]
             call _ftol
             push eax
             push esi
@@ -3740,40 +3981,40 @@ void C2_NAKED C2_HOOK_FAKE_THISCALL FlyCar(tCar_spec* c, undefined4 pArg2, br_sc
     L0041f845:
             mov ecx, dword ptr [edi + 8]
             fld dword ptr [ecx + 0x7c]
-            fcomp dword ptr ds:[gFlyCarZero]
+            fcomp dword ptr [gFlyCarZero]
             fnstsw ax
             test ah, 0x40
             jne L0041f874
             fld dword ptr [ecx + 0x7c]
             fmul dword ptr [esp + 0x54]
-            fmul qword ptr ds:[gFlyCarRadiansToAngle]
+            fmul qword ptr [gFlyCarRadiansToAngle]
             call _ftol
             push eax
             push esi
             call BrMatrix34PreRotateZ
             add esp, 8
     L0041f874:
-            mov eax, dword ptr ds:[gFlyCarMode]
+            mov eax, dword ptr [gFlyCarMode]
             mov ecx, dword ptr [edi + 8]
-            fld dword ptr ds:[gFlyCarAngularVelocity]
+            fld dword ptr [gFlyCarAngularVelocity]
             lea edx, [eax + eax*2]
             fchs
             fld dword ptr [esi + edx*4]
             fxch st(1)
             fmulp st(1), st(0)
             fstp dword ptr [ecx + 0x68]
-            mov eax, dword ptr ds:[gFlyCarMode]
+            mov eax, dword ptr [gFlyCarMode]
             mov ecx, dword ptr [edi + 8]
-            fld dword ptr ds:[gFlyCarAngularVelocity]
+            fld dword ptr [gFlyCarAngularVelocity]
             lea edx, [eax + eax*2]
             fchs
             fld dword ptr [esi + edx*4 + 4]
             fxch st(1)
             fmulp st(1), st(0)
             fstp dword ptr [ecx + 0x6c]
-            mov eax, dword ptr ds:[gFlyCarMode]
+            mov eax, dword ptr [gFlyCarMode]
             mov ecx, dword ptr [edi + 8]
-            fld dword ptr ds:[gFlyCarAngularVelocity]
+            fld dword ptr [gFlyCarAngularVelocity]
             lea edx, [eax + eax*2]
             fchs
             fld dword ptr [esi + edx*4 + 8]
@@ -3805,7 +4046,7 @@ void C2_NAKED C2_HOOK_FAKE_THISCALL FlyCar(tCar_spec* c, undefined4 pArg2, br_sc
             fstp dword ptr [esi + 0x28]
             fstp dword ptr [esi + 0x24]
             fstp dword ptr [esi + 0x2c]
-            mov eax, dword ptr ds:[0x75cefc]
+            mov eax, dword ptr [gProgram_state+0x137c]
             and eax, 0x800000
             je L0041fb55
             cmp ebp, ebx
@@ -3818,7 +4059,7 @@ void C2_NAKED C2_HOOK_FAKE_THISCALL FlyCar(tCar_spec* c, undefined4 pArg2, br_sc
             mov ecx, dword ptr [esp + 0x54]
             mov dword ptr [esp + 0x2c], eax
             mov dword ptr [esp + 0x34], ecx
-            fmul qword ptr ds:[gFlyCarRadiansToAngle]
+            fmul qword ptr [gFlyCarRadiansToAngle]
             call _ftol
             mov edx, 0x3ffc
             sub edx, eax
@@ -3849,7 +4090,7 @@ void C2_NAKED C2_HOOK_FAKE_THISCALL FlyCar(tCar_spec* c, undefined4 pArg2, br_sc
             push ebx
             lea edx, [esp + 0x1c]
             push ecx
-            mov ecx, dword ptr ds:[gTrack_actor]
+            mov ecx, dword ptr [gTrack_actor]
             lea eax, [esp + 0x40]
             push edx
             push eax
@@ -3858,12 +4099,12 @@ void C2_NAKED C2_HOOK_FAKE_THISCALL FlyCar(tCar_spec* c, undefined4 pArg2, br_sc
             lea ecx, [esp + 0x34]
             call ActorFindFace
             fld dword ptr [esp + 0x24]
-            fsub dword ptr ds:[gFlyCarAccelerationRate]
+            fsub dword ptr [gFlyCarAccelerationRate]
             lea edx, [esp + 0x1c]
             push ebx
             lea eax, [esp + 0x14]
             push edx
-            mov edx, dword ptr ds:[gTrack_actor]
+            mov edx, dword ptr [gTrack_actor]
             lea ecx, [esp + 0x4c]
             fstp dword ptr [esp + 0x2c]
             push eax
@@ -3873,7 +4114,7 @@ void C2_NAKED C2_HOOK_FAKE_THISCALL FlyCar(tCar_spec* c, undefined4 pArg2, br_sc
             lea ecx, [esp + 0x34]
             call ActorFindFace
             fld dword ptr [esp + 0x10]
-            fcomp dword ptr ds:[gOne]
+            fcomp dword ptr [gOne]
             fnstsw ax
             test ah, 0x41
             je L0041fa9a
@@ -3884,17 +4125,17 @@ void C2_NAKED C2_HOOK_FAKE_THISCALL FlyCar(tCar_spec* c, undefined4 pArg2, br_sc
             push eax
             call BrVector3SetFloat
             fld dword ptr [esp + 0x34]
-            fsub dword ptr ds:[gFlyCarAccelerationRate2]
+            fsub dword ptr [gFlyCarAccelerationRate2]
             add esp, 0x10
             fstp dword ptr [esp + 0x24]
     L0041fa2d:
             fld dword ptr [esp + 0x24]
-            fsub dword ptr ds:[gFloat_005896f4]
+            fsub dword ptr [gFloat_005896f4]
             lea ecx, [esp + 0x1c]
             push 0
             lea edx, [esp + 0x14]
             push ecx
-            mov ecx, dword ptr ds:[gTrack_actor]
+            mov ecx, dword ptr [gTrack_actor]
             lea eax, [esp + 0x4c]
             fstp dword ptr [esp + 0x2c]
             push edx
@@ -3904,7 +4145,7 @@ void C2_NAKED C2_HOOK_FAKE_THISCALL FlyCar(tCar_spec* c, undefined4 pArg2, br_sc
             lea ecx, [esp + 0x34]
             call ActorFindFace
             fld dword ptr [esp + 0x10]
-            fcomp dword ptr ds:[gOne]
+            fcomp dword ptr [gOne]
             fnstsw ax
             test ah, 0x41
             jne L0041fa77
@@ -3917,9 +4158,9 @@ void C2_NAKED C2_HOOK_FAKE_THISCALL FlyCar(tCar_spec* c, undefined4 pArg2, br_sc
             mov dword ptr [esp + 0x54], ebx
             fild dword ptr [esp + 0x54]
             fxch st(1)
-            fmul dword ptr ds:[gFlyCarCollisionStep]
+            fmul dword ptr [gFlyCarCollisionStep]
             fxch st(1)
-            fmul dword ptr ds:[gFlyCarCollisionStep2]
+            fmul dword ptr [gFlyCarCollisionStep2]
             fsubp st(1), st(0)
             fstp dword ptr [esp + 0x10]
     L0041fa9a:
@@ -3940,7 +4181,7 @@ void C2_NAKED C2_HOOK_FAKE_THISCALL FlyCar(tCar_spec* c, undefined4 pArg2, br_sc
     L0041facb:
             fld dword ptr [esp + 0x18]
             fabs
-            fcomp dword ptr ds:[gOne]
+            fcomp dword ptr [gOne]
             fnstsw ax
             test ah, 0x41
             je L0041fb95
@@ -3953,7 +4194,7 @@ void C2_NAKED C2_HOOK_FAKE_THISCALL FlyCar(tCar_spec* c, undefined4 pArg2, br_sc
             fxch st(2)
             fmul dword ptr [esp + 0x38]
             fxch st(3)
-            fmul dword ptr ds:[gFlyCarAccelerationRate2]
+            fmul dword ptr [gFlyCarAccelerationRate2]
             fxch st(3)
             faddp st(2), st(0)
             fmul dword ptr [esp + 0x3c]
@@ -3968,7 +4209,7 @@ void C2_NAKED C2_HOOK_FAKE_THISCALL FlyCar(tCar_spec* c, undefined4 pArg2, br_sc
         _emit 0x68
         _emit 0x15
         _emit 0x00
-            fmul qword ptr ds:[gFlyCarRadiansToAngle]
+            fmul qword ptr [gFlyCarRadiansToAngle]
             call _ftol
             push eax
             push esi
@@ -3998,7 +4239,7 @@ void C2_NAKED C2_HOOK_FAKE_THISCALL FlyCar(tCar_spec* c, undefined4 pArg2, br_sc
         _emit 0x68
         _emit 0x15
         _emit 0x00
-            fmul qword ptr ds:[gFlyCarRadiansToAngle]
+            fmul qword ptr [gFlyCarRadiansToAngle]
             call _ftol
             push eax
             push esi
@@ -4011,7 +4252,7 @@ void C2_NAKED C2_HOOK_FAKE_THISCALL FlyCar(tCar_spec* c, undefined4 pArg2, br_sc
         _emit 0x68
         _emit 0x15
         _emit 0x00
-            fmul qword ptr ds:[gFlyCarRadiansToAngleNeg]
+            fmul qword ptr [gFlyCarRadiansToAngleNeg]
             call _ftol
             push eax
             push esi
@@ -4044,6 +4285,17 @@ void C2_NAKED C2_HOOK_FAKE_THISCALL FlyCar(tCar_spec* c, undefined4 pArg2, br_sc
             pop ebx
             add esp, 0x40
             ret 4
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -4117,6 +4369,14 @@ float C2_NAKED C2_HOOK_FASTCALL GetCarOverallBoundsMinY(tCar_spec* pCar) {
     L0041fc54:
             add esp, 8
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -4190,7 +4450,7 @@ void C2_NAKED C2_HOOK_FAKE_THISCALL SetCarSuspGiveAndHeight(tCar_spec* pCar, flo
             fstp dword ptr [esp + 0x10]
             fdiv dword ptr [esp + 0x10]
             fld dword ptr [esp + 0x10]
-            fld qword ptr [gDouble_00589728+0x8]
+            fld qword ptr [gMatchDouble_00589730]
             fsqrt
             fxch st(1)
             fsqrt
@@ -4317,6 +4577,14 @@ void C2_NAKED C2_HOOK_FAKE_THISCALL SetCarSuspGiveAndHeight(tCar_spec* pCar, flo
             fstp dword ptr [edx + 0x40]
             add esp, 8
             ret 0x14
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -5092,7 +5360,7 @@ int C2_NAKED C2_HOOK_FASTCALL IncidentCam(tCar_spec* c, tU32 pTime) {
             sub eax, 2
             jne L0040fc52
             fld dword ptr [gIncident_towards]
-            fcomp dword ptr [gSwing_forward_speed_threshold+0x10]
+            fcomp dword ptr [gMatchFloat_00589470]
             fnstsw ax
             test ah, 1
             je L0040f960
@@ -5158,7 +5426,7 @@ int C2_NAKED C2_HOOK_FASTCALL IncidentCam(tCar_spec* c, tU32 pTime) {
             fxch st(1)
             faddp st(2), st(0)
             fld dword ptr [esp + 0x24]
-            fsub dword ptr [gDOUBLE_00589478+0x8]
+            fsub dword ptr [gMatchFloat_00589480]
             fxch st(1)
             faddp st(2), st(0)
             fxch st(1)
@@ -5444,7 +5712,7 @@ int C2_NAKED C2_HOOK_FASTCALL IncidentCam(tCar_spec* c, tU32 pTime) {
             mov dword ptr [esp + 0x10], eax
             fild dword ptr [esp + 0x10]
             fabs
-            fcomp dword ptr [gDOUBLE_00589478+0x10]
+            fcomp dword ptr [gMatchFloat_00589488]
             fnstsw ax
             test ah, 0x41
             jne L0040fd9e
@@ -5568,7 +5836,12 @@ int C2_NAKED C2_HOOK_FASTCALL IncidentCam(tCar_spec* c, tU32 pTime) {
             _emit 0xd8
         _emit 0x00
             fxch st(1)
-            fsub dword ptr [gFLOAT_0058948c+0x4]
+            _emit 0xd8
+        _emit 0x25
+        _emit 0x90
+        _emit 0x94
+        _emit 0x58
+        _emit 0x00
             fxch st(1)
             fstp dword ptr [esi + 0x2c]
             fstp dword ptr [esi + 0x28]
@@ -5605,7 +5878,7 @@ int C2_NAKED C2_HOOK_FASTCALL IncidentCam(tCar_spec* c, tU32 pTime) {
             mov dword ptr [esp + 0x10], eax
             fild dword ptr [esp + 0x10]
             fabs
-            fcomp dword ptr [gDOUBLE_00589478+0x10]
+            fcomp dword ptr [gMatchFloat_00589488]
             fnstsw ax
             test ah, 0x41
             jne L0040ff70
@@ -5718,7 +5991,11 @@ int C2_NAKED C2_HOOK_FASTCALL IncidentCam(tCar_spec* c, tU32 pTime) {
             mov dword ptr [esp + 0x8c], eax
             jmp L0041017b
     L004100d1:
-            mov eax, dword ptr [0x18]
+            _emit 0xa1
+        _emit 0x18
+        _emit 0x00
+        _emit 0x00
+        _emit 0x00
             test eax, eax
             je L00410155
             mov ecx, eax
@@ -5731,27 +6008,37 @@ int C2_NAKED C2_HOOK_FASTCALL IncidentCam(tCar_spec* c, tU32 pTime) {
             lea ecx, [esp + 0x8c]
             push ecx
             fstp dword ptr [esp + 0x20]
-            mov edx, dword ptr [0x18]
+            _emit 0x8b
+        _emit 0x15
+        _emit 0x18
+        _emit 0x00
+        _emit 0x00
+        _emit 0x00
             fld dword ptr [esp + 0x20]
             fld dword ptr [edx + 0x44]
             mov eax, edx
             fsub dword ptr [eax + 0x38]
             fxch st(1)
-            fmul dword ptr [gFLOAT_0058948c+0x8]
+            fmul dword ptr [gMatchFloat_00589494]
             fxch st(1)
             fstp dword ptr [esp + 0x24]
-            mov ecx, dword ptr [0x18]
+            _emit 0x8b
+        _emit 0x0d
+        _emit 0x18
+        _emit 0x00
+        _emit 0x00
+        _emit 0x00
             fld dword ptr [esp + 0x24]
             fld dword ptr [ecx + 0x48]
             mov edx, ecx
             fsub dword ptr [edx + 0x3c]
             fxch st(1)
-            fmul dword ptr [gFLOAT_0058948c+0x8]
+            fmul dword ptr [gMatchFloat_00589494]
             fxch st(2)
             fstp dword ptr [esp + 0x20]
             fxch st(1)
             fxch st(1)
-            fmul dword ptr [gFLOAT_0058948c+0x8]
+            fmul dword ptr [gMatchFloat_00589494]
             fxch st(1)
             fstp dword ptr [esp + 0x24]
             fstp dword ptr [esp + 0x28]
@@ -5759,11 +6046,25 @@ int C2_NAKED C2_HOOK_FASTCALL IncidentCam(tCar_spec* c, tU32 pTime) {
             add esp, 0xc
             jmp L0041017b
     L00410155:
-            mov eax, dword ptr [0x50]
+            _emit 0xa1
+        _emit 0x50
+        _emit 0x00
+        _emit 0x00
+        _emit 0x00
             mov dword ptr [esp + 0x84], eax
-            mov ecx, dword ptr [0x54]
+            _emit 0x8b
+        _emit 0x0d
+        _emit 0x54
+        _emit 0x00
+        _emit 0x00
+        _emit 0x00
             mov dword ptr [esp + 0x88], ecx
-            mov edx, dword ptr [0x58]
+            _emit 0x8b
+        _emit 0x15
+        _emit 0x58
+        _emit 0x00
+        _emit 0x00
+        _emit 0x00
             mov dword ptr [esp + 0x8c], edx
     L0041017b:
             call GetTotalTime
@@ -5812,9 +6113,9 @@ int C2_NAKED C2_HOOK_FASTCALL IncidentCam(tCar_spec* c, tU32 pTime) {
             fld dword ptr [esp + 0x1c]
             fld dword ptr [gFLOAT_00589418]
             fxch st(2)
-            fmul dword ptr [gFLOAT_0058948c+0xc]
+            fmul dword ptr [gMatchFloat_00589498]
             fxch st(1)
-            fmul dword ptr [gFLOAT_0058948c+0xc]
+            fmul dword ptr [gMatchFloat_00589498]
             fld dword ptr [gFLOAT_00589418]
             fxch st(2)
             fsub st(0), st(3)
@@ -5873,7 +6174,7 @@ int C2_NAKED C2_HOOK_FASTCALL IncidentCam(tCar_spec* c, tU32 pTime) {
             fld dword ptr [esp + 0x78]
             fadd dword ptr [esp + 0x34]
             fxch st(1)
-            fsub dword ptr [gFLOAT_0058948c+0x10]
+            fsub dword ptr [gMatchFloat_0058949c]
             fxch st(1)
             fstp dword ptr [esi + 0x2c]
             fstp dword ptr [esi + 0x28]
@@ -6003,7 +6304,7 @@ int C2_NAKED C2_HOOK_FASTCALL IncidentCam(tCar_spec* c, tU32 pTime) {
             fxch st(1)
             fmul st(0), st(2)
             faddp st(1), st(0)
-            fcomp qword ptr [gFLOAT_0058948c+0x14]
+            fcomp qword ptr [gMatchDouble_005894a0]
             fnstsw ax
             test ah, 1
             fstp st(0)
@@ -6137,7 +6438,7 @@ void C2_NAKED C2_HOOK_FAKE_THISCALL ControlCar4(tCar_spec* c, undefined4 pArg2, 
             test ah, 0x41
             jne L00417649
             fld dword ptr [esp + 0x10]
-            fmul qword ptr [gFloat_005896f4+0x24]
+            fmul qword ptr [gMatchDouble_00589718]
             fld dword ptr [ecx + 0x125c]
             fxch st(1)
             fsubp st(1), st(0)
@@ -6150,7 +6451,7 @@ void C2_NAKED C2_HOOK_FAKE_THISCALL ControlCar4(tCar_spec* c, undefined4 pArg2, 
             test ah, 1
             jne L00417670
             fld dword ptr [edx + 0x78]
-            fcomp qword ptr [gFloat_005896f4+0x2c]
+            fcomp qword ptr [gMatchDouble_00589720]
             fnstsw ax
             test ah, 1
             je L0041770f
@@ -6176,13 +6477,13 @@ void C2_NAKED C2_HOOK_FAKE_THISCALL ControlCar4(tCar_spec* c, undefined4 pArg2, 
             fxch st(3)
             faddp st(1), st(0)
             fld dword ptr [esp + 0x10]
-            fmul dword ptr [gFloat_005896d8+0x18]
+            fmul dword ptr [gMatchFloat_005896f0]
             fxch st(3)
             faddp st(1), st(0)
             fsqrt
             fst dword ptr [esp + 8]
             fmul qword ptr [gDouble_00589728]
-            fsubr qword ptr [gDouble_00589728+0x8]
+            fsubr qword ptr [gMatchDouble_00589730]
             fdivr qword ptr [gDouble_00589738]
             fxch st(2)
             fmulp st(2), st(0)
@@ -6196,7 +6497,7 @@ void C2_NAKED C2_HOOK_FAKE_THISCALL ControlCar4(tCar_spec* c, undefined4 pArg2, 
             je L0041777c
             fld dword ptr [esp + 0x10]
             fmul dword ptr [edx + 0x78]
-            fmul qword ptr [gDouble_00589740+0x8]
+            fmul qword ptr [gMatchDouble_00589748]
             fsubp st(1), st(0)
             fstp dword ptr [ecx + 0x125c]
             jmp L0041777e
@@ -6217,7 +6518,7 @@ void C2_NAKED C2_HOOK_FAKE_THISCALL ControlCar4(tCar_spec* c, undefined4 pArg2, 
             fxch st(3)
             faddp st(1), st(0)
             fld dword ptr [esp + 0x10]
-            fmul dword ptr [gFloat_005896d8+0x18]
+            fmul dword ptr [gMatchFloat_005896f0]
             fxch st(3)
             faddp st(1), st(0)
             fld dword ptr [ecx + 0x125c]
@@ -6225,12 +6526,12 @@ void C2_NAKED C2_HOOK_FAKE_THISCALL ControlCar4(tCar_spec* c, undefined4 pArg2, 
             fsqrt
             fst dword ptr [esp + 8]
             fmul qword ptr [gDouble_00589728]
-            fsubr qword ptr [gDouble_00589728+0x8]
+            fsubr qword ptr [gMatchDouble_00589730]
             fdivr qword ptr [gDouble_00589738]
             fxch st(3)
             fmulp st(3), st(0)
             fxch st(2)
-            fmul qword ptr [gFloat_005896f4+0x24]
+            fmul qword ptr [gMatchDouble_00589718]
             fsubp st(2), st(0)
             fxch st(1)
             fstp dword ptr [ecx + 0x125c]
@@ -6253,7 +6554,7 @@ void C2_NAKED C2_HOOK_FAKE_THISCALL ControlCar4(tCar_spec* c, undefined4 pArg2, 
             test ah, 0x41
             jne L004177dc
             fld dword ptr [esp + 0x10]
-            fmul qword ptr [gDouble_00589740+0x8]
+            fmul qword ptr [gMatchDouble_00589748]
             fld dword ptr [ecx + 0x125c]
             fxch st(1)
             fsubp st(1), st(0)
@@ -6266,7 +6567,7 @@ void C2_NAKED C2_HOOK_FAKE_THISCALL ControlCar4(tCar_spec* c, undefined4 pArg2, 
             test ah, 0x41
             je L00417803
             fld dword ptr [edx + 0x78]
-            fcomp qword ptr [gDouble_00589740+0x10]
+            fcomp qword ptr [gMatchDouble_00589750]
             fnstsw ax
             test ah, 0x41
             jne L004178a8
@@ -6292,18 +6593,18 @@ void C2_NAKED C2_HOOK_FAKE_THISCALL ControlCar4(tCar_spec* c, undefined4 pArg2, 
             fxch st(3)
             faddp st(1), st(0)
             fld dword ptr [esp + 0x10]
-            fmul dword ptr [gFloat_005896d8+0x18]
+            fmul dword ptr [gMatchFloat_005896f0]
             fxch st(3)
             faddp st(1), st(0)
             fsqrt
             fst dword ptr [esp + 8]
             fmul qword ptr [gDouble_00589728]
-            fsubr qword ptr [gDouble_00589728+0x8]
+            fsubr qword ptr [gMatchDouble_00589730]
             fdivr qword ptr [gDouble_00589738]
             fxch st(2)
             fmulp st(2), st(0)
             fxch st(1)
-            fmul qword ptr [gDouble_00589740+0x18]
+            fmul qword ptr [gMatchDouble_00589758]
             fstp st(1)
             fst dword ptr [ecx + 0x125c]
             fld dword ptr [edx + 0x78]
@@ -6313,7 +6614,7 @@ void C2_NAKED C2_HOOK_FAKE_THISCALL ControlCar4(tCar_spec* c, undefined4 pArg2, 
             je L00417915
             fld dword ptr [esp + 0x10]
             fmul dword ptr [edx + 0x78]
-            fmul qword ptr [gDouble_00589740+0x8]
+            fmul qword ptr [gMatchDouble_00589748]
             fsubp st(1), st(0)
             fstp dword ptr [ecx + 0x125c]
             jmp L00417917
@@ -6334,7 +6635,7 @@ void C2_NAKED C2_HOOK_FAKE_THISCALL ControlCar4(tCar_spec* c, undefined4 pArg2, 
             fxch st(3)
             faddp st(1), st(0)
             fld dword ptr [esp + 0x10]
-            fmul dword ptr [gFloat_005896d8+0x18]
+            fmul dword ptr [gMatchFloat_005896f0]
             fxch st(3)
             faddp st(1), st(0)
             fld dword ptr [ecx + 0x125c]
@@ -6342,12 +6643,12 @@ void C2_NAKED C2_HOOK_FAKE_THISCALL ControlCar4(tCar_spec* c, undefined4 pArg2, 
             fsqrt
             fst dword ptr [esp + 8]
             fmul qword ptr [gDouble_00589728]
-            fsubr qword ptr [gDouble_00589728+0x8]
+            fsubr qword ptr [gMatchDouble_00589730]
             fdivr qword ptr [gDouble_00589738]
             fxch st(3)
             fmulp st(3), st(0)
             fxch st(2)
-            fmul qword ptr [gDouble_00589740+0x8]
+            fmul qword ptr [gMatchDouble_00589748]
             fsubp st(2), st(0)
             fxch st(1)
             fstp dword ptr [ecx + 0x125c]
@@ -6394,7 +6695,7 @@ void C2_NAKED C2_HOOK_FAKE_THISCALL ControlCar4(tCar_spec* c, undefined4 pArg2, 
             fild dword ptr [esp + 0x10]
             fld st(0)
             fmul st(0), st(1)
-            fmul dword ptr [gDouble_00589740+0x24]
+            fmul dword ptr [gMatchFloat_00589764]
             jmp L004179c3
     L004179a5:
             mov eax, dword ptr [ecx + 0x12d8]
@@ -6404,7 +6705,7 @@ void C2_NAKED C2_HOOK_FAKE_THISCALL ControlCar4(tCar_spec* c, undefined4 pArg2, 
             fild dword ptr [esp + 0x10]
             fld st(0)
             fmul st(0), st(1)
-            fmul dword ptr [gDouble_00589740+0x24]
+            fmul dword ptr [gMatchFloat_00589764]
             fchs
     L004179c3:
             fmul dword ptr [ecx + 0x1258]
@@ -6438,6 +6739,9 @@ void C2_NAKED C2_HOOK_FAKE_THISCALL ControlCar4(tCar_spec* c, undefined4 pArg2, 
             fstp st(0)
             pop ecx
             ret 4
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -6618,12 +6922,25 @@ void C2_NAKED C2_HOOK_FASTCALL ControlOurCar(tU32 pTime_difference) {
             push edi
             mov ebp, ecx
             je L00414e5d
-            mov eax, dword ptr [gCar_simplification_factor+0x28]
+            _emit 0xa1
+        _emit 0xd8
+        _emit 0xf6
+        _emit 0x58
+        _emit 0x00
             xor ebx, ebx
             cmp eax, ebx
             jne L00414e65
             mov eax, dword ptr [gProgram_state+0x1394]
-            mov dword ptr [gCar_simplification_factor+0x28], 1
+            _emit 0xc7
+        _emit 0x05
+        _emit 0xd8
+        _emit 0xf6
+        _emit 0x58
+        _emit 0x00
+        _emit 0x01
+        _emit 0x00
+        _emit 0x00
+        _emit 0x00
             cmp eax, 2
             jg L00414e65
             mov ecx, dword ptr [gProgram_state+0xb4]
@@ -6645,7 +6962,7 @@ void C2_NAKED C2_HOOK_FASTCALL ControlOurCar(tU32 pTime_difference) {
             fxch st(2)
             faddp st(2), st(0)
             fxch st(1)
-            fcomp qword ptr [gFloat_005895d0+0x10]
+            fcomp qword ptr [gMatchDouble_005895e0]
             fnstsw ax
             test ah, 1
             fstp st(0)
@@ -6734,7 +7051,12 @@ void C2_NAKED C2_HOOK_FASTCALL ControlOurCar(tU32 pTime_difference) {
             jmp L00414e65
     L00414e5d:
             xor ebx, ebx
-            mov dword ptr [gCar_simplification_factor+0x28], ebx
+            _emit 0x89
+        _emit 0x1d
+        _emit 0xd8
+        _emit 0xf6
+        _emit 0x58
+        _emit 0x00
     L00414e65:
             cmp dword ptr [gNet_mode], ebx
             je L00414eb9
@@ -6752,7 +7074,7 @@ void C2_NAKED C2_HOOK_FASTCALL ControlOurCar(tU32 pTime_difference) {
             mov eax, dword ptr [gControl__car]
             push ecx
             mov ecx, dword ptr [esi]
-            fmul dword ptr [gOne+0x4]
+            fmul dword ptr [gMatchFloat_005895fc]
             _emit 0xd9
         _emit 0x1c
         _emit 0x24
@@ -6771,7 +7093,7 @@ void C2_NAKED C2_HOOK_FASTCALL ControlOurCar(tU32 pTime_difference) {
             fild qword ptr [esp + 0x10]
             push ecx
             mov ecx, dword ptr [gCar_to_view]
-            fmul dword ptr [gOne+0x4]
+            fmul dword ptr [gMatchFloat_005895fc]
             _emit 0xd9
         _emit 0x1c
         _emit 0x24
@@ -6817,7 +7139,7 @@ void C2_NAKED C2_HOOK_FASTCALL ControlOurCar(tU32 pTime_difference) {
             imul eax, ebp
             mov dword ptr [esp + 0x10], eax
             fild qword ptr [esp + 0x10]
-            fmul qword ptr [gOne+0x8]
+            fmul qword ptr [gMatchDouble_00589600]
             call _ftol
             mov ecx, eax
             call PercentageChance
@@ -6826,7 +7148,7 @@ void C2_NAKED C2_HOOK_FASTCALL ControlOurCar(tU32 pTime_difference) {
             mov eax, dword ptr [gProgram_state+0xb4]
             fld dword ptr [eax + 0x1b0]
             fabs
-            fcomp qword ptr [gOne+0x10]
+            fcomp qword ptr [gMatchDouble_00589608]
             fnstsw ax
             test ah, 0x41
             jne L00415022
@@ -6892,7 +7214,7 @@ void C2_NAKED C2_HOOK_FASTCALL ControlOurCar(tU32 pTime_difference) {
             imul eax, ebp
             mov dword ptr [esp + 0x10], eax
             fild qword ptr [esp + 0x10]
-            fmul qword ptr [gOne+0x18]
+            fmul qword ptr [gMatchDouble_00589610]
             call _ftol
             mov ecx, eax
             call PercentageChance
@@ -6923,18 +7245,35 @@ void C2_NAKED C2_HOOK_FASTCALL ControlOurCar(tU32 pTime_difference) {
             mov eax, dword ptr [gControl__car]
             push ecx
             mov ecx, offset gProgram_state+0xac
-            fmul dword ptr [gOne+0x4]
+            fmul dword ptr [gMatchFloat_005895fc]
             _emit 0xd9
         _emit 0x1c
         _emit 0x24
             call dword ptr [eax*4 + ControlCar]
-            mov eax, dword ptr [gUnknown_car_collision_info+0x8]
+            _emit 0xa1
+        _emit 0xec
+        _emit 0x93
+        _emit 0x67
+        _emit 0x00
             add eax, ebp
             cmp eax, 0x1388
-            mov dword ptr [gUnknown_car_collision_info+0x8], eax
+            _emit 0xa3
+        _emit 0xec
+        _emit 0x93
+        _emit 0x67
+        _emit 0x00
             jb L004152ae
             mov eax, dword ptr [gProgram_state+0xb0]
-            mov dword ptr [gUnknown_car_collision_info+0x8], 0xfa0
+            _emit 0xc7
+        _emit 0x05
+        _emit 0xec
+        _emit 0x93
+        _emit 0x67
+        _emit 0x00
+        _emit 0xa0
+        _emit 0x0f
+        _emit 0x00
+        _emit 0x00
             cmp eax, ebx
             jne L004152ae
             mov eax, dword ptr [gProgram_state+0x1980]
@@ -7000,7 +7339,7 @@ void C2_NAKED C2_HOOK_FASTCALL ControlOurCar(tU32 pTime_difference) {
             jne L004152ae
             mov edx, dword ptr [gProgram_state+0xbc]
             fld dword ptr [edx + 0x3c]
-            fcomp dword ptr [gDouble_00589618+0x8]
+            fcomp dword ptr [gMatchFloat_00589620]
             fnstsw ax
             test ah, 1
             jne L004152ae
@@ -7027,7 +7366,7 @@ void C2_NAKED C2_HOOK_FASTCALL ControlOurCar(tU32 pTime_difference) {
             fxch st(1)
             faddp st(2), st(0)
             faddp st(1), st(0)
-            fcomp dword ptr [gDouble_00589618+0xc]
+            fcomp dword ptr [gMatchFloat_00589624]
             fnstsw ax
             test ah, 1
             fstp st(0)
@@ -7051,7 +7390,12 @@ void C2_NAKED C2_HOOK_FASTCALL ControlOurCar(tU32 pTime_difference) {
             push offset gProgram_state+0xee4
             call BrMatrix34Copy
             add esp, 8
-            mov dword ptr [gUnknown_car_collision_info+0x8], ebx
+            _emit 0x89
+        _emit 0x1d
+        _emit 0xec
+        _emit 0x93
+        _emit 0x67
+        _emit 0x00
     L004152ae:
             cmp dword ptr [gCamera_reset], ebx
             je L004152eb
@@ -7078,6 +7422,19 @@ void C2_NAKED C2_HOOK_FASTCALL ControlOurCar(tU32 pTime_difference) {
             pop ebx
             add esp, 0x30
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -7261,7 +7618,7 @@ void C2_NAKED C2_HOOK_FASTCALL SetInitialPosition(tRace_info* pThe_race, int pCa
             mov ebp, dword ptr [esp + 0x24]
             faddp st(2), st(0)
             fxch st(1)
-            fcomp dword ptr [gFloat_005895b0+0x4]
+            fcomp dword ptr [gMatchFloat_005895b4]
             fnstsw ax
             test ah, 1
             fstp st(0)
@@ -7296,7 +7653,7 @@ void C2_NAKED C2_HOOK_FASTCALL SetInitialPosition(tRace_info* pThe_race, int pCa
             mov edx, dword ptr [eax + 0xa4]
             mov dword ptr [ebp + 0x58], edx
             fld dword ptr [eax + 0xa8]
-            fmul qword ptr [gFloat_005895b0+0x8]
+            fmul qword ptr [gMatchDouble_005895b8]
             call _ftol
             mov ebx, eax
             mov dword ptr [esp + 0x14], 0
@@ -7324,7 +7681,7 @@ void C2_NAKED C2_HOOK_FASTCALL SetInitialPosition(tRace_info* pThe_race, int pCa
             mov ecx, dword ptr [eax + 0x94]
             mov dword ptr [ebp + 0x58], ecx
             fld dword ptr [eax + 0x98]
-            fmul qword ptr [gFloat_005895b0+0x8]
+            fmul qword ptr [gMatchDouble_005895b8]
             call _ftol
             mov ebx, eax
             mov dword ptr [esp + 0x14], 0
@@ -7333,7 +7690,7 @@ void C2_NAKED C2_HOOK_FASTCALL SetInitialPosition(tRace_info* pThe_race, int pCa
             test eax, eax
             je L004147b6
             fld dword ptr [esi + 0xed0]
-            fmul qword ptr [gFloat_005895b0+0x8]
+            fmul qword ptr [gMatchDouble_005895b8]
             call _ftol
             mov ebx, eax
             lea edx, [esp + 0x6c]
@@ -7367,7 +7724,7 @@ void C2_NAKED C2_HOOK_FASTCALL SetInitialPosition(tRace_info* pThe_race, int pCa
             push eax
             push ecx
             push edi
-            fmul dword ptr [gFloat_005895c4+0x4]
+            fmul dword ptr [gMatchFloat_005895c8]
             fsubp st(1), st(0)
             fstp dword ptr [esp + 0x50]
             call BrMatrix34ApplyV
@@ -7403,7 +7760,7 @@ void C2_NAKED C2_HOOK_FASTCALL SetInitialPosition(tRace_info* pThe_race, int pCa
             lea ecx, [ebp + 0x50]
             call FindBestY
             fld dword ptr [esp + 0x28]
-            fcomp dword ptr [gFloat_005895c4+0x8]
+            fcomp dword ptr [gMatchFloat_005895cc]
             fnstsw ax
             test ah, 0x40
             jne L00414805
@@ -7478,6 +7835,15 @@ void C2_NAKED C2_HOOK_FASTCALL SetInitialPosition(tRace_info* pThe_race, int pCa
             pop ebx
             add esp, 0x8c
             ret 4
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -7748,7 +8114,7 @@ void C2_NAKED C2_HOOK_FASTCALL InitialiseExternalCamera(void) {
             fmul dword ptr [gView_direction]
             fld st(1)
             fmul st(0), st(2)
-            mov dword ptr [gUNK_006792f8+0x4], 0x3f800000
+            mov dword ptr [gMatchData_006792fc], 0x3f800000
             faddp st(1), st(0)
             fsqrt
             fcom dword ptr [gFLOAT_00589430]
@@ -8193,20 +8559,25 @@ void C2_NAKED C2_HOOK_FASTCALL MungeCarGraphics(tU32 pFrame_period) {
             mov eax, dword ptr [gProgram_state+0x1394]
             cmp eax, ebx
             je L0041e6b4
-            mov dword ptr [gInTheSea+0xc], ecx
+            _emit 0x89
+        _emit 0x0d
+        _emit 0x70
+        _emit 0x93
+        _emit 0x67
+        _emit 0x00
     L0041e6b4:
             mov eax, dword ptr [gProgram_state+0xb4]
             fld dword ptr [eax + 0x74]
             fld dword ptr [eax + 0x1ac]
             fld dword ptr [eax + 0x1a8]
-            fmul dword ptr [gOne+0x4]
+            fmul dword ptr [gMatchFloat_005895fc]
             fxch st(2)
             fabs
             fxch st(1)
-            fmul dword ptr [gOne+0x4]
+            fmul dword ptr [gMatchFloat_005895fc]
             fld st(1)
             fld dword ptr [eax + 0x1b0]
-            fmul dword ptr [gOne+0x4]
+            fmul dword ptr [gMatchFloat_005895fc]
             fxch st(1)
             fst dword ptr [esp + 0x28]
             fld dword ptr [eax + 0x78]
@@ -8220,7 +8591,7 @@ void C2_NAKED C2_HOOK_FASTCALL MungeCarGraphics(tU32 pFrame_period) {
             fst dword ptr [esp + 0x3c]
             fstp dword ptr [esp + 0x18]
             fxch st(1)
-            fcomp dword ptr [gDouble_00589888+0x10]
+            fcomp dword ptr [gMatchFloat_00589898]
             fxch st(2)
             fabs
             fxch st(1)
@@ -8250,12 +8621,12 @@ void C2_NAKED C2_HOOK_FASTCALL MungeCarGraphics(tU32 pFrame_period) {
             fstp st(0)
             je L0041e92f
             fld dword ptr [esp + 0x30]
-            fcomp dword ptr [gDouble_00589888+0x10]
+            fcomp dword ptr [gMatchFloat_00589898]
             fnstsw ax
             test ah, 0x41
             je L0041e92f
             fld dword ptr [esp + 0x38]
-            fcomp dword ptr [gDouble_00589888+0x10]
+            fcomp dword ptr [gMatchFloat_00589898]
             fnstsw ax
             test ah, 0x41
             jne L0041e791
@@ -8300,14 +8671,19 @@ void C2_NAKED C2_HOOK_FASTCALL MungeCarGraphics(tU32 pFrame_period) {
             test ah, 0x41
             jne L0041e82f
             fld dword ptr [esp + 0x40]
-            fcomp dword ptr [gFlyCarPitchRate+0x4]
+            fcomp dword ptr [gMatchFloat_005898a0]
             fnstsw ax
             test ah, 1
             je L0041e82f
             mov ecx, 6
             jmp L0041e934
     L0041e82f:
-            sub ecx, dword ptr [gInTheSea+0xc]
+            _emit 0x2b
+        _emit 0x0d
+        _emit 0x70
+        _emit 0x93
+        _emit 0x67
+        _emit 0x00
             cmp ecx, 0x1f4
             jbe L0041e847
             mov ecx, 5
@@ -8332,7 +8708,7 @@ void C2_NAKED C2_HOOK_FASTCALL MungeCarGraphics(tU32 pFrame_period) {
             test ah, 0x41
             jne L0041e89b
             fld dword ptr [esp + 0x20]
-            fcomp dword ptr [gFlyCarPitchRate+0x8]
+            fcomp dword ptr [gMatchFloat_005898a4]
             fnstsw ax
             test ah, 1
             je L0041e89b
@@ -8366,7 +8742,7 @@ void C2_NAKED C2_HOOK_FASTCALL MungeCarGraphics(tU32 pFrame_period) {
             jmp L0041e934
     L0041e8ed:
             fld dword ptr [esp + 0x10]
-            fcomp dword ptr [gFlyCarPitchRate+0xc]
+            fcomp dword ptr [gMatchFloat_005898a8]
             fnstsw ax
             test ah, 0x41
             jne L0041e905
@@ -8374,7 +8750,7 @@ void C2_NAKED C2_HOOK_FASTCALL MungeCarGraphics(tU32 pFrame_period) {
             jmp L0041e934
     L0041e905:
             fld dword ptr [esp + 0x10]
-            fcomp dword ptr [gFlyCarPitchRate+0x10]
+            fcomp dword ptr [gMatchFloat_005898ac]
             fnstsw ax
             test ah, 0x41
             jne L0041e91d
@@ -8567,7 +8943,7 @@ void C2_NAKED C2_HOOK_FASTCALL MungeCarGraphics(tU32 pFrame_period) {
         _emit 0x1c
         _emit 0x24
             call frac
-            fmul qword ptr [gFlyCarPitchRate+0x14]
+            fmul qword ptr [gMatchDouble_005898b0]
             call _ftol
             mov ecx, eax
             call FastScalarSin
@@ -8575,7 +8951,7 @@ void C2_NAKED C2_HOOK_FASTCALL MungeCarGraphics(tU32 pFrame_period) {
             fild dword ptr [esi + 0x2ec]
             fxch st(2)
             fstp dword ptr [esp + 0x3c]
-            fsubr qword ptr [gFlyCarPitchRate+0x1c]
+            fsubr qword ptr [gMatchDouble_005898b8]
             fld dword ptr [esp + 0x3c]
             fabs
             fxch st(1)
@@ -8590,7 +8966,7 @@ void C2_NAKED C2_HOOK_FASTCALL MungeCarGraphics(tU32 pFrame_period) {
             jmp L0041ebce
     L0041eb8d:
             fld dword ptr [esi + 0x4a4]
-            fmul qword ptr [gFlyCarPitchRate+0x24]
+            fmul qword ptr [gMatchDouble_005898c0]
             fld st(0)
             call _ftol
             mov ecx, dword ptr [esi + 0x2ec]
@@ -8601,7 +8977,7 @@ void C2_NAKED C2_HOOK_FASTCALL MungeCarGraphics(tU32 pFrame_period) {
             fsubr st(0), st(1)
             fild dword ptr [esp + 0x3c]
             fmulp st(1), st(0)
-            fsub qword ptr [gFlyCarPitchRate+0x2c]
+            fsub qword ptr [gMatchDouble_005898c8]
             fstp dword ptr [esi + 0x1340]
             fstp st(0)
     L0041ebce:
@@ -8726,7 +9102,7 @@ void C2_NAKED C2_HOOK_FASTCALL MungeCarGraphics(tU32 pFrame_period) {
             mov edx, dword ptr [gFrame_period]
             mov dword ptr [esp + 0x24], ebp
             fxch st(1)
-            fmul dword ptr [gFlyCarPitchRate+0x34]
+            fmul dword ptr [gMatchFloat_005898d0]
             mov dword ptr [esp + 0x20], edx
             fild qword ptr [esp + 0x20]
             fxch st(2)
@@ -8794,7 +9170,7 @@ void C2_NAKED C2_HOOK_FASTCALL MungeCarGraphics(tU32 pFrame_period) {
             fld dword ptr [ecx + 0x74]
             fld dword ptr [ecx + 0xc]
             fxch st(2)
-            fsub qword ptr [gFlyCarPitchRate+0x3c]
+            fsub qword ptr [gMatchDouble_005898d8]
             fld dword ptr [ecx + 0x10]
             fxch st(2)
             fabs
@@ -8817,11 +9193,11 @@ void C2_NAKED C2_HOOK_FASTCALL MungeCarGraphics(tU32 pFrame_period) {
             fld st(1)
             fld dword ptr [esp + 0x3c]
             fxch st(1)
-            fcomp dword ptr [gFlyCarPitchRate+0x54]
+            fcomp dword ptr [gMatchFloat_005898f0]
             fxch st(3)
-            fsub qword ptr [gFlyCarPitchRate+0x44]
+            fsub qword ptr [gMatchDouble_005898e0]
             fxch st(4)
-            fsub qword ptr [gFlyCarPitchRate+0x4c]
+            fsub qword ptr [gMatchDouble_005898e8]
             fxch st(4)
             fmul qword ptr [gDouble_00589638]
             fxch st(4)
@@ -8837,12 +9213,12 @@ void C2_NAKED C2_HOOK_FASTCALL MungeCarGraphics(tU32 pFrame_period) {
             fstp dword ptr [esp + 0x3c]
             test ah, 0x41
             je L0041eedd
-            fcomp dword ptr [gFlyCarPitchRate+0x58]
+            fcomp dword ptr [gMatchFloat_005898f4]
             fnstsw ax
             test ah, 0x41
             je L0041eedf
             fld dword ptr [esp + 0x3c]
-            fcomp dword ptr [gFlyCarPitchRate+0x5c]
+            fcomp dword ptr [gMatchFloat_005898f8]
             fnstsw ax
             test ah, 0x41
             jne L0041ef75
@@ -8889,13 +9265,13 @@ void C2_NAKED C2_HOOK_FASTCALL MungeCarGraphics(tU32 pFrame_period) {
     L0041ef75:
             mov edi, dword ptr [esp + 0x40]
     L0041ef79:
-            fcomp dword ptr [gFlyCarPitchRate+0x60]
+            fcomp dword ptr [gMatchFloat_005898fc]
             mov dword ptr [gWild_start], ebp
             fnstsw ax
             test ah, 0x41
             je L0041efa1
             fld dword ptr [esp + 0x3c]
-            fcomp dword ptr [gFlyCarPitchRate+0x64]
+            fcomp dword ptr [gMatchFloat_00589900]
             fnstsw ax
             test ah, 0x41
             je L0041efa1
@@ -8979,7 +9355,7 @@ void C2_NAKED C2_HOOK_FASTCALL MungeCarGraphics(tU32 pFrame_period) {
     L0041f0bc:
             mov edx, dword ptr [esi + 0x10]
             fld dword ptr [edx + 0x3c]
-            fcomp dword ptr [gFlyCarPitchRate+0x68]
+            fcomp dword ptr [gMatchFloat_00589904]
             fnstsw ax
             test ah, 1
             je L0041f0e7
@@ -9005,6 +9381,16 @@ void C2_NAKED C2_HOOK_FASTCALL MungeCarGraphics(tU32 pFrame_period) {
             pop ebx
             add esp, 0x38
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -9155,7 +9541,7 @@ void C2_NAKED C2_HOOK_FASTCALL MungeSomeOtherCarGraphics(void) {
             mov eax, dword ptr [ecx + 8]
             fld dword ptr [eax + 0x1b0]
             fabs
-            fcomp qword ptr [gDouble_00589888+0x8]
+            fcomp qword ptr [gMatchDouble_00589890]
             fnstsw ax
             test ah, 0x41
             jne L0041e61b
@@ -9189,6 +9575,9 @@ void C2_NAKED C2_HOOK_FASTCALL MungeSomeOtherCarGraphics(void) {
             pop esi
             pop ebp
             ret
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -12461,6 +12850,8 @@ merge_done:
             call BrMatrix34ApplyP
             add esp, 0xc
             jmp L0041c72e
+            nop
+            nop
     }
 #endif
 }
@@ -12630,7 +13021,7 @@ void C2_NAKED C2_HOOK_FASTCALL NewFacesListCallback(tPhysics_object* pCollision,
             je L00414b75
             fld dword ptr [edi + 0x38]
             fabs
-            fcomp dword ptr [gFloat_005895d0+0x4]
+            fcomp dword ptr [gMatchFloat_005895d4]
             fnstsw ax
             test ah, 0x41
             jne L00414b75
@@ -12752,7 +13143,7 @@ void C2_NAKED C2_HOOK_FASTCALL NewFacesListCallback(tPhysics_object* pCollision,
             fld dword ptr [esp + 0xc]
             fsub dword ptr [esi + 0x250]
             fabs
-            fcomp qword ptr [gFloat_005895d0+0x8]
+            fcomp qword ptr [gMatchDouble_005895d8]
             fnstsw ax
             test ah, 0x41
             jne L00414c98
@@ -12823,6 +13214,8 @@ void C2_NAKED C2_HOOK_FASTCALL NewFacesListCallback(tPhysics_object* pCollision,
             pop esi
             add esp, 0x20
             ret
+            nop
+            nop
     }
 #endif
 }
@@ -12924,7 +13317,7 @@ void C2_NAKED C2_HOOK_FAKE_THISCALL ControlCar1(tCar_spec* c, undefined4 arg2, b
             test ah, 1
             je L00417e62
             fld dword ptr [esp + 8]
-            fmul qword ptr [gFloat_005896f4+0x24]
+            fmul qword ptr [gMatchDouble_00589718]
             fld dword ptr [ecx + 0x1254]
             fxch st(1)
             fsubp st(1), st(0)
@@ -12960,7 +13353,7 @@ void C2_NAKED C2_HOOK_FAKE_THISCALL ControlCar1(tCar_spec* c, undefined4 arg2, b
             fxch st(3)
             faddp st(1), st(0)
             fld dword ptr [esp + 8]
-            fmul dword ptr [gFloat_005896d8+0x18]
+            fmul dword ptr [gMatchFloat_005896f0]
             fxch st(3)
             faddp st(1), st(0)
             fsqrt
@@ -12968,8 +13361,8 @@ void C2_NAKED C2_HOOK_FAKE_THISCALL ControlCar1(tCar_spec* c, undefined4 arg2, b
         _emit 0x54
         _emit 0x24
         _emit 0x00
-            fsub dword ptr [gFloat_005896d8+0x10]
-            fdivr dword ptr [gFloat_005896d8+0x14]
+            fsub dword ptr [gMatchFloat_005896e8]
+            fdivr dword ptr [gMatchFloat_005896ec]
             fxch st(2)
             fmulp st(2), st(0)
             fxch st(1)
@@ -12985,7 +13378,7 @@ void C2_NAKED C2_HOOK_FAKE_THISCALL ControlCar1(tCar_spec* c, undefined4 arg2, b
             test ah, 0x41
             jne L00417efd
             fld dword ptr [esp + 8]
-            fmul qword ptr [gDouble_00589740+0x8]
+            fmul qword ptr [gMatchDouble_00589748]
             fld dword ptr [ecx + 0x1254]
             fxch st(1)
             fsubp st(1), st(0)
@@ -13021,13 +13414,13 @@ void C2_NAKED C2_HOOK_FAKE_THISCALL ControlCar1(tCar_spec* c, undefined4 arg2, b
             fxch st(3)
             faddp st(1), st(0)
             fld dword ptr [esp + 8]
-            fmul dword ptr [gFloat_005896d8+0x18]
+            fmul dword ptr [gMatchFloat_005896f0]
             fxch st(3)
             faddp st(1), st(0)
             fsqrt
             fst dword ptr [esp + 8]
-            fsub dword ptr [gFloat_005896d8+0x10]
-            fdivr dword ptr [gFloat_005896d8+0x14]
+            fsub dword ptr [gMatchFloat_005896e8]
+            fdivr dword ptr [gMatchFloat_005896ec]
             fxch st(2)
             fmulp st(2), st(0)
             fxch st(1)
@@ -13058,6 +13451,17 @@ void C2_NAKED C2_HOOK_FAKE_THISCALL ControlCar1(tCar_spec* c, undefined4 arg2, b
             fstp st(0)
             pop ecx
             ret 4
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -13147,7 +13551,7 @@ void C2_NAKED C2_HOOK_FAKE_THISCALL ControlCar2(tCar_spec* c, undefined4 arg2, b
             test ah, 1
             je L0041721d
             fld dword ptr [esp + 0x10]
-            fmul qword ptr [gFloat_005896d8+0x8]
+            fmul qword ptr [gMatchDouble_005896e0]
             fld dword ptr [ecx + 0x125c]
             fxch st(1)
             fsubp st(1), st(0)
@@ -13171,13 +13575,13 @@ void C2_NAKED C2_HOOK_FAKE_THISCALL ControlCar2(tCar_spec* c, undefined4 arg2, b
             fxch st(3)
             faddp st(1), st(0)
             fld dword ptr [esp + 0x10]
-            fmul dword ptr [gFloat_005896d8+0x18]
+            fmul dword ptr [gMatchFloat_005896f0]
             fxch st(3)
             faddp st(1), st(0)
             fsqrt
             fst dword ptr [esp + 8]
-            fsub dword ptr [gFloat_005896d8+0x10]
-            fdivr dword ptr [gFloat_005896d8+0x14]
+            fsub dword ptr [gMatchFloat_005896e8]
+            fdivr dword ptr [gMatchFloat_005896ec]
             fxch st(2)
             fmulp st(2), st(0)
             fxch st(1)
@@ -13201,7 +13605,7 @@ void C2_NAKED C2_HOOK_FAKE_THISCALL ControlCar2(tCar_spec* c, undefined4 arg2, b
             test ah, 0x41
             jne L004172d7
             fld dword ptr [esp + 0x10]
-            fmul qword ptr [gFloat_005896f4+0x4]
+            fmul qword ptr [gMatchDouble_005896f8]
             fld dword ptr [ecx + 0x125c]
             fxch st(1)
             fsubp st(1), st(0)
@@ -13225,13 +13629,13 @@ void C2_NAKED C2_HOOK_FAKE_THISCALL ControlCar2(tCar_spec* c, undefined4 arg2, b
             fxch st(3)
             faddp st(1), st(0)
             fld dword ptr [esp + 0x10]
-            fmul dword ptr [gFloat_005896d8+0x18]
+            fmul dword ptr [gMatchFloat_005896f0]
             fxch st(3)
             faddp st(1), st(0)
             fsqrt
             fst dword ptr [esp + 0x10]
-            fsub dword ptr [gFloat_005896d8+0x10]
-            fdivr dword ptr [gFloat_005896d8+0x14]
+            fsub dword ptr [gMatchFloat_005896e8]
+            fdivr dword ptr [gMatchFloat_005896ec]
             fxch st(2)
             fmulp st(2), st(0)
             fxch st(1)
@@ -13275,6 +13679,19 @@ void C2_NAKED C2_HOOK_FAKE_THISCALL ControlCar2(tCar_spec* c, undefined4 arg2, b
             fstp st(0)
             pop ecx
             ret 4
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -13361,20 +13778,20 @@ void C2_NAKED C2_HOOK_FAKE_THISCALL ControlCar3(tCar_spec* c, undefined4 arg2, b
             fxch st(3)
             faddp st(1), st(0)
             fld dword ptr [esp + 0x10]
-            fmul dword ptr [gFloat_005896d8+0x18]
+            fmul dword ptr [gMatchFloat_005896f0]
             fxch st(3)
             faddp st(1), st(0)
             fld dword ptr [ecx + 0x125c]
             fxch st(1)
             fsqrt
             fst dword ptr [esp + 8]
-            fsub dword ptr [gFloat_005896d8+0x10]
-            fdivr dword ptr [gFloat_005896d8+0x14]
+            fsub dword ptr [gMatchFloat_005896e8]
+            fdivr dword ptr [gMatchFloat_005896ec]
             fxch st(3)
             fmulp st(3), st(0)
             fxch st(2)
             fmul dword ptr [gFloat_005896f4]
-            fmul qword ptr [gFloat_005896f4+0xc]
+            fmul qword ptr [gMatchDouble_00589700]
             fsubp st(2), st(0)
             fxch st(1)
             fstp dword ptr [ecx + 0x125c]
@@ -13382,7 +13799,7 @@ void C2_NAKED C2_HOOK_FAKE_THISCALL ControlCar3(tCar_spec* c, undefined4 arg2, b
             jmp L00417499
     L0041747f:
             fld dword ptr [esp + 0x10]
-            fmul qword ptr [gFloat_005896f4+0x14]
+            fmul qword ptr [gMatchDouble_00589708]
             fld dword ptr [ecx + 0x125c]
             fxch st(1)
             fsubp st(1), st(0)
@@ -13424,20 +13841,20 @@ void C2_NAKED C2_HOOK_FAKE_THISCALL ControlCar3(tCar_spec* c, undefined4 arg2, b
             fxch st(3)
             faddp st(1), st(0)
             fld dword ptr [esp + 0x10]
-            fmul dword ptr [gFloat_005896d8+0x18]
+            fmul dword ptr [gMatchFloat_005896f0]
             fxch st(3)
             faddp st(1), st(0)
             fld dword ptr [ecx + 0x125c]
             fxch st(1)
             fsqrt
             fst dword ptr [esp + 0x10]
-            fsub dword ptr [gFloat_005896d8+0x10]
-            fdivr dword ptr [gFloat_005896d8+0x14]
+            fsub dword ptr [gMatchFloat_005896e8]
+            fdivr dword ptr [gMatchFloat_005896ec]
             fxch st(3)
             fmulp st(3), st(0)
             fxch st(2)
             fmul dword ptr [gFloat_00589650]
-            fmul qword ptr [gFloat_005896f4+0xc]
+            fmul qword ptr [gMatchDouble_00589700]
             fsubp st(2), st(0)
             fxch st(1)
             fstp dword ptr [ecx + 0x125c]
@@ -13445,7 +13862,7 @@ void C2_NAKED C2_HOOK_FAKE_THISCALL ControlCar3(tCar_spec* c, undefined4 arg2, b
             jmp L00417577
     L0041755d:
             fld dword ptr [esp + 0x10]
-            fmul qword ptr [gFloat_005896f4+0x1c]
+            fmul qword ptr [gMatchDouble_00589710]
             fld dword ptr [ecx + 0x125c]
             fxch st(1)
             fsubp st(1), st(0)
@@ -13486,6 +13903,9 @@ void C2_NAKED C2_HOOK_FAKE_THISCALL ControlCar3(tCar_spec* c, undefined4 arg2, b
             fstp st(0)
             pop ecx
             ret 4
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -13590,7 +14010,7 @@ void C2_NAKED C2_HOOK_FAKE_THISCALL ControlCar5(tCar_spec* c, undefined4 arg2, b
             test ah, 1
             je L00417abe
             fld dword ptr [esp + 0x14]
-            fmul qword ptr [gDouble_00589740+0x28]
+            fmul qword ptr [gMatchDouble_00589768]
             fld dword ptr [ecx + 0x125c]
             fxch st(1)
             fsubp st(1), st(0)
@@ -13614,15 +14034,15 @@ void C2_NAKED C2_HOOK_FAKE_THISCALL ControlCar5(tCar_spec* c, undefined4 arg2, b
             fxch st(3)
             faddp st(1), st(0)
             fld dword ptr [esp + 0x14]
-            fmul dword ptr [gFloat_005896d8+0x18]
+            fmul dword ptr [gMatchFloat_005896f0]
             fxch st(3)
             faddp st(1), st(0)
             fld dword ptr [ecx + 0x125c]
             fxch st(1)
             fsqrt
             fst dword ptr [esp + 0xc]
-            fsub dword ptr [gFloat_005896d8+0x10]
-            fdivr dword ptr [gFloat_005896d8+0x14]
+            fsub dword ptr [gMatchFloat_005896e8]
+            fdivr dword ptr [gMatchFloat_005896ec]
             fxch st(3)
             fmulp st(3), st(0)
             fxch st(2)
@@ -13649,7 +14069,7 @@ void C2_NAKED C2_HOOK_FAKE_THISCALL ControlCar5(tCar_spec* c, undefined4 arg2, b
             test ah, 0x41
             jne L00417b86
             fld dword ptr [esp + 0x14]
-            fmul qword ptr [gDouble_00589740+0x30]
+            fmul qword ptr [gMatchDouble_00589770]
             fld dword ptr [ecx + 0x125c]
             fxch st(1)
             fsubp st(1), st(0)
@@ -13673,15 +14093,15 @@ void C2_NAKED C2_HOOK_FAKE_THISCALL ControlCar5(tCar_spec* c, undefined4 arg2, b
             fxch st(3)
             faddp st(1), st(0)
             fld dword ptr [esp + 0x14]
-            fmul dword ptr [gFloat_005896d8+0x18]
+            fmul dword ptr [gMatchFloat_005896f0]
             fxch st(3)
             faddp st(1), st(0)
             fld dword ptr [ecx + 0x125c]
             fxch st(1)
             fsqrt
             fst dword ptr [esp + 0xc]
-            fsub dword ptr [gFloat_005896d8+0x10]
-            fdivr dword ptr [gFloat_005896d8+0x14]
+            fsub dword ptr [gMatchFloat_005896e8]
+            fdivr dword ptr [gMatchFloat_005896ec]
             fxch st(3)
             fmulp st(3), st(0)
             fxch st(2)
@@ -13721,20 +14141,20 @@ void C2_NAKED C2_HOOK_FAKE_THISCALL ControlCar5(tCar_spec* c, undefined4 arg2, b
             fxch st(3)
             faddp st(1), st(0)
             fld dword ptr [esp + 0x14]
-            fmul dword ptr [gFloat_005896d8+0x18]
+            fmul dword ptr [gMatchFloat_005896f0]
             fxch st(3)
             faddp st(1), st(0)
             fld dword ptr [ecx + 0x1254]
             fxch st(1)
             fsqrt
             fst dword ptr [esp + 0x14]
-            fsub dword ptr [gFloat_005896d8+0x10]
-            fdivr dword ptr [gFloat_005896d8+0x14]
+            fsub dword ptr [gMatchFloat_005896e8]
+            fdivr dword ptr [gMatchFloat_005896ec]
             fxch st(3)
             fmulp st(3), st(0)
             fxch st(2)
             fmul dword ptr [gFloat_005896f4]
-            fmul qword ptr [gDouble_00589740+0x38]
+            fmul qword ptr [gMatchDouble_00589778]
             fsubp st(2), st(0)
             fxch st(1)
             fstp st(1)
@@ -13769,20 +14189,20 @@ void C2_NAKED C2_HOOK_FAKE_THISCALL ControlCar5(tCar_spec* c, undefined4 arg2, b
             fxch st(3)
             faddp st(1), st(0)
             fld dword ptr [esp + 0x14]
-            fmul dword ptr [gFloat_005896d8+0x18]
+            fmul dword ptr [gMatchFloat_005896f0]
             fxch st(3)
             faddp st(1), st(0)
             fld dword ptr [ecx + 0x1254]
             fxch st(1)
             fsqrt
             fst dword ptr [esp + 0x14]
-            fsub dword ptr [gFloat_005896d8+0x10]
-            fdivr dword ptr [gFloat_005896d8+0x14]
+            fsub dword ptr [gMatchFloat_005896e8]
+            fdivr dword ptr [gMatchFloat_005896ec]
             fxch st(3)
             fmulp st(3), st(0)
             fxch st(2)
             fmul dword ptr [gFloat_00589650]
-            fmul qword ptr [gDouble_00589740+0x38]
+            fmul qword ptr [gMatchDouble_00589778]
             fsubp st(2), st(0)
             fxch st(1)
             fstp st(1)
@@ -13829,6 +14249,19 @@ void C2_NAKED C2_HOOK_FAKE_THISCALL ControlCar5(tCar_spec* c, undefined4 arg2, b
             pop ebx
             pop ecx
             ret 4
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -14051,7 +14484,7 @@ void C2_NAKED C2_HOOK_FASTCALL RecalculateCarMassMomentOfInertia(tCar_spec* car)
             jl L004f90da
             mov esi, dword ptr [esp + 0x18]
     L004f9138:
-            push offset gDAT_00660148+0x68
+            push 0x6601b0
             call BrMaterialFind
             add esp, 4
             test eax, eax
@@ -14208,9 +14641,9 @@ void C2_NAKED C2_HOOK_FASTCALL PositionCarMountedCamera(tCar_spec* pCar, tU32 pT
 #else
     __asm {
             sub esp, 0xc
-            mov eax, dword ptr ds:[gCamera]
+            mov eax, dword ptr [gCamera]
             push ebx
-            mov bl, byte ptr ds:[gCamera_key_flags]
+            mov bl, byte ptr [gCamera_key_flags]
             push esi
             mov esi, ecx
             push edi
@@ -14221,49 +14654,138 @@ void C2_NAKED C2_HOOK_FASTCALL PositionCarMountedCamera(tCar_spec* pCar, tU32 pT
             je L0040f5d5
             test bl, 1
             jne L0040f5d5
-            fld dword ptr ds:[0x679300]
-            fcomp dword ptr ds:[gFLOAT_00589418]
+            _emit 0xd9
+        _emit 0x05
+        _emit 0x00
+        _emit 0x93
+        _emit 0x67
+        _emit 0x00
+            fcomp dword ptr [gFLOAT_00589418]
             fnstsw ax
             test ah, 1
             jne L0040f5d5
-            mov dword ptr ds:[0x679300], 0xb951b717
+            _emit 0xc7
+        _emit 0x05
+        _emit 0x00
+        _emit 0x93
+        _emit 0x67
+        _emit 0x00
+        _emit 0x17
+        _emit 0xb7
+        _emit 0x51
+        _emit 0xb9
             jmp L0040f5fc
     L0040f5d5:
             test bl, 4
             je L0040f5fc
             test bl, 1
             jne L0040f5fc
-            fld dword ptr ds:[0x679300]
-            fcomp dword ptr ds:[gFLOAT_00589418]
+            _emit 0xd9
+        _emit 0x05
+        _emit 0x00
+        _emit 0x93
+        _emit 0x67
+        _emit 0x00
+            fcomp dword ptr [gFLOAT_00589418]
             fnstsw ax
             test ah, 0x41
             je L0040f5fc
-            mov dword ptr ds:[0x679300], 0x3951b717
+            _emit 0xc7
+        _emit 0x05
+        _emit 0x00
+        _emit 0x93
+        _emit 0x67
+        _emit 0x00
+        _emit 0x17
+        _emit 0xb7
+        _emit 0x51
+        _emit 0x39
     L0040f5fc:
             mov dword ptr [esp + 0xc], edx
             mov dword ptr [esp + 0x10], 0
             fild qword ptr [esp + 0xc]
-            fmul dword ptr ds:[0x679300]
-            fadd dword ptr ds:[0x58f624]
-            fst dword ptr ds:[0x58f624]
-            fcomp dword ptr ds:[gFLOAT_00589440]
+            _emit 0xd8
+        _emit 0x0d
+        _emit 0x00
+        _emit 0x93
+        _emit 0x67
+        _emit 0x00
+            _emit 0xd8
+        _emit 0x05
+        _emit 0x24
+        _emit 0xf6
+        _emit 0x58
+        _emit 0x00
+            _emit 0xd9
+        _emit 0x15
+        _emit 0x24
+        _emit 0xf6
+        _emit 0x58
+        _emit 0x00
+            fcomp dword ptr [gFLOAT_00589440]
             fnstsw ax
             test ah, 0x41
             jne L0040f641
-            mov dword ptr ds:[0x679300], 0
-            mov dword ptr ds:[0x58f624], 0x3f800000
+            _emit 0xc7
+        _emit 0x05
+        _emit 0x00
+        _emit 0x93
+        _emit 0x67
+        _emit 0x00
+        _emit 0x00
+        _emit 0x00
+        _emit 0x00
+        _emit 0x00
+            _emit 0xc7
+        _emit 0x05
+        _emit 0x24
+        _emit 0xf6
+        _emit 0x58
+        _emit 0x00
+        _emit 0x00
+        _emit 0x00
+        _emit 0x80
+        _emit 0x3f
             jmp L0040f668
     L0040f641:
-            fld dword ptr ds:[0x58f624]
-            fcomp dword ptr ds:[gFLOAT_00589418]
+            _emit 0xd9
+        _emit 0x05
+        _emit 0x24
+        _emit 0xf6
+        _emit 0x58
+        _emit 0x00
+            fcomp dword ptr [gFLOAT_00589418]
             fnstsw ax
             test ah, 1
             je L0040f668
-            mov dword ptr ds:[0x679300], 0
-            mov dword ptr ds:[0x58f624], 0
+            _emit 0xc7
+        _emit 0x05
+        _emit 0x00
+        _emit 0x93
+        _emit 0x67
+        _emit 0x00
+        _emit 0x00
+        _emit 0x00
+        _emit 0x00
+        _emit 0x00
+            _emit 0xc7
+        _emit 0x05
+        _emit 0x24
+        _emit 0xf6
+        _emit 0x58
+        _emit 0x00
+        _emit 0x00
+        _emit 0x00
+        _emit 0x00
+        _emit 0x00
     L0040f668:
-            fld dword ptr ds:[gFLOAT_00589440]
-            fsub dword ptr ds:[0x58f624]
+            fld dword ptr [gFLOAT_00589440]
+            _emit 0xd8
+        _emit 0x25
+        _emit 0x24
+        _emit 0xf6
+        _emit 0x58
+        _emit 0x00
             fld dword ptr [esi + 0x18d8]
             fld dword ptr [esi + 0x18e4]
             fld dword ptr [esi + 0x18dc]
@@ -14273,7 +14795,12 @@ void C2_NAKED C2_HOOK_FASTCALL PositionCarMountedCamera(tCar_spec* pCar, tU32 pT
             fxch st(5)
             fmul st(0), st(6)
             fxch st(4)
-            fmul dword ptr ds:[0x58f624]
+            _emit 0xd8
+        _emit 0x0d
+        _emit 0x24
+        _emit 0xf6
+        _emit 0x58
+        _emit 0x00
             push ecx
             push edi
             faddp st(4), st(0)
@@ -14281,13 +14808,23 @@ void C2_NAKED C2_HOOK_FASTCALL PositionCarMountedCamera(tCar_spec* pCar, tU32 pT
             fmul st(0), st(5)
             fxch st(3)
             fstp dword ptr [esp + 0x14]
-            fmul dword ptr ds:[0x58f624]
+            _emit 0xd8
+        _emit 0x0d
+        _emit 0x24
+        _emit 0xf6
+        _emit 0x58
+        _emit 0x00
             fxch st(1)
             fmul st(0), st(4)
             fxch st(1)
             faddp st(2), st(0)
             fxch st(2)
-            fmul dword ptr ds:[0x58f624]
+            _emit 0xd8
+        _emit 0x0d
+        _emit 0x24
+        _emit 0xf6
+        _emit 0x58
+        _emit 0x00
             fxch st(1)
             fstp dword ptr [esp + 0x18]
             faddp st(1), st(0)
@@ -14303,24 +14840,54 @@ void C2_NAKED C2_HOOK_FASTCALL PositionCarMountedCamera(tCar_spec* pCar, tU32 pT
             push eax
             push edi
             call BrMatrix34PreTranslate
-            fld dword ptr ds:[0x679300]
-            fcomp dword ptr ds:[gFLOAT_00589418]
+            _emit 0xd9
+        _emit 0x05
+        _emit 0x00
+        _emit 0x93
+        _emit 0x67
+        _emit 0x00
+            fcomp dword ptr [gFLOAT_00589418]
             add esp, 0x10
             fnstsw ax
             test ah, 1
             je L0040f71b
-            fld dword ptr ds:[0x679300]
-            fsub qword ptr ds:[gSwing_forward_speed_threshold]
-            fstp dword ptr ds:[0x679300]
+            _emit 0xd9
+        _emit 0x05
+        _emit 0x00
+        _emit 0x93
+        _emit 0x67
+        _emit 0x00
+            fsub qword ptr [gSwing_forward_speed_threshold]
+            _emit 0xd9
+        _emit 0x1d
+        _emit 0x00
+        _emit 0x93
+        _emit 0x67
+        _emit 0x00
     L0040f71b:
-            fld dword ptr ds:[0x679300]
-            fcomp dword ptr ds:[gFLOAT_00589418]
+            _emit 0xd9
+        _emit 0x05
+        _emit 0x00
+        _emit 0x93
+        _emit 0x67
+        _emit 0x00
+            fcomp dword ptr [gFLOAT_00589418]
             fnstsw ax
             test ah, 0x41
             jne L0040f740
-            fld dword ptr ds:[0x679300]
-            fsub qword ptr ds:[0x589468]
-            fstp dword ptr ds:[0x679300]
+            _emit 0xd9
+        _emit 0x05
+        _emit 0x00
+        _emit 0x93
+        _emit 0x67
+        _emit 0x00
+            fsub qword ptr [gMatchDouble_00589468]
+            _emit 0xd9
+        _emit 0x1d
+        _emit 0x00
+        _emit 0x93
+        _emit 0x67
+        _emit 0x00
     L0040f740:
             push 0
             push 0
@@ -14333,6 +14900,14 @@ void C2_NAKED C2_HOOK_FASTCALL PositionCarMountedCamera(tCar_spec* pCar, tU32 pT
             pop ebx
             add esp, 0xc
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -14704,7 +15279,7 @@ void C2_NAKED C2_HOOK_FASTCALL GeneralisedPositionExternalCamera(tCar_spec* pCar
             mov edx, dword ptr [esp + 0x68]
             mov dword ptr [esp + 0x1c], ebp
             fld dword ptr [edx + 4]
-            fsub qword ptr [gDOUBLE_005894a8+0x10]
+            fsub qword ptr [gMatchDouble_005894b8]
             fld dword ptr [gCamera_height]
             fxch st(1)
             fcompp
@@ -14764,7 +15339,12 @@ void C2_NAKED C2_HOOK_FASTCALL GeneralisedPositionExternalCamera(tCar_spec* pCar
     L00410d3e:
             xor edx, edx
     L00410d40:
-            cmp ecx, dword ptr [gCamera_type+0x4]
+            _emit 0x3b
+        _emit 0x0d
+        _emit 0x0c
+        _emit 0x93
+        _emit 0x67
+        _emit 0x00
             je L00410db4
             mov eax, dword ptr [gSave_camera]
             cmp ecx, ebx
@@ -14776,7 +15356,12 @@ void C2_NAKED C2_HOOK_FASTCALL GeneralisedPositionExternalCamera(tCar_spec* pCar
             mov dword ptr [gSave_camera+0x4], eax
             mov word ptr [gSave_camera+0x8], di
             mov dword ptr [gSave_camera], ebp
-            mov dword ptr [gCamera_type+0x4], ecx
+            _emit 0x89
+        _emit 0x0d
+        _emit 0x0c
+        _emit 0x93
+        _emit 0x67
+        _emit 0x00
             jmp L00410dbb
     L00410d7b:
             cmp eax, ebx
@@ -14786,11 +15371,21 @@ void C2_NAKED C2_HOOK_FASTCALL GeneralisedPositionExternalCamera(tCar_spec* pCar
             mov dword ptr [gCamera_zoom], eax
             mov word ptr [gCamera_yaw], di
             mov dword ptr [gSave_camera], ebx
-            mov dword ptr [gCamera_type+0x4], ecx
+            _emit 0x89
+        _emit 0x0d
+        _emit 0x0c
+        _emit 0x93
+        _emit 0x67
+        _emit 0x00
             jmp L00410dbb
     L00410da5:
             mov di, word ptr [gCamera_yaw]
-            mov dword ptr [gCamera_type+0x4], ecx
+            _emit 0x89
+        _emit 0x0d
+        _emit 0x0c
+        _emit 0x93
+        _emit 0x67
+        _emit 0x00
             jmp L00410dbb
     L00410db4:
             mov di, word ptr [gCamera_yaw]
@@ -14822,12 +15417,12 @@ void C2_NAKED C2_HOOK_FASTCALL GeneralisedPositionExternalCamera(tCar_spec* pCar
             mov dword ptr [esp + 0x38], eax
             fild dword ptr [esp + 0x38]
             fxch st(1)
-            fmul dword ptr [gDOUBLE_005894a8+0x18]
+            fmul dword ptr [gMatchFloat_005894c0]
             fxch st(1)
             fdivp st(1), st(0)
             fadd dword ptr [gCamera_zoom]
             fst dword ptr [gCamera_zoom]
-            fcomp dword ptr [gDOUBLE_00589478+0xc]
+            fcomp dword ptr [gMatchFloat_00589484]
             fnstsw ax
             test ah, 0x41
             jne L00410e51
@@ -14858,17 +15453,17 @@ void C2_NAKED C2_HOOK_FASTCALL GeneralisedPositionExternalCamera(tCar_spec* pCar
             mov edx, dword ptr [gAction_replay_camera_mode]
             fild dword ptr [esp + 0x38]
             fxch st(1)
-            fmul dword ptr [gDOUBLE_005894a8+0x18]
+            fmul dword ptr [gMatchFloat_005894c0]
             fxch st(1)
             fdivp st(1), st(0)
             cmp edx, 5
             fsubr dword ptr [gCamera_zoom]
             fstp dword ptr [gCamera_zoom]
             jne L00410ed2
-            fld qword ptr [gDOUBLE_005894a8+0x20]
+            fld qword ptr [gMatchDouble_005894c8]
             jmp L00410ed8
     L00410ed2:
-            fld qword ptr [gDOUBLE_005894a8+0x28]
+            fld qword ptr [gMatchDouble_005894d0]
     L00410ed8:
             fld dword ptr [gCamera_zoom]
             fcompp
@@ -14877,10 +15472,10 @@ void C2_NAKED C2_HOOK_FASTCALL GeneralisedPositionExternalCamera(tCar_spec* pCar
             je L00410f25
             cmp dword ptr [gAction_replay_camera_mode], 5
             jne L00410ef8
-            fld qword ptr [gDOUBLE_005894a8+0x20]
+            fld qword ptr [gMatchDouble_005894c8]
             jmp L00410efe
     L00410ef8:
-            fld qword ptr [gDOUBLE_005894a8+0x28]
+            fld qword ptr [gMatchDouble_005894d0]
     L00410efe:
             fstp dword ptr [gCamera_zoom]
             test esi, esi
@@ -14895,7 +15490,7 @@ void C2_NAKED C2_HOOK_FASTCALL GeneralisedPositionExternalCamera(tCar_spec* pCar
             test ecx, ecx
             je L00410f48
             fld dword ptr [gProgram_state+0x550]
-            fcomp qword ptr [gDOUBLE_005894a8+0x30]
+            fcomp qword ptr [gMatchDouble_005894d8]
             fnstsw ax
             test ah, 1
             je L00410f48
@@ -14921,7 +15516,7 @@ void C2_NAKED C2_HOOK_FASTCALL GeneralisedPositionExternalCamera(tCar_spec* pCar
             mov dword ptr [esp + 0x3c], esi
             mov dword ptr [esp + 0x38], ecx
             fild qword ptr [esp + 0x38]
-            fmul dword ptr [gDOUBLE_005894a8+0x38]
+            fmul dword ptr [gMatchFloat_005894e0]
             fmul qword ptr [gDegreesToAngle_00589400]
             call _ftol
             add di, ax
@@ -14946,8 +15541,8 @@ void C2_NAKED C2_HOOK_FASTCALL GeneralisedPositionExternalCamera(tCar_spec* pCar
             mov dword ptr [esp + 0x3c], esi
             mov dword ptr [esp + 0x38], edx
             fild qword ptr [esp + 0x38]
-            fmul dword ptr [gDOUBLE_005894a8+0x38]
-            fmul qword ptr [gDOUBLE_005894a8+0x40]
+            fmul dword ptr [gMatchFloat_005894e0]
+            fmul qword ptr [gMatchDouble_005894e8]
             call _ftol
             add di, ax
             mov word ptr [gCamera_yaw], di
@@ -15052,7 +15647,7 @@ void C2_NAKED C2_HOOK_FASTCALL GeneralisedPositionExternalCamera(tCar_spec* pCar
             fld dword ptr [gCamera_zoom]
             fsqrt
             test ecx, ecx
-            fsub dword ptr [gSwing_reverse_speed_threshold+0x8]
+            fsub dword ptr [gMatchFloat_005894f8]
             fstp dword ptr [esp + 0x18]
             je L00411154
             cmp ecx, -1
@@ -15079,7 +15674,7 @@ void C2_NAKED C2_HOOK_FASTCALL GeneralisedPositionExternalCamera(tCar_spec* pCar
             test esi, esi
             je L004112f7
             fld dword ptr [esi + 0x7c]
-            fcomp dword ptr [gSwing_reverse_speed_threshold+0xc]
+            fcomp dword ptr [gMatchFloat_005894fc]
             fnstsw ax
             test ah, 0x41
             je L004112f7
@@ -15099,7 +15694,11 @@ void C2_NAKED C2_HOOK_FASTCALL GeneralisedPositionExternalCamera(tCar_spec* pCar
             jbe L00411204
             cmp ax, 0x5ffa
             jae L00411204
-            mov eax, dword ptr [gCamera_incident_direction+0x4]
+            _emit 0xa1
+        _emit 0x38
+        _emit 0xf6
+        _emit 0x58
+        _emit 0x00
             test eax, eax
             je L004112f7
             fld dword ptr [esi + 0x122c]
@@ -15111,28 +15710,54 @@ void C2_NAKED C2_HOOK_FASTCALL GeneralisedPositionExternalCamera(tCar_spec* pCar
             lea ecx, [ebp + ebp]
             mov edx, 1
             sub edx, ecx
-            mov dword ptr [gCamera_incident_direction+0x4], 0
+            _emit 0xc7
+        _emit 0x05
+        _emit 0x38
+        _emit 0xf6
+        _emit 0x58
+        _emit 0x00
+        _emit 0x00
+        _emit 0x00
+        _emit 0x00
+        _emit 0x00
             jmp L00411241
     L00411204:
-            mov eax, dword ptr [gCamera_incident_direction+0x4]
+            _emit 0xa1
+        _emit 0x38
+        _emit 0xf6
+        _emit 0x58
+        _emit 0x00
             test eax, eax
             jne L0041125b
             fld dword ptr [esi + 0x122c]
             fmul dword ptr [esi + 0x1254]
             fld qword ptr [gOne_00589438]
             fpatan
-            fmul qword ptr [gSwing_reverse_speed_threshold+0x10]
+            fmul qword ptr [gMatchDouble_00589500]
             call _ftol
             lea ecx, [ebp + ebp]
             mov edx, 1
             sub edx, ecx
-            mov dword ptr [gCamera_incident_direction+0x4], 1
+            _emit 0xc7
+        _emit 0x05
+        _emit 0x38
+        _emit 0xf6
+        _emit 0x58
+        _emit 0x00
+        _emit 0x01
+        _emit 0x00
+        _emit 0x00
+        _emit 0x00
     L00411241:
             imul eax, edx
             add di, ax
             mov word ptr [gCamera_yaw], di
     L0041124e:
-            mov eax, dword ptr [gCamera_incident_direction+0x4]
+            _emit 0xa1
+        _emit 0x38
+        _emit 0xf6
+        _emit 0x58
+        _emit 0x00
             test eax, eax
             je L004112f7
     L0041125b:
@@ -15476,7 +16101,12 @@ void C2_NAKED C2_HOOK_FASTCALL GeneralisedPositionExternalCamera(tCar_spec* pCar
             fmul dword ptr [gSwing_milliseconds_to_seconds]
             fxch st(1)
             fst dword ptr [esp + 0x70]
-            fsub dword ptr [gFLOAT_0058948c+0x4]
+            _emit 0xd8
+        _emit 0x25
+        _emit 0x90
+        _emit 0x94
+        _emit 0x58
+        _emit 0x00
             fxch st(1)
             fmulp st(1), st(0)
             fdiv dword ptr [esp + 0x70]
@@ -15548,9 +16178,9 @@ void C2_NAKED C2_HOOK_FASTCALL GeneralisedPositionExternalCamera(tCar_spec* pCar
             mov eax, dword ptr [gCamera_frozen]
             fild qword ptr [esp + 0x30]
             fxch st(1)
-            fsub dword ptr [gSwing_milliseconds_to_seconds+0x4]
+            fsub dword ptr [gMatchFloat_00589514]
             fxch st(1)
-            fmul dword ptr [gSwing_milliseconds_to_seconds+0x8]
+            fmul dword ptr [gMatchFloat_00589518]
             fxch st(1)
             fstp dword ptr [esp + 0x68]
             cmp eax, edx
@@ -15573,14 +16203,14 @@ void C2_NAKED C2_HOOK_FASTCALL GeneralisedPositionExternalCamera(tCar_spec* pCar
             fld dword ptr [esp + 0x70]
             test eax, eax
             je L00411802
-            fcomp dword ptr [gSwing_milliseconds_to_seconds+0xc]
+            fcomp dword ptr [gMatchFloat_0058951c]
             fnstsw ax
             test ah, 0x41
             jne L004117d7
             mov dword ptr [esp + 0x70], 0x3e4ccccd
     L004117d7:
             fld dword ptr [esp + 0x70]
-            fmul dword ptr [gSwing_milliseconds_to_seconds+0x10]
+            fmul dword ptr [gMatchFloat_00589520]
             fsubr dword ptr [gCamera_height]
             fst dword ptr [gCamera_height]
             fcomp dword ptr [ebx + 4]
@@ -15591,10 +16221,10 @@ void C2_NAKED C2_HOOK_FASTCALL GeneralisedPositionExternalCamera(tCar_spec* pCar
             mov dword ptr [gCamera_height], edx
             jmp L00411833
     L00411802:
-            fmul dword ptr [gSwing_milliseconds_to_seconds+0x10]
+            fmul dword ptr [gMatchFloat_00589520]
             fld dword ptr [ebx + 4]
             fld dword ptr [esp + 0x70]
-            fmul dword ptr [gSwing_milliseconds_to_seconds+0x14]
+            fmul dword ptr [gMatchFloat_00589524]
             fxch st(2)
             fmulp st(1), st(0)
             fxch st(1)
@@ -15615,7 +16245,7 @@ void C2_NAKED C2_HOOK_FASTCALL GeneralisedPositionExternalCamera(tCar_spec* pCar
             fld dword ptr [esp + 0x68]
             fld dword ptr [ebx + 4]
             fsubrp st(2), st(0)
-            fmul dword ptr [gFLOAT_0058948c+0x8]
+            fmul dword ptr [gMatchFloat_00589494]
             fld dword ptr [gCamera_height]
             fxch st(1)
             fsubp st(2), st(0)
@@ -15720,6 +16350,9 @@ void C2_NAKED C2_HOOK_FASTCALL GeneralisedPositionExternalCamera(tCar_spec* pCar
             xor ebp, ebp
             mov dword ptr [gCamera_sign], ebp
             jmp L004110a5
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -15752,7 +16385,7 @@ void C2_NAKED C2_HOOK_FASTCALL FrozenCamera(tCar_spec* pCar, tU32 pTime) {
             push esi
             push edi
             mov edi, ecx
-            mov ecx, dword ptr ds:[gCamera_key_flags]
+            mov ecx, dword ptr [gCamera_key_flags]
             mov esi, edx
             mov eax, ecx
             and eax, 8
@@ -15776,83 +16409,83 @@ void C2_NAKED C2_HOOK_FASTCALL FrozenCamera(tCar_spec* pCar, tU32 pTime) {
             add edx, 0x2c
             mov ecx, edi
             call GeneralisedPositionExternalCamera
-            mov ecx, dword ptr ds:[gCamera_key_flags]
-            mov dword ptr ds:[gAction_replay_manual_camera_target_type], 0
+            mov ecx, dword ptr [gCamera_key_flags]
+            mov dword ptr [gAction_replay_manual_camera_target_type], 0
             jmp L0040f026
     L0040efeb:
             test eax, eax
             je L0040f003
-            fld dword ptr ds:[gManual_camera_yaw]
-            fsub dword ptr ds:[gManual_camera_turn_step]
-            fstp dword ptr ds:[gManual_camera_yaw]
+            fld dword ptr [gManual_camera_yaw]
+            fsub dword ptr [gManual_camera_turn_step]
+            fstp dword ptr [gManual_camera_yaw]
             jmp L0040f026
     L0040f003:
             test cl, 0x10
             je L0040f01c
-            fld dword ptr ds:[gManual_camera_yaw]
-            fsub dword ptr ds:[gManual_camera_reverse_step]
-            fstp dword ptr ds:[gManual_camera_yaw]
+            fld dword ptr [gManual_camera_yaw]
+            fsub dword ptr [gManual_camera_reverse_step]
+            fstp dword ptr [gManual_camera_yaw]
             jmp L0040f026
     L0040f01c:
-            mov dword ptr ds:[gManual_camera_yaw], 0
+            mov dword ptr [gManual_camera_yaw], 0
     L0040f026:
-            mov edx, dword ptr ds:[gCamera]
+            mov edx, dword ptr [gCamera]
             test cl, 1
             jne L0040f089
             mov eax, ecx
-            mov dword ptr ds:[gManual_camera_vertical], 0
+            mov dword ptr [gManual_camera_vertical], 0
             and eax, 2
             jne L0040f056
             test cl, 4
             jne L0040f056
-            mov dword ptr ds:[gManual_camera_dolly], 0
+            mov dword ptr [gManual_camera_dolly], 0
             jmp L0040f0ff
     L0040f056:
             test eax, eax
             je L0040f06c
-            fld dword ptr ds:[gManual_camera_dolly]
-            fsub dword ptr ds:[gManual_camera_reverse_step]
-            fstp dword ptr ds:[gManual_camera_dolly]
+            fld dword ptr [gManual_camera_dolly]
+            fsub dword ptr [gManual_camera_reverse_step]
+            fstp dword ptr [gManual_camera_dolly]
     L0040f06c:
             test cl, 4
             je L0040f0ff
-            fld dword ptr ds:[gManual_camera_dolly]
-            fsub dword ptr ds:[gManual_camera_turn_step]
-            fstp dword ptr ds:[gManual_camera_dolly]
+            fld dword ptr [gManual_camera_dolly]
+            fsub dword ptr [gManual_camera_turn_step]
+            fstp dword ptr [gManual_camera_dolly]
             jmp L0040f0ff
     L0040f089:
             mov eax, ecx
-            mov dword ptr ds:[gManual_camera_dolly], 0
+            mov dword ptr [gManual_camera_dolly], 0
             and eax, 2
             jne L0040f0ab
             test cl, 4
             jne L0040f0ab
-            mov dword ptr ds:[gManual_camera_vertical], 0
+            mov dword ptr [gManual_camera_vertical], 0
             jmp L0040f0ff
     L0040f0ab:
             test eax, eax
             je L0040f0e8
-            fld dword ptr ds:[gManual_camera_vertical]
-            fsub dword ptr ds:[gManual_camera_reverse_step]
-            fstp dword ptr ds:[gManual_camera_vertical]
+            fld dword ptr [gManual_camera_vertical]
+            fsub dword ptr [gManual_camera_reverse_step]
+            fstp dword ptr [gManual_camera_vertical]
             mov eax, dword ptr [edi + 8]
             fld dword ptr [edx + 0x54]
             fld dword ptr [eax + 0xb4]
-            fsub dword ptr ds:[gManual_camera_min_height]
+            fsub dword ptr [gManual_camera_min_height]
             fxch st(1)
             fcompp
             fnstsw ax
             test ah, 0x41
             jne L0040f0e8
-            mov dword ptr ds:[gManual_camera_vertical], 0
+            mov dword ptr [gManual_camera_vertical], 0
     L0040f0e8:
             test cl, 4
             je L0040f0ff
-            fld dword ptr ds:[gManual_camera_vertical]
-            fsub dword ptr ds:[gManual_camera_turn_step]
-            fstp dword ptr ds:[gManual_camera_vertical]
+            fld dword ptr [gManual_camera_vertical]
+            fsub dword ptr [gManual_camera_turn_step]
+            fstp dword ptr [gManual_camera_vertical]
     L0040f0ff:
-            fld dword ptr ds:[gManual_camera_vertical]
+            fld dword ptr [gManual_camera_vertical]
             mov ecx, dword ptr [edx + 0x50]
             mov dword ptr [esp + 0x14], esi
             mov dword ptr [esp + 0x18], 0
@@ -15867,7 +16500,7 @@ void C2_NAKED C2_HOOK_FASTCALL FrozenCamera(tCar_spec* pCar, tU32 pTime) {
             mov dword ptr [esp + 0x30], ecx
             fadd dword ptr [edx + 0x54]
             fstp dword ptr [edx + 0x54]
-            mov eax, dword ptr ds:[gAction_replay_manual_camera_target_type]
+            mov eax, dword ptr [gAction_replay_manual_camera_target_type]
             cmp eax, 3
             ja L0040f21e
             jmp dword ptr [eax*4 + 0x40f484]
@@ -15879,7 +16512,7 @@ void C2_NAKED C2_HOOK_FASTCALL FrozenCamera(tCar_spec* pCar, tU32 pTime) {
             jmp L0040f222
             mov esi, offset gAction_replay_manual_camera_target_position
             jmp L0040f222
-            mov eax, dword ptr ds:[gAction_replay_manual_camera_target_car]
+            mov eax, dword ptr [gAction_replay_manual_camera_target_car]
             mov esi, offset gAction_replay_manual_camera_target_position
             mov edx, dword ptr [eax + 0x10]
             mov eax, dword ptr [eax + 8]
@@ -15891,12 +16524,12 @@ void C2_NAKED C2_HOOK_FASTCALL FrozenCamera(tCar_spec* pCar, tU32 pTime) {
             call BrMatrix34ApplyP
             add esp, 0xc
             jmp L0040f222
-            mov eax, dword ptr ds:[gAction_replay_manual_camera_target_pedestrian]
+            mov eax, dword ptr [gAction_replay_manual_camera_target_pedestrian]
             mov esi, offset gAction_replay_manual_camera_target_position
             test byte ptr [eax + 8], 1
             je L0040f222
             mov ecx, dword ptr [eax]
-            mov edx, dword ptr ds:[gAction_replay_manual_camera_target_character_actor]
+            mov edx, dword ptr [gAction_replay_manual_camera_target_character_actor]
             add edx, 0x2c
             lea ebx, [esp + 0x1c]
             mov ecx, dword ptr [ecx]
@@ -15912,7 +16545,7 @@ void C2_NAKED C2_HOOK_FASTCALL FrozenCamera(tCar_spec* pCar, tU32 pTime) {
             fld dword ptr [ecx + 0x38]
             fadd dword ptr [ecx + 0x44]
             fxch st(1)
-            fmul qword ptr ds:[gHalf_00589428]
+            fmul qword ptr [gHalf_00589428]
             fxch st(1)
             fstp dword ptr [esp + 0x2c]
             mov edx, dword ptr [eax]
@@ -15921,12 +16554,12 @@ void C2_NAKED C2_HOOK_FASTCALL FrozenCamera(tCar_spec* pCar, tU32 pTime) {
             fld dword ptr [eax + 0x3c]
             fadd dword ptr [eax + 0x48]
             fxch st(1)
-            fmul qword ptr ds:[gHalf_00589428]
+            fmul qword ptr [gHalf_00589428]
             fxch st(2)
             fstp dword ptr [esp + 0x28]
             fxch st(1)
             fxch st(1)
-            fmul qword ptr ds:[gHalf_00589428]
+            fmul qword ptr [gHalf_00589428]
             fxch st(1)
             fstp dword ptr [esp + 0x2c]
             fstp dword ptr [esp + 0x30]
@@ -15936,12 +16569,12 @@ void C2_NAKED C2_HOOK_FASTCALL FrozenCamera(tCar_spec* pCar, tU32 pTime) {
     L0040f21e:
             mov esi, dword ptr [esp + 0x14]
     L0040f222:
-            mov ecx, dword ptr ds:[gCamera]
+            mov ecx, dword ptr [gCamera]
             fld dword ptr [ecx + 0x50]
             _emit 0xd8
         _emit 0x26
-            fld dword ptr ds:[gManual_camera_dolly]
-            fcomp dword ptr ds:[gFLOAT_00589418]
+            fld dword ptr [gManual_camera_dolly]
+            fcomp dword ptr [gFLOAT_00589418]
             fstp dword ptr [esp + 0x1c]
             fld dword ptr [ecx + 0x54]
             fsub dword ptr [esi + 4]
@@ -15966,7 +16599,7 @@ void C2_NAKED C2_HOOK_FASTCALL FrozenCamera(tCar_spec* pCar, tU32 pTime) {
             fmul dword ptr [esp + 0x1c]
             fld st(1)
             fmul st(0), st(2)
-            fld dword ptr ds:[gManual_camera_dolly]
+            fld dword ptr [gManual_camera_dolly]
             fmul dword ptr [esp + 0x14]
             fxch st(1)
             faddp st(2), st(0)
@@ -15975,15 +16608,15 @@ void C2_NAKED C2_HOOK_FASTCALL FrozenCamera(tCar_spec* pCar, tU32 pTime) {
             fst dword ptr [esp + 0x10]
             fxch st(1)
             fld st(1)
-            fcomp dword ptr ds:[gFLOAT_00589430]
+            fcomp dword ptr [gFLOAT_00589430]
             fstp dword ptr [esp + 0x10]
             fnstsw ax
             test ah, 0x41
             jne L0040f2d3
-            fdivr qword ptr ds:[gOne_00589438]
+            fdivr qword ptr [gOne_00589438]
             fld st(0)
             fmul dword ptr [esp + 0x1c]
-            fld dword ptr ds:[gFLOAT_00589418]
+            fld dword ptr [gFLOAT_00589418]
             fxch st(2)
             fmul st(0), st(3)
             fxch st(1)
@@ -15992,9 +16625,9 @@ void C2_NAKED C2_HOOK_FASTCALL FrozenCamera(tCar_spec* pCar, tU32 pTime) {
     L0040f2d3:
             fstp st(0)
             fstp st(0)
-            fld dword ptr ds:[gFLOAT_00589440]
-            fld dword ptr ds:[gFLOAT_00589418]
-            fld dword ptr ds:[gFLOAT_00589418]
+            fld dword ptr [gFLOAT_00589440]
+            fld dword ptr [gFLOAT_00589418]
+            fld dword ptr [gFLOAT_00589418]
     L0040f2e9:
             fld st(3)
             fsub dword ptr [esp + 0x10]
@@ -16024,21 +16657,21 @@ void C2_NAKED C2_HOOK_FASTCALL FrozenCamera(tCar_spec* pCar, tU32 pTime) {
             fxch st(2)
             fadd dword ptr [ecx + 0x50]
             fstp dword ptr [ecx + 0x50]
-            mov eax, dword ptr ds:[gCamera]
+            mov eax, dword ptr [gCamera]
             fxch st(1)
             fstp st(0)
             fstp st(0)
             fld dword ptr [esp + 0x20]
             fadd dword ptr [eax + 0x54]
             fstp dword ptr [eax + 0x54]
-            mov eax, dword ptr ds:[gCamera]
+            mov eax, dword ptr [gCamera]
             fld dword ptr [esp + 0x24]
             fadd dword ptr [eax + 0x58]
             fstp dword ptr [eax + 0x58]
-            mov ecx, dword ptr ds:[gCamera]
+            mov ecx, dword ptr [gCamera]
     L0040f35c:
-            fld dword ptr ds:[gManual_camera_yaw]
-            fcomp dword ptr ds:[gFLOAT_00589418]
+            fld dword ptr [gManual_camera_yaw]
+            fcomp dword ptr [gFLOAT_00589418]
             fnstsw ax
             test ah, 0x40
             jne L0040f3f4
@@ -16046,40 +16679,40 @@ void C2_NAKED C2_HOOK_FASTCALL FrozenCamera(tCar_spec* pCar, tU32 pTime) {
             _emit 0xd8
         _emit 0x26
             fstp dword ptr [ecx + 0x50]
-            mov eax, dword ptr ds:[gCamera]
+            mov eax, dword ptr [gCamera]
             fld dword ptr [eax + 0x54]
             fsub dword ptr [esi + 4]
             fstp dword ptr [eax + 0x54]
-            mov eax, dword ptr ds:[gCamera]
+            mov eax, dword ptr [gCamera]
             fld dword ptr [eax + 0x58]
             fsub dword ptr [esi + 8]
             fstp dword ptr [eax + 0x58]
-            fld dword ptr ds:[gManual_camera_yaw]
+            fld dword ptr [gManual_camera_yaw]
             fmul dword ptr [esp + 0x14]
             fdiv st(0), st(1)
-            fmul qword ptr ds:[gRadiansToAngle_00589448]
+            fmul qword ptr [gRadiansToAngle_00589448]
             call _ftol
-            mov ecx, dword ptr ds:[gCamera]
+            mov ecx, dword ptr [gCamera]
             push eax
             add ecx, 0x2c
             push ecx
             fstp st(0)
             call BrMatrix34PostRotateY
-            mov eax, dword ptr ds:[gCamera]
+            mov eax, dword ptr [gCamera]
             add esp, 8
             _emit 0xd9
         _emit 0x06
             fadd dword ptr [eax + 0x50]
             fstp dword ptr [eax + 0x50]
-            mov eax, dword ptr ds:[gCamera]
+            mov eax, dword ptr [gCamera]
             fld dword ptr [esi + 4]
             fadd dword ptr [eax + 0x54]
             fstp dword ptr [eax + 0x54]
-            mov eax, dword ptr ds:[gCamera]
+            mov eax, dword ptr [gCamera]
             fld dword ptr [esi + 8]
             fadd dword ptr [eax + 0x58]
             fstp dword ptr [eax + 0x58]
-            mov ecx, dword ptr ds:[gCamera]
+            mov ecx, dword ptr [gCamera]
             jmp L0040f3f6
     L0040f3f4:
             fstp st(0)
@@ -16088,30 +16721,30 @@ void C2_NAKED C2_HOOK_FASTCALL FrozenCamera(tCar_spec* pCar, tU32 pTime) {
             mov ecx, esi
             call CollideCameraWithOtherCars
             mov edx, dword ptr [edi + 8]
-            mov eax, dword ptr ds:[gCamera]
+            mov eax, dword ptr [gCamera]
             push edx
             push 1
             push 0
             lea edx, [eax + 0x50]
             lea ecx, [esp + 0x34]
             call CollideCamera2
-            mov eax, dword ptr ds:[gCamera_has_collided]
+            mov eax, dword ptr [gCamera_has_collided]
             test eax, eax
             je L0040f466
             fld dword ptr [esp + 0x28]
-            mov ecx, dword ptr ds:[gCamera]
-            mov dword ptr ds:[gManual_camera_yaw], 0
-            mov dword ptr ds:[gManual_camera_dolly], 0
-            mov dword ptr ds:[gManual_camera_vertical], 0
+            mov ecx, dword ptr [gCamera]
+            mov dword ptr [gManual_camera_yaw], 0
+            mov dword ptr [gManual_camera_dolly], 0
+            mov dword ptr [gManual_camera_vertical], 0
             fstp dword ptr [ecx + 0x50]
             fld dword ptr [esp + 0x2c]
-            mov edx, dword ptr ds:[gCamera]
+            mov edx, dword ptr [gCamera]
             fstp dword ptr [edx + 0x54]
             fld dword ptr [esp + 0x30]
-            mov eax, dword ptr ds:[gCamera]
+            mov eax, dword ptr [gCamera]
             fstp dword ptr [eax + 0x58]
     L0040f466:
-            mov ecx, dword ptr ds:[gCamera]
+            mov ecx, dword ptr [gCamera]
             push 0x3f800000
             lea edx, [ecx + 0x2c]
             mov ecx, esi
@@ -16306,22 +16939,37 @@ void C2_NAKED C2_HOOK_FASTCALL SwingCamera(br_matrix34* pM1, br_matrix34* pM2, b
             push ebp
             push esi
             push edi
-            mov di, word ptr ds:[gCamera_yaw]
+            mov di, word ptr [gCamera_yaw]
             xor eax, eax
-            cmp word ptr ds:[gOld_yaw__car], di
+            cmp word ptr [gOld_yaw__car], di
             mov ebp, ecx
-            mov ecx, dword ptr ds:[0x58f63c]
+            _emit 0x8b
+        _emit 0x0d
+        _emit 0x3c
+        _emit 0xf6
+        _emit 0x58
+        _emit 0x00
             setne al
             cmp ecx, 0x1f4
             mov dword ptr [esp + 0x1c], eax
             jle L004119b7
             or ecx, 0xffffffff
-            mov dword ptr ds:[0x58f63c], ecx
+            _emit 0x89
+        _emit 0x0d
+        _emit 0x3c
+        _emit 0xf6
+        _emit 0x58
+        _emit 0x00
     L004119b7:
             test ecx, ecx
             jl L004119c5
             add ecx, dword ptr [esp + 0x34]
-            mov dword ptr ds:[0x58f63c], ecx
+            _emit 0x89
+        _emit 0x0d
+        _emit 0x3c
+        _emit 0xf6
+        _emit 0x58
+        _emit 0x00
     L004119c5:
             mov esi, dword ptr [esp + 0x24]
             fld dword ptr [ebp + 0x20]
@@ -16340,20 +16988,25 @@ void C2_NAKED C2_HOOK_FASTCALL SwingCamera(br_matrix34* pM1, br_matrix34* pM2, b
             fld dword ptr [esi + 8]
             fxch st(2)
             faddp st(3), st(0)
-            fld dword ptr ds:[0x679338]
+            _emit 0xd9
+        _emit 0x05
+        _emit 0x38
+        _emit 0x93
+        _emit 0x67
+        _emit 0x00
             fxch st(1)
-            fmul dword ptr ds:[0x67933c]
+            fmul dword ptr [gMatchData_0067933c]
             fxch st(3)
             fchs
             fxch st(2)
-            fmul dword ptr ds:[0x679340]
+            fmul dword ptr [gMatchData_00679340]
             fxch st(2)
             fst dword ptr [esp + 0x24]
             fxch st(1)
             _emit 0xd8
         _emit 0x0e
             fxch st(1)
-            fcomp dword ptr ds:[gFLOAT_00589418]
+            fcomp dword ptr [gFLOAT_00589418]
             fxch st(1)
             faddp st(2), st(0)
             faddp st(1), st(0)
@@ -16365,10 +17018,10 @@ void C2_NAKED C2_HOOK_FASTCALL SwingCamera(br_matrix34* pM1, br_matrix34* pM2, b
     L00411a2e:
             xor eax, eax
     L00411a30:
-            mov ebx, dword ptr ds:[gCamera_sign]
+            mov ebx, dword ptr [gCamera_sign]
             cmp eax, ebx
             je L00411be3
-            fcomp dword ptr ds:[gFLOAT_00589418]
+            fcomp dword ptr [gFLOAT_00589418]
             fnstsw ax
             test ah, 0x41
             jne L00411a9e
@@ -16379,7 +17032,7 @@ void C2_NAKED C2_HOOK_FASTCALL SwingCamera(br_matrix34* pM1, br_matrix34* pM2, b
             sete cl
             mov ebx, ecx
             cmp di, 0x7ff8
-            mov dword ptr ds:[gCamera_sign], ebx
+            mov dword ptr [gCamera_sign], ebx
             jbe L00411a78
             mov dx, di
             sub dx, 0x7ff8
@@ -16394,10 +17047,10 @@ void C2_NAKED C2_HOOK_FASTCALL SwingCamera(br_matrix34* pM1, br_matrix34* pM2, b
             cmp ax, 0x5ffa
             jae L00411bef
             neg di
-            mov word ptr ds:[gCamera_yaw], di
+            mov word ptr [gCamera_yaw], di
             jmp L00411bef
     L00411a9e:
-            mov eax, dword ptr ds:[gAction_replay_camera_mode]
+            mov eax, dword ptr [gAction_replay_camera_mode]
             test eax, eax
             jne L00411aaf
             test ebx, ebx
@@ -16406,26 +17059,40 @@ void C2_NAKED C2_HOOK_FASTCALL SwingCamera(br_matrix34* pM1, br_matrix34* pM2, b
             test ecx, ecx
             jge L00411abb
             xor ecx, ecx
-            mov dword ptr ds:[0x58f63c], ecx
+            _emit 0x89
+        _emit 0x0d
+        _emit 0x3c
+        _emit 0xf6
+        _emit 0x58
+        _emit 0x00
     L00411abb:
             cmp ecx, 0x1f4
             jge L00411ad8
             fld dword ptr [esp + 0x24]
-            fcomp dword ptr ds:[gFLOAT_00589418]
+            fcomp dword ptr [gFLOAT_00589418]
             fnstsw ax
             test ah, 0x41
             jne L00411bbe
     L00411ad8:
             fld dword ptr [esp + 0x24]
-            fcomp dword ptr ds:[gFLOAT_00589418]
-            mov dword ptr ds:[0x58f63c], 0x1f4
+            fcomp dword ptr [gFLOAT_00589418]
+            _emit 0xc7
+        _emit 0x05
+        _emit 0x3c
+        _emit 0xf6
+        _emit 0x58
+        _emit 0x00
+        _emit 0xf4
+        _emit 0x01
+        _emit 0x00
+        _emit 0x00
             fnstsw ax
             test ah, 0x41
             jne L00411afb
-            fld qword ptr ds:[gSwing_forward_speed_threshold]
+            fld qword ptr [gSwing_forward_speed_threshold]
             jmp L00411b01
     L00411afb:
-            fld qword ptr ds:[gSwing_reverse_speed_threshold]
+            fld qword ptr [gSwing_reverse_speed_threshold]
     L00411b01:
             fld dword ptr [esp + 0x30]
             fabs
@@ -16434,27 +17101,27 @@ void C2_NAKED C2_HOOK_FASTCALL SwingCamera(br_matrix34* pM1, br_matrix34* pM2, b
             test ah, 0x41
             fstp st(0)
             jne L00411bbe
-            mov eax, dword ptr ds:[gCar_flying]
+            mov eax, dword ptr [gCar_flying]
             test eax, eax
             jne L00411bbe
             xor eax, eax
             test ebx, ebx
             sete al
             mov ebx, eax
-            mov eax, dword ptr ds:[gUNK_006792f8]
+            mov eax, dword ptr [gUNK_006792f8]
             test eax, eax
-            mov dword ptr ds:[gCamera_sign], ebx
+            mov dword ptr [gCamera_sign], ebx
             je L00411b43
-            fld qword ptr ds:[gSwing_fast_acceleration]
+            fld qword ptr [gSwing_fast_acceleration]
             jmp L00411b49
     L00411b43:
-            fld qword ptr ds:[gSwing_slow_acceleration]
+            fld qword ptr [gSwing_slow_acceleration]
     L00411b49:
-            fmul qword ptr ds:[gSwing_reverse_acceleration_time]
-            fmul qword ptr ds:[gDegreesToAngle_00589400]
+            fmul qword ptr [gSwing_reverse_acceleration_time]
+            fmul qword ptr [gDegreesToAngle_00589400]
             call _ftol
             cmp di, 0x7ff8
-            mov word ptr ds:[gUNK_006792f4], ax
+            mov word ptr [gUNK_006792f4], ax
             jbe L00411b7a
             mov cx, di
             sub cx, 0x7ff8
@@ -16471,7 +17138,7 @@ void C2_NAKED C2_HOOK_FASTCALL SwingCamera(br_matrix34* pM1, br_matrix34* pM2, b
             mov ax, 0x7ff8
             sub ax, di
             mov di, ax
-            mov word ptr ds:[gCamera_yaw], di
+            mov word ptr [gCamera_yaw], di
             jmp L00411bef
     L00411b9f:
             cmp ax, 0x1ffe
@@ -16481,7 +17148,7 @@ void C2_NAKED C2_HOOK_FASTCALL SwingCamera(br_matrix34* pM1, br_matrix34* pM2, b
             mov cx, 0x7ff8
             sub cx, di
             mov di, cx
-            mov word ptr ds:[gCamera_yaw], di
+            mov word ptr [gCamera_yaw], di
             jmp L00411bef
     L00411bbe:
             _emit 0xd9
@@ -16495,20 +17162,34 @@ void C2_NAKED C2_HOOK_FASTCALL SwingCamera(br_matrix34* pM1, br_matrix34* pM2, b
             fld dword ptr [esi + 8]
             fchs
             fstp dword ptr [esi + 8]
-            mov di, word ptr ds:[gCamera_yaw]
-            mov ebx, dword ptr ds:[gCamera_sign]
+            mov di, word ptr [gCamera_yaw]
+            mov ebx, dword ptr [gCamera_sign]
             jmp L00411bef
     L00411be3:
             fstp st(0)
-            mov dword ptr ds:[0x58f63c], 0xffffffff
+            _emit 0xc7
+        _emit 0x05
+        _emit 0x3c
+        _emit 0xf6
+        _emit 0x58
+        _emit 0x00
+        _emit 0xff
+        _emit 0xff
+        _emit 0xff
+        _emit 0xff
     L00411bef:
             mov edx, dword ptr [esi]
-            mov dword ptr ds:[0x679338], edx
+            _emit 0x89
+        _emit 0x15
+        _emit 0x38
+        _emit 0x93
+        _emit 0x67
+        _emit 0x00
             mov eax, dword ptr [esi + 4]
-            mov dword ptr ds:[0x67933c], eax
+            mov dword ptr [gMatchData_0067933c], eax
             mov ecx, dword ptr [esi + 8]
             test ebx, ebx
-            mov dword ptr ds:[0x679340], ecx
+            mov dword ptr [gMatchData_00679340], ecx
             je L00411c14
             mov ax, di
             neg ax
@@ -16517,7 +17198,7 @@ void C2_NAKED C2_HOOK_FASTCALL SwingCamera(br_matrix34* pM1, br_matrix34* pM2, b
             mov word ptr [esp + 0x24], di
             mov eax, dword ptr [esp + 0x24]
     L00411c1d:
-            mov ecx, dword ptr ds:[gCar_flying]
+            mov ecx, dword ptr [gCar_flying]
             test ecx, ecx
             jne L00411c9a
             and eax, 0xffff
@@ -16526,7 +17207,7 @@ void C2_NAKED C2_HOOK_FASTCALL SwingCamera(br_matrix34* pM1, br_matrix34* pM2, b
             fld dword ptr [esi + 8]
             fld dword ptr [esi + 8]
             fxch st(2)
-            fmul qword ptr ds:[gBrAngleToRadiansScale]
+            fmul qword ptr [gBrAngleToRadiansScale]
             fld st(0)
             fld st(1)
             fxch st(1)
@@ -16561,26 +17242,26 @@ void C2_NAKED C2_HOOK_FASTCALL SwingCamera(br_matrix34* pM1, br_matrix34* pM2, b
         _emit 0x1e
             fxch st(1)
             fstp dword ptr [esi + 8]
-            mov di, word ptr ds:[gCamera_yaw]
+            mov di, word ptr [gCamera_yaw]
             fstp st(0)
     L00411c9a:
             fld dword ptr [esi + 8]
             _emit 0xd9
         _emit 0x06
-            fmul dword ptr ds:[gView_direction]
+            fmul dword ptr [gView_direction]
             fxch st(1)
-            fmul dword ptr ds:[0x655f50]
+            fmul dword ptr [gView_direction+0x8]
             fld dword ptr [esi + 8]
             fxch st(2)
             faddp st(1), st(0)
             _emit 0xd9
         _emit 0x06
-            fmul dword ptr ds:[0x655f50]
+            fmul dword ptr [gView_direction+0x8]
             fxch st(1)
             fst dword ptr [esp + 0x24]
-            fcomp qword ptr ds:[gHalf_00589428]
+            fcomp qword ptr [gHalf_00589428]
             fxch st(1)
-            fmul dword ptr ds:[gView_direction]
+            fmul dword ptr [gView_direction]
             fnstsw ax
             fsubp st(1), st(0)
             test ah, 1
@@ -16588,7 +17269,7 @@ void C2_NAKED C2_HOOK_FASTCALL SwingCamera(br_matrix34* pM1, br_matrix34* pM2, b
             je L00411cec
             test di, di
             jne L00411cec
-            mov dword ptr ds:[gUNK_006792f8], 1
+            mov dword ptr [gUNK_006792f8], 1
     L00411cec:
             mov eax, dword ptr [esp + 0x28]
             mov edx, dword ptr [esp + 0x34]
@@ -16612,19 +17293,19 @@ void C2_NAKED C2_HOOK_FASTCALL SwingCamera(br_matrix34* pM1, br_matrix34* pM2, b
             fst dword ptr [esp + 0x10]
             fabs
             fst dword ptr [esp + 0x28]
-            fsub dword ptr ds:[gSwing_negative_min_angular_speed]
+            fsub dword ptr [gSwing_negative_min_angular_speed]
             fxch st(1)
             fmulp st(1), st(0)
-            fmul dword ptr ds:[gSwing_milliseconds_to_seconds]
-            fmul qword ptr ds:[gRadiansToAngle_00589448]
+            fmul dword ptr [gSwing_milliseconds_to_seconds]
+            fmul qword ptr [gRadiansToAngle_00589448]
             call _ftol
-            mov bx, word ptr ds:[gUNK_006792f4]
+            mov bx, word ptr [gUNK_006792f4]
             xor ebp, ebp
             cmp bx, bp
             mov edi, eax
             jne L00411d8c
             fld dword ptr [esp + 0x24]
-            fcomp dword ptr ds:[gFLOAT_00589418]
+            fcomp dword ptr [gFLOAT_00589418]
             fnstsw ax
             test ah, 0x41
             jne L00411d8c
@@ -16636,30 +17317,30 @@ void C2_NAKED C2_HOOK_FASTCALL SwingCamera(br_matrix34* pM1, br_matrix34* pM2, b
         _emit 0x46
         _emit 0x16
         _emit 0x00
-            fmul qword ptr ds:[gRadiansToAngle_00589448]
+            fmul qword ptr [gRadiansToAngle_00589448]
             call _ftol
             cmp ax, di
             jb L00411fa0
     L00411d8c:
-            cmp dword ptr ds:[gCar_flying], ebp
+            cmp dword ptr [gCar_flying], ebp
             jne L00411fa0
             cmp dword ptr [esp + 0x1c], ebp
             jne L00411fa0
             cmp bx, bp
             jne L00411dd4
-            cmp dword ptr ds:[gUNK_006792f8], ebp
+            cmp dword ptr [gUNK_006792f8], ebp
             je L00411db7
-            fld qword ptr ds:[gSwing_fast_acceleration]
+            fld qword ptr [gSwing_fast_acceleration]
             jmp L00411dbd
     L00411db7:
-            fld qword ptr ds:[gSwing_slow_acceleration]
+            fld qword ptr [gSwing_slow_acceleration]
     L00411dbd:
-            fmul qword ptr ds:[gSwing_initial_acceleration_time]
-            fmul qword ptr ds:[gDegreesToAngle_00589400]
+            fmul qword ptr [gSwing_initial_acceleration_time]
+            fmul qword ptr [gDegreesToAngle_00589400]
             call _ftol
-            mov word ptr ds:[gUNK_006792f4], ax
+            mov word ptr [gUNK_006792f4], ax
     L00411dd4:
-            mov eax, dword ptr ds:[gUNK_006792f4]
+            mov eax, dword ptr [gUNK_006792f4]
             mov ecx, dword ptr [esp + 0x34]
             and eax, 0xffff
             imul ecx, eax
@@ -16675,7 +17356,7 @@ void C2_NAKED C2_HOOK_FASTCALL SwingCamera(br_matrix34* pM1, br_matrix34* pM2, b
             and ecx, 0xffff
             mov dword ptr [esp + 0x1c], ecx
             fild dword ptr [esp + 0x1c]
-            fmul qword ptr ds:[gBrAngleToRadiansScale]
+            fmul qword ptr [gBrAngleToRadiansScale]
             fxch st(1)
             fxch st(1)
             fcos
@@ -16686,35 +17367,35 @@ void C2_NAKED C2_HOOK_FASTCALL SwingCamera(br_matrix34* pM1, br_matrix34* pM2, b
             test ah, 1
             je L00411fa0
             fld dword ptr [esp + 0x24]
-            fcomp qword ptr ds:[gSwing_turn_dot_threshold]
+            fcomp qword ptr [gSwing_turn_dot_threshold]
             fnstsw ax
             test ah, 1
             je L00411e62
             fld dword ptr [esp + 0x28]
-            fcomp qword ptr ds:[gSwing_turn_speed_threshold]
+            fcomp qword ptr [gSwing_turn_speed_threshold]
             fnstsw ax
             test ah, 0x41
             jne L00411e62
             fld dword ptr [esp + 0x10]
             fmul dword ptr [esp + 0x30]
-            fcomp dword ptr ds:[gFLOAT_00589418]
+            fcomp dword ptr [gFLOAT_00589418]
             fnstsw ax
             test ah, 0x41
             jne L00411e62
             neg edx
     L00411e62:
             fld dword ptr [esp + 0x30]
-            fcomp dword ptr ds:[gFLOAT_00589418]
+            fcomp dword ptr [gFLOAT_00589418]
             fnstsw ax
             test ah, 0x41
             jne L00411ec8
             and edx, 0xffff
             mov dword ptr [esp + 0x24], edx
             fild dword ptr [esp + 0x24]
-            fld dword ptr ds:[0x655f50]
-            fld dword ptr ds:[gView_direction]
+            fld dword ptr [gView_direction+0x8]
+            fld dword ptr [gView_direction]
             fxch st(2)
-            fmul qword ptr ds:[gBrAngleToRadiansScale]
+            fmul qword ptr [gBrAngleToRadiansScale]
             fld st(0)
             fcos
             fxch st(1)
@@ -16728,8 +17409,8 @@ void C2_NAKED C2_HOOK_FASTCALL SwingCamera(br_matrix34* pM1, br_matrix34* pM2, b
             fxch st(1)
             _emit 0xd9
         _emit 0x1e
-            fld dword ptr ds:[gView_direction]
-            fld dword ptr ds:[0x655f50]
+            fld dword ptr [gView_direction]
+            fld dword ptr [gView_direction+0x8]
             fmul st(0), st(2)
             fxch st(1)
             fmul st(0), st(3)
@@ -16741,10 +17422,10 @@ void C2_NAKED C2_HOOK_FASTCALL SwingCamera(br_matrix34* pM1, br_matrix34* pM2, b
             and edx, 0xffff
             mov dword ptr [esp + 0x24], edx
             fild dword ptr [esp + 0x24]
-            fld dword ptr ds:[gView_direction]
-            fld dword ptr ds:[0x655f50]
+            fld dword ptr [gView_direction]
+            fld dword ptr [gView_direction+0x8]
             fxch st(2)
-            fmul qword ptr ds:[gBrAngleToRadiansScale]
+            fmul qword ptr [gBrAngleToRadiansScale]
             fld st(0)
             fcos
             fxch st(1)
@@ -16757,51 +17438,51 @@ void C2_NAKED C2_HOOK_FASTCALL SwingCamera(br_matrix34* pM1, br_matrix34* pM2, b
             fxch st(2)
             _emit 0xd9
         _emit 0x1e
-            fld dword ptr ds:[0x655f50]
-            fld dword ptr ds:[gView_direction]
+            fld dword ptr [gView_direction+0x8]
+            fld dword ptr [gView_direction]
             fmul st(0), st(2)
             fxch st(1)
             fmul st(0), st(3)
             faddp st(1), st(0)
             fstp dword ptr [esi + 8]
     L00411f17:
-            mov esi, dword ptr ds:[gUNK_006792f8]
+            mov esi, dword ptr [gUNK_006792f8]
             fstp st(0)
             cmp esi, ebp
             fstp st(0)
             je L00411f2d
-            fld qword ptr ds:[gSwing_fast_acceleration]
+            fld qword ptr [gSwing_fast_acceleration]
             jmp L00411f33
     L00411f2d:
-            fld qword ptr ds:[gSwing_slow_acceleration]
+            fld qword ptr [gSwing_slow_acceleration]
     L00411f33:
             fild dword ptr [esp + 0x34]
             fmul st(0), st(1)
-            fmul qword ptr ds:[gDegreesToAngle_00589400]
+            fmul qword ptr [gDegreesToAngle_00589400]
             call _ftol
-            add word ptr ds:[gUNK_006792f4], ax
+            add word ptr [gUNK_006792f4], ax
             cmp esi, ebp
             fstp st(0)
             je L00411f59
-            fld qword ptr ds:[gSwing_fast_max_degrees]
+            fld qword ptr [gSwing_fast_max_degrees]
             jmp L00411f5f
     L00411f59:
-            fld qword ptr ds:[gSwing_slow_max_degrees]
+            fld qword ptr [gSwing_slow_max_degrees]
     L00411f5f:
-            fmul qword ptr ds:[gDegreesToAngle_00589400]
+            fmul qword ptr [gDegreesToAngle_00589400]
             call _ftol
-            cmp word ptr ds:[gUNK_006792f4], ax
+            cmp word ptr [gUNK_006792f4], ax
             jbe L00411fb3
             cmp esi, ebp
             je L00411f7f
-            fld qword ptr ds:[gSwing_fast_max_degrees]
+            fld qword ptr [gSwing_fast_max_degrees]
             jmp L00411f85
     L00411f7f:
-            fld qword ptr ds:[gSwing_slow_max_degrees]
+            fld qword ptr [gSwing_slow_max_degrees]
     L00411f85:
-            fmul qword ptr ds:[gDegreesToAngle_00589400]
+            fmul qword ptr [gDegreesToAngle_00589400]
             call _ftol
-            mov word ptr ds:[gUNK_006792f4], ax
+            mov word ptr [gUNK_006792f4], ax
             pop edi
             pop esi
             pop ebp
@@ -16809,9 +17490,9 @@ void C2_NAKED C2_HOOK_FASTCALL SwingCamera(br_matrix34* pM1, br_matrix34* pM2, b
             add esp, 0x10
             ret 0x18
     L00411fa0:
-            mov word ptr ds:[gUNK_006792f4], bp
-            mov dword ptr ds:[gCamera_mode], ebp
-            mov dword ptr ds:[gUNK_006792f8], ebp
+            mov word ptr [gUNK_006792f4], bp
+            mov dword ptr [gCamera_mode], ebp
+            mov dword ptr [gUNK_006792f8], ebp
     L00411fb3:
             pop edi
             pop esi
@@ -16819,6 +17500,9 @@ void C2_NAKED C2_HOOK_FASTCALL SwingCamera(br_matrix34* pM1, br_matrix34* pM2, b
             pop ebx
             add esp, 0x10
             ret 0x18
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -16881,7 +17565,7 @@ void C2_NAKED C2_HOOK_FASTCALL PointCameraAtCar(br_vector3* pPos, br_matrix34* p
             mov edi, ecx
             mov ecx, dword ptr [eax + 0x5c]
             mov esi, edx
-            fmul dword ptr [gManual_camera_min_height+0x4]
+            fmul dword ptr [gMatchFloat_00589420]
             xor edx, edx
             mov dx, word ptr [ecx + 6]
             mov dword ptr [esp + 0x20], edx
@@ -16893,7 +17577,7 @@ void C2_NAKED C2_HOOK_FASTCALL PointCameraAtCar(br_vector3* pPos, br_matrix34* p
             cmp eax, ecx
             je L0041201a
             fld dword ptr [edi + 4]
-            fsub dword ptr [gSwing_slow_max_degrees+0x8]
+            fsub dword ptr [gMatchFloat_00589570]
             fcomp dword ptr [gCamera_height]
             fnstsw ax
             test ah, 1
@@ -16918,7 +17602,7 @@ void C2_NAKED C2_HOOK_FASTCALL PointCameraAtCar(br_vector3* pPos, br_matrix34* p
             fxch st(2)
             fsub dword ptr [edi + 8]
             fxch st(3)
-            fmul dword ptr [gSwing_slow_max_degrees+0xc]
+            fmul dword ptr [gMatchFloat_00589574]
             fxch st(1)
             fmul st(0), st(1)
             fxch st(2)
@@ -17055,6 +17739,12 @@ void C2_NAKED C2_HOOK_FASTCALL PointCameraAtCar(br_vector3* pPos, br_matrix34* p
             pop ebx
             add esp, 0xc
             ret 4
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -17346,7 +18036,7 @@ void C2_NAKED C2_HOOK_FASTCALL CalcGraphicalWheelStuff(tCar_spec* pCar) {
             fxch st(3)
             fsub dword ptr [ecx + 0x1270]
             fxch st(2)
-            fmul qword ptr [gFloat_00589668+0x18]
+            fmul qword ptr [gMatchDouble_00589680]
             fxch st(4)
             fmul qword ptr [gDouble_00589688]
             fxch st(1)
@@ -17363,6 +18053,7 @@ void C2_NAKED C2_HOOK_FASTCALL CalcGraphicalWheelStuff(tCar_spec* pCar) {
             fstp dword ptr [ecx + 0x4a8]
             fstp dword ptr [ecx + 0x4ac]
             jmp PipeSingleGraphicalWheelStuff
+            nop
     }
 #endif
 }
@@ -17483,7 +18174,7 @@ void C2_NAKED C2_HOOK_FASTCALL FinishCars(tU32 pLast_frame_time, tU32 pTime) {
             fxch st(1)
             fsqrt
             fst dword ptr [esp + 0x10]
-            fmul dword ptr [gOne+0x4]
+            fmul dword ptr [gMatchFloat_005895fc]
             fxch st(1)
             fcomp dword ptr [gFloat_005896ac]
             fstp dword ptr [esi + 0x7c]
@@ -17617,7 +18308,7 @@ void C2_NAKED C2_HOOK_FASTCALL FinishCars(tU32 pLast_frame_time, tU32 pTime) {
             faddp st(1), st(0)
             fxch st(1)
             faddp st(1), st(0)
-            fmul dword ptr [gOne+0x4]
+            fmul dword ptr [gMatchFloat_005895fc]
             fstp dword ptr [esi + 0x4a4]
             call CalcGraphicalWheelStuff
             lea ebp, [esi + 0x1274]
@@ -17677,7 +18368,7 @@ void C2_NAKED C2_HOOK_FASTCALL FinishCars(tU32 pLast_frame_time, tU32 pTime) {
             fld dword ptr [gCar_to_view_original_v]
             fsub dword ptr [eax + 0x68]
             fxch st(2)
-            fmul dword ptr [gFloat_005896ac+0x4]
+            fmul dword ptr [gMatchFloat_005896b0]
             fxch st(1)
             fsub dword ptr [eax + 0x6c]
             fld dword ptr [gCar_to_view_original_v+0x8]
@@ -17968,13 +18659,26 @@ void C2_NAKED C2_HOOK_FASTCALL CheckForDeAttachmentOfNonCars(tU32 pTime) {
             jl L004203f6
     L0042041e:
             call AREndPipingSession
-            mov eax, dword ptr [gFlyCarAngularVelocity+0x4]
+            _emit 0xa1
+        _emit 0x18
+        _emit 0x94
+        _emit 0x67
+        _emit 0x00
             add eax, ebp
             cmp eax, 0x3e8
-            mov dword ptr [gFlyCarAngularVelocity+0x4], eax
+            _emit 0xa3
+        _emit 0x18
+        _emit 0x94
+        _emit 0x67
+        _emit 0x00
             jb L00420791
             mov eax, dword ptr [gNum_active_non_cars]
-            mov dword ptr [gFlyCarAngularVelocity+0x4], ebx
+            _emit 0x89
+        _emit 0x1d
+        _emit 0x18
+        _emit 0x94
+        _emit 0x67
+        _emit 0x00
             cmp eax, ebx
             mov dword ptr [esp + 0x24], ebx
             jle L00420787
@@ -18128,7 +18832,7 @@ void C2_NAKED C2_HOOK_FASTCALL CheckForDeAttachmentOfNonCars(tU32 pTime) {
             fxch st(1)
             faddp st(2), st(0)
             faddp st(1), st(0)
-            fcomp dword ptr [gFlyCarRadiansToAngleNeg+0x8]
+            fcomp dword ptr [gMatchFloat_00589938]
             fnstsw ax
             test ah, 0x41
             fstp st(0)
@@ -18230,6 +18934,13 @@ void C2_NAKED C2_HOOK_FASTCALL CheckForDeAttachmentOfNonCars(tU32 pTime) {
             pop ebx
             add esp, 0x74
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -18451,7 +19162,7 @@ void C2_NAKED C2_HOOK_FASTCALL APTCPreCollision(void) {
             mov dword ptr [esp + 0x10], edx
             fild dword ptr [esp + 0x10]
             fmul dword ptr [esi + 0x1258]
-            fmul dword ptr [gDouble_00589688+0x8]
+            fmul dword ptr [gMatchFloat_00589690]
             fstp dword ptr [esi + 0x1254]
     L0041597e:
             cmp dword ptr [gNet_mode], 2
@@ -18673,6 +19384,9 @@ void C2_NAKED C2_HOOK_FASTCALL APTCPreCollision(void) {
             pop ebx
             pop ecx
             ret
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -18846,7 +19560,8 @@ void C2_NAKED C2_HOOK_FASTCALL AddDrag(tCar_spec* pCar, tPhysics_object* pObject
             fld dword ptr [esi + 4]
             fxch st(3)
             faddp st(1), st(0)
-            fld dword ptr [ecx]
+            _emit 0xd9
+        _emit 0x01
             fld dword ptr [esi + 0x6c]
             fxch st(2)
             fsqrt
@@ -19486,7 +20201,7 @@ void C2_NAKED C2_HOOK_FASTCALL MoveAndCollideCar(tCar_spec* pCar, br_scalar pDt)
             fmul dword ptr [esp + 0x28]
             fld dword ptr [esi + 0x1340]
             fxch st(1)
-            fmul qword ptr [gFlyCarAccelerationRate2+0x8]
+            fmul qword ptr [gMatchDouble_005896c0]
             fsubp st(1), st(0)
             fst dword ptr [esp + 0x28]
             fstp dword ptr [esi + 0x1340]
@@ -19525,7 +20240,7 @@ void C2_NAKED C2_HOOK_FASTCALL MoveAndCollideCar(tCar_spec* pCar, br_scalar pDt)
             jne L00416e93
     L00416e37:
             fld dword ptr [esi + 0x1344]
-            fcomp dword ptr [gFlyCarAccelerationRate2+0x10]
+            fcomp dword ptr [gMatchFloat_005896c8]
             fnstsw ax
             test ah, 0x41
             jne L00416e93
@@ -19557,7 +20272,7 @@ void C2_NAKED C2_HOOK_FASTCALL MoveAndCollideCar(tCar_spec* pCar, br_scalar pDt)
             jle L00416ef0
     L00416ea2:
             fld dword ptr [esi + 0x1344]
-            fcomp dword ptr [gFlyCarAccelerationRate2+0x14]
+            fcomp dword ptr [gMatchFloat_005896cc]
             fnstsw ax
             test ah, 1
             je L00416ef0
@@ -19602,7 +20317,7 @@ void C2_NAKED C2_HOOK_FASTCALL MoveAndCollideCar(tCar_spec* pCar, br_scalar pDt)
             je L00416f8c
     L00416f44:
             fld dword ptr [esi + 0x1340]
-            fcomp dword ptr [gFlyCarAccelerationRate2+0x10]
+            fcomp dword ptr [gMatchFloat_005896c8]
             fnstsw ax
             test ah, 1
             je L00416f8c
@@ -19614,7 +20329,7 @@ void C2_NAKED C2_HOOK_FASTCALL MoveAndCollideCar(tCar_spec* pCar, br_scalar pDt)
             cmp dword ptr [esi + 0x135c], 2
             jl L00416f86
             fld dword ptr [esi + 0x1340]
-            fcomp dword ptr [gFlyCarAccelerationRate2+0x14]
+            fcomp dword ptr [gMatchFloat_005896cc]
             fnstsw ax
             test ah, 1
             jne L00416f8c
@@ -19622,7 +20337,7 @@ void C2_NAKED C2_HOOK_FASTCALL MoveAndCollideCar(tCar_spec* pCar, br_scalar pDt)
             mov dword ptr [esi + 0x1360], ebx
     L00416f8c:
             fld dword ptr [esi + 0x1340]
-            fcomp dword ptr [gFlyCarAccelerationRate2+0x10]
+            fcomp dword ptr [gMatchFloat_005896c8]
             fnstsw ax
             test ah, 1
             jne L00416fc3
@@ -20028,7 +20743,8 @@ apply:
             lea edx, [esp + 0x18]
             fstp dword ptr [esp + 0x14]
             fmul dword ptr [esp + 0x14]
-            fld dword ptr [ecx]
+            _emit 0xd9
+        _emit 0x01
             fxch st(1)
             fdiv dword ptr [eax + 4]
             fxch st(1)
@@ -20089,10 +20805,14 @@ apply:
             fld dword ptr [esi + 0xe0]
             push ecx
             lea edx, [ecx + 0x68]
-            fstp dword ptr [esp]
+            _emit 0xd9
+        _emit 0x1c
+        _emit 0x24
             fld dword ptr [esi + 0xdc]
             push ecx
-            fstp dword ptr [esp]
+            _emit 0xd9
+        _emit 0x1c
+        _emit 0x24
             call ApplyNonCarTumble
     L00418510:
             test dword ptr [esi + 0x100], 0x10000
@@ -20239,7 +20959,9 @@ apply:
             mov dword ptr [esp + 0x34], 0
             jmp L004187da
     L00418703:
-            fld dword ptr [ebp]
+            _emit 0xd9
+        _emit 0x45
+        _emit 0x00
             fmul qword ptr [gDouble_00589798]
             fxch st(1)
             fcomp qword ptr [gDouble_005897a8]
@@ -21094,7 +21816,7 @@ void C2_NAKED C2_HOOK_FASTCALL ApplyNonCarTumble(tPhysics_object* pObject, br_ve
             fld dword ptr [esi + 0x74]
             fmul dword ptr [esp + 0x18]
             faddp st(1), st(0)
-            fcomp qword ptr [gDouble_00589740+0x40]
+            fcomp qword ptr [gMatchDouble_00589780]
             fnstsw ax
             test ah, 0x41
             je L00418227
@@ -21185,14 +21907,14 @@ void C2_NAKED C2_HOOK_FASTCALL ApplyNonCarTumble(tPhysics_object* pObject, br_ve
             fstp dword ptr [esi + 0x74]
             fxch st(1)
             fst dword ptr [esp + 0x28]
-            fcomp dword ptr [gFloat_00589788+0x4]
+            fcomp dword ptr [gMatchFloat_0058978c]
             fxch st(1)
             fstp dword ptr [esi + 0x78]
             fstp dword ptr [esi + 0x7c]
             fnstsw ax
             test ah, 0x41
             jne L00418223
-            fld dword ptr [gFloat_00589788+0x4]
+            fld dword ptr [gMatchFloat_0058978c]
             fdiv dword ptr [esp + 0x28]
             fsqrt
             fld dword ptr [esp + 0x2c]
@@ -21218,6 +21940,8 @@ void C2_NAKED C2_HOOK_FASTCALL ApplyNonCarTumble(tPhysics_object* pObject, br_ve
             pop esi
             add esp, 0x20
             ret 8
+            nop
+            nop
     }
 #endif
 }
@@ -21608,7 +22332,7 @@ void C2_NAKED C2_HOOK_FASTCALL CalcEngineForce(tCar_spec* pCar, br_scalar pDt) {
             mov edi, esi
             fmul dword ptr [gFloat_00589640]
             and edi, 0x40000
-            fsub qword ptr [gFloat_00589640+0x8]
+            fsub qword ptr [gMatchDouble_00589648]
             fst dword ptr [ecx + 0x12bc]
             jne L00415571
             mov eax, dword ptr [ecx + 0x12dc]
@@ -21637,7 +22361,7 @@ void C2_NAKED C2_HOOK_FASTCALL CalcEngineForce(tCar_spec* pCar, br_scalar pDt) {
             mov eax, dword ptr [ecx + 0x12dc]
             cmp eax, ebp
             jge L004155b5
-            fld dword ptr [gFloat_00589650+0x4]
+            fld dword ptr [gMatchFloat_00589654]
             jmp L004155d5
     L004155b5:
             mov eax, dword ptr [ecx + 0x12dc]
@@ -21645,10 +22369,10 @@ void C2_NAKED C2_HOOK_FASTCALL CalcEngineForce(tCar_spec* pCar, br_scalar pDt) {
             mov dword ptr [esp + 0x10], eax
             jl L004155cf
             fild dword ptr [esp + 0x10]
-            fmul qword ptr [gFloat_00589650+0x8]
+            fmul qword ptr [gMatchDouble_00589658]
             jmp L004155d5
     L004155cf:
-            fld dword ptr [gFloat_00589650+0x10]
+            fld dword ptr [gMatchFloat_00589660]
     L004155d5:
             mov ebp, dword ptr [ecx + 0x18ac]
             mov edx, dword ptr [ecx + 0x4e0]
@@ -21659,7 +22383,7 @@ void C2_NAKED C2_HOOK_FASTCALL CalcEngineForce(tCar_spec* pCar, br_scalar pDt) {
             add edx, -0xa
             mov dword ptr [esp + 0x10], edx
             fild dword ptr [esp + 0x10]
-            fmul dword ptr [gFloat_00589650+0x14]
+            fmul dword ptr [gMatchFloat_00589664]
             fsubr dword ptr [gOne]
             fmulp st(1), st(0)
     L0041560c:
@@ -21767,7 +22491,7 @@ void C2_NAKED C2_HOOK_FASTCALL CalcEngineForce(tCar_spec* pCar, br_scalar pDt) {
             fxch st(1)
             fdivr qword ptr [gZero]
             fxch st(1)
-            fmul qword ptr [gFloat_00589668+0x10]
+            fmul qword ptr [gMatchDouble_00589678]
             fdivr qword ptr [gZero]
             fxch st(1)
             fdiv dword ptr [esp + 0x10]
@@ -21781,7 +22505,7 @@ void C2_NAKED C2_HOOK_FASTCALL CalcEngineForce(tCar_spec* pCar, br_scalar pDt) {
             fxch st(3)
             fmul dword ptr [esp + 0x10]
             fxch st(1)
-            fmul qword ptr [gFloat_00589668+0x8]
+            fmul qword ptr [gMatchDouble_00589670]
             fxch st(1)
             faddp st(2), st(0)
             fxch st(2)
@@ -21971,7 +22695,8 @@ void C2_NAKED C2_HOOK_FASTCALL ConditionallyNoteSkid(tCar_spec* pCar, tFace_ref*
             fld dword ptr [eax + 8]
             fld dword ptr [eax + 0x38]
             fld dword ptr [eax + 0xc]
-            fld dword ptr [edi]
+            _emit 0xd9
+        _emit 0x07
             fld dword ptr [eax + 0x3c]
             fxch st(3)
             fmulp st(4), st(0)
@@ -21999,8 +22724,10 @@ void C2_NAKED C2_HOOK_FASTCALL ConditionallyNoteSkid(tCar_spec* pCar, tFace_ref*
             fxch st(1)
             fsubp st(2), st(0)
             fmul st(0), st(1)
-            fadd dword ptr [edi]
-            fstp dword ptr [edi]
+            _emit 0xd8
+        _emit 0x07
+            _emit 0xd9
+        _emit 0x1f
             mov eax, dword ptr [edx + ebx*4]
             fld dword ptr [eax + 0x38]
             fmul st(0), st(1)
@@ -22009,8 +22736,12 @@ void C2_NAKED C2_HOOK_FASTCALL ConditionallyNoteSkid(tCar_spec* pCar, tFace_ref*
             mov ecx, dword ptr [edx + ebx*4]
             fld dword ptr [ecx + 0x3c]
             fmul st(0), st(1)
-            fadd dword ptr [ebp]
-            fstp dword ptr [ebp]
+            _emit 0xd8
+        _emit 0x45
+        _emit 0x00
+            _emit 0xd9
+        _emit 0x5d
+        _emit 0x00
             fstp st(0)
     L0041bec5:
             pop edi
@@ -26845,7 +27576,7 @@ void C2_NAKED C2_HOOK_FASTCALL SkidNoise(tCar_spec* pCar, int pSide, br_scalar p
             fld dword ptr [esp + 0x50]
             fmul dword ptr [gFlyCarAccelerationRate2]
             call _ftol
-            mov dword ptr [edi*4 + gINT_00679404+0x4], eax
+            mov dword ptr [edi*4 + 0x679408], eax
             lea eax, [ebx + 0x183]
             lea ecx, [ebx + ebx*2]
             lea eax, [eax + eax*2]
@@ -26893,7 +27624,7 @@ void C2_NAKED C2_HOOK_FASTCALL SkidNoise(tCar_spec* pCar, int pSide, br_scalar p
             lea ecx, [esi + 0x13cc]
             lea edx, [esp + 0x2c]
             push eax
-            mov eax, dword ptr [edi*4 + gINT_00679404+0x4]
+            mov eax, dword ptr [edi*4 + 0x679408]
             push eax
             push 1
             push ecx
@@ -27003,7 +27734,7 @@ void C2_NAKED C2_HOOK_FASTCALL SkidNoise(tCar_spec* pCar, int pSide, br_scalar p
             push edx
             call BrMatrix34ApplyV
             fld dword ptr [esp + 0x5c]
-            fmul dword ptr [gFloat_00589800+0x4]
+            fmul dword ptr [gMatchFloat_00589804]
             add esp, 0xc
             lea edx, [esp + 0x34]
             push 4
@@ -27021,6 +27752,18 @@ void C2_NAKED C2_HOOK_FASTCALL SkidNoise(tCar_spec* pCar, int pSide, br_scalar p
             pop ebx
             add esp, 0x3c
             ret 8
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -27350,7 +28093,8 @@ after_link:
             fmul dword ptr [gFloat_00589868]
             fld dword ptr [eax + 4]
             fld dword ptr [eax + 8]
-            fld dword ptr [eax]
+            _emit 0xd9
+        _emit 0x00
             fmul st(0), st(3)
             fxch st(2)
             fmul st(0), st(3)

@@ -46,6 +46,56 @@ extern br_boolean C2_HOOK_CDECL HostIniSectionExists();
 extern br_error C2_HOOK_CDECL HostRegistryQuery();
 extern br_framework_state fw;
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gData_0066c968[];
+extern char gFloat_0066c8c4[];
+extern char gFloat_0066c918[];
+extern char gFloat_0066c9f4[];
+extern char gFloat_0066ca0c[];
+extern char gFloat_0066ca20[];
+extern char gFloat_0066ca54[];
+extern char gFloat_0066ca90[];
+extern char gFloat_0066cabc[];
+extern char gString_0066c884[];
+extern char gString_0066c894[];
+extern char gString_0066c8a4[];
+extern char gString_0066c8b4[];
+extern char gString_0066c8d8[];
+extern char gString_0066c8e8[];
+extern char gString_0066c8f8[];
+extern char gString_0066c908[];
+extern char gString_0066c99c[];
+extern char gString_0066c9ac[];
+extern char gString_0066c9bc[];
+extern char gString_0066c9c8[];
+extern char gString_0066c9d8[];
+extern char gString_0066c9e4[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchData_0066c968[];
+extern char gMatchFloat_0066c8c4[];
+extern char gMatchFloat_0066c918[];
+extern char gMatchFloat_0066c9f4[];
+extern char gMatchFloat_0066ca0c[];
+extern char gMatchFloat_0066ca20[];
+extern char gMatchFloat_0066ca54[];
+extern char gMatchFloat_0066ca90[];
+extern char gMatchFloat_0066cabc[];
+extern char gMatchString_0066c884[];
+extern char gMatchString_0066c894[];
+extern char gMatchString_0066c8a4[];
+extern char gMatchString_0066c8b4[];
+extern char gMatchString_0066c8d8[];
+extern char gMatchString_0066c8e8[];
+extern char gMatchString_0066c8f8[];
+extern char gMatchString_0066c908[];
+extern char gMatchString_0066c99c[];
+extern char gMatchString_0066c9ac[];
+extern char gMatchString_0066c9bc[];
+extern char gMatchString_0066c9c8[];
+extern char gMatchString_0066c9d8[];
+extern char gMatchString_0066c9e4[];
+#endif
 // FUNCTION: CARMA2_HW 0x005308b0
 br_boolean C2_HOOK_STDCALL LoadIniEntry(char* ini_file, char* section_name, br_token t, char* Entry) {
     br_uint_16 size;
@@ -172,9 +222,9 @@ br_error C2_NAKED C2_HOOK_CDECL BrSystemConfigBegin(void) {
             sub esp, 0x304
             call BrAssociativeArrayAllocate
             test eax, eax
-            mov dword ptr ds:[0x79f948], eax
+            mov dword ptr [fw+0x468], eax
             jne L0053048d
-            push 0x66c968
+            push offset gMatchData_0066c968
             call BrFailure
             add esp, 4
             mov eax, 0x1002
@@ -196,34 +246,34 @@ br_error C2_NAKED C2_HOOK_CDECL BrSystemConfigBegin(void) {
             push ecx
             push 0xff
             push edx
-            push 0x66c99c
+            push offset gMatchString_0066c99c
             push eax
             push 0
             call HostRegistryQuery
             add esp, 0x18
             test eax, eax
             jne L005304ea
-            mov edx, dword ptr ds:[0x79f948]
+            mov edx, dword ptr [fw+0x468]
             lea ecx, [esp + 4]
             push ecx
             push 0x1a3
             push edx
             jmp L00530524
     L005304ea:
-            push 0x66c99c
+            push offset gMatchString_0066c99c
             push 0x1a3
             push 0x66c954
             push 0x66c95c
             call LoadIniEntry
             test eax, eax
             jne L00530529
-            push 0x66c99c
+            push offset gMatchString_0066c99c
             call BrGetEnv
             add esp, 4
             test eax, eax
             je L00530529
             push eax
-            mov eax, dword ptr ds:[0x79f948]
+            mov eax, dword ptr [fw+0x468]
             push 0x1a3
             push eax
     L00530524:
@@ -244,33 +294,33 @@ br_error C2_NAKED C2_HOOK_CDECL BrSystemConfigBegin(void) {
             push edx
             push 0xff
             push eax
-            push 0x66c9ac
+            push offset gMatchString_0066c9ac
             push ecx
             push 0
             call HostRegistryQuery
             add esp, 0x18
             test eax, eax
             jne L00530585
-            mov eax, dword ptr ds:[0x79f948]
+            mov eax, dword ptr [fw+0x468]
             lea edx, [esp + 0x204]
             push edx
             push 0x1a4
             push eax
             jmp L005305c0
     L00530585:
-            push 0x66c9ac
+            push offset gMatchString_0066c9ac
             push 0x1a4
             push 0x66c954
             push 0x66c95c
             call LoadIniEntry
             test eax, eax
             jne L005305c5
-            push 0x66c9ac
+            push offset gMatchString_0066c9ac
             call BrGetEnv
             add esp, 4
             test eax, eax
             je L005305c5
-            mov ecx, dword ptr ds:[0x79f948]
+            mov ecx, dword ptr [fw+0x468]
             push eax
             push 0x1a4
             push ecx
@@ -287,26 +337,26 @@ br_error C2_NAKED C2_HOOK_CDECL BrSystemConfigBegin(void) {
             call BrSprintf
             add esp, 0x18
             lea eax, [esp + 4]
-            push 0x66c9bc
+            push offset gMatchString_0066c9bc
             push 0x1a4
             push 0
             push eax
             call LoadRegistryEntry
             test eax, eax
             jne L0053063c
-            push 0x66c9bc
+            push offset gMatchString_0066c9bc
             push 0x1a4
             push 0x66c954
             push 0x66c95c
             call LoadIniEntry
             test eax, eax
             jne L0053063c
-            push 0x66c9bc
+            push offset gMatchString_0066c9bc
             call BrGetEnv
             add esp, 4
             test eax, eax
             je L0053063c
-            mov ecx, dword ptr ds:[0x79f948]
+            mov ecx, dword ptr [fw+0x468]
             push eax
             push 0x1a4
             push ecx
@@ -322,26 +372,26 @@ br_error C2_NAKED C2_HOOK_CDECL BrSystemConfigBegin(void) {
             call BrSprintf
             add esp, 0x18
             lea eax, [esp + 4]
-            push 0x66c9c8
+            push offset gMatchString_0066c9c8
             push 0x1a6
             push 0
             push eax
             call LoadRegistryEntry
             test eax, eax
             jne L005306b3
-            push 0x66c9c8
+            push offset gMatchString_0066c9c8
             push 0x1a6
             push 0x66c954
             push 0x66c95c
             call LoadIniEntry
             test eax, eax
             jne L005306b3
-            push 0x66c9c8
+            push offset gMatchString_0066c9c8
             call BrGetEnv
             add esp, 4
             test eax, eax
             je L005306b3
-            mov ecx, dword ptr ds:[0x79f948]
+            mov ecx, dword ptr [fw+0x468]
             push eax
             push 0x1a6
             push ecx
@@ -357,26 +407,26 @@ br_error C2_NAKED C2_HOOK_CDECL BrSystemConfigBegin(void) {
             call BrSprintf
             add esp, 0x18
             lea eax, [esp + 4]
-            push 0x66c9d8
+            push offset gMatchString_0066c9d8
             push 0x1a6
             push 0
             push eax
             call LoadRegistryEntry
             test eax, eax
             jne L0053072a
-            push 0x66c9d8
+            push offset gMatchString_0066c9d8
             push 0x1a6
             push 0x66c954
             push 0x66c95c
             call LoadIniEntry
             test eax, eax
             jne L0053072a
-            push 0x66c9d8
+            push offset gMatchString_0066c9d8
             call BrGetEnv
             add esp, 4
             test eax, eax
             je L0053072a
-            mov ecx, dword ptr ds:[0x79f948]
+            mov ecx, dword ptr [fw+0x468]
             push eax
             push 0x1a6
             push ecx
@@ -392,26 +442,26 @@ br_error C2_NAKED C2_HOOK_CDECL BrSystemConfigBegin(void) {
             call BrSprintf
             add esp, 0x18
             lea eax, [esp + 4]
-            push 0x66c9e4
+            push offset gMatchString_0066c9e4
             push 0x1a5
             push 0
             push eax
             call LoadRegistryEntry
             test eax, eax
             jne L005307a1
-            push 0x66c9e4
+            push offset gMatchString_0066c9e4
             push 0x1a5
             push 0x66c954
             push 0x66c95c
             call LoadIniEntry
             test eax, eax
             jne L005307a1
-            push 0x66c9e4
+            push offset gMatchString_0066c9e4
             call BrGetEnv
             add esp, 4
             test eax, eax
             je L005307a1
-            mov ecx, dword ptr ds:[0x79f948]
+            mov ecx, dword ptr [fw+0x468]
             push eax
             push 0x1a5
             push ecx
@@ -427,32 +477,32 @@ br_error C2_NAKED C2_HOOK_CDECL BrSystemConfigBegin(void) {
             call BrSprintf
             add esp, 0x18
             lea eax, [esp + 4]
-            push 0x66c9f4
+            push offset gMatchFloat_0066c9f4
             push 0x1a5
             push 0
             push eax
             call LoadRegistryEntry
             test eax, eax
             jne L00530818
-            push 0x66c9f4
+            push offset gMatchFloat_0066c9f4
             push 0x1a5
             push 0x66c954
             push 0x66c95c
             call LoadIniEntry
             test eax, eax
             jne L00530818
-            push 0x66c9f4
+            push offset gMatchFloat_0066c9f4
             call BrGetEnv
             add esp, 4
             test eax, eax
             je L00530818
-            mov ecx, dword ptr ds:[0x79f948]
+            mov ecx, dword ptr [fw+0x468]
             push eax
             push 0x1a5
             push ecx
             call BrAssociativeArraySetEntry
     L00530818:
-            push 0x66ca0c
+            push offset gMatchFloat_0066ca0c
             push 0x1a5
             call BrSetDefaultConfig
             lea edx, [esp + 0x104]
@@ -466,7 +516,7 @@ br_error C2_NAKED C2_HOOK_CDECL BrSystemConfigBegin(void) {
             jne L00530862
             call HostDefaultDevice
             push eax
-            mov eax, dword ptr ds:[0x79f948]
+            mov eax, dword ptr [fw+0x468]
             push 0x1a5
             push eax
             call BrAssociativeArraySetEntry
@@ -480,8 +530,8 @@ br_error C2_NAKED C2_HOOK_CDECL BrSystemConfigBegin(void) {
             add esp, 0xc
             test al, al
             jne L0053089d
-            mov edx, dword ptr ds:[0x79f948]
-            push 0x66ca20
+            mov edx, dword ptr [fw+0x468]
+            push offset gMatchFloat_0066ca20
             push 0x1a3
             push edx
             call BrAssociativeArraySetEntry
@@ -489,6 +539,16 @@ br_error C2_NAKED C2_HOOK_CDECL BrSystemConfigBegin(void) {
             xor eax, eax
             add esp, 0x304
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -518,7 +578,7 @@ br_error C2_NAKED C2_HOOK_CDECL BrSystemConfigLoad(br_token t, char* Param1, voi
             je L00530c28
             dec eax
             je L00530ac5
-            push offset valid_system_config_tokens+0x1e4
+            push offset gMatchFloat_0066ca54
             call BrFailure
             add esp, 4
             mov eax, 0x1002
@@ -546,7 +606,7 @@ br_error C2_NAKED C2_HOOK_CDECL BrSystemConfigLoad(br_token t, char* Param1, voi
             push eax
             push 0xff
             push ecx
-            push offset valid_system_config_tokens+0x14
+            push offset gMatchString_0066c884
             push esi
             push edi
             call HostIniQuery
@@ -565,7 +625,7 @@ br_error C2_NAKED C2_HOOK_CDECL BrSystemConfigLoad(br_token t, char* Param1, voi
             push ecx
             push 0xff
             push edx
-            push offset valid_system_config_tokens+0x24
+            push offset gMatchString_0066c894
             push esi
             push edi
             call HostIniQuery
@@ -584,7 +644,7 @@ br_error C2_NAKED C2_HOOK_CDECL BrSystemConfigLoad(br_token t, char* Param1, voi
             push edx
             push 0xff
             push eax
-            push offset valid_system_config_tokens+0x34
+            push offset gMatchString_0066c8a4
             push esi
             push edi
             call HostIniQuery
@@ -603,7 +663,7 @@ br_error C2_NAKED C2_HOOK_CDECL BrSystemConfigLoad(br_token t, char* Param1, voi
             push eax
             push 0xff
             push ecx
-            push offset valid_system_config_tokens+0x44
+            push offset gMatchString_0066c8b4
             push esi
             push edi
             call HostIniQuery
@@ -622,7 +682,7 @@ br_error C2_NAKED C2_HOOK_CDECL BrSystemConfigLoad(br_token t, char* Param1, voi
             push ecx
             push 0xff
             push edx
-            push offset valid_system_config_tokens+0x54
+            push offset gMatchFloat_0066c8c4
             push esi
             push edi
             call HostIniQuery
@@ -648,7 +708,7 @@ br_error C2_NAKED C2_HOOK_CDECL BrSystemConfigLoad(br_token t, char* Param1, voi
             push edx
             push 0xff
             push eax
-            push offset valid_system_config_tokens+0x68
+            push offset gMatchString_0066c8d8
             push esi
             push edi
             call HostRegistryQuery
@@ -666,7 +726,7 @@ br_error C2_NAKED C2_HOOK_CDECL BrSystemConfigLoad(br_token t, char* Param1, voi
             push eax
             push 0xff
             push ecx
-            push offset valid_system_config_tokens+0x78
+            push offset gMatchString_0066c8e8
             push esi
             push edi
             call HostRegistryQuery
@@ -684,7 +744,7 @@ br_error C2_NAKED C2_HOOK_CDECL BrSystemConfigLoad(br_token t, char* Param1, voi
             push ecx
             push 0xff
             push edx
-            push offset valid_system_config_tokens+0x88
+            push offset gMatchString_0066c8f8
             push esi
             push edi
             call HostRegistryQuery
@@ -702,7 +762,7 @@ br_error C2_NAKED C2_HOOK_CDECL BrSystemConfigLoad(br_token t, char* Param1, voi
             push edx
             push 0xff
             push eax
-            push offset valid_system_config_tokens+0x98
+            push offset gMatchString_0066c908
             push esi
             push edi
             call HostRegistryQuery
@@ -720,7 +780,7 @@ br_error C2_NAKED C2_HOOK_CDECL BrSystemConfigLoad(br_token t, char* Param1, voi
             push eax
             push 0xff
             push ecx
-            push offset valid_system_config_tokens+0xa8
+            push offset gMatchFloat_0066c918
             push esi
             push edi
             call HostRegistryQuery
@@ -791,7 +851,7 @@ br_error C2_NAKED C2_HOOK_CDECL BrSystemConfigSetString(br_token t, const char* 
     L00530daa:
             test edx, edx
             jne L00530dc2
-            push offset valid_system_config_tokens+0x220
+            push offset gMatchFloat_0066ca90
             call BrFailure
             add esp, 4
             mov eax, 0x1002
@@ -865,7 +925,7 @@ br_error C2_NAKED C2_HOOK_CDECL BrSystemConfigQueryString(br_token t, char* stri
     L00530e0a:
             test edx, edx
             jne L00530e22
-            push offset valid_system_config_tokens+0x24c
+            push offset gMatchFloat_0066cabc
             call BrFailure
             add esp, 4
             mov eax, 0x1002
@@ -906,6 +966,7 @@ br_error C2_NAKED C2_HOOK_CDECL BrSystemConfigQueryString(br_token t, char* stri
             pop esi
             mov byte ptr [edx], 0
             ret
+            nop
     }
 #endif
 }

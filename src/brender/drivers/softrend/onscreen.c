@@ -30,6 +30,12 @@
 extern void C2_HOOK_CDECL BrMatrix4TApply();
 extern char rendererStateStoredDispatch[];
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gData_0058c904[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchData_0058c904[];
+#endif
 // FUNCTION: CARMA2_HW 0x00544830
 br_token C2_NAKED C2_HOOK_STDCALL OnScreenCheck(br_soft_renderer* self, br_matrix4* model_to_screen, br_bounds3* bounds) {
 #ifndef CARPOCALYPSE2_MATCHING
@@ -132,7 +138,7 @@ br_token C2_NAKED C2_HOOK_STDCALL OnScreenCheck(br_soft_renderer* self, br_matri
             fld dword ptr [ebp + 0x3c]
             fld dword ptr [ebp + 0x1c]
             fld st(2)
-            fcomp dword ptr [rendererStateStoredDispatch+0x6c]
+            fcomp dword ptr [gMatchData_0058c904]
             fld dword ptr [ebp + 0x20]
             fxch st(2)
             fadd dword ptr [ebp + 0x30]
@@ -157,7 +163,7 @@ br_token C2_NAKED C2_HOOK_STDCALL OnScreenCheck(br_soft_renderer* self, br_matri
         _emit 0x06
     L0054488a:
             fld st(1)
-            fcomp dword ptr [rendererStateStoredDispatch+0x6c]
+            fcomp dword ptr [gMatchData_0058c904]
             fnstsw ax
             test ah, 0x41
             jne L0054489e
@@ -167,7 +173,7 @@ br_token C2_NAKED C2_HOOK_STDCALL OnScreenCheck(br_soft_renderer* self, br_matri
             fld dword ptr [esi + 4]
     L005448a1:
             fld dword ptr [esp + 0x18]
-            fcomp dword ptr [rendererStateStoredDispatch+0x6c]
+            fcomp dword ptr [gMatchData_0058c904]
             fnstsw ax
             test ah, 0x41
             jne L005448b7
@@ -207,7 +213,7 @@ br_token C2_NAKED C2_HOOK_STDCALL OnScreenCheck(br_soft_renderer* self, br_matri
             ret 0xc
     L005448fa:
             fld st(1)
-            fcomp dword ptr [rendererStateStoredDispatch+0x6c]
+            fcomp dword ptr [gMatchData_0058c904]
             fnstsw ax
             test ah, 0x41
             jne L0054490d
@@ -218,7 +224,7 @@ br_token C2_NAKED C2_HOOK_STDCALL OnScreenCheck(br_soft_renderer* self, br_matri
             fld dword ptr [esi + 0xc]
     L00544910:
             fld st(1)
-            fcomp dword ptr [rendererStateStoredDispatch+0x6c]
+            fcomp dword ptr [gMatchData_0058c904]
             fnstsw ax
             test ah, 0x41
             jne L00544924
@@ -228,7 +234,7 @@ br_token C2_NAKED C2_HOOK_STDCALL OnScreenCheck(br_soft_renderer* self, br_matri
             fld dword ptr [esi + 0x10]
     L00544927:
             fld dword ptr [esp + 0x18]
-            fcomp dword ptr [rendererStateStoredDispatch+0x6c]
+            fcomp dword ptr [gMatchData_0058c904]
             fnstsw ax
             test ah, 0x41
             jne L0054493d
@@ -271,7 +277,7 @@ br_token C2_NAKED C2_HOOK_STDCALL OnScreenCheck(br_soft_renderer* self, br_matri
             fld dword ptr [ebp + 0x2c]
             fxch st(3)
             fst dword ptr [esp + 0x10]
-            fcomp dword ptr [rendererStateStoredDispatch+0x6c]
+            fcomp dword ptr [gMatchData_0058c904]
             fxch st(1)
             fsub dword ptr [ebp + 0x30]
             fxch st(1)
@@ -294,7 +300,7 @@ br_token C2_NAKED C2_HOOK_STDCALL OnScreenCheck(br_soft_renderer* self, br_matri
         _emit 0x06
     L005449c1:
             fld dword ptr [esp + 0x14]
-            fcomp dword ptr [rendererStateStoredDispatch+0x6c]
+            fcomp dword ptr [gMatchData_0058c904]
             fnstsw ax
             test ah, 0x41
             jne L005449d7
@@ -304,7 +310,7 @@ br_token C2_NAKED C2_HOOK_STDCALL OnScreenCheck(br_soft_renderer* self, br_matri
             fld dword ptr [esi + 4]
     L005449da:
             fld dword ptr [esp + 0x18]
-            fcomp dword ptr [rendererStateStoredDispatch+0x6c]
+            fcomp dword ptr [gMatchData_0058c904]
             fnstsw ax
             test ah, 0x41
             jne L005449f0
@@ -343,7 +349,7 @@ br_token C2_NAKED C2_HOOK_STDCALL OnScreenCheck(br_soft_renderer* self, br_matri
             cmp ecx, ebx
             je L00544ab4
             fld dword ptr [esp + 0x10]
-            fcomp dword ptr [rendererStateStoredDispatch+0x6c]
+            fcomp dword ptr [gMatchData_0058c904]
             fnstsw ax
             test ah, 0x41
             jne L00544a4a
@@ -354,7 +360,7 @@ br_token C2_NAKED C2_HOOK_STDCALL OnScreenCheck(br_soft_renderer* self, br_matri
             fld dword ptr [esi + 0xc]
     L00544a4d:
             fld dword ptr [esp + 0x14]
-            fcomp dword ptr [rendererStateStoredDispatch+0x6c]
+            fcomp dword ptr [gMatchData_0058c904]
             fnstsw ax
             test ah, 0x41
             jne L00544a63
@@ -364,7 +370,7 @@ br_token C2_NAKED C2_HOOK_STDCALL OnScreenCheck(br_soft_renderer* self, br_matri
             fld dword ptr [esi + 0x10]
     L00544a66:
             fld dword ptr [esp + 0x18]
-            fcomp dword ptr [rendererStateStoredDispatch+0x6c]
+            fcomp dword ptr [gMatchData_0058c904]
             fnstsw ax
             test ah, 0x41
             jne L00544a7c
@@ -402,7 +408,7 @@ br_token C2_NAKED C2_HOOK_STDCALL OnScreenCheck(br_soft_renderer* self, br_matri
             fld dword ptr [ebp + 0x2c]
             fxch st(3)
             fst dword ptr [esp + 0x10]
-            fcomp dword ptr [rendererStateStoredDispatch+0x6c]
+            fcomp dword ptr [gMatchData_0058c904]
             fxch st(1)
             fadd dword ptr [ebp + 0x34]
             fxch st(1)
@@ -425,7 +431,7 @@ br_token C2_NAKED C2_HOOK_STDCALL OnScreenCheck(br_soft_renderer* self, br_matri
         _emit 0x06
     L00544afe:
             fld dword ptr [esp + 0x14]
-            fcomp dword ptr [rendererStateStoredDispatch+0x6c]
+            fcomp dword ptr [gMatchData_0058c904]
             fnstsw ax
             test ah, 0x41
             jne L00544b14
@@ -435,7 +441,7 @@ br_token C2_NAKED C2_HOOK_STDCALL OnScreenCheck(br_soft_renderer* self, br_matri
             fld dword ptr [esi + 4]
     L00544b17:
             fld dword ptr [esp + 0x18]
-            fcomp dword ptr [rendererStateStoredDispatch+0x6c]
+            fcomp dword ptr [gMatchData_0058c904]
             fnstsw ax
             test ah, 0x41
             jne L00544b2d
@@ -474,7 +480,7 @@ br_token C2_NAKED C2_HOOK_STDCALL OnScreenCheck(br_soft_renderer* self, br_matri
             cmp ecx, ebx
             je L00544bf1
             fld dword ptr [esp + 0x10]
-            fcomp dword ptr [rendererStateStoredDispatch+0x6c]
+            fcomp dword ptr [gMatchData_0058c904]
             fnstsw ax
             test ah, 0x41
             jne L00544b87
@@ -485,7 +491,7 @@ br_token C2_NAKED C2_HOOK_STDCALL OnScreenCheck(br_soft_renderer* self, br_matri
             fld dword ptr [esi + 0xc]
     L00544b8a:
             fld dword ptr [esp + 0x14]
-            fcomp dword ptr [rendererStateStoredDispatch+0x6c]
+            fcomp dword ptr [gMatchData_0058c904]
             fnstsw ax
             test ah, 0x41
             jne L00544ba0
@@ -495,7 +501,7 @@ br_token C2_NAKED C2_HOOK_STDCALL OnScreenCheck(br_soft_renderer* self, br_matri
             fld dword ptr [esi + 0x10]
     L00544ba3:
             fld dword ptr [esp + 0x18]
-            fcomp dword ptr [rendererStateStoredDispatch+0x6c]
+            fcomp dword ptr [gMatchData_0058c904]
             fnstsw ax
             test ah, 0x41
             jne L00544bb9
@@ -533,7 +539,7 @@ br_token C2_NAKED C2_HOOK_STDCALL OnScreenCheck(br_soft_renderer* self, br_matri
             fld dword ptr [ebp + 0x2c]
             fxch st(3)
             fst dword ptr [esp + 0x10]
-            fcomp dword ptr [rendererStateStoredDispatch+0x6c]
+            fcomp dword ptr [gMatchData_0058c904]
             fxch st(1)
             fsub dword ptr [ebp + 0x34]
             fxch st(1)
@@ -556,7 +562,7 @@ br_token C2_NAKED C2_HOOK_STDCALL OnScreenCheck(br_soft_renderer* self, br_matri
         _emit 0x06
     L00544c3b:
             fld dword ptr [esp + 0x14]
-            fcomp dword ptr [rendererStateStoredDispatch+0x6c]
+            fcomp dword ptr [gMatchData_0058c904]
             fnstsw ax
             test ah, 0x41
             jne L00544c51
@@ -566,7 +572,7 @@ br_token C2_NAKED C2_HOOK_STDCALL OnScreenCheck(br_soft_renderer* self, br_matri
             fld dword ptr [esi + 4]
     L00544c54:
             fld dword ptr [esp + 0x18]
-            fcomp dword ptr [rendererStateStoredDispatch+0x6c]
+            fcomp dword ptr [gMatchData_0058c904]
             fnstsw ax
             test ah, 0x41
             jne L00544c6a
@@ -605,7 +611,7 @@ br_token C2_NAKED C2_HOOK_STDCALL OnScreenCheck(br_soft_renderer* self, br_matri
             cmp ecx, ebx
             je L00544d2e
             fld dword ptr [esp + 0x10]
-            fcomp dword ptr [rendererStateStoredDispatch+0x6c]
+            fcomp dword ptr [gMatchData_0058c904]
             fnstsw ax
             test ah, 0x41
             jne L00544cc4
@@ -616,7 +622,7 @@ br_token C2_NAKED C2_HOOK_STDCALL OnScreenCheck(br_soft_renderer* self, br_matri
             fld dword ptr [esi + 0xc]
     L00544cc7:
             fld dword ptr [esp + 0x14]
-            fcomp dword ptr [rendererStateStoredDispatch+0x6c]
+            fcomp dword ptr [gMatchData_0058c904]
             fnstsw ax
             test ah, 0x41
             jne L00544cdd
@@ -626,7 +632,7 @@ br_token C2_NAKED C2_HOOK_STDCALL OnScreenCheck(br_soft_renderer* self, br_matri
             fld dword ptr [esi + 0x10]
     L00544ce0:
             fld dword ptr [esp + 0x18]
-            fcomp dword ptr [rendererStateStoredDispatch+0x6c]
+            fcomp dword ptr [gMatchData_0058c904]
             fnstsw ax
             test ah, 0x41
             jne L00544cf6
@@ -664,7 +670,7 @@ br_token C2_NAKED C2_HOOK_STDCALL OnScreenCheck(br_soft_renderer* self, br_matri
             fld dword ptr [ebp + 0x2c]
             fxch st(3)
             fst dword ptr [esp + 0x10]
-            fcomp dword ptr [rendererStateStoredDispatch+0x6c]
+            fcomp dword ptr [gMatchData_0058c904]
             fxch st(1)
             fadd dword ptr [ebp + 0x38]
             fxch st(1)
@@ -687,7 +693,7 @@ br_token C2_NAKED C2_HOOK_STDCALL OnScreenCheck(br_soft_renderer* self, br_matri
         _emit 0x06
     L00544d78:
             fld dword ptr [esp + 0x14]
-            fcomp dword ptr [rendererStateStoredDispatch+0x6c]
+            fcomp dword ptr [gMatchData_0058c904]
             fnstsw ax
             test ah, 0x41
             jne L00544d8e
@@ -697,7 +703,7 @@ br_token C2_NAKED C2_HOOK_STDCALL OnScreenCheck(br_soft_renderer* self, br_matri
             fld dword ptr [esi + 4]
     L00544d91:
             fld dword ptr [esp + 0x18]
-            fcomp dword ptr [rendererStateStoredDispatch+0x6c]
+            fcomp dword ptr [gMatchData_0058c904]
             fnstsw ax
             test ah, 0x41
             jne L00544da7
@@ -736,7 +742,7 @@ br_token C2_NAKED C2_HOOK_STDCALL OnScreenCheck(br_soft_renderer* self, br_matri
             cmp ecx, ebx
             je L00544e6b
             fld dword ptr [esp + 0x10]
-            fcomp dword ptr [rendererStateStoredDispatch+0x6c]
+            fcomp dword ptr [gMatchData_0058c904]
             fnstsw ax
             test ah, 0x41
             jne L00544e01
@@ -747,7 +753,7 @@ br_token C2_NAKED C2_HOOK_STDCALL OnScreenCheck(br_soft_renderer* self, br_matri
             fld dword ptr [esi + 0xc]
     L00544e04:
             fld dword ptr [esp + 0x14]
-            fcomp dword ptr [rendererStateStoredDispatch+0x6c]
+            fcomp dword ptr [gMatchData_0058c904]
             fnstsw ax
             test ah, 0x41
             jne L00544e1a
@@ -757,7 +763,7 @@ br_token C2_NAKED C2_HOOK_STDCALL OnScreenCheck(br_soft_renderer* self, br_matri
             fld dword ptr [esi + 0x10]
     L00544e1d:
             fld dword ptr [esp + 0x18]
-            fcomp dword ptr [rendererStateStoredDispatch+0x6c]
+            fcomp dword ptr [gMatchData_0058c904]
             fnstsw ax
             test ah, 0x41
             jne L00544e33
@@ -795,7 +801,7 @@ br_token C2_NAKED C2_HOOK_STDCALL OnScreenCheck(br_soft_renderer* self, br_matri
             fld dword ptr [ebp + 0x2c]
             fxch st(3)
             fst dword ptr [esp + 0x10]
-            fcomp dword ptr [rendererStateStoredDispatch+0x6c]
+            fcomp dword ptr [gMatchData_0058c904]
             fxch st(1)
             fsub dword ptr [ebp + 0x38]
             fxch st(1)
@@ -818,7 +824,7 @@ br_token C2_NAKED C2_HOOK_STDCALL OnScreenCheck(br_soft_renderer* self, br_matri
         _emit 0x06
     L00544eb5:
             fld dword ptr [esp + 0x14]
-            fcomp dword ptr [rendererStateStoredDispatch+0x6c]
+            fcomp dword ptr [gMatchData_0058c904]
             fnstsw ax
             test ah, 0x41
             jne L00544ecb
@@ -828,7 +834,7 @@ br_token C2_NAKED C2_HOOK_STDCALL OnScreenCheck(br_soft_renderer* self, br_matri
             fld dword ptr [esi + 4]
     L00544ece:
             fld dword ptr [esp + 0x18]
-            fcomp dword ptr [rendererStateStoredDispatch+0x6c]
+            fcomp dword ptr [gMatchData_0058c904]
             fnstsw ax
             test ah, 0x41
             jne L00544ee4
@@ -867,7 +873,7 @@ br_token C2_NAKED C2_HOOK_STDCALL OnScreenCheck(br_soft_renderer* self, br_matri
             cmp ecx, ebx
             je L00544fa6
             fld dword ptr [esp + 0x10]
-            fcomp dword ptr [rendererStateStoredDispatch+0x6c]
+            fcomp dword ptr [gMatchData_0058c904]
             fnstsw ax
             test ah, 0x41
             jne L00544f3e
@@ -878,7 +884,7 @@ br_token C2_NAKED C2_HOOK_STDCALL OnScreenCheck(br_soft_renderer* self, br_matri
             fld dword ptr [esi + 0xc]
     L00544f41:
             fld dword ptr [esp + 0x14]
-            fcomp dword ptr [rendererStateStoredDispatch+0x6c]
+            fcomp dword ptr [gMatchData_0058c904]
             fnstsw ax
             test ah, 0x41
             jne L00544f57
@@ -888,7 +894,7 @@ br_token C2_NAKED C2_HOOK_STDCALL OnScreenCheck(br_soft_renderer* self, br_matri
             fld dword ptr [esi + 0x10]
     L00544f5a:
             fld dword ptr [esp + 0x18]
-            fcomp dword ptr [rendererStateStoredDispatch+0x6c]
+            fcomp dword ptr [gMatchData_0058c904]
             fnstsw ax
             test ah, 0x41
             jne L00544f70
@@ -932,7 +938,7 @@ br_token C2_NAKED C2_HOOK_STDCALL OnScreenCheck(br_soft_renderer* self, br_matri
             fchs
             fstp dword ptr [esp + 0x28]
             fld dword ptr [esp + 0x1c]
-            fcomp dword ptr [rendererStateStoredDispatch+0x6c]
+            fcomp dword ptr [gMatchData_0058c904]
             add esp, 0xc
             fnstsw ax
             test ah, 0x41
@@ -944,7 +950,7 @@ br_token C2_NAKED C2_HOOK_STDCALL OnScreenCheck(br_soft_renderer* self, br_matri
         _emit 0x06
     L00544fee:
             fld dword ptr [esp + 0x14]
-            fcomp dword ptr [rendererStateStoredDispatch+0x6c]
+            fcomp dword ptr [gMatchData_0058c904]
             fnstsw ax
             test ah, 0x41
             jne L00545004
@@ -954,7 +960,7 @@ br_token C2_NAKED C2_HOOK_STDCALL OnScreenCheck(br_soft_renderer* self, br_matri
             fld dword ptr [esi + 4]
     L00545007:
             fld dword ptr [esp + 0x18]
-            fcomp dword ptr [rendererStateStoredDispatch+0x6c]
+            fcomp dword ptr [gMatchData_0058c904]
             fnstsw ax
             test ah, 0x41
             jne L0054501d
@@ -986,7 +992,7 @@ br_token C2_NAKED C2_HOOK_STDCALL OnScreenCheck(br_soft_renderer* self, br_matri
             test eax, eax
             je L005450e0
             fld dword ptr [esp + 0x10]
-            fcomp dword ptr [rendererStateStoredDispatch+0x6c]
+            fcomp dword ptr [gMatchData_0058c904]
             fnstsw ax
             test ah, 0x41
             jne L00545074
@@ -997,7 +1003,7 @@ br_token C2_NAKED C2_HOOK_STDCALL OnScreenCheck(br_soft_renderer* self, br_matri
             fld dword ptr [esi + 0xc]
     L00545077:
             fld dword ptr [esp + 0x14]
-            fcomp dword ptr [rendererStateStoredDispatch+0x6c]
+            fcomp dword ptr [gMatchData_0058c904]
             fnstsw ax
             test ah, 0x41
             jne L0054508d
@@ -1007,7 +1013,7 @@ br_token C2_NAKED C2_HOOK_STDCALL OnScreenCheck(br_soft_renderer* self, br_matri
             fld dword ptr [esi + 0x10]
     L00545090:
             fld dword ptr [esp + 0x18]
-            fcomp dword ptr [rendererStateStoredDispatch+0x6c]
+            fcomp dword ptr [gMatchData_0058c904]
             fnstsw ax
             test ah, 0x41
             jne L005450a6
@@ -1060,6 +1066,16 @@ br_token C2_NAKED C2_HOOK_STDCALL OnScreenCheck(br_soft_renderer* self, br_matri
             pop ebx
             add esp, 0x10
             ret 0xc
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }

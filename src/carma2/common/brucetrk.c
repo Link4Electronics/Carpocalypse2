@@ -76,6 +76,40 @@ extern char gFloat_0058935c[];
 extern intptr_t C2_HOOK_FASTCALL DRActorEnumRecurse(br_actor* pActor, br_actor_enum_cbfn* callback, void* arg);
 extern intptr_t C2_HOOK_CDECL FoundAnActor();
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gData_0058f528[];
+extern char gDouble_005893c8[];
+extern char gDouble_005893d8[];
+extern char gDouble_005893e0[];
+extern char gDouble_005893e8[];
+extern char gFloat_005893c0[];
+extern char gFloat_005893d0[];
+extern char gFloat_005893f0[];
+extern char gFloat_0058f49c[];
+extern char gFloat_0058f52c[];
+extern char gFloat_0058f570[];
+extern char gFloat_0058f58c[];
+extern char gFloat_0058f5a8[];
+extern char gString_0058f51c[];
+extern char gString_0058f568[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchData_0058f528[];
+extern char gMatchDouble_005893c8[];
+extern char gMatchDouble_005893d8[];
+extern char gMatchDouble_005893e0[];
+extern char gMatchDouble_005893e8[];
+extern char gMatchFloat_005893c0[];
+extern char gMatchFloat_005893d0[];
+extern char gMatchFloat_005893f0[];
+extern char gMatchFloat_0058f49c[];
+extern char gMatchFloat_0058f52c[];
+extern char gMatchFloat_0058f570[];
+extern char gMatchFloat_0058f58c[];
+extern char gMatchFloat_0058f5a8[];
+extern char gMatchString_0058f51c[];
+extern char gMatchString_0058f568[];
+#endif
 // FUNCTION: CARMA2_HW 0x0040d530
 void C2_NAKED C2_HOOK_FASTCALL MungeFaces(br_actor* pActor, br_model* pModel) {
 #ifndef CARPOCALYPSE2_MATCHING
@@ -448,7 +482,7 @@ intptr_t C2_NAKED C2_HOOK_CDECL FindNonCarsCB(br_actor* pActor, void* pData) {
             jne L0040d232
             push eax
             lea eax, [esp + 0x1c]
-            push offset gRender_alternative_track_actors+0x118
+            push offset gMatchFloat_0058f5a8
             push eax
             call sprintf
             add esp, 0xc
@@ -504,7 +538,7 @@ intptr_t C2_NAKED C2_HOOK_CDECL FindNonCarsCB(br_actor* pActor, void* pData) {
             fmul dword ptr [esp + 0xc]
             fxch st(3)
             fst dword ptr [esp + 0x14]
-            fcomp qword ptr [gFloat_0058935c+0x6c]
+            fcomp qword ptr [gMatchDouble_005893c8]
             fst dword ptr [esp + 0xc]
             fmul dword ptr [esp + 0xc]
             fxch st(4)
@@ -538,36 +572,36 @@ intptr_t C2_NAKED C2_HOOK_CDECL FindNonCarsCB(br_actor* pActor, void* pData) {
             fstp st(0)
             jne L0040d35b
             fld dword ptr [esp + 0x10]
-            fcomp qword ptr [gFloat_0058935c+0x6c]
+            fcomp qword ptr [gMatchDouble_005893c8]
             fnstsw ax
             test ah, 1
             jne L0040d35b
             fld dword ptr [esp + 0xc]
-            fcomp qword ptr [gFloat_0058935c+0x6c]
+            fcomp qword ptr [gMatchDouble_005893c8]
             fnstsw ax
             test ah, 1
             je L0040d375
     L0040d35b:
             push ecx
-            push offset gRender_alternative_track_actors+0xfc
+            push offset gMatchFloat_0058f58c
             call dr_dprintf
             fld dword ptr [esi + 0x50]
-            fsub dword ptr [gFloat_0058935c+0x74]
+            fsub dword ptr [gMatchFloat_005893d0]
             add esp, 8
             fstp dword ptr [esi + 0x50]
     L0040d375:
             fld dword ptr [esp + 0x14]
-            fcomp qword ptr [gFloat_0058935c+0x7c]
+            fcomp qword ptr [gMatchDouble_005893d8]
             fnstsw ax
             test ah, 0x41
             je L0040d3ac
             fld dword ptr [esp + 0x10]
-            fcomp qword ptr [gFloat_0058935c+0x7c]
+            fcomp qword ptr [gMatchDouble_005893d8]
             fnstsw ax
             test ah, 0x41
             je L0040d3ac
             fld dword ptr [esp + 0xc]
-            fcomp qword ptr [gFloat_0058935c+0x7c]
+            fcomp qword ptr [gMatchDouble_005893d8]
             fnstsw ax
             test ah, 0x41
             jne L0040d495
@@ -587,11 +621,11 @@ intptr_t C2_NAKED C2_HOOK_CDECL FindNonCarsCB(br_actor* pActor, void* pData) {
             fxch st(1)
             fst dword ptr [esp + 0xc]
             fxch st(3)
-            fdivr qword ptr [gFloat_0058935c+0x84]
+            fdivr qword ptr [gMatchDouble_005893e0]
             fxch st(1)
-            fdivr qword ptr [gFloat_0058935c+0x84]
+            fdivr qword ptr [gMatchDouble_005893e0]
             fxch st(3)
-            fdivr qword ptr [gFloat_0058935c+0x84]
+            fdivr qword ptr [gMatchDouble_005893e0]
             fxch st(1)
             fst dword ptr [esp + 0xc]
             fxch st(3)
@@ -646,7 +680,7 @@ intptr_t C2_NAKED C2_HOOK_CDECL FindNonCarsCB(br_actor* pActor, void* pData) {
             fxch st(1)
             fstp dword ptr [esi + 0x4c]
             push ecx
-            push offset gRender_alternative_track_actors+0xe0
+            push offset gMatchFloat_0058f570
             fstp st(0)
             call dr_dprintf
             add esp, 8
@@ -707,6 +741,11 @@ intptr_t C2_NAKED C2_HOOK_CDECL FindNonCarsCB(br_actor* pActor, void* pData) {
             pop ebx
             add esp, 0x10c
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -906,7 +945,7 @@ intptr_t C2_NAKED C2_HOOK_CDECL ProcessModelsCB(br_actor* pActor, void* data) {
             push eax
             mov edx, dword ptr [esi + 0x14]
             push ecx
-            push offset gRender_alternative_track_actors+0xd8
+            push offset gMatchString_0058f568
             push edx
             call sscanf
             mov ebp, dword ptr [esp + 0x38]
@@ -1140,6 +1179,11 @@ intptr_t C2_NAKED C2_HOOK_CDECL ProcessModelsCB(br_actor* pActor, void* data) {
             pop ebx
             add esp, 0x10
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -1265,7 +1309,7 @@ void C2_NAKED C2_HOOK_FASTCALL ExtractColumns(tTrack_spec* pTrack_spec) {
             jmp L0040cce1
     L0040cc7e:
             lea ecx, [esp + 0x44]
-            push offset gRender_alternative_track_actors+0x9c
+            push offset gMatchFloat_0058f52c
             push ecx
             call sprintf
             mov edx, dword ptr [ebx + 0x14]
@@ -1276,7 +1320,7 @@ void C2_NAKED C2_HOOK_FASTCALL ExtractColumns(tTrack_spec* pTrack_spec) {
             push eax
             push ecx
             call strncat
-            mov edi, offset gRender_alternative_track_actors+0x98
+            mov edi, offset gMatchData_0058f528
             or ecx, 0xffffffff
             xor eax, eax
             add esp, 0xc
@@ -1308,7 +1352,7 @@ void C2_NAKED C2_HOOK_FASTCALL ExtractColumns(tTrack_spec* pTrack_spec) {
             lea edx, [esp + 0x28]
             push ecx
             push edx
-            push offset gRender_alternative_track_actors+0x8c
+            push offset gMatchString_0058f51c
             push eax
             call sscanf
             add esp, 0x18
@@ -1328,7 +1372,7 @@ void C2_NAKED C2_HOOK_FASTCALL ExtractColumns(tTrack_spec* pTrack_spec) {
             mov dword ptr [ebx + 0x1c], eax
             jmp L0040cd3f
     L0040cd32:
-            push offset gRender_alternative_track_actors+0xc
+            push offset gMatchFloat_0058f49c
             call BrFailure
             add esp, 4
     L0040cd3f:
@@ -1344,7 +1388,7 @@ void C2_NAKED C2_HOOK_FASTCALL ExtractColumns(tTrack_spec* pTrack_spec) {
             mov dword ptr [esp + 0x18], eax
             call BrActorToBounds
             fld dword ptr [esp + 0x18]
-            fmul dword ptr [gFloat_0058935c+0x64]
+            fmul dword ptr [gMatchFloat_005893c0]
             fld dword ptr [esp + 0x40]
             fsub dword ptr [esp + 0x34]
             xor eax, eax
@@ -1456,7 +1500,7 @@ void C2_NAKED C2_HOOK_FASTCALL ExtractColumns(tTrack_spec* pTrack_spec) {
             mov ecx, dword ptr [eax + 0x14]
             push esi
             add ecx, 4
-            push offset gRender_alternative_track_actors+0x4
+            push 0x58f494
             push ecx
             call sprintf
             add esp, 0xc
@@ -1487,6 +1531,17 @@ void C2_NAKED C2_HOOK_FASTCALL ExtractColumns(tTrack_spec* pTrack_spec) {
             pop ebx
             add esp, 0x134
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -1884,7 +1939,12 @@ int C2_NAKED C2_HOOK_FASTCALL ProcessNearbyActors(tTrack_spec* pTrack, br_vector
             mov dword ptr [esp + 0x10], eax
             mov dword ptr [esp + 0x14], 0
             fild qword ptr [esp + 0x10]
-            fcom dword ptr [gFloat_0058935c+0x5c]
+            _emit 0xd8
+        _emit 0x15
+        _emit 0xb8
+        _emit 0x93
+        _emit 0x58
+        _emit 0x00
             fnstsw ax
             test ah, 0x40
             je L0040e266
@@ -1928,6 +1988,14 @@ int C2_NAKED C2_HOOK_FASTCALL ProcessNearbyActors(tTrack_spec* pTrack, br_vector
     L0040e281:
             fstp st(0)
             jmp L0040e182
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -2318,7 +2386,12 @@ void C2_NAKED C2_HOOK_FASTCALL RenderTrack(br_actor* pWorld, tTrack_spec* pTrack
             fst dword ptr [esp + 0x50]
             fxch st(1)
             fxch st(1)
-            fcomp dword ptr [gFloat_0058935c+0x5c]
+            _emit 0xd8
+        _emit 0x1d
+        _emit 0xb8
+        _emit 0x93
+        _emit 0x58
+        _emit 0x00
             fnstsw ax
             test ah, 1
             je L0040d81f
@@ -2333,18 +2406,33 @@ void C2_NAKED C2_HOOK_FASTCALL RenderTrack(br_actor* pWorld, tTrack_spec* pTrack
             fnstsw ax
             test ah, 1
             jne L0040d845
-            fsub dword ptr [gFloat_0058935c+0x60]
+            _emit 0xd8
+        _emit 0x25
+        _emit 0xbc
+        _emit 0x93
+        _emit 0x58
+        _emit 0x00
             fstp dword ptr [esp + 0x50]
             jmp L0040d847
     L0040d845:
             fstp st(0)
     L0040d847:
-            fcom dword ptr [gFloat_0058935c+0x5c]
+            _emit 0xd8
+        _emit 0x15
+        _emit 0xb8
+        _emit 0x93
+        _emit 0x58
+        _emit 0x00
             fnstsw ax
             test ah, 1
             je L0040d85c
             fstp st(0)
-            fld dword ptr [gFloat_0058935c+0x5c]
+            _emit 0xd9
+        _emit 0x05
+        _emit 0xb8
+        _emit 0x93
+        _emit 0x58
+        _emit 0x00
     L0040d85c:
             xor edx, edx
             mov dl, byte ptr [ebp + 1]
@@ -2357,7 +2445,12 @@ void C2_NAKED C2_HOOK_FASTCALL RenderTrack(br_actor* pWorld, tTrack_spec* pTrack
             jne L0040d884
             fstp st(0)
             fld dword ptr [esp + 0x14]
-            fsub dword ptr [gFloat_0058935c+0x60]
+            _emit 0xd8
+        _emit 0x25
+        _emit 0xbc
+        _emit 0x93
+        _emit 0x58
+        _emit 0x00
     L0040d884:
             fld dword ptr [esp + 0x50]
             call _ftol
@@ -2376,8 +2469,8 @@ void C2_NAKED C2_HOOK_FASTCALL RenderTrack(br_actor* pWorld, tTrack_spec* pTrack
             push ecx
             mov byte ptr [esp + 0x24], bl
             mov byte ptr [esp + 0x1c], bl
-            fmul qword ptr [gFloat_0058935c+0x8c]
-            fld dword ptr [gFloat_0058935c+0x94]
+            fmul qword ptr [gMatchDouble_005893e8]
+            fld dword ptr [gMatchFloat_005893f0]
             fld st(1)
             fsin
             mov byte ptr [esp + 0x28], al
@@ -2408,7 +2501,7 @@ void C2_NAKED C2_HOOK_FASTCALL RenderTrack(br_actor* pWorld, tTrack_spec* pTrack
             fstp st(0)
             fld dword ptr [esi + 0xc]
             fmul dword ptr [gYon_factor]
-            fmul dword ptr [gFloat_0058935c+0x94]
+            fmul dword ptr [gMatchFloat_005893f0]
             fstp dword ptr [esp + 0x54]
             call BrMatrix34ApplyV
             fld dword ptr [esp + 0x40]
@@ -2421,7 +2514,12 @@ void C2_NAKED C2_HOOK_FASTCALL RenderTrack(br_actor* pWorld, tTrack_spec* pTrack
             fadd dword ptr [edi + 0x2c]
             fsub dword ptr [ebp + 0x10]
             fxch st(1)
-            fcomp dword ptr [gFloat_0058935c+0x5c]
+            _emit 0xd8
+        _emit 0x1d
+        _emit 0xb8
+        _emit 0x93
+        _emit 0x58
+        _emit 0x00
             fdiv dword ptr [ebp + 8]
             fnstsw ax
             test ah, 1
@@ -2437,18 +2535,33 @@ void C2_NAKED C2_HOOK_FASTCALL RenderTrack(br_actor* pWorld, tTrack_spec* pTrack
             fnstsw ax
             test ah, 1
             jne L0040d997
-            fsub dword ptr [gFloat_0058935c+0x60]
+            _emit 0xd8
+        _emit 0x25
+        _emit 0xbc
+        _emit 0x93
+        _emit 0x58
+        _emit 0x00
             fstp dword ptr [esp + 0x20]
             jmp L0040d999
     L0040d997:
             fstp st(0)
     L0040d999:
-            fcom dword ptr [gFloat_0058935c+0x5c]
+            _emit 0xd8
+        _emit 0x15
+        _emit 0xb8
+        _emit 0x93
+        _emit 0x58
+        _emit 0x00
             fnstsw ax
             test ah, 1
             je L0040d9ae
             fstp st(0)
-            fld dword ptr [gFloat_0058935c+0x5c]
+            _emit 0xd9
+        _emit 0x05
+        _emit 0xb8
+        _emit 0x93
+        _emit 0x58
+        _emit 0x00
     L0040d9ae:
             xor eax, eax
             mov al, byte ptr [ebp + 1]
@@ -2461,7 +2574,12 @@ void C2_NAKED C2_HOOK_FASTCALL RenderTrack(br_actor* pWorld, tTrack_spec* pTrack
             jne L0040d9d6
             fstp st(0)
             fld dword ptr [esp + 0x14]
-            fsub dword ptr [gFloat_0058935c+0x60]
+            _emit 0xd8
+        _emit 0x25
+        _emit 0xbc
+        _emit 0x93
+        _emit 0x58
+        _emit 0x00
     L0040d9d6:
             fld dword ptr [esp + 0x20]
             call _ftol
@@ -2511,7 +2629,12 @@ void C2_NAKED C2_HOOK_FASTCALL RenderTrack(br_actor* pWorld, tTrack_spec* pTrack
             fst dword ptr [esp + 0x20]
             fxch st(1)
             fxch st(1)
-            fcomp dword ptr [gFloat_0058935c+0x5c]
+            _emit 0xd8
+        _emit 0x1d
+        _emit 0xb8
+        _emit 0x93
+        _emit 0x58
+        _emit 0x00
             fnstsw ax
             test ah, 1
             je L0040da70
@@ -2526,18 +2649,33 @@ void C2_NAKED C2_HOOK_FASTCALL RenderTrack(br_actor* pWorld, tTrack_spec* pTrack
             fnstsw ax
             test ah, 1
             jne L0040da96
-            fsub dword ptr [gFloat_0058935c+0x60]
+            _emit 0xd8
+        _emit 0x25
+        _emit 0xbc
+        _emit 0x93
+        _emit 0x58
+        _emit 0x00
             fstp dword ptr [esp + 0x20]
             jmp L0040da98
     L0040da96:
             fstp st(0)
     L0040da98:
-            fcom dword ptr [gFloat_0058935c+0x5c]
+            _emit 0xd8
+        _emit 0x15
+        _emit 0xb8
+        _emit 0x93
+        _emit 0x58
+        _emit 0x00
             fnstsw ax
             test ah, 1
             je L0040daad
             fstp st(0)
-            fld dword ptr [gFloat_0058935c+0x5c]
+            _emit 0xd9
+        _emit 0x05
+        _emit 0xb8
+        _emit 0x93
+        _emit 0x58
+        _emit 0x00
     L0040daad:
             xor ecx, ecx
             mov cl, byte ptr [ebp + 1]
@@ -2550,7 +2688,12 @@ void C2_NAKED C2_HOOK_FASTCALL RenderTrack(br_actor* pWorld, tTrack_spec* pTrack
             jne L0040dad5
             fstp st(0)
             fld dword ptr [esp + 0x14]
-            fsub dword ptr [gFloat_0058935c+0x60]
+            _emit 0xd8
+        _emit 0x25
+        _emit 0xbc
+        _emit 0x93
+        _emit 0x58
+        _emit 0x00
     L0040dad5:
             fld dword ptr [esp + 0x20]
             call _ftol
@@ -2600,7 +2743,12 @@ void C2_NAKED C2_HOOK_FASTCALL RenderTrack(br_actor* pWorld, tTrack_spec* pTrack
             fst dword ptr [esp + 0x20]
             fxch st(1)
             fxch st(1)
-            fcomp dword ptr [gFloat_0058935c+0x5c]
+            _emit 0xd8
+        _emit 0x1d
+        _emit 0xb8
+        _emit 0x93
+        _emit 0x58
+        _emit 0x00
             fnstsw ax
             test ah, 1
             je L0040db6f
@@ -2615,18 +2763,33 @@ void C2_NAKED C2_HOOK_FASTCALL RenderTrack(br_actor* pWorld, tTrack_spec* pTrack
             fnstsw ax
             test ah, 1
             jne L0040db95
-            fsub dword ptr [gFloat_0058935c+0x60]
+            _emit 0xd8
+        _emit 0x25
+        _emit 0xbc
+        _emit 0x93
+        _emit 0x58
+        _emit 0x00
             fstp dword ptr [esp + 0x20]
             jmp L0040db97
     L0040db95:
             fstp st(0)
     L0040db97:
-            fcom dword ptr [gFloat_0058935c+0x5c]
+            _emit 0xd8
+        _emit 0x15
+        _emit 0xb8
+        _emit 0x93
+        _emit 0x58
+        _emit 0x00
             fnstsw ax
             test ah, 1
             je L0040dbac
             fstp st(0)
-            fld dword ptr [gFloat_0058935c+0x5c]
+            _emit 0xd9
+        _emit 0x05
+        _emit 0xb8
+        _emit 0x93
+        _emit 0x58
+        _emit 0x00
     L0040dbac:
             xor edx, edx
             mov dl, byte ptr [ebp + 1]
@@ -2639,7 +2802,12 @@ void C2_NAKED C2_HOOK_FASTCALL RenderTrack(br_actor* pWorld, tTrack_spec* pTrack
             jne L0040dbd4
             fstp st(0)
             fld dword ptr [esp + 0x14]
-            fsub dword ptr [gFloat_0058935c+0x60]
+            _emit 0xd8
+        _emit 0x25
+        _emit 0xbc
+        _emit 0x93
+        _emit 0x58
+        _emit 0x00
     L0040dbd4:
             fld dword ptr [esp + 0x20]
             call _ftol
@@ -2689,7 +2857,12 @@ void C2_NAKED C2_HOOK_FASTCALL RenderTrack(br_actor* pWorld, tTrack_spec* pTrack
             fst dword ptr [esp + 0x20]
             fxch st(1)
             fxch st(1)
-            fcomp dword ptr [gFloat_0058935c+0x5c]
+            _emit 0xd8
+        _emit 0x1d
+        _emit 0xb8
+        _emit 0x93
+        _emit 0x58
+        _emit 0x00
             fnstsw ax
             test ah, 1
             je L0040dc6e
@@ -2705,18 +2878,33 @@ void C2_NAKED C2_HOOK_FASTCALL RenderTrack(br_actor* pWorld, tTrack_spec* pTrack
             fnstsw ax
             test ah, 1
             jne L0040dc96
-            fsub dword ptr [gFloat_0058935c+0x60]
+            _emit 0xd8
+        _emit 0x25
+        _emit 0xbc
+        _emit 0x93
+        _emit 0x58
+        _emit 0x00
             fstp dword ptr [esp + 0x20]
             jmp L0040dc98
     L0040dc96:
             fstp st(0)
     L0040dc98:
-            fcom dword ptr [gFloat_0058935c+0x5c]
+            _emit 0xd8
+        _emit 0x15
+        _emit 0xb8
+        _emit 0x93
+        _emit 0x58
+        _emit 0x00
             fnstsw ax
             test ah, 1
             je L0040dcad
             fstp st(0)
-            fld dword ptr [gFloat_0058935c+0x5c]
+            _emit 0xd9
+        _emit 0x05
+        _emit 0xb8
+        _emit 0x93
+        _emit 0x58
+        _emit 0x00
     L0040dcad:
             xor eax, eax
             mov al, byte ptr [ebp + 1]
@@ -2730,7 +2918,12 @@ void C2_NAKED C2_HOOK_FASTCALL RenderTrack(br_actor* pWorld, tTrack_spec* pTrack
             jne L0040dcd7
             fstp st(0)
             fld dword ptr [esp + 0x14]
-            fsub dword ptr [gFloat_0058935c+0x60]
+            _emit 0xd8
+        _emit 0x25
+        _emit 0xbc
+        _emit 0x93
+        _emit 0x58
+        _emit 0x00
     L0040dcd7:
             fld dword ptr [esp + 0x20]
             call _ftol
@@ -2824,7 +3017,12 @@ void C2_NAKED C2_HOOK_FASTCALL RenderTrack(br_actor* pWorld, tTrack_spec* pTrack
     L0040dddb:
             mov edi, dword ptr [esp + 0x54]
             fld dword ptr [edi + 0x18]
-            fcomp dword ptr [gFloat_0058935c+0x5c]
+            _emit 0xd8
+        _emit 0x1d
+        _emit 0xb8
+        _emit 0x93
+        _emit 0x58
+        _emit 0x00
             fnstsw ax
             test ah, 0x41
             jne L0040ddf9
@@ -2840,7 +3038,12 @@ void C2_NAKED C2_HOOK_FASTCALL RenderTrack(br_actor* pWorld, tTrack_spec* pTrack
             mov byte ptr [esp + 0x20], al
     L0040de0d:
             fld dword ptr [edi + 0x20]
-            fcomp dword ptr [gFloat_0058935c+0x5c]
+            _emit 0xd8
+        _emit 0x1d
+        _emit 0xb8
+        _emit 0x93
+        _emit 0x58
+        _emit 0x00
             fnstsw ax
             test ah, 0x41
             jne L0040de27
@@ -2929,7 +3132,12 @@ void C2_NAKED C2_HOOK_FASTCALL RenderTrack(br_actor* pWorld, tTrack_spec* pTrack
     L0040df0c:
             mov edi, dword ptr [esp + 0x54]
             fld dword ptr [edi + 0x18]
-            fcomp dword ptr [gFloat_0058935c+0x5c]
+            _emit 0xd8
+        _emit 0x1d
+        _emit 0xb8
+        _emit 0x93
+        _emit 0x58
+        _emit 0x00
             fnstsw ax
             test ah, 0x41
             jne L0040df2a
@@ -2944,7 +3152,12 @@ void C2_NAKED C2_HOOK_FASTCALL RenderTrack(br_actor* pWorld, tTrack_spec* pTrack
             mov byte ptr [esp + 0x20], dl
     L0040df38:
             fld dword ptr [edi + 0x20]
-            fcomp dword ptr [gFloat_0058935c+0x5c]
+            _emit 0xd8
+        _emit 0x1d
+        _emit 0xb8
+        _emit 0x93
+        _emit 0x58
+        _emit 0x00
             fnstsw ax
             test ah, 0x41
             jne L0040df52
@@ -3002,6 +3215,16 @@ void C2_NAKED C2_HOOK_FASTCALL RenderTrack(br_actor* pWorld, tTrack_spec* pTrack
             pop ebx
             add esp, 0x3c
             ret 8
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }

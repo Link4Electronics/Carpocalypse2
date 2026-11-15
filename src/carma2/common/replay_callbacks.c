@@ -709,6 +709,28 @@ extern tU32 gUnk_006a2360;
 extern tU32 gUnk_006a2364;
 extern tU32 gUnk_006a23c8;
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gDouble_0058a950[];
+extern char gDouble_0058a958[];
+extern char gDouble_0058a970[];
+extern char gDouble_0058a978[];
+extern char gDouble_0058a980[];
+extern char gFloat_0058a914[];
+extern char gFloat_0058a960[];
+extern char gFloat_0058adb8[];
+extern char gFloat_0058adbc[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchDouble_0058a950[];
+extern char gMatchDouble_0058a958[];
+extern char gMatchDouble_0058a970[];
+extern char gMatchDouble_0058a978[];
+extern char gMatchDouble_0058a980[];
+extern char gMatchFloat_0058a914[];
+extern char gMatchFloat_0058a960[];
+extern char gMatchFloat_0058adb8[];
+extern char gMatchFloat_0058adbc[];
+#endif
 // FUNCTION: CARMA2_HW 0x004c9360
 void C2_HOOK_FASTCALL ApplyFrameBoundary(tPipe_chunk** pChunk) {
     return ApplyTime(((tPipe_chunk_frame_bound*)*pChunk)->field_0x4);
@@ -773,7 +795,7 @@ void C2_NAKED C2_HOOK_FASTCALL ApplySound(tPipe_chunk** pChunk) {
             mov esi, eax
             call ARGetReplayRate
             fabs
-            fmul qword ptr [gDouble_0058a908+0x48]
+            fmul qword ptr [gMatchDouble_0058a950]
             call _ftol
             mov edi, dword ptr [esi]
             push eax
@@ -809,7 +831,12 @@ void C2_NAKED C2_HOOK_FASTCALL ApplySound(tPipe_chunk** pChunk) {
             fxch st(2)
             faddp st(2), st(0)
             fxch st(1)
-            fcomp dword ptr [gDouble_0058a908+0x1c]
+            _emit 0xd8
+        _emit 0x1d
+        _emit 0x24
+        _emit 0xa9
+        _emit 0x58
+        _emit 0x00
             fnstsw ax
             test ah, 0x40
             fstp st(0)
@@ -1011,7 +1038,7 @@ void C2_NAKED C2_HOOK_FASTCALL ApplyCar(tPipe_chunk** pChunk) {
             fld st(1)
             fmul st(0), st(2)
             faddp st(1), st(0)
-            fcomp qword ptr [gDouble_0058a908+0x50]
+            fcomp qword ptr [gMatchDouble_0058a958]
             fstp st(0)
             fnstsw ax
             fstp st(0)
@@ -1050,11 +1077,16 @@ void C2_NAKED C2_HOOK_FASTCALL ApplyCar(tPipe_chunk** pChunk) {
             fxch st(1)
             fsqrt
             fstp st(1)
-            fcom dword ptr [gDouble_0058a908+0x58]
+            fcom dword ptr [gMatchFloat_0058a960]
             fnstsw ax
             test ah, 0x41
             jne L004c95c1
-            fdivr qword ptr [gDouble_0058a908+0x60]
+            _emit 0xdc
+        _emit 0x3d
+        _emit 0x68
+        _emit 0xa9
+        _emit 0x58
+        _emit 0x00
             fld dword ptr [ecx + 0x68]
             fmul st(0), st(1)
             fstp dword ptr [ebx + 0x70]
@@ -1079,7 +1111,7 @@ void C2_NAKED C2_HOOK_FASTCALL ApplyCar(tPipe_chunk** pChunk) {
             add edx, 0x50
             mov eax, esi
             mov ecx, dword ptr [edx]
-            fmul dword ptr [gDouble_0058a908+0xc]
+            fmul dword ptr [gMatchFloat_0058a914]
             mov dword ptr [eax], ecx
             mov ecx, dword ptr [edx + 4]
             mov dword ptr [eax + 4], ecx
@@ -1088,11 +1120,11 @@ void C2_NAKED C2_HOOK_FASTCALL ApplyCar(tPipe_chunk** pChunk) {
             lea ecx, [esp + 0x14]
             fstp dword ptr [esp + 0x14]
             fld dword ptr [ebx + 0x5c]
-            fmul dword ptr [gDouble_0058a908+0xc]
+            fmul dword ptr [gMatchFloat_0058a914]
             lea edx, [esp + 0x20]
             fstp dword ptr [esp + 0x18]
             fld dword ptr [ebx + 0x60]
-            fmul dword ptr [gDouble_0058a908+0xc]
+            fmul dword ptr [gMatchFloat_0058a914]
             fstp dword ptr [esp + 0x1c]
             mov eax, dword ptr [ebx + 0x10]
             add eax, 0x2c
@@ -1118,7 +1150,7 @@ void C2_NAKED C2_HOOK_FASTCALL ApplyCar(tPipe_chunk** pChunk) {
             movsx ecx, word ptr [eax + 0x40]
             mov dword ptr [esp + 8], ecx
             fild dword ptr [esp + 8]
-            fmul qword ptr [gDouble_0058a908+0x68]
+            fmul qword ptr [gMatchDouble_0058a970]
             fstp dword ptr [ebx + 0x4a4]
             mov edx, dword ptr [ebp]
             mov ax, word ptr [edx + 0x42]
@@ -1182,7 +1214,7 @@ void C2_NAKED C2_HOOK_FASTCALL ApplyGWS(tPipe_chunk** pChunk) {
             mov ecx, dword ptr [eax]
             test ecx, 0xffffff00
             jne L004c96d7
-            mov eax, 0x75bc2c
+            mov eax, offset gProgram_state+0xac
             jmp L004c96e7
     L004c96d7:
             mov edx, ecx
@@ -1194,25 +1226,25 @@ void C2_NAKED C2_HOOK_FASTCALL ApplyGWS(tPipe_chunk** pChunk) {
             movsx edx, byte ptr [ecx + 6]
             mov dword ptr [esp + 4], edx
             fild dword ptr [esp + 4]
-            fmul qword ptr ds:[0x58a978]
+            fmul qword ptr [gMatchDouble_0058a978]
             fstp dword ptr [eax + 0x4a8]
             mov ecx, dword ptr [esi]
             movsx edx, byte ptr [ecx + 7]
             mov dword ptr [esp + 4], edx
             fild dword ptr [esp + 4]
-            fmul qword ptr ds:[0x58a978]
+            fmul qword ptr [gMatchDouble_0058a978]
             fstp dword ptr [eax + 0x4ac]
             mov ecx, dword ptr [esi]
             movsx edx, byte ptr [ecx + 8]
             mov dword ptr [esp + 4], edx
             fild dword ptr [esp + 4]
-            fmul qword ptr ds:[0x58a978]
+            fmul qword ptr [gMatchDouble_0058a978]
             fstp dword ptr [eax + 0x4b0]
             mov ecx, dword ptr [esi]
             movsx edx, byte ptr [ecx + 9]
             mov dword ptr [esp + 4], edx
             fild dword ptr [esp + 4]
-            fmul qword ptr ds:[0x58a978]
+            fmul qword ptr [gMatchDouble_0058a978]
             fstp dword ptr [eax + 0x4b4]
             mov ecx, dword ptr [esi]
             pop esi
@@ -1222,10 +1254,14 @@ void C2_NAKED C2_HOOK_FASTCALL ApplyGWS(tPipe_chunk** pChunk) {
         _emit 0x44
         _emit 0x24
         _emit 0x00
-            fmul qword ptr ds:[0x58a980]
+            fmul qword ptr [gMatchDouble_0058a980]
             fstp dword ptr [eax + 0x4a0]
             pop ecx
             ret
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -1396,7 +1432,12 @@ void C2_NAKED C2_HOOK_FASTCALL UndoSpecial(tPipe_chunk** pChunk, tPipe_chunk* pP
             jne L004c9e41
             call ARGetReplayRate
             fabs
-            fcomp qword ptr [gDouble_0058a908+0x60]
+            _emit 0xdc
+        _emit 0x1d
+        _emit 0x68
+        _emit 0xa9
+        _emit 0x58
+        _emit 0x00
             fnstsw ax
             test ah, 0x41
             je L004c9e49
@@ -2816,7 +2857,7 @@ void C2_NAKED C2_HOOK_FASTCALL ActualActionReplayHeadups(int pSpecial_zappy_bast
             jmp L004e64f4
     L004e63d8:
             call ARGetReplayRate
-            fcomp dword ptr [gConst_kangeroo_force_factor+0x128]
+            fcomp dword ptr [gMatchFloat_0058adb8]
             fnstsw ax
             test ah, 1
             je L004e6417
@@ -2830,7 +2871,7 @@ void C2_NAKED C2_HOOK_FASTCALL ActualActionReplayHeadups(int pSpecial_zappy_bast
             jmp L004e64f4
     L004e6417:
             call ARGetReplayRate
-            fcomp dword ptr [gConst_kangeroo_force_factor+0x12c]
+            fcomp dword ptr [gMatchFloat_0058adbc]
             fnstsw ax
             test ah, 0x41
             jne L004e6455
@@ -2844,7 +2885,7 @@ void C2_NAKED C2_HOOK_FASTCALL ActualActionReplayHeadups(int pSpecial_zappy_bast
             jmp L004e64f4
     L004e6455:
             call ARGetReplayRate
-            fcomp dword ptr [gConst_kangeroo_force_factor+0x12c]
+            fcomp dword ptr [gMatchFloat_0058adbc]
             fnstsw ax
             test ah, 0x40
             je L004e6491
@@ -2858,7 +2899,7 @@ void C2_NAKED C2_HOOK_FASTCALL ActualActionReplayHeadups(int pSpecial_zappy_bast
             jmp L004e64f4
     L004e6491:
             call ARGetReplayRate
-            fcomp dword ptr [gConst_kangeroo_force_factor+0x128]
+            fcomp dword ptr [gMatchFloat_0058adb8]
             fnstsw ax
             test ah, 0x40
             je L004e64cd

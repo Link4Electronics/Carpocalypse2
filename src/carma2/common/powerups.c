@@ -356,6 +356,46 @@ extern tPhysics_object* gSensible_place_blocker;
 extern tBrender_storage gTrack_storage_space;
 extern tWorld_callbacks gWorld_callbacks;
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gData_007059c4[];
+extern char gDouble_0058ac98[];
+extern char gDouble_0058aca0[];
+extern char gDouble_0058aca8[];
+extern char gDouble_0058acb0[];
+extern char gDouble_0058acc0[];
+extern char gFloat_0058ac54[];
+extern char gFloat_0058ac58[];
+extern char gFloat_0058acb8[];
+extern char gString_0065ebf0[];
+extern char gString_0065ebf4[];
+extern char gString_0065ebfc[];
+extern char gString_0065ec04[];
+extern char gString_0065ec1c[];
+extern char gString_0065ec28[];
+extern char gString_0065ec34[];
+extern char gString_0065ec3c[];
+extern char gString_0065ec6c[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchData_007059c4[];
+extern char gMatchDouble_0058ac98[];
+extern char gMatchDouble_0058aca0[];
+extern char gMatchDouble_0058aca8[];
+extern char gMatchDouble_0058acb0[];
+extern char gMatchDouble_0058acc0[];
+extern char gMatchFloat_0058ac54[];
+extern char gMatchFloat_0058ac58[];
+extern char gMatchFloat_0058acb8[];
+extern char gMatchString_0065ebf0[];
+extern char gMatchString_0065ebf4[];
+extern char gMatchString_0065ebfc[];
+extern char gMatchString_0065ec04[];
+extern char gMatchString_0065ec1c[];
+extern char gMatchString_0065ec28[];
+extern char gMatchString_0065ec34[];
+extern char gMatchString_0065ec3c[];
+extern char gMatchString_0065ec6c[];
+#endif
 // FUNCTION: CARMA2_HW 0x004dedf0
 void C2_HOOK_FASTCALL SendCurrentPowerups(void) {
     tCar_spec* car;
@@ -1168,7 +1208,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadPowerups(void) {
             call PathCat
             lea edx, [esp + 0x114]
             lea ecx, [esp + 0x114]
-            push offset gMass_mine+0x48
+            push offset gMatchString_0065ec04
             call PathCat
             lea ecx, [esp + 0x114]
             call OpenPackFileAndSetTiffLoading
@@ -1202,7 +1242,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadPowerups(void) {
             xor eax, eax
             and ecx, 3
             rep movsb
-            mov edi, offset gDRFont_to_polyfont_mapping+0x314
+            mov edi, 0x59b0b4
             or ecx, 0xffffffff
             repne scasb
             not ecx
@@ -1241,7 +1281,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadPowerups(void) {
             xor eax, eax
             and ecx, 3
             rep movsb
-            mov edi, offset gMass_mine+0x40
+            mov edi, offset gMatchString_0065ebfc
             or ecx, 0xffffffff
             repne scasb
             not ecx
@@ -1277,7 +1317,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadPowerups(void) {
             mov dword ptr [gFizzle_height], ecx
             lea ecx, [esp + 0x118]
             call PathCat
-            mov edx, offset gNext_crush_actor_id+0x180
+            mov edx, 0x58f9e0
             lea ecx, [esp + 0x114]
             call DRfopen
             mov ebx, eax
@@ -1311,7 +1351,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadPowerups(void) {
             mov ecx, ebx
             mov edx, edi
             call GetALineAndDontArgue
-            mov esi, offset gMass_mine+0x38
+            mov esi, offset gMatchString_0065ebf4
             mov eax, edi
     L004d98ce:
             mov dl, byte ptr [eax]
@@ -1340,7 +1380,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadPowerups(void) {
             mov dword ptr [ebp - 0x14], eax
             jmp L004d9b90
     L004d9903:
-            mov esi, offset gMass_mine+0x34
+            mov esi, offset gMatchString_0065ebf0
             mov eax, edi
     L004d990a:
             mov dl, byte ptr [eax]
@@ -1393,7 +1433,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadPowerups(void) {
             xor eax, eax
             and ecx, 3
             rep movsb
-            mov edi, offset gDRFont_to_polyfont_mapping+0x314
+            mov edi, 0x59b0b4
             or ecx, 0xffffffff
             repne scasb
             not ecx
@@ -1432,7 +1472,7 @@ void C2_NAKED C2_HOOK_FASTCALL LoadPowerups(void) {
             xor eax, eax
             and ecx, 3
             rep movsb
-            mov edi, offset gMass_mine+0x40
+            mov edi, offset gMatchString_0065ebfc
             or ecx, 0xffffffff
             repne scasb
             not ecx
@@ -1845,13 +1885,13 @@ void C2_NAKED C2_HOOK_FASTCALL InitPowerups(void) {
             push ebp
             push esi
             push edi
-            mov ecx, offset gMass_mine+0x80
+            mov ecx, offset gMatchString_0065ec3c
             call LoadPixelmap
             mov ebx, eax
             test ebx, ebx
             mov dword ptr [esp + 0x10], ebx
             jne L004d9ecd
-            push offset gMass_mine+0x80
+            push offset gMatchString_0065ec3c
             push 0x75
             call FatalError
             add esp, 8
@@ -1876,7 +1916,7 @@ void C2_NAKED C2_HOOK_FASTCALL InitPowerups(void) {
             add esp, 0xc
             mov esi, eax
             or byte ptr [esi + 0x20], 0x80
-            push offset gDisable_sound+0x8
+            push 0x676920
             call BrMaterialAllocate
             mov edi, eax
             add esp, 4
@@ -2007,7 +2047,7 @@ void C2_NAKED C2_HOOK_FASTCALL InitPowerups(void) {
             cmp ebp, offset gINT_006a0a5c
             jl L004d9edd
             xor ebp, ebp
-            push offset gMass_mine+0x78
+            push offset gMatchString_0065ec34
             mov edx, offset gApplication_path
             lea ecx, [esp + 0x1c]
             mov dword ptr [esp + 0x14], ebp
@@ -2031,7 +2071,7 @@ void C2_NAKED C2_HOOK_FASTCALL InitPowerups(void) {
             sete bl
             test ebx, ebx
             je L004da0e7
-            push offset gMass_mine+0x6c
+            push offset gMatchString_0065ec28
             call BrModelFind
             mov edx, dword ptr [gMass_mutant_tail_ball]
             add esp, 4
@@ -2041,7 +2081,7 @@ void C2_NAKED C2_HOOK_FASTCALL InitPowerups(void) {
             call MungeSphereObject
             jmp L004da103
     L004da0e7:
-            push offset gMass_mine+0x60
+            push offset gMatchString_0065ec1c
             call BrModelFind
             add esp, 4
             mov edi, eax
@@ -2773,52 +2813,52 @@ void C2_NAKED C2_HOOK_FASTCALL ReadPowerupSmashables(FILE* pF) {
             mov edx, offset gPowerup_respawn_spill_time_offset
             mov ecx, esi
             call ReadSpillData
-            mov edx, offset gPowerup_respawn_field_0x50+0x4
+            mov edx, offset gPowerup_respawn_smashable+0x274
             mov ecx, esi
             call ReadNonCarCuboidActivation
-            mov edx, offset gPowerup_respawn_field_0x50+0xc
+            mov edx, offset gPowerup_respawn_smashable+0x27c
             mov ecx, esi
             call ReadShrapnelSideEffects
             mov ecx, esi
             call GetAnInt
-            mov dword ptr [gPowerup_respawn_field_0x50+0x18], eax
-            mov al, byte ptr [gPowerup_respawn_field_0x50+0x18]
+            mov dword ptr [gPowerup_respawn_smashable+0x288], eax
+            mov al, byte ptr [gPowerup_respawn_smashable+0x288]
             test al, 1
             je L004efc0c
             mov ecx, esi
             call GetAnInt
-            mov dword ptr [gPowerup_respawn_field_0x50+0x14], eax
+            mov dword ptr [gPowerup_respawn_smashable+0x284], eax
     L004efc0c:
             mov ecx, esi
             call GetAnInt
             mov edx, offset gRepeatability_names
             mov ecx, esi
             push 4
-            mov dword ptr [gPowerup_respawn_field_0x50+0x1c], eax
+            mov dword ptr [gPowerup_respawn_smashable+0x28c], eax
             call GetALineAndInterpretCommand
             test eax, eax
-            mov dword ptr [gPowerup_respawn_field_0x50+0x20], eax
+            mov dword ptr [gPowerup_respawn_smashable+0x290], eax
             je L004efc61
             mov ecx, esi
             call GetAScalar
-            fstp dword ptr [gPowerup_respawn_field_0x50+0x24]
+            fstp dword ptr [gPowerup_respawn_smashable+0x294]
             mov ecx, esi
             call GetAScalar
-            fstp dword ptr [gPowerup_respawn_field_0x50+0x28]
+            fstp dword ptr [gPowerup_respawn_smashable+0x298]
             mov ecx, esi
             call GetAnInt
             mov ecx, esi
-            mov dword ptr [gPowerup_respawn_field_0x50+0x2c], eax
+            mov dword ptr [gPowerup_respawn_smashable+0x29c], eax
             call GetAnInt
-            mov dword ptr [gPowerup_respawn_field_0x50+0x30], eax
+            mov dword ptr [gPowerup_respawn_smashable+0x2a0], eax
     L004efc61:
             mov ecx, esi
             call GetAnInt
             xor ebx, ebx
-            mov byte ptr [gPowerup_respawn_field_0x50+0x38], al
+            mov byte ptr [gPowerup_respawn_smashable+0x2a8], al
             test al, al
             jbe L004efcae
-            mov edi, offset gPowerup_respawn_field_0x50+0x3a
+            mov edi, offset gPowerup_respawn_smashable+0x2aa
     L004efc78:
             lea ecx, [esp + 0x10]
             lea edx, [esp + 0x14]
@@ -2831,7 +2871,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReadPowerupSmashables(FILE* pF) {
             mov ax, word ptr [esp + 0x10]
             mov word ptr [edi - 2], dx
             mov word ptr [edi - 4], ax
-            mov ecx, dword ptr [gPowerup_respawn_field_0x50+0x38]
+            mov ecx, dword ptr [gPowerup_respawn_smashable+0x2a8]
             and ecx, 0xff
             cmp ebx, ecx
             jl L004efc78
@@ -2850,6 +2890,10 @@ void C2_NAKED C2_HOOK_FASTCALL ReadPowerupSmashables(FILE* pF) {
             pop ebx
             add esp, 8
             ret
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -3303,7 +3347,9 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessShitMines(tU32 pTime) {
             push ecx
             mov ecx, esi
             mov ebp, 1
-            fstp dword ptr [esp]
+            _emit 0xd9
+        _emit 0x1c
+        _emit 0x24
             call TotallySpamTheModel
     L004ddec6:
             test ebp, ebp
@@ -4641,7 +4687,9 @@ int C2_NAKED C2_HOOK_FASTCALL HitMine(tPowerup* powerup, tCar_spec* car) {
             fmul dword ptr [gFLOAT_0058ac40]
             push ecx
             mov ecx, esi
-            fstp dword ptr [esp]
+            _emit 0xd9
+        _emit 0x1c
+        _emit 0x24
             call TotallySpamTheModel
     L004deb5b:
             mov ecx, dword ptr [esi + 8]
@@ -4831,7 +4879,7 @@ int C2_NAKED C2_HOOK_FASTCALL ShitMine(tPowerup* powerup, tCar_spec* car) {
     L004dd782:
             add edx, 0x38
             inc esi
-            cmp edx, offset gCount_mutant_tail_parts+0x4
+            cmp edx, offset gMatchData_007059c4
             jl L004dd769
             cmp edi, -1
             je L004dda7d
@@ -4888,7 +4936,7 @@ int C2_NAKED C2_HOOK_FASTCALL ShitMine(tPowerup* powerup, tCar_spec* car) {
             cmp dword ptr [eax + 0xc], 8
             jne L004dd838
             xor edx, edx
-            mov ecx, offset gMass_mine+0xb0
+            mov ecx, offset gMatchString_0065ec6c
             call PlayExclusiveFFBEffect
     L004dd838:
             mov eax, dword ptr [edi + 8]
@@ -5087,6 +5135,20 @@ int C2_NAKED C2_HOOK_FASTCALL ShitMine(tPowerup* powerup, tCar_spec* car) {
             add eax, ecx
             add esp, 0x44
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -6923,7 +6985,7 @@ void C2_NAKED C2_HOOK_FASTCALL PissedEffect(tPowerup* powerup, tU32 time) {
             push edi
             call GetTotalTime
             mov ebp, eax
-            mov eax, dword ptr ds:[gCredit_multiplier]
+            mov eax, dword ptr [gCredit_multiplier]
             test eax, eax
             je L004df565
             mov ebx, offset gPissed_flicker_frames
@@ -6933,7 +6995,7 @@ void C2_NAKED C2_HOOK_FASTCALL PissedEffect(tPowerup* powerup, tU32 time) {
     L004df3d7:
             fld dword ptr [esi - 0x30]
             fst dword ptr [esp + 0x10]
-            fcomp dword ptr ds:[gFLOAT_0058ac0c]
+            fcomp dword ptr [gFLOAT_0058ac0c]
             fnstsw ax
             test ah, 0x40
             jne L004df4e2
@@ -6944,21 +7006,17 @@ void C2_NAKED C2_HOOK_FASTCALL PissedEffect(tPowerup* powerup, tU32 time) {
             fild qword ptr [esp + 0x14]
             fadd dword ptr [esi + 0x30]
             fxch st(1)
-            _emit 0xe8
-        _emit 0xbf
-        _emit 0x77
-        _emit 0x09
-        _emit 0x00
+            call _CIfmod
             _emit 0xd8
         _emit 0x36
-            fmul qword ptr ds:[gDouble_0058abe8]
-            fcom qword ptr ds:[0x58ac98]
+            fmul qword ptr [gDouble_0058abe8]
+            fcom qword ptr [gMatchDouble_0058ac98]
             fnstsw ax
             test ah, 0x41
             jne L004df443
-            fld qword ptr ds:[gDouble_0058abe8]
+            fld qword ptr [gDouble_0058abe8]
             fsub st(0), st(1)
-            fmul qword ptr ds:[0x58aca0]
+            fmul qword ptr [gMatchDouble_0058aca0]
             call _ftol
             shl eax, 2
             mov ecx, offset gCosine_array
@@ -6968,12 +7026,12 @@ void C2_NAKED C2_HOOK_FASTCALL PissedEffect(tPowerup* powerup, tU32 time) {
         _emit 0x01
             jmp L004df4ba
     L004df443:
-            fcom qword ptr ds:[0x58aca8]
+            fcom qword ptr [gMatchDouble_0058aca8]
             fnstsw ax
             test ah, 0x41
             jne L004df471
-            fsub qword ptr ds:[0x58aca8]
-            fmul qword ptr ds:[0x58aca0]
+            fsub qword ptr [gMatchDouble_0058aca8]
+            fmul qword ptr [gMatchDouble_0058aca0]
             call _ftol
             mov edx, offset gCosine_array
             shl eax, 2
@@ -6983,13 +7041,13 @@ void C2_NAKED C2_HOOK_FASTCALL PissedEffect(tPowerup* powerup, tU32 time) {
             fchs
             jmp L004df4ba
     L004df471:
-            fcom qword ptr ds:[0x58acb0]
+            fcom qword ptr [gMatchDouble_0058acb0]
             fnstsw ax
             test ah, 0x41
             jne L004df4a3
-            fld qword ptr ds:[0x58aca8]
+            fld qword ptr [gMatchDouble_0058aca8]
             fsub st(0), st(1)
-            fmul qword ptr ds:[0x58aca0]
+            fmul qword ptr [gMatchDouble_0058aca0]
             call _ftol
             mov ecx, offset gCosine_array
             shl eax, 2
@@ -7000,7 +7058,7 @@ void C2_NAKED C2_HOOK_FASTCALL PissedEffect(tPowerup* powerup, tU32 time) {
             fchs
             jmp L004df4ba
     L004df4a3:
-            fmul qword ptr ds:[0x58aca0]
+            fmul qword ptr [gMatchDouble_0058aca0]
             call _ftol
             shl eax, 2
             mov edx, offset gCosine_array
@@ -7009,11 +7067,11 @@ void C2_NAKED C2_HOOK_FASTCALL PissedEffect(tPowerup* powerup, tU32 time) {
         _emit 0x02
     L004df4ba:
             fmul dword ptr [esp + 0x10]
-            fsub dword ptr ds:[0x58acb8]
-            fmul dword ptr ds:[gCamera_angle]
-            fmul qword ptr ds:[0x58acc0]
+            fsub dword ptr [gMatchFloat_0058acb8]
+            fmul dword ptr [gCamera_angle]
+            fmul qword ptr [gMatchDouble_0058acc0]
             call _ftol
-            mov ecx, dword ptr ds:[gCamera]
+            mov ecx, dword ptr [gCamera]
             mov edx, dword ptr [ecx + 0x5c]
             mov word ptr [edx + 6], ax
     L004df4e2:
@@ -7024,7 +7082,7 @@ void C2_NAKED C2_HOOK_FASTCALL PissedEffect(tPowerup* powerup, tU32 time) {
             cmp ebx, offset gPissed_flicker_limit
             jl L004df3d0
             call GetTotalTime
-            cmp eax, dword ptr ds:[gPissed_next_time]
+            cmp eax, dword ptr [gPissed_next_time]
             jbe L004df565
             push -1
             mov edx, 0x14000
@@ -7036,7 +7094,7 @@ void C2_NAKED C2_HOOK_FASTCALL PissedEffect(tPowerup* powerup, tU32 time) {
             push 0xff
             push 1
             call PercentageChance
-            mov ecx, dword ptr ds:[gXXX_outlet]
+            mov ecx, dword ptr [gXXX_outlet]
             mov edx, eax
             neg edx
             sbb edx, edx
@@ -7048,7 +7106,7 @@ void C2_NAKED C2_HOOK_FASTCALL PissedEffect(tPowerup* powerup, tU32 time) {
             mov esi, eax
             call GetTotalTime
             add esi, eax
-            mov dword ptr ds:[gPissed_next_time], esi
+            mov dword ptr [gPissed_next_time], esi
     L004df565:
             pop edi
             pop esi
@@ -7056,6 +7114,9 @@ void C2_NAKED C2_HOOK_FASTCALL PissedEffect(tPowerup* powerup, tU32 time) {
             pop ebx
             add esp, 0xc
             ret
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -7185,7 +7246,7 @@ void C2_NAKED C2_HOOK_FASTCALL SendMines(tU32 pNext_frame_time) {
             call GetHierarchyNetworkSize
             mov dword ptr [esp + 0x14], eax
             fild dword ptr [esp + 0x14]
-            fsub dword ptr [gBounce_rate_const+0x4]
+            fsub dword ptr [gMatchFloat_0058ac54]
             call _ftol
             mov ebx, eax
             mov eax, dword ptr [gNumber_of_net_players]
@@ -7248,7 +7309,7 @@ void C2_NAKED C2_HOOK_FASTCALL SendMines(tU32 pNext_frame_time) {
             faddp st(3), st(0)
             faddp st(2), st(0)
             fxch st(1)
-            fcomp dword ptr [gBounce_rate_const+0x8]
+            fcomp dword ptr [gMatchFloat_0058ac58]
             fnstsw ax
             test ah, 1
             fstp st(0)
@@ -7291,6 +7352,13 @@ void C2_NAKED C2_HOOK_FASTCALL SendMines(tU32 pNext_frame_time) {
     L004dd1a2:
             add esp, 0x254
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -7606,7 +7674,7 @@ int C2_NAKED C2_HOOK_FASTCALL DrawSinglePowerupIcon(int pDraw, int pTime, tPower
             lea ecx, [esp + 0x14]
             neg eax
             push eax
-            push offset gPed_flags_0058f2e4+0x134
+            push 0x58f418
             push ecx
             call sprintf
             add esp, 0xc
@@ -7668,7 +7736,7 @@ int C2_NAKED C2_HOOK_FASTCALL DrawSinglePowerupIcon(int pDraw, int pTime, tPower
             jle L004db1aa
             push esi
             lea edx, [esp + 0x18]
-            push offset gPed_flags_0058f2e4+0x134
+            push 0x58f418
             push edx
             call sprintf
             add esp, 0xc
@@ -8581,7 +8649,7 @@ set_owner:
             cmp dword ptr [eax + 0xc], 8
             jne L004dd387
             xor edx, edx
-            mov ecx, offset gMass_mine+0xb0
+            mov ecx, offset gMatchString_0065ec6c
             call PlayExclusiveFFBEffect
     L004dd387:
             mov cl, byte ptr [esi + 3]
@@ -8618,6 +8686,21 @@ set_owner:
             pop ebp
             pop ebx
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }

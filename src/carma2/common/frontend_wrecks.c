@@ -98,6 +98,24 @@ extern tOpponent* gOpponents;
 extern int gPrev_frontend_mouse_down;
 extern tProgram_state gProgram_state;
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gDouble_0058a0a0[];
+extern char gDouble_0058a0a8[];
+extern char gDouble_0058a0b0[];
+extern char gDouble_0058a0b8[];
+extern char gFloat_0058a0c0[];
+extern char gString_00655a50[];
+extern char gString_00655a58[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchDouble_0058a0a0[];
+extern char gMatchDouble_0058a0a8[];
+extern char gMatchDouble_0058a0b0[];
+extern char gMatchDouble_0058a0b8[];
+extern char gMatchFloat_0058a0c0[];
+extern char gMatchString_00655a50[];
+extern char gMatchString_00655a58[];
+#endif
 // FUNCTION: CARMA2_HW 0x0046e830
 int C2_HOOK_FASTCALL WrecksInFunc(tFrontend_spec* pFrontend) {
     int car_count;
@@ -536,7 +554,12 @@ int C2_NAKED C2_HOOK_FASTCALL WrecksUpdateFunc(tFrontend_spec* pFrontend) {
     L0046ec09:
             call PDGetTotalTime
             fld dword ptr [gFrontend_wreck_bought_car_dz]
-            fcomp dword ptr [gDouble_0058a068+0x30]
+            _emit 0xd8
+        _emit 0x1d
+        _emit 0x98
+        _emit 0xa0
+        _emit 0x58
+        _emit 0x00
             mov ecx, eax
             fnstsw ax
             test ah, 0x40
@@ -546,10 +569,10 @@ int C2_NAKED C2_HOOK_FASTCALL WrecksUpdateFunc(tFrontend_spec* pFrontend) {
             sub edx, eax
             mov dword ptr [esp + 0x1c], edx
             fild dword ptr [esp + 0x1c]
-            fmul qword ptr [gDouble_0058a068+0x38]
+            fmul qword ptr [gMatchDouble_0058a0a0]
             fadd dword ptr [gFrontend_wreck_bought_car_dz]
             fst dword ptr [gFrontend_wreck_bought_car_dz]
-            fcomp qword ptr [gDouble_0058a068+0x40]
+            fcomp qword ptr [gMatchDouble_0058a0a8]
             fnstsw ax
             test ah, 0x41
             jne L0046ec6d
@@ -607,7 +630,12 @@ int C2_NAKED C2_HOOK_FASTCALL WrecksUpdateFunc(tFrontend_spec* pFrontend) {
             test edx, edx
             jne L0046f0c2
             fld dword ptr [gFrontend_wreck_bought_car_dz]
-            fcomp dword ptr [gDouble_0058a068+0x30]
+            _emit 0xd8
+        _emit 0x1d
+        _emit 0x98
+        _emit 0xa0
+        _emit 0x58
+        _emit 0x00
             fnstsw ax
             test ah, 0x40
             je L0046f0c2
@@ -668,7 +696,7 @@ int C2_NAKED C2_HOOK_FASTCALL WrecksUpdateFunc(tFrontend_spec* pFrontend) {
             add eax, 0x90
             push ecx
             push eax
-            push offset gFrontend_QUIT+0xbc68
+            push offset gMatchString_00655a58
             push esi
             call sprintf
             add esp, 0x10
@@ -717,7 +745,7 @@ int C2_NAKED C2_HOOK_FASTCALL WrecksUpdateFunc(tFrontend_spec* pFrontend) {
             lea ecx, [ebp + 0xc49]
             push eax
             push esi
-            push offset gFrontend_QUIT+0xbc60
+            push offset gMatchString_00655a50
             push ecx
             call sprintf
             add esp, 0x10
@@ -730,7 +758,7 @@ int C2_NAKED C2_HOOK_FASTCALL WrecksUpdateFunc(tFrontend_spec* pFrontend) {
             call GetMiscString
             lea edx, [ebp + 0xc49]
             push eax
-            push offset gCancel_recover+0xbc
+            push 0x59101c
             push edx
             call sprintf
             add esp, 0xc
@@ -1023,7 +1051,7 @@ int C2_NAKED C2_HOOK_FASTCALL WrecksUpdateFunc(tFrontend_spec* pFrontend) {
             jge L0046f1b6
     L0046f1bc:
             fld dword ptr [esp + 0x18]
-            fmul qword ptr [gDouble_0058a068+0x48]
+            fmul qword ptr [gMatchDouble_0058a0b0]
             lea edx, [edi + edi*4]
             lea esi, [edi + edx*8]
             shl esi, 2
@@ -1042,7 +1070,7 @@ int C2_NAKED C2_HOOK_FASTCALL WrecksUpdateFunc(tFrontend_spec* pFrontend) {
             cmp edi, eax
             jne L0046f212
             fld dword ptr [gFrontend_wreck_bought_car_dz]
-            fsub qword ptr [gDouble_0058a068+0x50]
+            fsub qword ptr [gMatchDouble_0058a0b8]
             push ecx
             fchs
             _emit 0xd9
@@ -1099,7 +1127,7 @@ int C2_NAKED C2_HOOK_FASTCALL WrecksUpdateFunc(tFrontend_spec* pFrontend) {
             mov byte ptr [ecx + 0x20], 1
     L0046f2b5:
             fld dword ptr [esp + 0x18]
-            fsub dword ptr [gDouble_0058a068+0x58]
+            fsub dword ptr [gMatchFloat_0058a0c0]
             mov eax, dword ptr [esp + 0x1c]
             inc edi
             dec eax
@@ -1223,6 +1251,10 @@ int C2_NAKED C2_HOOK_FASTCALL WrecksUpdateFunc(tFrontend_spec* pFrontend) {
     L0046f462:
             mov edx, 1
             jmp L0046ee1a
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }

@@ -16457,7 +16457,8 @@ intptr_t C2_HOOK_CDECL MoveModelVertices(br_actor* pActor, br_vector3* pOffset) 
 }
 
 // FUNCTION: CARMA2_HW 0x00508ec0
-void C2_HOOK_FASTCALL RecenterActorModels(br_actor* pActor, br_vector3* pOffset) {
+void C2_NAKED C2_HOOK_FASTCALL RecenterActorModels(br_actor* pActor, br_vector3* pOffset) {
+#ifndef CARPOCALYPSE2_MATCHING
     if (pActor->model != NULL) {
         if (gLast_actor_position_cache_actor == gLast_actor) {
             pOffset->v[0] = gNegative_one * gLast_actor_position_cache.v[0];
@@ -16477,6 +16478,71 @@ void C2_HOOK_FASTCALL RecenterActorModels(br_actor* pActor, br_vector3* pOffset)
     pOffset->v[0] = -pOffset->v[0];
     pOffset->v[1] = -pOffset->v[1];
     pOffset->v[2] = -pOffset->v[2];
+#else
+    __asm {
+            mov eax, dword ptr [ecx + 0x18]
+            push esi
+            mov esi, edx
+            push edi
+            xor edx, edx
+            cmp eax, edx
+            je L00508f3f
+            mov edx, dword ptr [gLast_actor_position_cache_actor]
+            mov edi, dword ptr [gLast_actor]
+            cmp edx, edi
+            jne L00508f0b
+            fld dword ptr [gLast_actor_position_cache]
+            fmul dword ptr [gNegative_one]
+            _emit 0xd9
+        _emit 0x1e
+            fld dword ptr [gLast_actor_position_cache+0x4]
+            fmul dword ptr [gNegative_one]
+            fstp dword ptr [esi + 4]
+            fld dword ptr [gLast_actor_position_cache+0x8]
+            fmul dword ptr [gNegative_one]
+            fstp dword ptr [esi + 8]
+            jmp L00508f47
+    L00508f0b:
+            fld dword ptr [eax + 0x40]
+            fadd dword ptr [eax + 0x34]
+            fmul dword ptr [gNegative_half]
+            _emit 0xd9
+        _emit 0x1e
+            mov eax, dword ptr [ecx + 0x18]
+            fld dword ptr [eax + 0x44]
+            fadd dword ptr [eax + 0x38]
+            fmul dword ptr [gNegative_half]
+            fstp dword ptr [esi + 4]
+            mov eax, dword ptr [ecx + 0x18]
+            fld dword ptr [eax + 0x48]
+            fadd dword ptr [eax + 0x3c]
+            fmul dword ptr [gNegative_half]
+            fstp dword ptr [esi + 8]
+            jmp L00508f47
+    L00508f3f:
+            mov dword ptr [esi], edx
+            mov dword ptr [esi + 4], edx
+            mov dword ptr [esi + 8], edx
+    L00508f47:
+            push esi
+            mov edx, offset MoveModelVertices
+            call DRActorEnumRecurse
+            _emit 0xd9
+        _emit 0x06
+            fchs
+            _emit 0xd9
+        _emit 0x1e
+            fld dword ptr [esi + 4]
+            fchs
+            fstp dword ptr [esi + 4]
+            fld dword ptr [esi + 8]
+            fchs
+            fstp dword ptr [esi + 8]
+            pop edi
+            pop esi
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00508830

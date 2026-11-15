@@ -481,6 +481,80 @@ const char gAsmString_0065a334[] = "Guaranteed message not built properly";
 const char gAsmString_0065a35c[] = "oops - guaranteed messages";
 const char gAsmString_0065a378[] = "Dodgy message in guarantee list";
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gData_0065a2e8[];
+extern char gData_0065a30c[];
+extern char gData_0065a334[];
+extern char gData_0065a35c[];
+extern char gData_006b75dc[];
+extern char gData_0074a770[];
+extern char gDouble_0058a428[];
+extern char gFloat_00659c84[];
+extern char gFloat_00659c98[];
+extern char gFloat_00659cd8[];
+extern char gFloat_0065a18c[];
+extern char gFloat_0065a1a4[];
+extern char gFloat_0065a1bc[];
+extern char gFloat_0065a1d4[];
+extern char gFloat_0065a1ec[];
+extern char gFloat_0065a204[];
+extern char gFloat_0065a21c[];
+extern char gFloat_0065a234[];
+extern char gFloat_0065a24c[];
+extern char gFloat_0065a264[];
+extern char gFloat_0065a27c[];
+extern char gFloat_0065a294[];
+extern char gFloat_0065a378[];
+extern char gString_0058fd6c[];
+extern char gString_00655b3c[];
+extern char gString_00659cb8[];
+extern char gString_00659cc8[];
+extern char gString_00659cf4[];
+extern char gString_00659cfc[];
+extern char gString_00659d04[];
+extern char gString_0065a2ac[];
+extern char gString_0065a2bc[];
+extern char gString_0065a2c8[];
+extern char gString_0065a2d4[];
+extern char gString_0065a2e0[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchData_0065a2e8[];
+extern char gMatchData_0065a30c[];
+extern char gMatchData_0065a334[];
+extern char gMatchData_0065a35c[];
+extern char gMatchData_006b75dc[];
+extern char gMatchData_0074a770[];
+extern char gMatchDouble_0058a428[];
+extern char gMatchFloat_00659c84[];
+extern char gMatchFloat_00659c98[];
+extern char gMatchFloat_00659cd8[];
+extern char gMatchFloat_0065a18c[];
+extern char gMatchFloat_0065a1a4[];
+extern char gMatchFloat_0065a1bc[];
+extern char gMatchFloat_0065a1d4[];
+extern char gMatchFloat_0065a1ec[];
+extern char gMatchFloat_0065a204[];
+extern char gMatchFloat_0065a21c[];
+extern char gMatchFloat_0065a234[];
+extern char gMatchFloat_0065a24c[];
+extern char gMatchFloat_0065a264[];
+extern char gMatchFloat_0065a27c[];
+extern char gMatchFloat_0065a294[];
+extern char gMatchFloat_0065a378[];
+extern char gMatchString_0058fd6c[];
+extern char gMatchString_00655b3c[];
+extern char gMatchString_00659cb8[];
+extern char gMatchString_00659cc8[];
+extern char gMatchString_00659cf4[];
+extern char gMatchString_00659cfc[];
+extern char gMatchString_00659d04[];
+extern char gMatchString_0065a2ac[];
+extern char gMatchString_0065a2bc[];
+extern char gMatchString_0065a2c8[];
+extern char gMatchString_0065a2d4[];
+extern char gMatchString_0065a2e0[];
+#endif
 // FUNCTION: CARMA2_HW 0x0049d780
 
 void C2_NAKED C2_HOOK_FASTCALL NetSendHeadupToEverybody(const char* pMessage) {
@@ -524,7 +598,7 @@ void C2_NAKED C2_HOOK_FASTCALL NetSendHeadupToEverybody(const char* pMessage) {
             mov eax, dword ptr [gINT_00659d34]
             test eax, eax
             jl L0049d7ca
-            mov ecx, offset gAsmString_0065a170
+            mov ecx, 0x65a170
             call PDFatalError
     L0049d7ca:
             mov ecx, dword ptr [gNumber_of_net_players]
@@ -580,7 +654,7 @@ void C2_NAKED C2_HOOK_FASTCALL NetSendHeadupToEverybody(const char* pMessage) {
             lea ecx, [eax*4 + gNet_players]
             cmp ebx, ecx
             jne L0049d870
-            mov ecx, offset gAsmString_0065a148
+            mov ecx, 0x65a148
             call PDFatalError
     L0049d870:
             mov esi, dword ptr [ebx + 0xcc]
@@ -715,7 +789,7 @@ void C2_NAKED C2_HOOK_FASTCALL NetSendHeadupToEverybody(const char* pMessage) {
             lea edx, [ecx*4 + gNet_players]
             cmp ebp, edx
             jne L0049da10
-            mov ecx, offset gAsmString_0065a148
+            mov ecx, 0x65a148
             call PDFatalError
     L0049da10:
             mov esi, dword ptr [ebp + 0xcc]
@@ -823,7 +897,7 @@ void C2_NAKED C2_HOOK_FASTCALL NetSendHeadupToAllPlayers(char* pMessage) {
             mov eax, dword ptr [gINT_00659d34]
             test eax, eax
             jl L0049d45b
-            mov ecx, offset gAsmString_0065a170
+            mov ecx, 0x65a170
             call PDFatalError
     L0049d45b:
             mov ecx, dword ptr [gNumber_of_net_players]
@@ -880,7 +954,7 @@ void C2_NAKED C2_HOOK_FASTCALL NetSendHeadupToAllPlayers(char* pMessage) {
             lea ecx, [eax*4 + gNet_players]
             cmp ebx, ecx
             jne L0049d505
-            mov ecx, offset gAsmString_0065a148
+            mov ecx, 0x65a148
             call PDFatalError
     L0049d505:
             mov esi, dword ptr [ebx + 0xcc]
@@ -1015,7 +1089,7 @@ void C2_NAKED C2_HOOK_FASTCALL NetSendHeadupToAllPlayers(char* pMessage) {
             lea edx, [ecx*4 + gNet_players]
             cmp ebp, edx
             jne L0049d6a5
-            mov ecx, offset gAsmString_0065a148
+            mov ecx, 0x65a148
             call PDFatalError
     L0049d6a5:
             mov esi, dword ptr [ebp + 0xcc]
@@ -1424,8 +1498,8 @@ C2_NAKED tNet_game_details* C2_HOOK_FASTCALL NetHostGame(tNet_game_type pNet_typ
             add esp, 8
             cmp byte ptr [edi], bl
             jne L0049e253
-            push offset gAsmString_0065a2ac
-            push offset gAsmString_0059101c
+            push offset gMatchString_0065a2ac
+            push 0x59101c
             push edi
             call sprintf
             add esp, 0xc
@@ -1916,7 +1990,7 @@ C2_NAKED tNet_message* C2_HOOK_FASTCALL NetGetNextMessage(tNet_game_details* pDe
             mov ebp, ecx
             mov dword ptr [eax*4 + gTimers_stack], 9
             je L0049ffb0
-            mov eax, dword ptr [eax*4 + 0x6b75dc]
+            mov eax, dword ptr [eax*4 + gMatchData_006b75dc]
             lea esi, [eax*8]
             lea edx, [eax*8]
             sub esi, eax
@@ -1967,7 +2041,7 @@ C2_NAKED tNet_message* C2_HOOK_FASTCALL NetGetNextMessage(tNet_game_details* pDe
             jle L004a004e
             call PDGetMicroseconds
             mov ecx, dword ptr [gTimers_stack_size]
-            mov ecx, dword ptr [ecx*4 + 0x6b75dc]
+            mov ecx, dword ptr [ecx*4 + gMatchData_006b75dc]
             jmp L004a0059
     L004a004e:
             call PDGetMicroseconds
@@ -2022,7 +2096,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
             test eax, eax
             mov dword ptr [eax*4 + gTimers_stack], 0xf
             je L004a02c1
-            mov eax, dword ptr [eax*4 + 0x6b75dc]
+            mov eax, dword ptr [eax*4 + gMatchData_006b75dc]
             lea esi, [eax*8]
             lea edx, [eax*8]
             sub esi, eax
@@ -2139,7 +2213,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
             jle L004a044a
             call PDGetMicroseconds
             mov ecx, dword ptr [gTimers_stack_size]
-            mov edx, dword ptr [ecx*4 + 0x6b75dc]
+            mov edx, dword ptr [ecx*4 + gMatchData_006b75dc]
             mov esi, edx
             shl esi, 3
             sub esi, edx
@@ -2212,7 +2286,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
             test ecx, ecx
             mov dword ptr [ecx*4 + gTimers_stack], 0xe
             je L004a0562
-            mov ecx, dword ptr [ecx*4 + 0x6b75dc]
+            mov ecx, dword ptr [ecx*4 + gMatchData_006b75dc]
             xor edx, edx
             lea esi, [ecx*8]
             lea eax, [ecx*8]
@@ -2304,7 +2378,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
             test ecx, ecx
             mov dword ptr [ecx*4 + gTimers_stack], 0xe
             je L004a06a3
-            mov ecx, dword ptr [ecx*4 + 0x6b75dc]
+            mov ecx, dword ptr [ecx*4 + gMatchData_006b75dc]
             xor edx, edx
             lea esi, [ecx*8]
             lea eax, [ecx*8]
@@ -2363,7 +2437,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
             jle L004a449c
             call PDGetMicroseconds
             mov ecx, dword ptr [gTimers_stack_size]
-            mov edx, dword ptr [ecx*4 + 0x6b75dc]
+            mov edx, dword ptr [ecx*4 + gMatchData_006b75dc]
             mov esi, edx
             shl esi, 3
             sub esi, edx
@@ -2373,7 +2447,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
             test ecx, ecx
             mov dword ptr [ecx*4 + gTimers_stack], 0xe
             je L004a07ae
-            mov ecx, dword ptr [ecx*4 + 0x6b75dc]
+            mov ecx, dword ptr [ecx*4 + gMatchData_006b75dc]
             xor edx, edx
             lea esi, [ecx*8]
             lea eax, [ecx*8]
@@ -2514,8 +2588,8 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
             test cl, cl
             jne L004a0959
             push ebp
-            push offset gAsmString_0065a2e0
-            push offset gAsmString_0058fd6c
+            push offset gMatchString_0065a2e0
+            push offset gMatchString_0058fd6c
             push eax
             call sprintf
             add esp, 0x10
@@ -2537,7 +2611,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
             mov eax, dword ptr [gNumber_of_net_players]
             test eax, eax
             jle L004a0aae
-            mov dword ptr [esp + 0x1c], offset gNet_players
+            mov dword ptr [esp + 0x1c], 0x74bcc0
     L004a09a7:
             mov edx, 1
             mov cl, 3
@@ -2691,7 +2765,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
             call PDGetMicroseconds
             mov ecx, dword ptr [gTimers_stack_size]
             mov ebx, dword ptr [esp + 0x10]
-            mov edx, dword ptr [ecx*4 + 0x6b75dc]
+            mov edx, dword ptr [ecx*4 + gMatchData_006b75dc]
             mov esi, edx
             shl esi, 3
             sub esi, edx
@@ -2703,7 +2777,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
             test ecx, ecx
             mov dword ptr [ecx*4 + gTimers_stack], 0xe
             je L004a0c12
-            mov ecx, dword ptr [ecx*4 + 0x6b75dc]
+            mov ecx, dword ptr [ecx*4 + gMatchData_006b75dc]
             xor edx, edx
             lea esi, [ecx*8]
             lea eax, [ecx*8]
@@ -2755,7 +2829,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
             jle L004a449c
             call PDGetMicroseconds
             mov ecx, dword ptr [gTimers_stack_size]
-            mov edx, dword ptr [ecx*4 + 0x6b75dc]
+            mov edx, dword ptr [ecx*4 + gMatchData_006b75dc]
             mov esi, edx
             shl esi, 3
             sub esi, edx
@@ -2765,7 +2839,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
             test ecx, ecx
             mov dword ptr [ecx*4 + gTimers_stack], 0xe
             je L004a0d07
-            mov ecx, dword ptr [ecx*4 + 0x6b75dc]
+            mov ecx, dword ptr [ecx*4 + gMatchData_006b75dc]
             xor edx, edx
             lea esi, [ecx*8]
             lea eax, [ecx*8]
@@ -2823,7 +2897,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
             jle L004a449c
             call PDGetMicroseconds
             mov ecx, dword ptr [gTimers_stack_size]
-            mov edx, dword ptr [ecx*4 + 0x6b75dc]
+            mov edx, dword ptr [ecx*4 + gMatchData_006b75dc]
             mov esi, edx
             shl esi, 3
             sub esi, edx
@@ -2833,7 +2907,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
             test ecx, ecx
             mov dword ptr [ecx*4 + gTimers_stack], 0xe
             je L004a0e19
-            mov ecx, dword ptr [ecx*4 + 0x6b75dc]
+            mov ecx, dword ptr [ecx*4 + gMatchData_006b75dc]
             xor edx, edx
             lea esi, [ecx*8]
             lea eax, [ecx*8]
@@ -2885,7 +2959,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
             jle L004a449c
             call PDGetMicroseconds
             mov ecx, dword ptr [gTimers_stack_size]
-            mov edx, dword ptr [ecx*4 + 0x6b75dc]
+            mov edx, dword ptr [ecx*4 + gMatchData_006b75dc]
             mov esi, edx
             shl esi, 3
             sub esi, edx
@@ -2895,7 +2969,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
             test ecx, ecx
             mov dword ptr [ecx*4 + gTimers_stack], 0xe
             je L004a0f0d
-            mov ecx, dword ptr [ecx*4 + 0x6b75dc]
+            mov ecx, dword ptr [ecx*4 + gMatchData_006b75dc]
             xor edx, edx
             lea esi, [ecx*8]
             lea eax, [ecx*8]
@@ -2956,7 +3030,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
             jle L004a449c
             call PDGetMicroseconds
             mov ecx, dword ptr [gTimers_stack_size]
-            mov edx, dword ptr [ecx*4 + 0x6b75dc]
+            mov edx, dword ptr [ecx*4 + gMatchData_006b75dc]
             mov esi, edx
             shl esi, 3
             sub esi, edx
@@ -2966,7 +3040,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
             test ecx, ecx
             mov dword ptr [ecx*4 + gTimers_stack], 0xe
             je L004a1020
-            mov ecx, dword ptr [ecx*4 + 0x6b75dc]
+            mov ecx, dword ptr [ecx*4 + gMatchData_006b75dc]
             xor edx, edx
             lea esi, [ecx*8]
             lea eax, [ecx*8]
@@ -3062,7 +3136,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
             jle L004a449c
             call PDGetMicroseconds
             mov ecx, dword ptr [gTimers_stack_size]
-            mov edx, dword ptr [ecx*4 + 0x6b75dc]
+            mov edx, dword ptr [ecx*4 + gMatchData_006b75dc]
             mov esi, edx
             shl esi, 3
             sub esi, edx
@@ -3072,7 +3146,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
             test ecx, ecx
             mov dword ptr [ecx*4 + gTimers_stack], 0xe
             je L004a1199
-            mov ecx, dword ptr [ecx*4 + 0x6b75dc]
+            mov ecx, dword ptr [ecx*4 + gMatchData_006b75dc]
             xor edx, edx
             lea esi, [ecx*8]
             lea eax, [ecx*8]
@@ -3248,7 +3322,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
             jle L004a449c
             call PDGetMicroseconds
             mov ecx, dword ptr [gTimers_stack_size]
-            mov edx, dword ptr [ecx*4 + 0x6b75dc]
+            mov edx, dword ptr [ecx*4 + gMatchData_006b75dc]
             mov esi, edx
             shl esi, 3
             sub esi, edx
@@ -3258,7 +3332,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
             test ecx, ecx
             mov dword ptr [ecx*4 + gTimers_stack], 0xf
             je L004a1427
-            mov ecx, dword ptr [ecx*4 + 0x6b75dc]
+            mov ecx, dword ptr [ecx*4 + gMatchData_006b75dc]
             xor edx, edx
             lea esi, [ecx*8]
             lea eax, [ecx*8]
@@ -3327,7 +3401,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
             lea edx, [ecx*4 + gNet_players]
             cmp edi, edx
             jne L004a14e7
-            mov ecx, offset gAsmString_0065a148
+            mov ecx, 0x65a148
             call PDFatalError
     L004a14e7:
             mov esi, dword ptr [edi + 0xcc]
@@ -3456,7 +3530,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
             call PDGetMicroseconds
             mov ecx, dword ptr [gTimers_stack_size]
             mov ebx, dword ptr [esp + 0x10]
-            mov edx, dword ptr [ecx*4 + 0x6b75dc]
+            mov edx, dword ptr [ecx*4 + gMatchData_006b75dc]
             mov esi, edx
             shl esi, 3
             sub esi, edx
@@ -3468,7 +3542,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
             test ecx, ecx
             mov dword ptr [ecx*4 + gTimers_stack], 0xf
             je L004a16d6
-            mov ecx, dword ptr [ecx*4 + 0x6b75dc]
+            mov ecx, dword ptr [ecx*4 + gMatchData_006b75dc]
             xor edx, edx
             lea esi, [ecx*8]
             lea eax, [ecx*8]
@@ -3531,7 +3605,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
             jle L004a449c
             call PDGetMicroseconds
             mov ecx, dword ptr [gTimers_stack_size]
-            mov edx, dword ptr [ecx*4 + 0x6b75dc]
+            mov edx, dword ptr [ecx*4 + gMatchData_006b75dc]
             mov esi, edx
             shl esi, 3
             sub esi, edx
@@ -3541,7 +3615,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
             test ecx, ecx
             mov dword ptr [ecx*4 + gTimers_stack], 0xe
             je L004a17e2
-            mov ecx, dword ptr [ecx*4 + 0x6b75dc]
+            mov ecx, dword ptr [ecx*4 + gMatchData_006b75dc]
             xor edx, edx
             lea esi, [ecx*8]
             lea eax, [ecx*8]
@@ -3601,7 +3675,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
             jle L004a449c
             call PDGetMicroseconds
             mov ecx, dword ptr [gTimers_stack_size]
-            mov edx, dword ptr [ecx*4 + 0x6b75dc]
+            mov edx, dword ptr [ecx*4 + gMatchData_006b75dc]
             mov esi, edx
             shl esi, 3
             sub esi, edx
@@ -3611,7 +3685,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
             test ecx, ecx
             mov dword ptr [ecx*4 + gTimers_stack], 0xe
             je L004a18eb
-            mov ecx, dword ptr [ecx*4 + 0x6b75dc]
+            mov ecx, dword ptr [ecx*4 + gMatchData_006b75dc]
             xor edx, edx
             lea esi, [ecx*8]
             lea eax, [ecx*8]
@@ -3732,7 +3806,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
             call PDGetMicroseconds
             mov ecx, dword ptr [gTimers_stack_size]
             mov ebx, dword ptr [esp + 0x10]
-            mov edx, dword ptr [ecx*4 + 0x6b75dc]
+            mov edx, dword ptr [ecx*4 + gMatchData_006b75dc]
             mov esi, edx
             shl esi, 3
             sub esi, edx
@@ -3744,7 +3818,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
             test ecx, ecx
             mov dword ptr [ecx*4 + gTimers_stack], 0xe
             je L004a1abb
-            mov ecx, dword ptr [ecx*4 + 0x6b75dc]
+            mov ecx, dword ptr [ecx*4 + gMatchData_006b75dc]
             xor edx, edx
             lea esi, [ecx*8]
             lea eax, [ecx*8]
@@ -3821,7 +3895,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
             jle L004a449c
             call PDGetMicroseconds
             mov ecx, dword ptr [gTimers_stack_size]
-            mov edx, dword ptr [ecx*4 + 0x6b75dc]
+            mov edx, dword ptr [ecx*4 + gMatchData_006b75dc]
             mov esi, edx
             shl esi, 3
             sub esi, edx
@@ -3831,7 +3905,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
             test ecx, ecx
             mov dword ptr [ecx*4 + gTimers_stack], 0xc
             je L004a1c07
-            mov ecx, dword ptr [ecx*4 + 0x6b75dc]
+            mov ecx, dword ptr [ecx*4 + gMatchData_006b75dc]
             xor edx, edx
             lea esi, [ecx*8]
             lea eax, [ecx*8]
@@ -3882,7 +3956,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
             jle L004a449c
             call PDGetMicroseconds
             mov ecx, dword ptr [gTimers_stack_size]
-            mov edx, dword ptr [ecx*4 + 0x6b75dc]
+            mov edx, dword ptr [ecx*4 + gMatchData_006b75dc]
             mov esi, edx
             shl esi, 3
             sub esi, edx
@@ -3892,7 +3966,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
             test ecx, ecx
             mov dword ptr [ecx*4 + gTimers_stack], 0xc
             je L004a1cf7
-            mov ecx, dword ptr [ecx*4 + 0x6b75dc]
+            mov ecx, dword ptr [ecx*4 + gMatchData_006b75dc]
             xor edx, edx
             lea esi, [ecx*8]
             lea eax, [ecx*8]
@@ -3943,7 +4017,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
             jle L004a449c
             call PDGetMicroseconds
             mov ecx, dword ptr [gTimers_stack_size]
-            mov edx, dword ptr [ecx*4 + 0x6b75dc]
+            mov edx, dword ptr [ecx*4 + gMatchData_006b75dc]
             mov esi, edx
             shl esi, 3
             sub esi, edx
@@ -3953,7 +4027,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
             test ecx, ecx
             mov dword ptr [ecx*4 + gTimers_stack], 0xe
             je L004a1de7
-            mov ecx, dword ptr [ecx*4 + 0x6b75dc]
+            mov ecx, dword ptr [ecx*4 + gMatchData_006b75dc]
             xor edx, edx
             lea esi, [ecx*8]
             lea eax, [ecx*8]
@@ -4017,7 +4091,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
             jle L004a449c
             call PDGetMicroseconds
             mov ecx, dword ptr [gTimers_stack_size]
-            mov edx, dword ptr [ecx*4 + 0x6b75dc]
+            mov edx, dword ptr [ecx*4 + gMatchData_006b75dc]
             mov esi, edx
             shl esi, 3
             sub esi, edx
@@ -4027,7 +4101,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
             test ecx, ecx
             mov dword ptr [ecx*4 + gTimers_stack], 0xe
             je L004a1efc
-            mov ecx, dword ptr [ecx*4 + 0x6b75dc]
+            mov ecx, dword ptr [ecx*4 + gMatchData_006b75dc]
             xor edx, edx
             lea esi, [ecx*8]
             lea eax, [ecx*8]
@@ -4097,7 +4171,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
             jle L004a449c
             call PDGetMicroseconds
             mov ecx, dword ptr [gTimers_stack_size]
-            mov edx, dword ptr [ecx*4 + 0x6b75dc]
+            mov edx, dword ptr [ecx*4 + gMatchData_006b75dc]
             mov esi, edx
             shl esi, 3
             sub esi, edx
@@ -4107,7 +4181,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
             test ecx, ecx
             mov dword ptr [ecx*4 + gTimers_stack], 0xe
             je L004a201f
-            mov ecx, dword ptr [ecx*4 + 0x6b75dc]
+            mov ecx, dword ptr [ecx*4 + gMatchData_006b75dc]
             xor edx, edx
             lea esi, [ecx*8]
             lea eax, [ecx*8]
@@ -4156,7 +4230,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
             jle L004a449c
             call PDGetMicroseconds
             mov ecx, dword ptr [gTimers_stack_size]
-            mov edx, dword ptr [ecx*4 + 0x6b75dc]
+            mov edx, dword ptr [ecx*4 + gMatchData_006b75dc]
             mov esi, edx
             shl esi, 3
             sub esi, edx
@@ -4166,7 +4240,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
             test ecx, ecx
             mov dword ptr [ecx*4 + gTimers_stack], 0xe
             je L004a2108
-            mov ecx, dword ptr [ecx*4 + 0x6b75dc]
+            mov ecx, dword ptr [ecx*4 + gMatchData_006b75dc]
             xor edx, edx
             lea esi, [ecx*8]
             lea eax, [ecx*8]
@@ -4215,7 +4289,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
             jle L004a449c
             call PDGetMicroseconds
             mov ecx, dword ptr [gTimers_stack_size]
-            mov edx, dword ptr [ecx*4 + 0x6b75dc]
+            mov edx, dword ptr [ecx*4 + gMatchData_006b75dc]
             mov esi, edx
             shl esi, 3
             sub esi, edx
@@ -4225,7 +4299,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
             test ecx, ecx
             mov dword ptr [ecx*4 + gTimers_stack], 0xe
             je L004a21f1
-            mov ecx, dword ptr [ecx*4 + 0x6b75dc]
+            mov ecx, dword ptr [ecx*4 + gMatchData_006b75dc]
             xor edx, edx
             lea esi, [ecx*8]
             lea eax, [ecx*8]
@@ -4276,7 +4350,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
             jle L004a449c
             call PDGetMicroseconds
             mov ecx, dword ptr [gTimers_stack_size]
-            mov edx, dword ptr [ecx*4 + 0x6b75dc]
+            mov edx, dword ptr [ecx*4 + gMatchData_006b75dc]
             mov esi, edx
             shl esi, 3
             sub esi, edx
@@ -4286,7 +4360,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
             test ecx, ecx
             mov dword ptr [ecx*4 + gTimers_stack], 0xe
             je L004a22e1
-            mov ecx, dword ptr [ecx*4 + 0x6b75dc]
+            mov ecx, dword ptr [ecx*4 + gMatchData_006b75dc]
             xor edx, edx
             lea esi, [ecx*8]
             lea eax, [ecx*8]
@@ -4337,7 +4411,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
             jle L004a449c
             call PDGetMicroseconds
             mov ecx, dword ptr [gTimers_stack_size]
-            mov edx, dword ptr [ecx*4 + 0x6b75dc]
+            mov edx, dword ptr [ecx*4 + gMatchData_006b75dc]
             mov esi, edx
             shl esi, 3
             sub esi, edx
@@ -4347,7 +4421,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
             test ecx, ecx
             mov dword ptr [ecx*4 + gTimers_stack], 0xe
             je L004a23d1
-            mov ecx, dword ptr [ecx*4 + 0x6b75dc]
+            mov ecx, dword ptr [ecx*4 + gMatchData_006b75dc]
             xor edx, edx
             lea esi, [ecx*8]
             lea eax, [ecx*8]
@@ -4411,7 +4485,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
             jle L004a449c
             call PDGetMicroseconds
             mov ecx, dword ptr [gTimers_stack_size]
-            mov edx, dword ptr [ecx*4 + 0x6b75dc]
+            mov edx, dword ptr [ecx*4 + gMatchData_006b75dc]
             mov esi, edx
             shl esi, 3
             sub esi, edx
@@ -4421,7 +4495,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
             test ecx, ecx
             mov dword ptr [ecx*4 + gTimers_stack], 0xe
             je L004a24e4
-            mov ecx, dword ptr [ecx*4 + 0x6b75dc]
+            mov ecx, dword ptr [ecx*4 + gMatchData_006b75dc]
             xor edx, edx
             lea esi, [ecx*8]
             lea eax, [ecx*8]
@@ -4603,7 +4677,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
             push eax
             push edx
             lea eax, [esp + 0x3c]
-            push offset gAsmString_0065a2d4
+            push offset gMatchString_0065a2d4
             push eax
             call sprintf
             add esp, 0x18
@@ -4624,7 +4698,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
             lea edx, [esp + 0x30]
             push eax
             push ecx
-            push offset gAsmString_0065a2c8
+            push offset gMatchString_0065a2c8
             push edx
             call sprintf
             add esp, 0x14
@@ -4677,7 +4751,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
             jle L004a449c
             call PDGetMicroseconds
             mov ecx, dword ptr [gTimers_stack_size]
-            mov edx, dword ptr [ecx*4 + 0x6b75dc]
+            mov edx, dword ptr [ecx*4 + gMatchData_006b75dc]
             mov esi, edx
             shl esi, 3
             sub esi, edx
@@ -4687,7 +4761,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
             test ecx, ecx
             mov dword ptr [ecx*4 + gTimers_stack], 0xe
             je L004a2849
-            mov ecx, dword ptr [ecx*4 + 0x6b75dc]
+            mov ecx, dword ptr [ecx*4 + gMatchData_006b75dc]
             xor edx, edx
             lea esi, [ecx*8]
             lea eax, [ecx*8]
@@ -4741,7 +4815,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
             jle L004a449c
             call PDGetMicroseconds
             mov ecx, dword ptr [gTimers_stack_size]
-            mov edx, dword ptr [ecx*4 + 0x6b75dc]
+            mov edx, dword ptr [ecx*4 + gMatchData_006b75dc]
             mov esi, edx
             shl esi, 3
             sub esi, edx
@@ -4751,7 +4825,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
             test ecx, ecx
             mov dword ptr [ecx*4 + gTimers_stack], 0xc
             je L004a2945
-            mov ecx, dword ptr [ecx*4 + 0x6b75dc]
+            mov ecx, dword ptr [ecx*4 + gMatchData_006b75dc]
             xor edx, edx
             lea esi, [ecx*8]
             lea eax, [ecx*8]
@@ -4802,7 +4876,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
             jle L004a449c
             call PDGetMicroseconds
             mov ecx, dword ptr [gTimers_stack_size]
-            mov edx, dword ptr [ecx*4 + 0x6b75dc]
+            mov edx, dword ptr [ecx*4 + gMatchData_006b75dc]
             mov esi, edx
             shl esi, 3
             sub esi, edx
@@ -4812,7 +4886,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
             test ecx, ecx
             mov dword ptr [ecx*4 + gTimers_stack], 0xe
             je L004a2a35
-            mov ecx, dword ptr [ecx*4 + 0x6b75dc]
+            mov ecx, dword ptr [ecx*4 + gMatchData_006b75dc]
             xor edx, edx
             lea esi, [ecx*8]
             lea eax, [ecx*8]
@@ -4863,7 +4937,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
             jle L004a449c
             call PDGetMicroseconds
             mov ecx, dword ptr [gTimers_stack_size]
-            mov edx, dword ptr [ecx*4 + 0x6b75dc]
+            mov edx, dword ptr [ecx*4 + gMatchData_006b75dc]
             mov esi, edx
             shl esi, 3
             sub esi, edx
@@ -4873,7 +4947,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
             test ecx, ecx
             mov dword ptr [ecx*4 + gTimers_stack], 0xe
             je L004a2b25
-            mov ecx, dword ptr [ecx*4 + 0x6b75dc]
+            mov ecx, dword ptr [ecx*4 + gMatchData_006b75dc]
             xor edx, edx
             lea esi, [ecx*8]
             lea eax, [ecx*8]
@@ -5003,7 +5077,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
             test ecx, ecx
             mov dword ptr [ecx*4 + gTimers_stack], 0xe
             je L004a2cd5
-            mov ecx, dword ptr [ecx*4 + 0x6b75dc]
+            mov ecx, dword ptr [ecx*4 + gMatchData_006b75dc]
             xor edx, edx
             lea esi, [ecx*8]
             lea eax, [ecx*8]
@@ -5106,7 +5180,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
             call PDGetMicroseconds
             mov ecx, dword ptr [gTimers_stack_size]
             mov ebx, dword ptr [esp + 0x10]
-            mov edx, dword ptr [ecx*4 + 0x6b75dc]
+            mov edx, dword ptr [ecx*4 + gMatchData_006b75dc]
             mov esi, edx
             shl esi, 3
             sub esi, edx
@@ -5130,7 +5204,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
             test ecx, ecx
             mov dword ptr [ecx*4 + gTimers_stack], 0xe
             je L004a2e85
-            mov ecx, dword ptr [ecx*4 + 0x6b75dc]
+            mov ecx, dword ptr [ecx*4 + gMatchData_006b75dc]
             xor edx, edx
             lea esi, [ecx*8]
             lea eax, [ecx*8]
@@ -5198,7 +5272,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
             jle L004a449c
             call PDGetMicroseconds
             mov ecx, dword ptr [gTimers_stack_size]
-            mov edx, dword ptr [ecx*4 + 0x6b75dc]
+            mov edx, dword ptr [ecx*4 + gMatchData_006b75dc]
             mov esi, edx
             shl esi, 3
             sub esi, edx
@@ -5208,7 +5282,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
             test ecx, ecx
             mov dword ptr [ecx*4 + gTimers_stack], 0xe
             je L004a2fa7
-            mov ecx, dword ptr [ecx*4 + 0x6b75dc]
+            mov ecx, dword ptr [ecx*4 + gMatchData_006b75dc]
             xor edx, edx
             lea esi, [ecx*8]
             lea eax, [ecx*8]
@@ -5259,7 +5333,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
             jle L004a449c
             call PDGetMicroseconds
             mov ecx, dword ptr [gTimers_stack_size]
-            mov edx, dword ptr [ecx*4 + 0x6b75dc]
+            mov edx, dword ptr [ecx*4 + gMatchData_006b75dc]
             mov esi, edx
             shl esi, 3
             sub esi, edx
@@ -5269,7 +5343,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
             test ecx, ecx
             mov dword ptr [ecx*4 + gTimers_stack], 0xa
             je L004a3097
-            mov ecx, dword ptr [ecx*4 + 0x6b75dc]
+            mov ecx, dword ptr [ecx*4 + gMatchData_006b75dc]
             xor edx, edx
             lea esi, [ecx*8]
             lea eax, [ecx*8]
@@ -5320,7 +5394,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
             jle L004a449c
             call PDGetMicroseconds
             mov ecx, dword ptr [gTimers_stack_size]
-            mov edx, dword ptr [ecx*4 + 0x6b75dc]
+            mov edx, dword ptr [ecx*4 + gMatchData_006b75dc]
             mov esi, edx
             shl esi, 3
             sub esi, edx
@@ -5330,7 +5404,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
             test ecx, ecx
             mov dword ptr [ecx*4 + gTimers_stack], 0xb
             je L004a3187
-            mov ecx, dword ptr [ecx*4 + 0x6b75dc]
+            mov ecx, dword ptr [ecx*4 + gMatchData_006b75dc]
             xor edx, edx
             lea esi, [ecx*8]
             lea eax, [ecx*8]
@@ -5381,7 +5455,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
             jle L004a449c
             call PDGetMicroseconds
             mov ecx, dword ptr [gTimers_stack_size]
-            mov edx, dword ptr [ecx*4 + 0x6b75dc]
+            mov edx, dword ptr [ecx*4 + gMatchData_006b75dc]
             mov esi, edx
             shl esi, 3
             sub esi, edx
@@ -5391,7 +5465,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
             test ecx, ecx
             mov dword ptr [ecx*4 + gTimers_stack], 0xb
             je L004a3277
-            mov ecx, dword ptr [ecx*4 + 0x6b75dc]
+            mov ecx, dword ptr [ecx*4 + gMatchData_006b75dc]
             xor edx, edx
             lea esi, [ecx*8]
             lea eax, [ecx*8]
@@ -5442,7 +5516,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
             jle L004a449c
             call PDGetMicroseconds
             mov ecx, dword ptr [gTimers_stack_size]
-            mov edx, dword ptr [ecx*4 + 0x6b75dc]
+            mov edx, dword ptr [ecx*4 + gMatchData_006b75dc]
             mov esi, edx
             shl esi, 3
             sub esi, edx
@@ -5452,7 +5526,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
             test ecx, ecx
             mov dword ptr [ecx*4 + gTimers_stack], 0xe
             je L004a3367
-            mov ecx, dword ptr [ecx*4 + 0x6b75dc]
+            mov ecx, dword ptr [ecx*4 + gMatchData_006b75dc]
             xor edx, edx
             lea esi, [ecx*8]
             lea eax, [ecx*8]
@@ -5503,7 +5577,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
             jle L004a449c
             call PDGetMicroseconds
             mov ecx, dword ptr [gTimers_stack_size]
-            mov edx, dword ptr [ecx*4 + 0x6b75dc]
+            mov edx, dword ptr [ecx*4 + gMatchData_006b75dc]
             mov esi, edx
             shl esi, 3
             sub esi, edx
@@ -5513,7 +5587,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
             test ecx, ecx
             mov dword ptr [ecx*4 + gTimers_stack], 0xa
             je L004a3457
-            mov ecx, dword ptr [ecx*4 + 0x6b75dc]
+            mov ecx, dword ptr [ecx*4 + gMatchData_006b75dc]
             xor edx, edx
             lea esi, [ecx*8]
             lea eax, [ecx*8]
@@ -5564,7 +5638,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
             jle L004a449c
             call PDGetMicroseconds
             mov ecx, dword ptr [gTimers_stack_size]
-            mov edx, dword ptr [ecx*4 + 0x6b75dc]
+            mov edx, dword ptr [ecx*4 + gMatchData_006b75dc]
             mov esi, edx
             shl esi, 3
             sub esi, edx
@@ -5574,7 +5648,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
             test ecx, ecx
             mov dword ptr [ecx*4 + gTimers_stack], 0xa
             je L004a3547
-            mov ecx, dword ptr [ecx*4 + 0x6b75dc]
+            mov ecx, dword ptr [ecx*4 + gMatchData_006b75dc]
             xor edx, edx
             lea esi, [ecx*8]
             lea eax, [ecx*8]
@@ -5625,7 +5699,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
             jle L004a449c
             call PDGetMicroseconds
             mov ecx, dword ptr [gTimers_stack_size]
-            mov edx, dword ptr [ecx*4 + 0x6b75dc]
+            mov edx, dword ptr [ecx*4 + gMatchData_006b75dc]
             mov esi, edx
             shl esi, 3
             sub esi, edx
@@ -5635,7 +5709,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
             test ecx, ecx
             mov dword ptr [ecx*4 + gTimers_stack], 0xa
             je L004a3637
-            mov ecx, dword ptr [ecx*4 + 0x6b75dc]
+            mov ecx, dword ptr [ecx*4 + gMatchData_006b75dc]
             xor edx, edx
             lea esi, [ecx*8]
             lea eax, [ecx*8]
@@ -5686,7 +5760,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
             jle L004a449c
             call PDGetMicroseconds
             mov ecx, dword ptr [gTimers_stack_size]
-            mov edx, dword ptr [ecx*4 + 0x6b75dc]
+            mov edx, dword ptr [ecx*4 + gMatchData_006b75dc]
             mov esi, edx
             shl esi, 3
             sub esi, edx
@@ -5696,7 +5770,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
             test ecx, ecx
             mov dword ptr [ecx*4 + gTimers_stack], 0xa
             je L004a3727
-            mov ecx, dword ptr [ecx*4 + 0x6b75dc]
+            mov ecx, dword ptr [ecx*4 + gMatchData_006b75dc]
             xor edx, edx
             lea esi, [ecx*8]
             lea eax, [ecx*8]
@@ -5747,7 +5821,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
             jle L004a449c
             call PDGetMicroseconds
             mov ecx, dword ptr [gTimers_stack_size]
-            mov edx, dword ptr [ecx*4 + 0x6b75dc]
+            mov edx, dword ptr [ecx*4 + gMatchData_006b75dc]
             mov esi, edx
             shl esi, 3
             sub esi, edx
@@ -5757,7 +5831,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
             test ecx, ecx
             mov dword ptr [ecx*4 + gTimers_stack], 0xa
             je L004a3817
-            mov ecx, dword ptr [ecx*4 + 0x6b75dc]
+            mov ecx, dword ptr [ecx*4 + gMatchData_006b75dc]
             xor edx, edx
             lea esi, [ecx*8]
             lea eax, [ecx*8]
@@ -5808,7 +5882,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
             jle L004a449c
             call PDGetMicroseconds
             mov ecx, dword ptr [gTimers_stack_size]
-            mov edx, dword ptr [ecx*4 + 0x6b75dc]
+            mov edx, dword ptr [ecx*4 + gMatchData_006b75dc]
             mov esi, edx
             shl esi, 3
             sub esi, edx
@@ -5818,7 +5892,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
             test ecx, ecx
             mov dword ptr [ecx*4 + gTimers_stack], 0xa
             je L004a3907
-            mov ecx, dword ptr [ecx*4 + 0x6b75dc]
+            mov ecx, dword ptr [ecx*4 + gMatchData_006b75dc]
             xor edx, edx
             lea esi, [ecx*8]
             lea eax, [ecx*8]
@@ -5869,7 +5943,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
             jle L004a449c
             call PDGetMicroseconds
             mov ecx, dword ptr [gTimers_stack_size]
-            mov edx, dword ptr [ecx*4 + 0x6b75dc]
+            mov edx, dword ptr [ecx*4 + gMatchData_006b75dc]
             mov esi, edx
             shl esi, 3
             sub esi, edx
@@ -5879,7 +5953,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
             test ecx, ecx
             mov dword ptr [ecx*4 + gTimers_stack], 0xa
             je L004a39f7
-            mov ecx, dword ptr [ecx*4 + 0x6b75dc]
+            mov ecx, dword ptr [ecx*4 + gMatchData_006b75dc]
             xor edx, edx
             lea esi, [ecx*8]
             lea eax, [ecx*8]
@@ -5930,7 +6004,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
             jle L004a449c
             call PDGetMicroseconds
             mov ecx, dword ptr [gTimers_stack_size]
-            mov edx, dword ptr [ecx*4 + 0x6b75dc]
+            mov edx, dword ptr [ecx*4 + gMatchData_006b75dc]
             mov esi, edx
             shl esi, 3
             sub esi, edx
@@ -5940,7 +6014,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
             test ecx, ecx
             mov dword ptr [ecx*4 + gTimers_stack], 0xa
             je L004a3ae7
-            mov ecx, dword ptr [ecx*4 + 0x6b75dc]
+            mov ecx, dword ptr [ecx*4 + gMatchData_006b75dc]
             xor edx, edx
             lea esi, [ecx*8]
             lea eax, [ecx*8]
@@ -5991,7 +6065,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
             jle L004a449c
             call PDGetMicroseconds
             mov ecx, dword ptr [gTimers_stack_size]
-            mov edx, dword ptr [ecx*4 + 0x6b75dc]
+            mov edx, dword ptr [ecx*4 + gMatchData_006b75dc]
             mov esi, edx
             shl esi, 3
             sub esi, edx
@@ -6001,7 +6075,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
             test ecx, ecx
             mov dword ptr [ecx*4 + gTimers_stack], 0xa
             je L004a3bd7
-            mov ecx, dword ptr [ecx*4 + 0x6b75dc]
+            mov ecx, dword ptr [ecx*4 + gMatchData_006b75dc]
             xor edx, edx
             lea esi, [ecx*8]
             lea eax, [ecx*8]
@@ -6052,7 +6126,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
             jle L004a449c
             call PDGetMicroseconds
             mov ecx, dword ptr [gTimers_stack_size]
-            mov edx, dword ptr [ecx*4 + 0x6b75dc]
+            mov edx, dword ptr [ecx*4 + gMatchData_006b75dc]
             mov esi, edx
             shl esi, 3
             sub esi, edx
@@ -6062,7 +6136,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
             test ecx, ecx
             mov dword ptr [ecx*4 + gTimers_stack], 0xa
             je L004a3cc7
-            mov ecx, dword ptr [ecx*4 + 0x6b75dc]
+            mov ecx, dword ptr [ecx*4 + gMatchData_006b75dc]
             xor edx, edx
             lea esi, [ecx*8]
             lea eax, [ecx*8]
@@ -6113,7 +6187,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
             jle L004a449c
             call PDGetMicroseconds
             mov ecx, dword ptr [gTimers_stack_size]
-            mov edx, dword ptr [ecx*4 + 0x6b75dc]
+            mov edx, dword ptr [ecx*4 + gMatchData_006b75dc]
             mov esi, edx
             shl esi, 3
             sub esi, edx
@@ -6123,7 +6197,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
             test ecx, ecx
             mov dword ptr [ecx*4 + gTimers_stack], 0xc
             je L004a3db7
-            mov ecx, dword ptr [ecx*4 + 0x6b75dc]
+            mov ecx, dword ptr [ecx*4 + gMatchData_006b75dc]
             xor edx, edx
             lea esi, [ecx*8]
             lea eax, [ecx*8]
@@ -6174,7 +6248,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
             jle L004a449c
             call PDGetMicroseconds
             mov ecx, dword ptr [gTimers_stack_size]
-            mov edx, dword ptr [ecx*4 + 0x6b75dc]
+            mov edx, dword ptr [ecx*4 + gMatchData_006b75dc]
             mov esi, edx
             shl esi, 3
             sub esi, edx
@@ -6184,7 +6258,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
             test ecx, ecx
             mov dword ptr [ecx*4 + gTimers_stack], 0xe
             je L004a3ea7
-            mov ecx, dword ptr [ecx*4 + 0x6b75dc]
+            mov ecx, dword ptr [ecx*4 + gMatchData_006b75dc]
             xor edx, edx
             lea esi, [ecx*8]
             lea eax, [ecx*8]
@@ -6301,7 +6375,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
             jle L004a449c
             call PDGetMicroseconds
             mov ecx, dword ptr [gTimers_stack_size]
-            mov edx, dword ptr [ecx*4 + 0x6b75dc]
+            mov edx, dword ptr [ecx*4 + gMatchData_006b75dc]
             mov esi, edx
             shl esi, 3
             sub esi, edx
@@ -6311,7 +6385,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
             test ecx, ecx
             mov dword ptr [ecx*4 + gTimers_stack], 0xe
             je L004a4045
-            mov ecx, dword ptr [ecx*4 + 0x6b75dc]
+            mov ecx, dword ptr [ecx*4 + gMatchData_006b75dc]
             xor edx, edx
             lea esi, [ecx*8]
             lea eax, [ecx*8]
@@ -6363,7 +6437,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
             jle L004a449c
             call PDGetMicroseconds
             mov ecx, dword ptr [gTimers_stack_size]
-            mov edx, dword ptr [ecx*4 + 0x6b75dc]
+            mov edx, dword ptr [ecx*4 + gMatchData_006b75dc]
             mov esi, edx
             shl esi, 3
             sub esi, edx
@@ -6373,7 +6447,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
             test ecx, ecx
             mov dword ptr [ecx*4 + gTimers_stack], 0xc
             je L004a4139
-            mov ecx, dword ptr [ecx*4 + 0x6b75dc]
+            mov ecx, dword ptr [ecx*4 + gMatchData_006b75dc]
             xor edx, edx
             lea esi, [ecx*8]
             lea eax, [ecx*8]
@@ -6465,7 +6539,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
             jle L004a449c
             call PDGetMicroseconds
             mov ecx, dword ptr [gTimers_stack_size]
-            mov edx, dword ptr [ecx*4 + 0x6b75dc]
+            mov edx, dword ptr [ecx*4 + gMatchData_006b75dc]
             mov esi, edx
             shl esi, 3
             sub esi, edx
@@ -6475,7 +6549,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
             test ecx, ecx
             mov dword ptr [ecx*4 + gTimers_stack], 0xc
             je L004a428e
-            mov ecx, dword ptr [ecx*4 + 0x6b75dc]
+            mov ecx, dword ptr [ecx*4 + gMatchData_006b75dc]
             xor edx, edx
             lea esi, [ecx*8]
             lea eax, [ecx*8]
@@ -6526,7 +6600,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
             jle L004a449c
             call PDGetMicroseconds
             mov ecx, dword ptr [gTimers_stack_size]
-            mov edx, dword ptr [ecx*4 + 0x6b75dc]
+            mov edx, dword ptr [ecx*4 + gMatchData_006b75dc]
             mov esi, edx
             shl esi, 3
             sub esi, edx
@@ -6537,7 +6611,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
             mov dword ptr [ecx*4 + gTimers_stack], 0xe
             cmp ecx, ebp
             je L004a4380
-            mov ecx, dword ptr [ecx*4 + 0x6b75dc]
+            mov ecx, dword ptr [ecx*4 + gMatchData_006b75dc]
             xor edx, edx
             lea esi, [ecx*8]
             lea eax, [ecx*8]
@@ -6622,7 +6696,7 @@ void C2_NAKED C2_HOOK_FASTCALL ReceivedMessage(tNet_message* pMessage, void* pSe
     L004a4474:
             call PDGetMicroseconds
             mov ecx, dword ptr [gTimers_stack_size]
-            mov edx, dword ptr [ecx*4 + 0x6b75dc]
+            mov edx, dword ptr [ecx*4 + gMatchData_006b75dc]
             mov esi, edx
             shl esi, 3
             sub esi, edx
@@ -7141,7 +7215,7 @@ int C2_NAKED C2_HOOK_FASTCALL NetGuaranteedSendMessageToEverybody(tNet_game_deta
             mov dword ptr [esi + 0x10], eax
             cmp word ptr [esi + 0x14], bx
             je L004a5bf0
-            mov ecx, offset gAsmString_0065a2e8
+            mov ecx, offset gMatchData_0065a2e8
             call PDFatalError
     L004a5bf0:
             mov word ptr [esi + 0x14], 1
@@ -7303,7 +7377,7 @@ clear_stack:
             push edi
             cmp word ptr [esi + 0x14], bx
             je L004a5e3b
-            mov ecx, offset gAsmString_0065a334
+            mov ecx, offset gMatchData_0065a334
             call PDFatalError
     L004a5e3b:
             mov ecx, dword ptr [gNumber_of_net_players]
@@ -7383,7 +7457,7 @@ clear_stack:
             lea eax, [edx*4 + gNet_players]
             cmp edi, eax
             jne L004a5f19
-            mov ecx, offset gAsmString_0065a148
+            mov ecx, 0x65a148
             call PDFatalError
     L004a5f19:
             mov ebx, dword ptr [edi + 0xcc]
@@ -7847,7 +7921,7 @@ void C2_NAKED C2_HOOK_FASTCALL NetLeaveGame(tNet_game_details* pNet_game) {
             push ebp
             push edi
             mov edi, ecx
-            push offset gAsmString_0065a294
+            push offset gMatchFloat_0065a294
             mov dword ptr [esp + 0x10], edi
             call dr_dprintf
             mov eax, dword ptr [gNet_mode]
@@ -7861,7 +7935,7 @@ void C2_NAKED C2_HOOK_FASTCALL NetLeaveGame(tNet_game_details* pNet_game) {
             push ebx
             mov dword ptr [gOnly_receive_guarantee_replies], esi
             jne L0049de42
-            push offset gAsmString_0065a27c
+            push offset gMatchFloat_0065a27c
             call dr_dprintf
             add esp, 4
             mov dword ptr [gDont_allow_joiners], esi
@@ -7888,7 +7962,7 @@ void C2_NAKED C2_HOOK_FASTCALL NetLeaveGame(tNet_game_details* pNet_game) {
             cmp edi, eax
             jl L0049dcfd
     L0049dd27:
-            push offset gAsmString_0065a264
+            push offset gMatchFloat_0065a264
             call dr_dprintf
             add esp, 4
             xor edx, edx
@@ -7920,7 +7994,7 @@ void C2_NAKED C2_HOOK_FASTCALL NetLeaveGame(tNet_game_details* pNet_game) {
             mov dl, byte ptr [esi + 0x18]
             mov byte ptr [esi + edx + 0x18], al
     L0049dd93:
-            push offset gAsmString_0065a24c
+            push offset gMatchFloat_0065a24c
             call dr_dprintf
             mov eax, dword ptr [gIn_net_service]
             add esp, 4
@@ -7932,7 +8006,7 @@ void C2_NAKED C2_HOOK_FASTCALL NetLeaveGame(tNet_game_details* pNet_game) {
     L0049ddb9:
             mov dword ptr [esp + 0x10], ebp
     L0049ddbd:
-            push offset gAsmString_0065a234
+            push offset gMatchFloat_0065a234
             call dr_dprintf
             mov eax, dword ptr [gNumber_of_net_players]
             add esp, 4
@@ -7962,7 +8036,7 @@ void C2_NAKED C2_HOOK_FASTCALL NetLeaveGame(tNet_game_details* pNet_game) {
             cmp ebx, eax
             jl L0049dde5
     L0049de0f:
-            push offset gAsmString_0065a21c
+            push offset gMatchFloat_0065a21c
             call dr_dprintf
             mov eax, dword ptr [esp + 0x14]
             add esp, 4
@@ -7970,7 +8044,7 @@ void C2_NAKED C2_HOOK_FASTCALL NetLeaveGame(tNet_game_details* pNet_game) {
             je L0049de2e
             mov dword ptr [gIn_net_service], 1
     L0049de2e:
-            push offset gAsmString_0065a204
+            push offset gMatchFloat_0065a204
             call dr_dprintf
             add esp, 4
             xor ebp, ebp
@@ -8094,7 +8168,7 @@ void C2_NAKED C2_HOOK_FASTCALL NetLeaveGame(tNet_game_details* pNet_game) {
             mov ecx, edx
             call NetBroadcastContents
     L0049df88:
-            push offset gAsmString_0065a1ec
+            push offset gMatchFloat_0065a1ec
             call dr_dprintf
             mov eax, dword ptr [gNumber_of_net_players]
             add esp, 4
@@ -8109,17 +8183,17 @@ void C2_NAKED C2_HOOK_FASTCALL NetLeaveGame(tNet_game_details* pNet_game) {
             cmp esi, eax
             jl L0049dfa0
     L0049dfb1:
-            push offset gAsmString_0065a1d4
+            push offset gMatchFloat_0065a1d4
             call dr_dprintf
             add esp, 4
             mov ecx, offset gOur_car_storage_space
             call ClearOutStorageSpace
-            push offset gAsmString_0065a1bc
+            push offset gMatchFloat_0065a1bc
             call dr_dprintf
             add esp, 4
             mov ecx, offset gNet_cars_storage_space
             call ClearOutStorageSpace
-            push offset gAsmString_0065a1a4
+            push offset gMatchFloat_0065a1a4
             call dr_dprintf
             mov eax, dword ptr [gIn_net_service]
             add esp, 4
@@ -8183,7 +8257,7 @@ void C2_NAKED C2_HOOK_FASTCALL NetLeaveGame(tNet_game_details* pNet_game) {
             je L0049e0a3
             mov dword ptr [gIn_net_service], 1
     L0049e0a3:
-            push offset gAsmString_0065a18c
+            push offset gMatchFloat_0065a18c
             mov dword ptr [gCurrent_net_game], ebp
             mov dword ptr [gNet_mode], ebp
             mov dword ptr [gNumber_of_net_players], ebp
@@ -9109,7 +9183,7 @@ int C2_NAKED C2_HOOK_FASTCALL NetSendMessageToPlayer(tNet_game_details* pNet_gam
             lea edx, [ecx*4 + gNet_players]
             cmp eax, edx
             jne L0049ef87
-            mov ecx, offset gAsmString_0065a148
+            mov ecx, 0x65a148
             call PDFatalError
     L0049ef87:
             mov esi, dword ptr [ebp + 0xa8]
@@ -9484,7 +9558,7 @@ int C2_NAKED C2_HOOK_FASTCALL NetGetContentsSize(tU8 pType, int pOption) {
             jbe L0049f576
             push eax
             lea edx, [esp + 0xc]
-            push offset gAsmString_0065a2bc
+            push offset gMatchString_0065a2bc
             push edx
             call sprintf
             add esp, 0xc
@@ -10545,7 +10619,7 @@ void C2_NAKED C2_HOOK_FASTCALL BroadcastStatus(void) {
             lea edx, [ecx*4 + gNet_players]
             cmp eax, edx
             jne L004a4c1e
-            mov ecx, offset gAsmString_0065a148
+            mov ecx, 0x65a148
             call PDFatalError
     L004a4c1e:
             mov edx, dword ptr [ebp]
@@ -10802,7 +10876,7 @@ void C2_NAKED C2_HOOK_FASTCALL CheckForDisappearees(void) {
             mov eax, dword ptr [gINT_00659d34]
             test eax, eax
             jl L004a4eb5
-            mov ecx, offset gAsmString_0065a170
+            mov ecx, 0x65a170
             call PDFatalError
     L004a4eb5:
             mov ecx, dword ptr [gNumber_of_net_players]
@@ -10859,7 +10933,7 @@ void C2_NAKED C2_HOOK_FASTCALL CheckForDisappearees(void) {
             lea ecx, [eax*4 + gNet_players]
             cmp edx, ecx
             jne L004a4f61
-            mov ecx, offset gAsmString_0065a148
+            mov ecx, 0x65a148
             call PDFatalError
     L004a4f61:
             mov edx, dword ptr [ebx]
@@ -11592,7 +11666,7 @@ void C2_NAKED C2_HOOK_FASTCALL NetPlayerStatusChanged(tPlayer_status pNew_status
             lea edx, [ecx*4 + gNet_players]
             cmp eax, edx
             jne L004a5977
-            mov ecx, offset gAsmString_0065a148
+            mov ecx, 0x65a148
             call PDFatalError
     L004a5977:
             mov edx, dword ptr [ebp]
@@ -11808,7 +11882,7 @@ void C2_NAKED C2_HOOK_FASTCALL AddToGuaranteeList(tNet_message* pMessage, void* 
             mov ebp, edx
             cmp word ptr [edi + 0x14], bx
             je L004a5cbd
-            mov ecx, offset gAsmString_0065a30c
+            mov ecx, offset gMatchData_0065a30c
             call PDFatalError
     L004a5cbd:
             cmp dword ptr [gNext_guarantee], 0xc8
@@ -12019,16 +12093,16 @@ void C2_NAKED C2_HOOK_FASTCALL ResendGuaranteedMessages(void) {
             mov ebp, offset gGuarantee_list+0x10
             push ebx
             mov ebx, offset gGuarantee_list
-            mov dword ptr [esp + 0x38], offset gGuarantee_list+0x34
-            mov dword ptr [esp + 0x14], offset gGuarantee_list+0x8
-            mov dword ptr [esp + 0x34], offset gGuarantee_list+0xc
+            mov dword ptr [esp + 0x38], 0x68d9c4
+            mov dword ptr [esp + 0x14], 0x68d998
+            mov dword ptr [esp + 0x34], 0x68d99c
             mov dword ptr [esp + 0x30], ebp
-            mov dword ptr [esp + 0x2c], offset gGuarantee_list+0x24
-            mov dword ptr [esp + 0x28], offset gGuarantee_list+0x30
-            mov dword ptr [esp + 0x24], offset gGuarantee_list+0x14
-            mov dword ptr [esp + 0x20], offset gGuarantee_list+0x2c
-            mov dword ptr [esp + 0x10], offset gGuarantee_list+0x4
-            mov dword ptr [esp + 0x18], offset gGuarantee_list+0x28
+            mov dword ptr [esp + 0x2c], 0x68d9b4
+            mov dword ptr [esp + 0x28], 0x68d9c0
+            mov dword ptr [esp + 0x24], 0x68d9a4
+            mov dword ptr [esp + 0x20], 0x68d9bc
+            mov dword ptr [esp + 0x10], 0x68d994
+            mov dword ptr [esp + 0x18], 0x68d9b8
     L004a6102:
             cmp eax, dword ptr [esp + 0x1c]
             je L004a6118
@@ -12043,7 +12117,7 @@ void C2_NAKED C2_HOOK_FASTCALL ResendGuaranteedMessages(void) {
             mov ecx, dword ptr [ebx]
             cmp word ptr [ecx + 0x14], 0xff
             je L004a6136
-            mov ecx, offset gAsmString_0065a378
+            mov ecx, offset gMatchFloat_0065a378
             call PDFatalError
     L004a6136:
             mov edx, dword ptr [esp + 0x18]
@@ -12162,7 +12236,7 @@ void C2_NAKED C2_HOOK_FASTCALL ResendGuaranteedMessages(void) {
             lea edx, [ecx*4 + gNet_players]
             cmp ebp, edx
             jne L004a62a1
-            mov ecx, offset gAsmString_0065a148
+            mov ecx, 0x65a148
             call PDFatalError
     L004a62a1:
             mov esi, dword ptr [ebp + 0xcc]
@@ -12241,7 +12315,7 @@ void C2_NAKED C2_HOOK_FASTCALL ResendGuaranteedMessages(void) {
             rep movsb
             jmp L004a639b
     L004a6391:
-            mov ecx, offset gAsmString_0065a35c
+            mov ecx, offset gMatchData_0065a35c
             call PDFatalError
     L004a639b:
             mov esi, dword ptr [esp + 0x34]
@@ -12249,7 +12323,7 @@ void C2_NAKED C2_HOOK_FASTCALL ResendGuaranteedMessages(void) {
             mov eax, dword ptr [esi]
             mov dword ptr [esp + 0x4c], eax
             fild qword ptr [esp + 0x4c]
-            fmul qword ptr ds:[0x58a428]
+            fmul qword ptr [gMatchDouble_0058a428]
             call _ftol
             mov ecx, dword ptr [esp + 0x14]
             mov dword ptr [esi], eax
@@ -12288,7 +12362,7 @@ void C2_NAKED C2_HOOK_FASTCALL ResendGuaranteedMessages(void) {
             add ebx, eax
             jmp L004a646d
     L004a642c:
-            cmp dword ptr [esp + 0x18], offset gGuarantee_list+0x5c
+            cmp dword ptr [esp + 0x18], 0x68d9ec
             jl L004a643f
             mov ecx, dword ptr [ebx]
             mov eax, dword ptr [ebx - 0x34]
@@ -12511,7 +12585,7 @@ void C2_NAKED C2_HOOK_FASTCALL DoNetScores2(int pOnly_sort_scores) {
             xor eax, eax
             lea edx, [esp + 0x158]
             mov dword ptr [esp + 0x2c], eax
-            mov dword ptr [esp + 0x1c], offset gNet_score_actors
+            mov dword ptr [esp + 0x1c], 0x74a740
             mov dword ptr [esp + 0x28], 1
             mov dword ptr [esp + 0x24], edx
             mov dword ptr [esp + 0x14], 0xffffffff
@@ -12599,19 +12673,19 @@ void C2_NAKED C2_HOOK_FASTCALL DoNetScores2(int pOnly_sort_scores) {
             cmp eax, ebx
             mov dword ptr [esi], eax
             jne L00499c9b
-            push offset gAsmString_00659cd8
+            push offset gMatchFloat_00659cd8
             call BrFailure
             add esp, 4
     L00499c9b:
             mov ecx, dword ptr [esi]
             add esi, 4
-            cmp esi, 0x74a770
+            cmp esi, offset gMatchData_0074a770
             mov byte ptr [ecx + 0x20], 4
             jl L00499c7d
             mov esi, 2
             push esi
             push 4
-            push offset gAsmString_00659cc8
+            push offset gMatchString_00659cc8
             call BrModelAllocate
             mov dword ptr [gNet_score_model], eax
             mov edx, dword ptr [eax + 0xc]
@@ -12715,7 +12789,7 @@ void C2_NAKED C2_HOOK_FASTCALL DoNetScores2(int pOnly_sort_scores) {
             inc eax
             lea ecx, [esp + 0x38]
             push eax
-            push offset gAsmString_00659cb8
+            push offset gMatchString_00659cb8
             push ecx
             mov dword ptr [esp + 0x1c], eax
             call sprintf
@@ -12727,14 +12801,14 @@ void C2_NAKED C2_HOOK_FASTCALL DoNetScores2(int pOnly_sort_scores) {
             jne L00499e8d
             lea edx, [esp + 0x38]
             push edx
-            push offset gAsmString_00659c98
+            push offset gMatchFloat_00659c98
             call BrFailure
             add esp, 8
     L00499e8d:
             push ebp
             call BrMapAdd
             add esp, 4
-            push offset gAsmString_00659c84
+            push offset gMatchFloat_00659c84
             call BrMaterialAllocate
             add esp, 4
             mov esi, eax
@@ -12753,7 +12827,7 @@ void C2_NAKED C2_HOOK_FASTCALL DoNetScores2(int pOnly_sort_scores) {
             push 3
             call BrActorAllocate
             mov dword ptr [gNet_score_camera], eax
-            mov dword ptr [eax + 0x14], offset gAsmString_00659c74
+            mov dword ptr [eax + 0x14], 0x659c74
             mov eax, dword ptr [gNet_score_camera]
             xor ecx, ecx
             add esp, 8
@@ -12919,7 +12993,7 @@ void C2_NAKED C2_HOOK_FASTCALL DoNetScores2(int pOnly_sort_scores) {
             mov ecx, 0xc0
             call GetMiscString
             push eax
-            push offset gAsmString_0059101c
+            push 0x59101c
             jmp L0049a128
     L0049a0f8:
             cmp esi, ebx
@@ -12928,13 +13002,13 @@ void C2_NAKED C2_HOOK_FASTCALL DoNetScores2(int pOnly_sort_scores) {
             jmp L0049a1b5
             push ecx
             lea edx, [esp + 0x5c]
-            push offset gAsmString_00655b3c
+            push offset gMatchString_00655b3c
             push edx
             call sprintf
             add esp, 0xc
             jmp L0049a1d3
             push ecx
-            push offset gAsmString_0058f418
+            push 0x58f418
     L0049a128:
             lea eax, [esp + 0x60]
             push eax
@@ -12943,7 +13017,7 @@ void C2_NAKED C2_HOOK_FASTCALL DoNetScores2(int pOnly_sort_scores) {
             jmp L0049a1d3
             sar ecx, 0x10
             push ecx
-            push offset gAsmString_00659d04
+            push offset gMatchString_00659d04
             jmp L0049a1c0
             cmp edi, dword ptr [gIt_or_fox]
             jne L0049a151
@@ -12968,7 +13042,7 @@ void C2_NAKED C2_HOOK_FASTCALL DoNetScores2(int pOnly_sort_scores) {
             lea edx, [esp + 0x5c]
             inc eax
             push eax
-            push offset gAsmString_00659cfc
+            push offset gMatchString_00659cfc
             push edx
             call sprintf
             add esp, 0x10
@@ -12980,7 +13054,7 @@ void C2_NAKED C2_HOOK_FASTCALL DoNetScores2(int pOnly_sort_scores) {
             call GetMiscString
             push eax
             lea eax, [esp + 0x60]
-            push offset gAsmString_00659cf4
+            push offset gMatchString_00659cf4
             push eax
             call sprintf
             add esp, 0x10
@@ -12992,7 +13066,7 @@ void C2_NAKED C2_HOOK_FASTCALL DoNetScores2(int pOnly_sort_scores) {
     L0049a1b5:
             call GetMiscString
             push eax
-            push offset gAsmString_0059101c
+            push 0x59101c
     L0049a1c0:
             lea ecx, [esp + 0x60]
             push ecx
@@ -13237,19 +13311,19 @@ void C2_NAKED C2_HOOK_FASTCALL FUN_0049a410(void) {
             cmp eax, esi
             mov dword ptr [edi], eax
             jne L0049a44b
-            push offset gAsmString_00659cd8
+            push offset gMatchFloat_00659cd8
             call BrFailure
             add esp, 4
     L0049a44b:
             mov eax, dword ptr [edi]
             add edi, 4
-            cmp edi, 0x74a770
+            cmp edi, offset gMatchData_0074a770
             mov byte ptr [eax + 0x20], 4
             jl L0049a42d
             mov edi, 2
             push edi
             push 4
-            push offset gAsmString_00659cc8
+            push offset gMatchString_00659cc8
             call BrModelAllocate
             mov dword ptr [gNet_score_model], eax
             mov ecx, dword ptr [eax + 0xc]
@@ -13356,7 +13430,7 @@ void C2_NAKED C2_HOOK_FASTCALL FUN_0049a410(void) {
             inc ebx
             lea ecx, [esp + 0x14]
             push ebx
-            push offset gAsmString_00659cb8
+            push offset gMatchString_00659cb8
             push ecx
             call sprintf
             add esp, 0xc
@@ -13367,14 +13441,14 @@ void C2_NAKED C2_HOOK_FASTCALL FUN_0049a410(void) {
             jne L0049a63c
             lea edx, [esp + 0x14]
             push edx
-            push offset gAsmString_00659c98
+            push offset gMatchFloat_00659c98
             call BrFailure
             add esp, 8
     L0049a63c:
             push ebp
             call BrMapAdd
             add esp, 4
-            push offset gAsmString_00659c84
+            push offset gMatchFloat_00659c84
             call BrMaterialAllocate
             add esp, 4
             mov esi, eax
@@ -13392,7 +13466,7 @@ void C2_NAKED C2_HOOK_FASTCALL FUN_0049a410(void) {
             push 3
             call BrActorAllocate
             mov dword ptr [gNet_score_camera], eax
-            mov dword ptr [eax + 0x14], offset gAsmString_00659c74
+            mov dword ptr [eax + 0x14], 0x659c74
             mov eax, dword ptr [gNet_score_camera]
             xor ecx, ecx
             add esp, 8

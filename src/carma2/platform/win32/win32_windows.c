@@ -14,6 +14,26 @@ extern C2_NORETURN void C2_HOOK_FASTCALL PDShutdownSystem(void);
 extern C2_NORETURN void C2_HOOK_FASTCALL QuitGame(void);
 extern void C2_HOOK_CDECL dr_dprintf();
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gData_00662f18[];
+extern char gFloat_00662e48[];
+extern char gFloat_00662e68[];
+extern char gFloat_00662ea8[];
+extern char gFloat_00662ee8[];
+extern char gFloat_00662f34[];
+extern char gFloat_00662f50[];
+extern char gFloat_00662f64[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchData_00662f18[];
+extern char gMatchFloat_00662e48[];
+extern char gMatchFloat_00662e68[];
+extern char gMatchFloat_00662ea8[];
+extern char gMatchFloat_00662ee8[];
+extern char gMatchFloat_00662f34[];
+extern char gMatchFloat_00662f50[];
+extern char gMatchFloat_00662f64[];
+#endif
 // FUNCTION: CARMA2_HW 0x0051cad0
 void C2_NAKED C2_HOOK_CDECL SDL3ServiceMessages(void) {
 #ifndef CARPOCALYPSE2_MATCHING
@@ -58,21 +78,46 @@ void C2_NAKED C2_HOOK_CDECL SDL3ServiceMessages(void) {
             push ebp
             push esi
             push edi
-            push 0x662f64
+            push offset gMatchFloat_00662f64
             call dr_dprintf
-            mov esi, dword ptr ds:[0x5891f8]
-            mov edi, dword ptr ds:[0x589204]
-            mov ebx, dword ptr ds:[0x589208]
-            mov ebp, dword ptr ds:[0x589200]
+            _emit 0x8b
+        _emit 0x35
+        _emit 0xf8
+        _emit 0x91
+        _emit 0x58
+        _emit 0x00
+            _emit 0x8b
+        _emit 0x3d
+        _emit 0x04
+        _emit 0x92
+        _emit 0x58
+        _emit 0x00
+            _emit 0x8b
+        _emit 0x1d
+        _emit 0x08
+        _emit 0x92
+        _emit 0x58
+        _emit 0x00
+            _emit 0x8b
+        _emit 0x2d
+        _emit 0x00
+        _emit 0x92
+        _emit 0x58
+        _emit 0x00
             add esp, 4
     L0051cafc:
-            cmp dword ptr ds:[gWindowActiveState], 1
+            cmp dword ptr [gWindowActiveState], 1
             jne L0051cb11
-            mov eax, dword ptr ds:[gHWnd]
+            mov eax, dword ptr [gHWnd]
             push eax
-            call dword ptr ds:[0x589210]
+            _emit 0xff
+        _emit 0x15
+        _emit 0x10
+        _emit 0x92
+        _emit 0x58
+        _emit 0x00
     L0051cb11:
-            mov eax, dword ptr ds:[gWindowActiveState]
+            mov eax, dword ptr [gWindowActiveState]
             test eax, eax
             je L0051cb36
             push 1
@@ -84,7 +129,7 @@ void C2_NAKED C2_HOOK_CDECL SDL3ServiceMessages(void) {
             call esi
             test eax, eax
             je L0051cbaa
-            mov eax, dword ptr ds:[gWindowActiveState]
+            mov eax, dword ptr [gWindowActiveState]
             test eax, eax
             jne L0051cb48
     L0051cb36:
@@ -99,16 +144,16 @@ void C2_NAKED C2_HOOK_CDECL SDL3ServiceMessages(void) {
     L0051cb48:
             cmp dword ptr [esp + 0x14], 0x12
             jne L0051cb8a
-            push 0x662f50
+            push offset gMatchFloat_00662f50
             call dr_dprintf
-            mov eax, dword ptr ds:[gWindowActiveState]
+            mov eax, dword ptr [gWindowActiveState]
             add esp, 4
             cmp eax, 2
             jne L0051cb85
-            push 0x662f34
+            push offset gMatchFloat_00662f34
             call dr_dprintf
             add esp, 4
-            push 0x662f18
+            push offset gMatchData_00662f18
             call dr_dprintf
             add esp, 4
             call QuitGame
@@ -118,7 +163,7 @@ void C2_NAKED C2_HOOK_CDECL SDL3ServiceMessages(void) {
             lea eax, [esp + 0x10]
             push eax
             call ebx
-            push 0x662ee8
+            push offset gMatchFloat_00662ee8
             call dr_dprintf
             add esp, 4
             lea ecx, [esp + 0x10]
@@ -126,14 +171,14 @@ void C2_NAKED C2_HOOK_CDECL SDL3ServiceMessages(void) {
             call ebp
             jmp L0051cafc
     L0051cbaa:
-            push 0x662ea8
+            push offset gMatchFloat_00662ea8
             jmp L0051cbb6
     L0051cbb1:
-            push 0x662e68
+            push offset gMatchFloat_00662e68
     L0051cbb6:
             call dr_dprintf
             add esp, 4
-            push 0x662e48
+            push offset gMatchFloat_00662e48
             call dr_dprintf
             add esp, 4
             pop edi

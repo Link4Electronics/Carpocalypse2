@@ -419,6 +419,44 @@ extern int gMap_render_x_i;
 extern int gMap_render_y_i;
 extern tFloat_bunch_info gRepair_cost;
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gData_00591020[];
+extern char gData_0074d098[];
+extern char gDouble_00589c60[];
+extern char gDouble_00589c68[];
+extern char gDouble_00589c70[];
+extern char gDouble_00589c88[];
+extern char gDouble_0058ac28[];
+extern char gDouble_0058ac30[];
+extern char gDouble_0058ac38[];
+extern char gFloat_00589c78[];
+extern char gFloat_00589c84[];
+extern char gFloat_00589c90[];
+extern char gFloat_0058ac24[];
+extern char gFloat_005910ac[];
+extern char gString_0058fd6c[];
+extern char gString_00590ff0[];
+extern char gString_00596438[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchData_00591020[];
+extern char gMatchData_0074d098[];
+extern char gMatchDouble_00589c60[];
+extern char gMatchDouble_00589c68[];
+extern char gMatchDouble_00589c70[];
+extern char gMatchDouble_00589c88[];
+extern char gMatchDouble_0058ac28[];
+extern char gMatchDouble_0058ac30[];
+extern char gMatchDouble_0058ac38[];
+extern char gMatchFloat_00589c78[];
+extern char gMatchFloat_00589c84[];
+extern char gMatchFloat_00589c90[];
+extern char gMatchFloat_0058ac24[];
+extern char gMatchFloat_005910ac[];
+extern char gMatchString_0058fd6c[];
+extern char gMatchString_00590ff0[];
+extern char gMatchString_00596438[];
+#endif
 // FUNCTION: CARMA2_HW 0x00444700
 void C2_HOOK_FASTCALL AddVouchers(int amount) {
     gRecovery_voucher_count += amount;
@@ -1672,21 +1710,21 @@ void C2_NAKED C2_HOOK_FASTCALL F4Key(void) {
     }
 #else
     __asm {
-            mov eax, dword ptr ds:[gI_am_cheating]
+            mov eax, dword ptr [gI_am_cheating]
             sub esp, 0x100
             cmp eax, 0xa11ee75d
             je L004414e3
             cmp eax, 0x564e78b9
             jne L004414d2
-            mov eax, dword ptr ds:[gNet_mode]
+            mov eax, dword ptr [gNet_mode]
             test eax, eax
             je L004414e3
     L004414d2:
-            mov dword ptr ds:[gWhich_edit_mode], 0
+            mov dword ptr [gWhich_edit_mode], 0
             add esp, 0x100
             ret
     L004414e3:
-            cmp dword ptr ds:[gINT_0068b8e4], 1
+            cmp dword ptr [gINT_0068b8e4], 1
             jne L004414f1
             _emit 0xe8
         _emit 0x1f
@@ -1694,7 +1732,7 @@ void C2_NAKED C2_HOOK_FASTCALL F4Key(void) {
         _emit 0x0c
         _emit 0x00
     L004414f1:
-            cmp dword ptr ds:[gINT_0068b8e4], 2
+            cmp dword ptr [gINT_0068b8e4], 2
             jne L004414ff
             _emit 0xe8
         _emit 0x01
@@ -1702,7 +1740,7 @@ void C2_NAKED C2_HOOK_FASTCALL F4Key(void) {
         _emit 0x0c
         _emit 0x00
     L004414ff:
-            mov eax, dword ptr ds:[gINT_0068b8e8]
+            mov eax, dword ptr [gINT_0068b8e8]
             test eax, eax
             je L0044150d
             call ToggleJoystickHeadup
@@ -1710,7 +1748,7 @@ void C2_NAKED C2_HOOK_FASTCALL F4Key(void) {
             xor ecx, ecx
             call PDKeyDown
             test eax, eax
-            mov eax, dword ptr ds:[gWhich_edit_mode]
+            mov eax, dword ptr [gWhich_edit_mode]
             je L0044152b
             test eax, eax
             jne L00441528
@@ -1722,16 +1760,16 @@ void C2_NAKED C2_HOOK_FASTCALL F4Key(void) {
     L0044152b:
             inc eax
             cmp eax, 2
-            mov dword ptr ds:[gWhich_edit_mode], eax
+            mov dword ptr [gWhich_edit_mode], eax
             jl L0044153d
             xor eax, eax
     L00441538:
-            mov dword ptr ds:[gWhich_edit_mode], eax
+            mov dword ptr [gWhich_edit_mode], eax
     L0044153d:
             mov eax, dword ptr [eax*4 + gEdit_mode_names]
             lea ecx, [esp]
             push eax
-            push 0x590ff0
+            push offset gMatchString_00590ff0
             push ecx
             call sprintf
             add esp, 0xc
@@ -3320,7 +3358,7 @@ void C2_NAKED C2_HOOK_FASTCALL CheckOtherRacingKeys(void) {
             mov dword ptr [esp + 0x1c], ebx
             mov dword ptr [esp + 0x18], edx
             fild qword ptr [esp + 0x18]
-            fmul qword ptr [gFloat_00589c40+0x48]
+            fmul qword ptr [gMatchDouble_00589c88]
             call _ftol
             mov ecx, 8
             mov dword ptr [esp + 0x18], eax
@@ -3508,12 +3546,22 @@ void C2_NAKED C2_HOOK_FASTCALL CheckOtherRacingKeys(void) {
             jl L0044321c
     L00443233:
             call PDGetTotalTime
-            mov ecx, dword ptr [gAbuse_text+0x2c]
+            _emit 0x8b
+        _emit 0x0d
+        _emit 0xf4
+        _emit 0xc3
+        _emit 0x67
+        _emit 0x00
             sub eax, ecx
             add ecx, eax
             mov eax, dword ptr [gProgram_state+0xb0]
             cmp eax, ebx
-            mov dword ptr [gAbuse_text+0x2c], ecx
+            _emit 0x89
+        _emit 0x0d
+        _emit 0xf4
+        _emit 0xc3
+        _emit 0x67
+        _emit 0x00
             je L0044325c
             mov dword ptr [gRecover_timer], ebx
             jmp L004432de
@@ -3529,16 +3577,31 @@ void C2_NAKED C2_HOOK_FASTCALL CheckOtherRacingKeys(void) {
             call IsCarInTheSea
             test eax, eax
             jne L00443aa9
-            mov ecx, dword ptr [gAbuse_text+0x2c]
+            _emit 0x8b
+        _emit 0x0d
+        _emit 0xf4
+        _emit 0xc3
+        _emit 0x67
+        _emit 0x00
             mov dword ptr [gRecover_timer], ebx
     L00443292:
-            mov esi, dword ptr [gToo_poor_for_recovery_timeout+0x4]
+            _emit 0x8b
+        _emit 0x35
+        _emit 0x80
+        _emit 0xc4
+        _emit 0x67
+        _emit 0x00
             mov eax, ecx
             sub eax, esi
             mov esi, 0xbb8
             cmp eax, 0xc8
             jbe L004432c7
-            mov dword ptr [gToo_poor_for_recovery_timeout+0x4], ecx
+            _emit 0x89
+        _emit 0x0d
+        _emit 0x80
+        _emit 0xc4
+        _emit 0x67
+        _emit 0x00
             mov edx, 1
             mov ecx, offset gProgram_state+0xac
             call CarWorldOffFallenCheckThingy
@@ -3561,11 +3624,20 @@ void C2_NAKED C2_HOOK_FASTCALL CheckOtherRacingKeys(void) {
             sub edi, eax
             jns L00443306
             mov dword ptr [gPalette_fade_time], ebx
-            mov dword ptr [gToo_poor_for_recovery_timeout+0x18], ebx
+            _emit 0x89
+        _emit 0x1d
+        _emit 0x94
+        _emit 0xc4
+        _emit 0x67
+        _emit 0x00
     L00443306:
             cmp edi, 0x1f4
             jl L00443386
-            mov eax, dword ptr [gToo_poor_for_recovery_timeout+0x18]
+            _emit 0xa1
+        _emit 0x94
+        _emit 0xc4
+        _emit 0x67
+        _emit 0x00
             mov ebp, dword ptr [esp + 0x24]
             cmp eax, 0x1f4
             jge L0044332c
@@ -3586,7 +3658,12 @@ void C2_NAKED C2_HOOK_FASTCALL CheckOtherRacingKeys(void) {
             cmp esi, 0x100
             jl L0044336d
             mov dword ptr [gPalette_fade_time], ebx
-            mov dword ptr [gToo_poor_for_recovery_timeout+0x18], ebx
+            _emit 0x89
+        _emit 0x1d
+        _emit 0x94
+        _emit 0xc4
+        _emit 0x67
+        _emit 0x00
             mov ecx, dword ptr [ebp + 8]
             xor edx, edx
             mov esi, 0x100
@@ -3618,7 +3695,12 @@ void C2_NAKED C2_HOOK_FASTCALL CheckOtherRacingKeys(void) {
             dec ecx
             and ecx, esi
             call SetFadedPalette
-            mov dword ptr [gToo_poor_for_recovery_timeout+0x18], edi
+            _emit 0x89
+        _emit 0x3d
+        _emit 0x94
+        _emit 0xc4
+        _emit 0x67
+        _emit 0x00
             jmp L004433d6
     L004433ba:
             cmp dword ptr [gNet_mode], ebx
@@ -3669,33 +3751,67 @@ void C2_NAKED C2_HOOK_FASTCALL CheckOtherRacingKeys(void) {
     L00443471:
             call GetTotalTime
             mov dword ptr [gLast_repair_time], eax
-            mov eax, dword ptr [gToo_poor_for_recovery_timeout+0x10]
+            _emit 0xa1
+        _emit 0x8c
+        _emit 0xc4
+        _emit 0x67
+        _emit 0x00
             cmp eax, ebx
             mov dword ptr [gRepair_last_time], esi
             jne L00443787
             mov edx, dword ptr [gFrame_period]
             mov ecx, dword ptr [gProgram_state+0x12c]
-            push offset gRecovery_voucher_count+0x4
+            push 0x67c3fc
             call RepairCar
-            mov dword ptr [gToo_poor_for_recovery_timeout+0x10], esi
+            _emit 0x89
+        _emit 0x35
+        _emit 0x8c
+        _emit 0xc4
+        _emit 0x67
+        _emit 0x00
             fst dword ptr [esp + 0x18]
-            fcomp dword ptr [gFloat_00589c40+0x10]
+            _emit 0xd8
+        _emit 0x1d
+        _emit 0x50
+        _emit 0x9c
+        _emit 0x58
+        _emit 0x00
             fnstsw ax
             test ah, 0x41
             je L004434c1
-            mov dword ptr [gToo_poor_for_recovery_timeout+0x10], ebx
+            _emit 0x89
+        _emit 0x1d
+        _emit 0x8c
+        _emit 0xc4
+        _emit 0x67
+        _emit 0x00
     L004434c1:
             mov esi, offset gProgram_state+0x58c
     L004434c6:
-            fld dword ptr [gRecovery_voucher_count+0x4]
-            fcomp dword ptr [gFloat_00589c40+0x10]
+            _emit 0xd9
+        _emit 0x05
+        _emit 0xfc
+        _emit 0xc3
+        _emit 0x67
+        _emit 0x00
+            _emit 0xd8
+        _emit 0x1d
+        _emit 0x50
+        _emit 0x9c
+        _emit 0x58
+        _emit 0x00
             mov edi, dword ptr [esi]
             mov dword ptr [esp + 0x20], edi
             fnstsw ax
             test ah, 0x40
             jne L00443514
             fld dword ptr [esp + 0x18]
-            fdiv dword ptr [gRecovery_voucher_count+0x4]
+            _emit 0xd8
+        _emit 0x35
+        _emit 0xfc
+        _emit 0xc3
+        _emit 0x67
+        _emit 0x00
             sub esp, 8
             fild dword ptr [esp + 0x28]
             fild dword ptr [esp + 0x28]
@@ -3749,14 +3865,24 @@ void C2_NAKED C2_HOOK_FASTCALL CheckOtherRacingKeys(void) {
             fmul st(0), st(1)
             fiadd dword ptr [esp + 0x28]
             call _ftol
-            mov edx, dword ptr [gRecover_timer+0x4]
+            _emit 0x8b
+        _emit 0x15
+        _emit 0xc0
+        _emit 0xc3
+        _emit 0x67
+        _emit 0x00
             sub edi, ebp
             add esi, 0x2c
             add edx, edi
             cmp esi, offset gProgram_state+0x79c
             mov ebx, eax
             fstp st(0)
-            mov dword ptr [gRecover_timer+0x4], edx
+            _emit 0x89
+        _emit 0x15
+        _emit 0xc0
+        _emit 0xc3
+        _emit 0x67
+        _emit 0x00
             jl L004434c6
             mov eax, edx
             mov ecx, 0x64
@@ -3764,9 +3890,18 @@ void C2_NAKED C2_HOOK_FASTCALL CheckOtherRacingKeys(void) {
             idiv ecx
             mov eax, 0xcccccccd
             xor ebp, ebp
-            mov dword ptr [gRecover_timer+0x4], edx
+            _emit 0x89
+        _emit 0x15
+        _emit 0xc0
+        _emit 0xc3
+        _emit 0x67
+        _emit 0x00
             mul ebx
-            mov eax, dword ptr [gToo_poor_for_recovery_timeout+0x8]
+            _emit 0xa1
+        _emit 0x84
+        _emit 0xc4
+        _emit 0x67
+        _emit 0x00
             shr edx, 3
             lea ebx, [edx + edx*4]
             shl ebx, 1
@@ -3776,24 +3911,43 @@ void C2_NAKED C2_HOOK_FASTCALL CheckOtherRacingKeys(void) {
             jne L004435e5
     L004435d4:
             fld dword ptr [esp + 0x18]
-            fcomp dword ptr [gFloat_00589c40+0x10]
+            _emit 0xd8
+        _emit 0x1d
+        _emit 0x50
+        _emit 0x9c
+        _emit 0x58
+        _emit 0x00
             fnstsw ax
             test ah, 0x40
             jne L00443602
     L004435e5:
-            cmp dword ptr [gToo_poor_for_recovery_timeout+0xc], ebp
+            _emit 0x39
+        _emit 0x2d
+        _emit 0x88
+        _emit 0xc4
+        _emit 0x67
+        _emit 0x00
             jne L00443602
             mov ecx, dword ptr [gXXX_outlet]
             mov edx, 0x1450
             call DRS3StartSound
-            mov dword ptr [gToo_poor_for_recovery_timeout+0xc], eax
+            _emit 0xa3
+        _emit 0x88
+        _emit 0xc4
+        _emit 0x67
+        _emit 0x00
     L00443602:
             mov ecx, offset gProgram_state+0xac
             call StopCarSmoking
             cmp ebx, ebp
             jne L00443627
             fld dword ptr [esp + 0x18]
-            fcomp dword ptr [gFloat_00589c40+0x10]
+            _emit 0xd8
+        _emit 0x1d
+        _emit 0x50
+        _emit 0x9c
+        _emit 0x58
+        _emit 0x00
             fnstsw ax
             test ah, 0x40
             je L00443627
@@ -3850,9 +4004,17 @@ void C2_NAKED C2_HOOK_FASTCALL CheckOtherRacingKeys(void) {
             mov ecx, ebx
             call SpendCredits
     L004436d7:
-            mov eax, dword ptr [gToo_poor_for_recovery_timeout+0x8]
+            _emit 0xa1
+        _emit 0x84
+        _emit 0xc4
+        _emit 0x67
+        _emit 0x00
             add eax, ebx
-            mov dword ptr [gToo_poor_for_recovery_timeout+0x8], eax
+            _emit 0xa3
+        _emit 0x84
+        _emit 0xc4
+        _emit 0x67
+        _emit 0x00
             je L00443789
             cmp dword ptr [gFree_repairs], ebp
             je L004436fe
@@ -3861,13 +4023,18 @@ void C2_NAKED C2_HOOK_FASTCALL CheckOtherRacingKeys(void) {
             push eax
             jmp L00443727
     L004436fe:
-            mov edx, dword ptr [gToo_poor_for_recovery_timeout+0x8]
+            _emit 0x8b
+        _emit 0x15
+        _emit 0x84
+        _emit 0xc4
+        _emit 0x67
+        _emit 0x00
             mov ecx, 5
             push edx
             call GetMiscString
             push eax
             lea eax, [esp + 0x38]
-            push offset gNext_crush_actor_id+0x50c
+            push offset gMatchString_0058fd6c
             push eax
             call sprintf
             add esp, 0x10
@@ -3881,33 +4048,77 @@ void C2_NAKED C2_HOOK_FASTCALL CheckOtherRacingKeys(void) {
             call NewTextHeadupSlot
             jmp L00443789
     L0044373c:
-            mov ecx, dword ptr [gToo_poor_for_recovery_timeout+0xc]
+            _emit 0x8b
+        _emit 0x0d
+        _emit 0x88
+        _emit 0xc4
+        _emit 0x67
+        _emit 0x00
             mov dword ptr [gRepair_last_time], ebx
             cmp ecx, ebx
-            mov dword ptr [gToo_poor_for_recovery_timeout+0x14], ebx
-            mov dword ptr [gToo_poor_for_recovery_timeout+0x8], ebx
-            mov dword ptr [gRecover_timer+0x4], ebx
+            _emit 0x89
+        _emit 0x1d
+        _emit 0x90
+        _emit 0xc4
+        _emit 0x67
+        _emit 0x00
+            _emit 0x89
+        _emit 0x1d
+        _emit 0x84
+        _emit 0xc4
+        _emit 0x67
+        _emit 0x00
+            _emit 0x89
+        _emit 0x1d
+        _emit 0xc0
+        _emit 0xc3
+        _emit 0x67
+        _emit 0x00
             je L00443787
             call S3SoundStillPlaying
             test eax, eax
             je L00443781
     L00443767:
-            mov ecx, dword ptr [gToo_poor_for_recovery_timeout+0xc]
+            _emit 0x8b
+        _emit 0x0d
+        _emit 0x88
+        _emit 0xc4
+        _emit 0x67
+        _emit 0x00
             call DRS3StopSound
-            mov ecx, dword ptr [gToo_poor_for_recovery_timeout+0xc]
+            _emit 0x8b
+        _emit 0x0d
+        _emit 0x88
+        _emit 0xc4
+        _emit 0x67
+        _emit 0x00
             call S3SoundStillPlaying
             test eax, eax
             jne L00443767
     L00443781:
-            mov dword ptr [gToo_poor_for_recovery_timeout+0xc], ebx
+            _emit 0x89
+        _emit 0x1d
+        _emit 0x88
+        _emit 0xc4
+        _emit 0x67
+        _emit 0x00
     L00443787:
             xor ebp, ebp
     L00443789:
-            cmp dword ptr [gToo_poor_for_recovery_timeout+0x10], ebp
+            _emit 0x39
+        _emit 0x2d
+        _emit 0x8c
+        _emit 0xc4
+        _emit 0x67
+        _emit 0x00
             je L0044379f
             mov edx, dword ptr [gProgram_state+0x1980]
             mov eax, dword ptr [edx + 8]
-            mov dword ptr [gToo_poor_for_recovery_timeout+0x10], eax
+            _emit 0xa3
+        _emit 0x8c
+        _emit 0xc4
+        _emit 0x67
+        _emit 0x00
     L0044379f:
             cmp dword ptr [gToo_poor_for_recovery_timeout], ebp
             je L0044380b
@@ -3965,7 +4176,7 @@ void C2_NAKED C2_HOOK_FASTCALL CheckOtherRacingKeys(void) {
             mov esi, dword ptr [gNet_mode]
             cmp esi, ebp
             je L00443888
-            push offset gCamera_incident_direction+0xc
+            push 0x58f640
             push -4
             push 0x5dc
             xor edx, edx
@@ -4085,7 +4296,7 @@ void C2_NAKED C2_HOOK_FASTCALL CheckOtherRacingKeys(void) {
             call GetMiscString
             lea edx, [esp + 0x34]
             push eax
-            push offset gNext_crush_actor_id+0x50c
+            push offset gMatchString_0058fd6c
             push edx
             call sprintf
             add esp, 0x10
@@ -4102,7 +4313,7 @@ void C2_NAKED C2_HOOK_FASTCALL CheckOtherRacingKeys(void) {
             call GetMiscString
             lea ecx, [esp + 0x30]
             push eax
-            push offset gCancel_recover+0xbc
+            push 0x59101c
             push ecx
             call sprintf
             add esp, 0xc
@@ -4197,6 +4408,8 @@ void C2_NAKED C2_HOOK_FASTCALL CheckOtherRacingKeys(void) {
     L00443b8f:
             mov dword ptr [gHad_auto_recover], 1
             jmp L004432de
+            nop
+            nop
     }
 #endif
 }
@@ -4366,7 +4579,7 @@ void C2_NAKED C2_HOOK_FASTCALL FlipUpCar(tCar_spec* pCar_spec) {
             fxch st(1)
             faddp st(2), st(0)
             faddp st(1), st(0)
-            fcomp dword ptr [gFloat_00589c40+0x38]
+            fcomp dword ptr [gMatchFloat_00589c78]
             fnstsw ax
             test ah, 0x41
             jne L00442ab5
@@ -4406,7 +4619,12 @@ void C2_NAKED C2_HOOK_FASTCALL FlipUpCar(tCar_spec* pCar_spec) {
             mov dword ptr [esp + 0x50], 0
             call FindFace
             fld dword ptr [esp + 0x1c]
-            fcomp dword ptr [gFloat_00589c40+0x14]
+            _emit 0xd8
+        _emit 0x1d
+        _emit 0x54
+        _emit 0x9c
+        _emit 0x58
+        _emit 0x00
             fnstsw ax
             test ah, 0x41
             jne L00442b9e
@@ -4542,15 +4760,15 @@ void C2_NAKED C2_HOOK_FASTCALL FlipUpCar(tCar_spec* pCar_spec) {
             cmp edi, 0xa
             jge L00442d68
             fld dword ptr [esp + 0x30]
-            fmul dword ptr [gFloat_00589c40+0x44]
+            fmul dword ptr [gMatchFloat_00589c84]
             mov eax, dword ptr [esi + 0x10]
             inc edi
             fstp dword ptr [esp + 0x30]
             fld dword ptr [esp + 0x34]
-            fmul dword ptr [gFloat_00589c40+0x44]
+            fmul dword ptr [gMatchFloat_00589c84]
             fstp dword ptr [esp + 0x34]
             fld dword ptr [esp + 0x38]
-            fmul dword ptr [gFloat_00589c40+0x44]
+            fmul dword ptr [gMatchFloat_00589c84]
             fstp dword ptr [esp + 0x38]
             fld dword ptr [esp + 0x30]
             fadd dword ptr [eax + 0x50]
@@ -4638,6 +4856,15 @@ void C2_NAKED C2_HOOK_FASTCALL FlipUpCar(tCar_spec* pCar_spec) {
             pop ebx
             add esp, 0x38
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -4788,7 +5015,7 @@ void C2_NAKED C2_HOOK_FASTCALL EnterUserMessage(void) {
     }
 #else
     __asm {
-            mov eax, dword ptr ds:[gEntering_message]
+            mov eax, dword ptr [gEntering_message]
             push ebx
             push ebp
             xor ebp, ebp
@@ -4796,38 +5023,58 @@ void C2_NAKED C2_HOOK_FASTCALL EnterUserMessage(void) {
             cmp eax, ebp
             push edi
             je L00444b85
-            cmp dword ptr ds:[gNet_mode], ebp
+            cmp dword ptr [gNet_mode], ebp
             je L00444b85
-            mov eax, dword ptr ds:[gCurrent_net_game]
+            mov eax, dword ptr [gCurrent_net_game]
             cmp dword ptr [eax + 0x48], ebp
             je L00444b85
             call PDAnyKeyDown
             mov esi, eax
-            mov eax, dword ptr ds:[gEntering_message]
+            mov eax, dword ptr [gEntering_message]
             mov ebx, 1
             cmp eax, ebx
             jne L0044496a
             cmp esi, -1
             jne L00444b85
-            mov dword ptr ds:[gEntering_message], 2
+            mov dword ptr [gEntering_message], 2
             call PDClearKeyboardBuffer
     L0044496a:
-            cmp dword ptr ds:[0x67c49c], ebp
+            _emit 0x39
+        _emit 0x2d
+        _emit 0x9c
+        _emit 0xc4
+        _emit 0x67
+        _emit 0x00
             je L0044498c
             cmp esi, -1
             jne L00444b85
-            mov dword ptr ds:[0x67c49c], ebp
-            mov dword ptr ds:[gEntering_message], ebp
+            _emit 0x89
+        _emit 0x2d
+        _emit 0x9c
+        _emit 0xc4
+        _emit 0x67
+        _emit 0x00
+            mov dword ptr [gEntering_message], ebp
             pop edi
             pop esi
             pop ebp
             pop ebx
             ret
     L0044498c:
-            cmp esi, dword ptr ds:[0x590f64]
+            _emit 0x3b
+        _emit 0x35
+        _emit 0x64
+        _emit 0x0f
+        _emit 0x59
+        _emit 0x00
             jne L004449b1
             call PDGetTotalTime
-            mov ecx, dword ptr ds:[0x67c454]
+            _emit 0x8b
+        _emit 0x0d
+        _emit 0x54
+        _emit 0xc4
+        _emit 0x67
+        _emit 0x00
             cmp eax, ecx
             jbe L004449aa
             mov eax, ecx
@@ -4837,11 +5084,20 @@ void C2_NAKED C2_HOOK_FASTCALL EnterUserMessage(void) {
             mov esi, 0xfffffc18
             jmp L004449c6
     L004449b1:
-            mov dword ptr ds:[0x590f64], esi
+            _emit 0x89
+        _emit 0x35
+        _emit 0x64
+        _emit 0x0f
+        _emit 0x59
+        _emit 0x00
             call PDGetTotalTime
             add eax, 0x1f4
     L004449c1:
-            mov dword ptr ds:[0x67c454], eax
+            _emit 0xa3
+        _emit 0x54
+        _emit 0xc4
+        _emit 0x67
+        _emit 0x00
     L004449c6:
             lea eax, [esi + 1]
             cmp eax, 0x47
@@ -4849,14 +5105,14 @@ void C2_NAKED C2_HOOK_FASTCALL EnterUserMessage(void) {
             xor ecx, ecx
             mov cl, byte ptr [eax + 0x444bb0]
             jmp dword ptr [ecx*4 + 0x444b8c]
-            mov eax, dword ptr ds:[gThis_net_player_index]
+            mov eax, dword ptr [gThis_net_player_index]
             lea ecx, [eax + eax*2]
             lea edx, [ecx + ecx*8]
             or ecx, 0xffffffff
             shl edx, 1
             sub edx, eax
             xor eax, eax
-            lea esi, [edx*4 + 0x74bce8]
+            lea esi, [edx*4 + gNet_players+0x28]
             mov edi, esi
             repne scasb
             not ecx
@@ -4864,7 +5120,7 @@ void C2_NAKED C2_HOOK_FASTCALL EnterUserMessage(void) {
             mov ebp, ecx
             cmp ebp, 0x12
             jg L00444b85
-            mov edx, 0x67c412
+            mov edx, offset gString+0x12
             mov edi, esi
             or ecx, 0xffffffff
             sub edx, ebp
@@ -4882,10 +5138,10 @@ void C2_NAKED C2_HOOK_FASTCALL EnterUserMessage(void) {
             mov byte ptr [ebp + edx], 0x3a
             mov byte ptr [ebp + edx + 1], 0x20
             mov ecx, edx
-            mov byte ptr ds:[0x67c453], 0
+            mov byte ptr [gString+0x53], 0
             call NetSendHeadupToAllPlayers
             mov ecx, 0xe2
-            mov byte ptr ds:[0x67c414], 0
+            mov byte ptr [gString+0x14], 0
             call GetMiscString
             xor edx, edx
             mov ecx, 4
@@ -4893,13 +5149,18 @@ void C2_NAKED C2_HOOK_FASTCALL EnterUserMessage(void) {
             push -4
             push 0x3e8
             call NewTextHeadupSlot
-            mov dword ptr ds:[0x67c49c], ebx
+            _emit 0x89
+        _emit 0x1d
+        _emit 0x9c
+        _emit 0xc4
+        _emit 0x67
+        _emit 0x00
             pop edi
             pop esi
             pop ebp
             pop ebx
             ret
-            mov edi, 0x67c414
+            mov edi, offset gString+0x14
             or ecx, 0xffffffff
             xor eax, eax
             repne scasb
@@ -4907,16 +5168,21 @@ void C2_NAKED C2_HOOK_FASTCALL EnterUserMessage(void) {
             dec ecx
             cmp ecx, ebp
             jle L00444b85
-            mov byte ptr [ecx + 0x67c413], al
+            mov byte ptr [ecx + gString+0x13], al
             pop edi
             pop esi
             pop ebp
             pop ebx
             ret
     L00444a9c:
-            cmp esi, dword ptr ds:[0x74b6fc]
+            cmp esi, dword ptr [gKey_mapping+0x11c]
             jne L00444aaf
-            mov dword ptr ds:[0x67c49c], ebx
+            _emit 0x89
+        _emit 0x1d
+        _emit 0x9c
+        _emit 0xc4
+        _emit 0x67
+        _emit 0x00
             pop edi
             pop esi
             pop ebp
@@ -4946,7 +5212,7 @@ void C2_NAKED C2_HOOK_FASTCALL EnterUserMessage(void) {
             sub edi, ecx
             mov edx, ecx
             mov esi, edi
-            mov edi, 0x67c414
+            mov edi, offset gString+0x14
             shr ecx, 2
             rep movsd
             mov ecx, edx
@@ -4958,7 +5224,7 @@ void C2_NAKED C2_HOOK_FASTCALL EnterUserMessage(void) {
             pop ebx
             ret
     L00444b04:
-            mov dword ptr ds:[gEntering_message], ebp
+            mov dword ptr [gEntering_message], ebp
             pop edi
             pop esi
             pop ebp
@@ -4972,7 +5238,7 @@ void C2_NAKED C2_HOOK_FASTCALL EnterUserMessage(void) {
             mov cl, al
             call PDConvertToASCIILessThan128
             mov dl, al
-            mov edi, 0x67c414
+            mov edi, offset gString+0x14
             or ecx, 0xffffffff
             xor eax, eax
             and edx, 0xff
@@ -4981,21 +5247,21 @@ void C2_NAKED C2_HOOK_FASTCALL EnterUserMessage(void) {
             dec ecx
             cmp ecx, 0x3f
             jge L00444b7c
-            mov byte ptr [ecx + 0x67c414], dl
-            mov eax, dword ptr ds:[0x767274]
+            mov byte ptr [ecx + gString+0x14], dl
+            mov eax, dword ptr [gFonts+0xe94]
             and edx, 0xff
             cmp edx, eax
             jl L00444b5c
-            mov esi, dword ptr ds:[0x767278]
+            mov esi, dword ptr [gFonts+0xe98]
             add eax, esi
             cmp edx, eax
             jl L00444b63
     L00444b5c:
-            mov byte ptr [ecx + 0x67c414], 0
+            mov byte ptr [ecx + gString+0x14], 0
     L00444b63:
-            push 0x67c414
-            push 0x5910ac
-            mov byte ptr [ecx + 0x67c415], 0
+            push offset gString+0x14
+            push offset gMatchFloat_005910ac
+            mov byte ptr [ecx + gString+0x15], 0
             call dr_dprintf
             add esp, 8
     L00444b7c:
@@ -5243,7 +5509,7 @@ void C2_NAKED C2_HOOK_FASTCALL CheckRecoveryOfCars(tU32 pEndFrameTime) {
             call GetMiscString
             push eax
             lea eax, [esp + 0x44]
-            push offset gCancel_recover+0xb0
+            push 0x591010
             push eax
             call sprintf
             mov eax, dword ptr [gToo_late]
@@ -5308,13 +5574,13 @@ void C2_NAKED C2_HOOK_FASTCALL CheckRecoveryOfCars(tU32 pEndFrameTime) {
             mov dword ptr [esp + 0x1c], edx
             lea ecx, [esp + 0x14]
             fld dword ptr [eax + 0x68]
-            fmul qword ptr [gFloat_00589c40+0x20]
+            fmul qword ptr [gMatchDouble_00589c60]
             fstp dword ptr [esp + 0x20]
             fld dword ptr [eax + 0x6c]
-            fmul qword ptr [gFloat_00589c40+0x20]
+            fmul qword ptr [gMatchDouble_00589c60]
             fstp dword ptr [esp + 0x24]
             fld dword ptr [eax + 0x70]
-            fmul qword ptr [gFloat_00589c40+0x20]
+            fmul qword ptr [gMatchDouble_00589c60]
             fstp dword ptr [esp + 0x28]
             fld dword ptr [eax + 0x44]
             fld dword ptr [eax + 0x50]
@@ -5322,7 +5588,7 @@ void C2_NAKED C2_HOOK_FASTCALL CheckRecoveryOfCars(tU32 pEndFrameTime) {
             mov eax, dword ptr [esi + 0x10]
             lea edx, [esp + 0x2c]
             add eax, 0x2c
-            fmul qword ptr [gFloat_00589c40+0x28]
+            fmul qword ptr [gMatchDouble_00589c68]
             push eax
             push ecx
             push edx
@@ -5344,7 +5610,7 @@ void C2_NAKED C2_HOOK_FASTCALL CheckRecoveryOfCars(tU32 pEndFrameTime) {
             fsub dword ptr [eax + 0x44]
             mov eax, dword ptr [esi + 0x10]
             add eax, 0x2c
-            fmul qword ptr [gFloat_00589c40+0x30]
+            fmul qword ptr [gMatchDouble_00589c70]
             push eax
             push ecx
             push edx
@@ -5383,6 +5649,9 @@ void C2_NAKED C2_HOOK_FASTCALL CheckRecoveryOfCars(tU32 pEndFrameTime) {
             pop ebx
             add esp, 0x128
             ret
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -5648,7 +5917,7 @@ void C2_NAKED C2_HOOK_FASTCALL PollCarControls(tU32 pTime_difference) {
             fstp st(0)
             je L00444007
             fld dword ptr [esp + 0x10]
-            fcomp dword ptr [gFloat_00589c40+0x50]
+            fcomp dword ptr [gMatchFloat_00589c90]
             fnstsw ax
             test ah, 0x41
             jne L00444007
@@ -5666,11 +5935,16 @@ void C2_NAKED C2_HOOK_FASTCALL PollCarControls(tU32 pTime_difference) {
             mov edi, dword ptr [esp + 0x1c]
     L00444007:
             fld dword ptr [esp + 0x10]
-            fcomp dword ptr [gFloat_00589c40+0x54]
+            _emit 0xd8
+        _emit 0x1d
+        _emit 0x94
+        _emit 0x9c
+        _emit 0x58
+        _emit 0x00
             fnstsw ax
             test ah, 0x41
             jne L00444028
-            mov ecx, offset gCancel_recover+0xc0
+            mov ecx, offset gMatchData_00591020
             call PDPlayFFBEffect
             mov ecx, dword ptr [gProgram_state+0xb4]
     L00444028:
@@ -5852,6 +6126,15 @@ void C2_NAKED C2_HOOK_FASTCALL PollCarControls(tU32 pTime_difference) {
             pop ebx
             add esp, 0x14
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -5913,7 +6196,7 @@ void C2_NAKED C2_HOOK_FASTCALL FUN_0045a670(void) {
             call CreateAccentPolyActor
             cmp dword ptr [gHeadup_text_buffer_0079d860+0x8], ebx
             jne L0045a7e1
-            push offset gDisable_sound+0x8
+            push 0x676920
             mov edx, offset gRace_path
             lea ecx, [esp + 0x28]
             call PathCat
@@ -5921,7 +6204,7 @@ void C2_NAKED C2_HOOK_FASTCALL FUN_0045a670(void) {
             jge L0045a757
             mov dword ptr [gHeadup_text_buffer_0079d860+0x14], 0xa
     L0045a757:
-            mov edi, offset gDefault_drone_direction+0x6dc
+            mov edi, 0x594e9c
             or ecx, 0xffffffff
             xor eax, eax
             lea edx, [esp + 0xc]
@@ -5961,6 +6244,11 @@ void C2_NAKED C2_HOOK_FASTCALL FUN_0045a670(void) {
             pop ebx
             add esp, 0x118
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -6039,7 +6327,7 @@ void C2_NAKED C2_HOOK_FASTCALL FUN_0045acf0(void) {
             cmp esi, ebx
             je L0045ae0c
             push edi
-            push offset gUNK_00596310+0x128
+            push offset gMatchString_00596438
             push esi
             mov dword ptr [esi], ebx
             call sprintf
@@ -6057,6 +6345,16 @@ void C2_NAKED C2_HOOK_FASTCALL FUN_0045acf0(void) {
             pop esi
             pop ebx
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -6385,16 +6683,29 @@ void C2_NAKED C2_HOOK_FASTCALL FUN_0045ae20(void) {
             jmp L0045b085
     L0045b079:
             mov ecx, dword ptr [esi]
-            mov edx, offset gDisable_sound+0x8
+            mov edx, 0x676920
             call ChangeHeadupText
     L0045b085:
             add esi, 4
-            cmp esi, offset gRace_head_ups+0x58
+            cmp esi, offset gMatchData_0074d098
             jl L0045b04e
             pop esi
             pop edi
     L0045b092:
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -6676,11 +6987,11 @@ void C2_NAKED C2_HOOK_FASTCALL FUN_0045b150(void) {
             jmp L0045b33f
     L0045b333:
             mov ecx, dword ptr [esi]
-            mov edx, offset gDisable_sound+0x8
+            mov edx, 0x676920
             call ChangeHeadupText
     L0045b33f:
             add esi, 4
-            cmp esi, offset gRace_head_ups+0x58
+            cmp esi, offset gMatchData_0074d098
             jl L0045b308
             pop esi
             pop edi
@@ -6692,6 +7003,7 @@ void C2_NAKED C2_HOOK_FASTCALL FUN_0045b150(void) {
             mov eax, dword ptr [edx*4 + gKey_mapping]
             mov dword ptr [ecx + eax*4], 1
             ret
+            nop
     }
 #endif
 }
@@ -7647,8 +7959,8 @@ void C2_NAKED C2_HOOK_FASTCALL MungeRepulseRays(tU32 pTime) {
             mov dword ptr [esp + 0x58], 0
             mov dword ptr [esp + 0x54], ecx
             fild qword ptr [esp + 0x54]
-            fmul dword ptr [gFLOAT_0058ac20+0x4]
-            fcom qword ptr [gFLOAT_0058ac20+0x8]
+            fmul dword ptr [gMatchFloat_0058ac24]
+            fcom qword ptr [gMatchDouble_0058ac28]
             fnstsw ax
             test ah, 0x41
             jne L004dbcf5
@@ -7656,7 +7968,7 @@ void C2_NAKED C2_HOOK_FASTCALL MungeRepulseRays(tU32 pTime) {
             mov edi, 0x19
             jmp L004dbd22
     L004dbcf5:
-            fcom qword ptr [gFLOAT_0058ac20+0x10]
+            fcom qword ptr [gMatchDouble_0058ac30]
             fnstsw ax
             test ah, 0x41
             jne L004dbd0b
@@ -7664,7 +7976,7 @@ void C2_NAKED C2_HOOK_FASTCALL MungeRepulseRays(tU32 pTime) {
             mov edi, 0x32
             jmp L004dbd22
     L004dbd0b:
-            fcomp qword ptr [gFLOAT_0058ac20+0x18]
+            fcomp qword ptr [gMatchDouble_0058ac38]
             mov edi, 0x4b
             fnstsw ax
             test ah, 0x41

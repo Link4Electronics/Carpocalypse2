@@ -42,6 +42,14 @@ extern int gMouse_started;
 extern tProgram_state gProgram_state;
 extern char g_source_exists[];
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gData_00659270[];
+extern char gData_00659274[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchData_00659270[];
+extern char gMatchData_00659274[];
+#endif
 // FUNCTION: CARMA2_HW 0x00494570
 void C2_HOOK_FASTCALL DoOptionsMenu(void) {
     tPlayer_status player_status;
@@ -126,13 +134,13 @@ int C2_NAKED C2_HOOK_FASTCALL DoVerifyQuit(int pReplace_background) {
             je L004944b2
             dec eax
             jne L004944c8
-            mov dword ptr [g_source_exists+0xc60], 0x84
+            mov dword ptr [gMatchData_00659274], 0x84
             jmp L004944c8
     L004944b2:
-            mov dword ptr [g_source_exists+0xc60], 0x83
+            mov dword ptr [gMatchData_00659274], 0x83
             jmp L004944c8
     L004944be:
-            mov dword ptr [g_source_exists+0xc60], 0x82
+            mov dword ptr [gMatchData_00659274], 0x82
     L004944c8:
             mov eax, dword ptr [gMouse_started]
             test eax, eax
@@ -149,7 +157,7 @@ int C2_NAKED C2_HOOK_FASTCALL DoVerifyQuit(int pReplace_background) {
             mov ecx, esi
             call LoadInterfaceStuff
             xor edx, edx
-            mov ecx, offset g_source_exists+0xc5c
+            mov ecx, offset gMatchData_00659270
             push 0
             call DoInterfaceScreen
             mov edi, eax
@@ -169,6 +177,7 @@ int C2_NAKED C2_HOOK_FASTCALL DoVerifyQuit(int pReplace_background) {
             pop edi
             pop esi
             ret
+            nop
     }
 #endif
 }

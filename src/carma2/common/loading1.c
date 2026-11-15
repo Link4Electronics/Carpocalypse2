@@ -96,6 +96,24 @@ extern char gQuickTime_call_component_with_storage[];
 extern int C2_HOOK_FASTCALL DRfgetc2(FILE* pFile);
 extern void C2_NORETURN C2_HOOK_FASTCALL PDFatalError(const char* pThe_str);
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gData_0058ff10[];
+extern char gData_00657a3c[];
+extern char gFloat_00594db6[];
+extern char gFloat_006586d4[];
+extern char gFloat_006586f4[];
+extern char gFloat_00658724[];
+extern char gString_00658618[];
+extern char gString_00658718[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchData_0058ff10[];
+extern char gMatchFloat_006586d4[];
+extern char gMatchFloat_006586f4[];
+extern char gMatchFloat_00658724[];
+extern char gMatchString_00658618[];
+extern char gMatchString_00658718[];
+#endif
 // FUNCTION: CARMA2_HW 0x0048f830
 tU32 C2_HOOK_FASTCALL ReadU32(FILE* pF) {
     tU32 raw_long;
@@ -714,9 +732,9 @@ void C2_NAKED C2_HOOK_FASTCALL EncodeFile(char* pThe_path) {
             mov ecx, eax
             and ecx, 3
             rep movsb
-            mov ecx, dword ptr [g_source_exists+0x4]
+            mov ecx, dword ptr [gMatchString_00658618]
             mov dword ptr [esp + edx + 0x121], ecx
-            mov edx, offset gNext_crush_actor_id+0x180
+            mov edx, 0x58f9e0
             mov ecx, ebx
             call PFfopen
             mov edi, eax
@@ -747,7 +765,7 @@ void C2_NAKED C2_HOOK_FASTCALL EncodeFile(char* pThe_path) {
             add esp, 0x214
             ret
     L004908e2:
-            mov edx, offset gFrontend_QUIT+0xbcc4
+            mov edx, 0x655ab4
             lea ecx, [esp + 0x124]
             call PFfopen
             test eax, eax
@@ -1014,6 +1032,20 @@ void C2_NAKED C2_HOOK_FASTCALL EncodeFile(char* pThe_path) {
             mov al, byte ptr [esp + 0x2d]
             add esp, 0xc
             jmp L00490b4f
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -1149,7 +1181,12 @@ C2_NAKED char * C2_HOOK_FASTCALL GetALineWithNoPossibleService(FILE* pF, char* p
             mov ecx, eax
             call PFungetc
     L00490f8a:
-            cmp dword ptr [gQuickTime_call_component_with_storage+0x5a0], edi
+            _emit 0x39
+        _emit 0x3d
+        _emit 0x5c
+        _emit 0x3c
+        _emit 0x67
+        _emit 0x00
             jle L00490fa7
             xor eax, eax
             push 0x107
@@ -1159,7 +1196,12 @@ C2_NAKED char * C2_HOOK_FASTCALL GetALineWithNoPossibleService(FILE* pF, char* p
             add esp, 8
             jmp L00490fbb
     L00490fa7:
-            mov edx, dword ptr [gQuickTime_call_component_with_storage+0x394]
+            _emit 0x8b
+        _emit 0x15
+        _emit 0x50
+        _emit 0x3a
+        _emit 0x67
+        _emit 0x00
             xor ecx, ecx
             mov cl, byte ptr [ebp]
             mov ax, word ptr [edx + ecx*2]
@@ -1255,6 +1297,21 @@ C2_NAKED char * C2_HOOK_FASTCALL GetALineWithNoPossibleService(FILE* pF, char* p
             pop ebp
             add esp, 0x104
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -1421,8 +1478,12 @@ C2_NAKED FILE* C2_HOOK_FASTCALL DRfopen(const char* pFilename, const char* pMode
     L004911a6:
             cmp dword ptr [g_source_exists], 1
             jne L004913c7
-            mov eax, dword ptr ds:[0x58ff0c]
-            mov cl, byte ptr ds:[0x58ff10]
+            _emit 0xa1
+        _emit 0x0c
+        _emit 0xff
+        _emit 0x58
+        _emit 0x00
+            mov cl, byte ptr [gMatchData_0058ff10]
             mov edx, dword ptr [gDir_separator]
             mov byte ptr [esp + 0x124], cl
             mov dword ptr [esp + 0x120], eax
@@ -1596,7 +1657,7 @@ C2_NAKED FILE* C2_HOOK_FASTCALL DRfopen(const char* pFilename, const char* pMode
             call PDCheckDriveExists
             test eax, eax
             jne L004913c1
-            mov ecx, 0x658724
+            mov ecx, offset gMatchFloat_00658724
             call PDFatalError
             cmp dword ptr [gCD_fully_installed], ebx
             je L004913c7
@@ -1625,7 +1686,12 @@ C2_NAKED FILE* C2_HOOK_FASTCALL DRfopen(const char* pFilename, const char* pMode
             push ebx
             push 0x6586b8
             push 0x80000002
-            call dword ptr ds:[0x589008]
+            _emit 0xff
+        _emit 0x15
+        _emit 0x08
+        _emit 0x90
+        _emit 0x58
+        _emit 0x00
             test eax, eax
             jne L0049185b
             mov ecx, dword ptr [esp + 0x10]
@@ -1637,12 +1703,22 @@ C2_NAKED FILE* C2_HOOK_FASTCALL DRfopen(const char* pFilename, const char* pMode
             push ebx
             push 0x6586a8
             push ecx
-            call dword ptr ds:[0x589004]
+            _emit 0xff
+        _emit 0x15
+        _emit 0x04
+        _emit 0x90
+        _emit 0x58
+        _emit 0x00
             cmp eax, ebx
             jne L0049196a
             mov edx, dword ptr [esp + 0x10]
             push edx
-            call dword ptr ds:[0x589000]
+            _emit 0xff
+        _emit 0x15
+        _emit 0x00
+        _emit 0x90
+        _emit 0x58
+        _emit 0x00
             lea edi, [esp + 0x20]
             or ecx, 0xffffffff
             xor eax, eax
@@ -2064,7 +2140,7 @@ C2_NAKED FILE* C2_HOOK_FASTCALL DRfopen(const char* pFilename, const char* pMode
     L00491806:
             cmp eax, ebx
             je L00491866
-            mov esi, 0x658718
+            mov esi, offset gMatchString_00658718
             mov eax, edi
     L00491811:
             mov dl, byte ptr [eax]
@@ -2118,7 +2194,12 @@ C2_NAKED FILE* C2_HOOK_FASTCALL DRfopen(const char* pFilename, const char* pMode
             push ebx
             push 0x6586b8
             push 0x80000002
-            call dword ptr ds:[0x589008]
+            _emit 0xff
+        _emit 0x15
+        _emit 0x08
+        _emit 0x90
+        _emit 0x58
+        _emit 0x00
             test eax, eax
             jne L00491932
             mov eax, dword ptr [esp + 0x10]
@@ -2130,12 +2211,22 @@ C2_NAKED FILE* C2_HOOK_FASTCALL DRfopen(const char* pFilename, const char* pMode
             push ebx
             push 0x6586a8
             push eax
-            call dword ptr ds:[0x589004]
+            _emit 0xff
+        _emit 0x15
+        _emit 0x04
+        _emit 0x90
+        _emit 0x58
+        _emit 0x00
             cmp eax, ebx
             jne L004918d9
             mov ecx, dword ptr [esp + 0x10]
             push ecx
-            call dword ptr ds:[0x589000]
+            _emit 0xff
+        _emit 0x15
+        _emit 0x00
+        _emit 0x90
+        _emit 0x58
+        _emit 0x00
             jmp L00491902
     L004918d9:
             mov edx, dword ptr [esp + 0x14]
@@ -2147,10 +2238,20 @@ C2_NAKED FILE* C2_HOOK_FASTCALL DRfopen(const char* pFilename, const char* pMode
             push eax
             push ebx
             push 0x1000
-            call dword ptr ds:[0x58907c]
+            _emit 0xff
+        _emit 0x15
+        _emit 0x7c
+        _emit 0x90
+        _emit 0x58
+        _emit 0x00
             mov edx, dword ptr [esp + 0x10]
             push edx
-            call dword ptr ds:[0x589000]
+            _emit 0xff
+        _emit 0x15
+        _emit 0x00
+        _emit 0x90
+        _emit 0x58
+        _emit 0x00
             jmp L00491932
     L00491902:
             lea ecx, [esp + 0x320]
@@ -2164,7 +2265,7 @@ C2_NAKED FILE* C2_HOOK_FASTCALL DRfopen(const char* pFilename, const char* pMode
             mov ecx, eax
             jmp L0049192d
     L00491928:
-            mov ecx, 0x6586f4
+            mov ecx, offset gMatchFloat_006586f4
     L0049192d:
             call PDFatalError
     L00491932:
@@ -2173,7 +2274,7 @@ C2_NAKED FILE* C2_HOOK_FASTCALL DRfopen(const char* pFilename, const char* pMode
             push eax
             push ecx
             lea edx, [esp + 0x428]
-            push 0x6586d4
+            push offset gMatchFloat_006586d4
             push edx
             call sprintf
             add esp, 0x10
@@ -2197,10 +2298,20 @@ C2_NAKED FILE* C2_HOOK_FASTCALL DRfopen(const char* pFilename, const char* pMode
             push eax
             push ebx
             push 0x1000
-            call dword ptr ds:[0x58907c]
+            _emit 0xff
+        _emit 0x15
+        _emit 0x7c
+        _emit 0x90
+        _emit 0x58
+        _emit 0x00
             mov eax, dword ptr [esp + 0x10]
             push eax
-            call dword ptr ds:[0x589000]
+            _emit 0xff
+        _emit 0x15
+        _emit 0x00
+        _emit 0x90
+        _emit 0x58
+        _emit 0x00
             xor esi, esi
             jmp L0049186a
             nop

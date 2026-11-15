@@ -156,6 +156,26 @@ extern void __cdecl _ftol();
 extern float C2_HOOK_FASTCALL PointRectDistSq(const br_vector3* pP, const br_vector3* pA, const br_vector3* pB, const br_vector3* pC);
 extern float C2_HOOK_FASTCALL PointTriangleDistSq(const br_vector3* pP, const br_vector3* pA, const br_vector3* pB, const br_vector3* pC);
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gFloat_00589ab0[];
+extern char gFloat_0058fa98[];
+extern char gFloat_0058fc00[];
+extern char gFloat_0058fc20[];
+extern char gFloat_0058fc40[];
+extern char gFloat_0058fc60[];
+extern char gFloat_0058fc80[];
+extern char gFloat_0058fca0[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchFloat_00589ab0[];
+extern char gMatchFloat_0058fa98[];
+extern char gMatchFloat_0058fc00[];
+extern char gMatchFloat_0058fc20[];
+extern char gMatchFloat_0058fc40[];
+extern char gMatchFloat_0058fc60[];
+extern char gMatchFloat_0058fc80[];
+extern char gMatchFloat_0058fca0[];
+#endif
 // FUNCTION: CARMA2_HW 0x00429bb0
 
 void C2_HOOK_FASTCALL ReadCrushSettings(FILE* pF) {
@@ -590,7 +610,7 @@ void C2_NAKED C2_HOOK_FASTCALL SimpleCrushModel(br_model* pModel, int pCount, fl
             je L0042c896
             cmp word ptr [edi + 0x10], 0x400
             jbe L0042c570
-            mov ecx, offset gNext_crush_actor_id+0x238
+            mov ecx, offset gMatchFloat_0058fa98
             call PDFatalError
     L0042c570:
             cmp esi, 1
@@ -891,6 +911,19 @@ void C2_NAKED C2_HOOK_FASTCALL SimpleCrushModel(br_model* pModel, int pCount, fl
             pop ebx
             add esp, 0x1050
             ret 0xc
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -926,7 +959,7 @@ float C2_NAKED C2_HOOK_FASTCALL DistSq(const br_vector3* pP, int pCount, const b
             mov dword ptr [esp + 0x1c], ecx
             ja L0042c978
             jmp dword ptr [edx*4 + 0x42ca1c]
-            fld dword ptr ds:[gCrushZero]
+            fld dword ptr [gCrushZero]
             pop edi
             pop esi
             pop ebp
@@ -2142,7 +2175,7 @@ int C2_NAKED C2_HOOK_FASTCALL QuantizeWithinBounds(br_scalar pQuant, br_scalar p
             fnstsw ax
             test ah, 0x41
             jne L00430da7
-            fsub dword ptr [gFLOAT_00589aac+0x4]
+            fsub dword ptr [gMatchFloat_00589ab0]
             jmp L00430dad
     L00430da7:
             fsub dword ptr [gFLOAT_00589a2c]
@@ -2168,7 +2201,7 @@ int C2_NAKED C2_HOOK_FASTCALL QuantizeWithinBounds(br_scalar pQuant, br_scalar p
             fnstsw ax
             test ah, 0x41
             jne L00430df2
-            fsub dword ptr [gFLOAT_00589aac+0x4]
+            fsub dword ptr [gMatchFloat_00589ab0]
             jmp L00430df8
     L00430df2:
             fsub dword ptr [gFLOAT_00589a2c]
@@ -2193,6 +2226,14 @@ int C2_NAKED C2_HOOK_FASTCALL QuantizeWithinBounds(br_scalar pQuant, br_scalar p
             xor eax, eax
             pop esi
             ret 0xc
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -3269,37 +3310,37 @@ void C2_NAKED C2_HOOK_FASTCALL TotallyRepairACar(tCar_spec* pCar_spec) {
             push esi
             call PhysicsObjectRecurse
             call AREndPipingSession
-            push offset gNext_crush_actor_id+0x440
+            push offset gMatchFloat_0058fca0
             call dr_dprintf
             add esp, 4
             mov ecx, esi
             call TotallyRepairCarCollisionShapes
-            push offset gNext_crush_actor_id+0x420
+            push offset gMatchFloat_0058fc80
             call dr_dprintf
             mov ecx, dword ptr [esi + 8]
             add esp, 4
             mov edx, offset BattenDownTheObjects
             push esi
             call PhysicsObjectRecurse
-            push offset gNext_crush_actor_id+0x400
+            push offset gMatchFloat_0058fc60
             call dr_dprintf
             mov eax, dword ptr [gProgram_state+0xa4]
             add esp, 4
             cmp eax, 2
             je L0043987f
-            push offset gNext_crush_actor_id+0x3e0
+            push offset gMatchFloat_0058fc40
             call dr_dprintf
             add esp, 4
             mov ecx, esi
             call SwapShapesIfPossible
     L0043987f:
-            push offset gNext_crush_actor_id+0x3c0
+            push offset gMatchFloat_0058fc20
             call dr_dprintf
             add esp, 4
             mov ecx, esi
             mov dword ptr [esi + 0xe24], 1
             call RemoveCarFromCrushLists
-            push offset gNext_crush_actor_id+0x3a0
+            push offset gMatchFloat_0058fc00
             call dr_dprintf
             add esp, 4
     L004398aa:
@@ -3309,6 +3350,20 @@ void C2_NAKED C2_HOOK_FASTCALL TotallyRepairACar(tCar_spec* pCar_spec) {
             pop ebx
             add esp, 0x10
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }

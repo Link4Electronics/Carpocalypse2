@@ -168,6 +168,22 @@ extern tNet_game_options* gChosen_net_game_options;
 extern int gNet_last_game_type;
 extern tNet_game_options gNet_settings[9];
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gData_006556fc[];
+extern char gString_00655700[];
+extern char gString_00655714[];
+extern char gString_00655724[];
+extern char gString_00655730[];
+extern char gString_0065573c[];
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern char gMatchData_006556fc[];
+extern char gMatchString_00655700[];
+extern char gMatchString_00655714[];
+extern char gMatchString_00655724[];
+extern char gMatchString_00655730[];
+extern char gMatchString_0065573c[];
+#endif
 // FUNCTION: CARMA2_HW 0x00467ef0
 int C2_NAKED C2_HOOK_FASTCALL NetworkJoinMenuInfunc(tFrontend_spec* pFrontend) {
 #ifndef CARPOCALYPSE2_MATCHING
@@ -992,16 +1008,16 @@ int C2_NAKED C2_HOOK_FASTCALL FRONTEND_NetworkJoinMenuHandler(tFrontend_spec* pF
             lea eax, [esi + 0x31]
             add edx, 0xe
             push edx
-            push offset gFrontend_QUIT+0xb90c
+            push offset gMatchData_006556fc
             push eax
             call sprintf
             add esp, 0xc
             mov dword ptr [esi], 1
             jmp L004697d5
     L004697b9:
-            push offset gCamera_incident_direction+0xc
+            push 0x58f640
             lea ecx, [esi + 0x31]
-            push offset gFrontend_QUIT+0xb90c
+            push offset gMatchData_006556fc
             push ecx
             call sprintf
             add esp, 0xc
@@ -1022,15 +1038,32 @@ int C2_NAKED C2_HOOK_FASTCALL FRONTEND_NetworkJoinMenuHandler(tFrontend_spec* pF
             call IString_Get
             push eax
             lea eax, [ebx + 0x1c69]
-            push offset gFrontend_QUIT+0xb90c
+            push offset gMatchData_006556fc
             push eax
             call sprintf
-            mov cx, word ptr [gCamera_incident_direction+0xc]
+            _emit 0x66
+        _emit 0x8b
+        _emit 0x0d
+        _emit 0x40
+        _emit 0xf6
+        _emit 0x58
+        _emit 0x00
             add esp, 0xc
             mov word ptr [ebx + 0x1dc1], cx
-            mov dx, word ptr [gCamera_incident_direction+0xc]
+            _emit 0x66
+        _emit 0x8b
+        _emit 0x15
+        _emit 0x40
+        _emit 0xf6
+        _emit 0x58
+        _emit 0x00
             mov word ptr [ebx + 0x1f19], dx
-            mov ax, word ptr [gCamera_incident_direction+0xc]
+            _emit 0x66
+        _emit 0xa1
+        _emit 0x40
+        _emit 0xf6
+        _emit 0x58
+        _emit 0x00
             mov word ptr [ebx + 0x2071], ax
             or eax, 0xffffffff
             mov dword ptr [ebx + 0x2850], eax
@@ -1181,6 +1214,21 @@ int C2_NAKED C2_HOOK_FASTCALL FRONTEND_NetworkJoinMenuHandler(tFrontend_spec* pF
             pop ebx
             add esp, 0x10
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -1348,7 +1396,7 @@ int C2_NAKED C2_HOOK_FASTCALL NetSetRaceType(tFrontend_spec* pFrontend) {
             sub esp, 8
             push ebx
             mov ebx, ecx
-            mov ecx, dword ptr ds:[gFrontend_selected_item_index]
+            mov ecx, dword ptr [gFrontend_selected_item_index]
             push ebp
             mov eax, dword ptr [ebx + 0x87a0]
             push esi
@@ -1370,56 +1418,56 @@ int C2_NAKED C2_HOOK_FASTCALL NetSetRaceType(tFrontend_spec* pFrontend) {
             inc eax
     L004687cd:
             mov esi, 1
-            mov dword ptr ds:[gFrontend_game_type], eax
+            mov dword ptr [gFrontend_game_type], eax
             mov dword ptr [ebx + 0x1830], esi
             mov dword ptr [ebx + 0x2850], 0xffffffff
-            mov edx, dword ptr ds:[gFrontend_game_type]
-            mov dword ptr ds:[gNet_last_game_type], edx
+            mov edx, dword ptr [gFrontend_game_type]
+            mov dword ptr [gNet_last_game_type], edx
             call SaveOptions
-            mov eax, dword ptr ds:[gNet_settings]
-            mov ecx, dword ptr ds:[gFrontend_game_type]
-            mov edx, dword ptr ds:[0x763964]
-            mov dword ptr ds:[gFrontend_net_options], eax
-            mov eax, dword ptr ds:[0x763968]
-            mov dword ptr ds:[0x763b24], edx
-            mov edx, dword ptr ds:[0x76396c]
-            mov dword ptr ds:[0x763b28], eax
+            mov eax, dword ptr [gNet_settings]
+            mov ecx, dword ptr [gFrontend_game_type]
+            mov edx, dword ptr [gNet_settings+0x4]
+            mov dword ptr [gFrontend_net_options], eax
+            mov eax, dword ptr [gNet_settings+0x8]
+            mov dword ptr [gFrontend_net_options+0x4], edx
+            mov edx, dword ptr [gNet_settings+0xc]
+            mov dword ptr [gFrontend_net_options+0x8], eax
             lea eax, [ecx + ecx*2]
-            mov dword ptr ds:[0x763b2c], edx
+            mov dword ptr [gFrontend_net_options+0xc], edx
             shl eax, 4
-            mov edx, dword ptr [eax + 0x7639a0]
-            mov dword ptr ds:[0x763b30], edx
-            mov edx, dword ptr ds:[0x763974]
-            mov dword ptr ds:[0x763b34], edx
-            mov edx, dword ptr [eax + 0x7639a8]
+            mov edx, dword ptr [eax + gNet_settings+0x40]
+            mov dword ptr [gFrontend_net_options+0x10], edx
+            mov edx, dword ptr [gNet_settings+0x14]
+            mov dword ptr [gFrontend_net_options+0x14], edx
+            mov edx, dword ptr [eax + gNet_settings+0x48]
             test edx, edx
             jne L00468867
-            mov edx, dword ptr [ecx*4 + 0x59c7ec]
-            mov dword ptr ds:[0x763b38], 0
+            mov edx, dword ptr [ecx*4 + gNet_grid_starts+0x4]
+            mov dword ptr [gFrontend_net_options+0x18], 0
             test edx, edx
             je L0046886d
     L00468867:
-            mov dword ptr ds:[0x763b38], esi
+            mov dword ptr [gFrontend_net_options+0x18], esi
     L0046886d:
-            mov ecx, dword ptr [eax + 0x7639b0]
-            mov edx, dword ptr [eax + 0x7639b4]
-            mov eax, dword ptr [eax + 0x7639ac]
-            mov dword ptr ds:[0x763b40], ecx
-            mov ecx, dword ptr ds:[0x76398c]
-            mov dword ptr ds:[0x763b44], edx
-            mov edx, dword ptr ds:[0x763988]
-            mov dword ptr ds:[0x763b4c], ecx
+            mov ecx, dword ptr [eax + gNet_settings+0x50]
+            mov edx, dword ptr [eax + gNet_settings+0x54]
+            mov eax, dword ptr [eax + gNet_settings+0x4c]
+            mov dword ptr [gFrontend_net_options+0x20], ecx
+            mov ecx, dword ptr [gNet_settings+0x2c]
+            mov dword ptr [gFrontend_net_options+0x24], edx
+            mov edx, dword ptr [gNet_settings+0x28]
+            mov dword ptr [gFrontend_net_options+0x2c], ecx
             or ecx, 0xffffffff
-            mov dword ptr ds:[0x763b48], edx
-            mov dword ptr ds:[0x763b3c], eax
+            mov dword ptr [gFrontend_net_options+0x28], edx
+            mov dword ptr [gFrontend_net_options+0x1c], eax
             call PickNetRace
-            mov ecx, dword ptr ds:[gFrontend_game_type]
+            mov ecx, dword ptr [gFrontend_game_type]
             mov edx, offset gNumber_of_races
             push ecx
             mov ecx, offset gRace_list
-            mov dword ptr ds:[gRace_index], eax
+            mov dword ptr [gRace_index], eax
             call LoadRaces
-            mov edx, dword ptr ds:[gFrontend_game_type]
+            mov edx, dword ptr [gFrontend_game_type]
             lea esi, [ebx + 0x29d9]
             lea ecx, [edx + 0xc2]
             call GetMiscString
@@ -1435,7 +1483,7 @@ int C2_NAKED C2_HOOK_FASTCALL NetSetRaceType(tFrontend_spec* pFrontend) {
             mov eax, dword ptr [ebx + 0x87d8]
             mov edi, dword ptr [ebx + 0x87d0]
             mov dword ptr [ebx + 0x87d4], eax
-            mov ecx, dword ptr ds:[gNumber_of_races]
+            mov ecx, dword ptr [gNumber_of_races]
             mov edx, eax
             mov dword ptr [ebx + 0x87cc], ecx
             add eax, edi
@@ -2289,7 +2337,7 @@ success:
             push ebx
             push 0x64
             mov edx, 0xc8
-            mov ecx, offset gFrontend_QUIT+0xb94c
+            mov ecx, offset gMatchString_0065573c
             call SolidPolyFontText
             mov dword ptr [gFrontend_net_car_index], 0xffffffff
     L004684f6:
@@ -2347,7 +2395,7 @@ success:
             xor eax, eax
             and ecx, 3
             rep movsb
-            mov edi, offset gCamera_incident_direction+0xc
+            mov edi, 0x58f640
             or ecx, 0xffffffff
             repne scasb
             not ecx
@@ -2467,6 +2515,18 @@ success:
             xor eax, eax
             pop ebx
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -2521,7 +2581,7 @@ int C2_NAKED C2_HOOK_FASTCALL NetworkStartHost(tFrontend_spec* pFrontend) {
             push ebx
             push 0x64
             mov edx, 0xc8
-            mov ecx, offset gFrontend_QUIT+0xb94c
+            mov ecx, offset gMatchString_0065573c
             call SolidPolyFontText
             mov dword ptr [gFrontend_net_car_index], 0xffffffff
     L00468f20:
@@ -2579,7 +2639,7 @@ int C2_NAKED C2_HOOK_FASTCALL NetworkStartHost(tFrontend_spec* pFrontend) {
             xor eax, eax
             and ecx, 3
             rep movsb
-            mov edi, offset gCamera_incident_direction+0xc
+            mov edi, 0x58f640
             or ecx, 0xffffffff
             repne scasb
             not ecx
@@ -2710,6 +2770,20 @@ int C2_NAKED C2_HOOK_FASTCALL NetworkStartHost(tFrontend_spec* pFrontend) {
             xor eax, eax
             pop ebx
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -2827,7 +2901,7 @@ int C2_NAKED C2_HOOK_FASTCALL NetJoinChooseThisGame(tFrontend_spec* pFrontend) {
             lea ecx, [esp + 0x10]
             add eax, 0xe
             push eax
-            push offset gFrontend_QUIT+0xb940
+            push offset gMatchString_00655730
             push ecx
             call sprintf
             mov edx, dword ptr [esi*8 + gGames_to_join]
@@ -2838,7 +2912,7 @@ int C2_NAKED C2_HOOK_FASTCALL NetJoinChooseThisGame(tFrontend_spec* pFrontend) {
             call GetMiscString
             push eax
             lea eax, [esp + edi + 0x14]
-            push offset gFrontend_QUIT+0xb934
+            push offset gMatchString_00655724
             push eax
             call sprintf
             mov ecx, dword ptr [esi*8 + gGames_to_join]
@@ -2847,7 +2921,7 @@ int C2_NAKED C2_HOOK_FASTCALL NetJoinChooseThisGame(tFrontend_spec* pFrontend) {
             mov edx, dword ptr [ecx + 0x34]
             push edx
             lea eax, [esp + edi + 0x14]
-            push offset gFrontend_QUIT+0xb924
+            push offset gMatchString_00655714
             push eax
             call sprintf
             mov ecx, dword ptr [esi*8 + gGames_to_join]
@@ -2864,14 +2938,14 @@ int C2_NAKED C2_HOOK_FASTCALL NetJoinChooseThisGame(tFrontend_spec* pFrontend) {
             push eax
             push ebp
             lea eax, [esp + edi + 0x18]
-            push offset gFrontend_QUIT+0xb910
+            push offset gMatchString_00655700
             push eax
             call sprintf
             add esp, 0x10
             lea ecx, [esp + 0x10]
             lea esi, [ebx + 0x29d9]
             push ecx
-            push offset gFrontend_QUIT+0xb90c
+            push offset gMatchData_006556fc
             push esi
             call sprintf
             add esp, 0xc
@@ -2887,6 +2961,13 @@ int C2_NAKED C2_HOOK_FASTCALL NetJoinChooseThisGame(tFrontend_spec* pFrontend) {
             pop ebx
             add esp, 0x100
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -2952,7 +3033,7 @@ int C2_NAKED C2_HOOK_FASTCALL NetworkStartJoin(tFrontend_spec* pFrontend) {
             push ebp
             push 0x64
             mov edx, 0xc8
-            mov ecx, offset gFrontend_QUIT+0xb94c
+            mov ecx, offset gMatchString_0065573c
             call SolidPolyFontText
             mov dword ptr [gFrontend_net_car_index], 0xffffffff
     L00468af0:
@@ -3010,7 +3091,7 @@ int C2_NAKED C2_HOOK_FASTCALL NetworkStartJoin(tFrontend_spec* pFrontend) {
             xor eax, eax
             and ecx, 3
             rep movsb
-            mov edi, offset gCamera_incident_direction+0xc
+            mov edi, 0x58f640
             or ecx, 0xffffffff
             repne scasb
             not ecx
@@ -3144,6 +3225,9 @@ int C2_NAKED C2_HOOK_FASTCALL NetworkStartJoin(tFrontend_spec* pFrontend) {
             xor eax, eax
             pop ebx
             ret
+            nop
+            nop
+            nop
     }
 #endif
 }
