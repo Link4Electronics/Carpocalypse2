@@ -1010,8 +1010,9 @@ void C2_NAKED C2_HOOK_FASTCALL AdjustHeadupTextBuffer(tHeadup_text_buffer* pText
 #endif
 }
 
-// UNLABELED: CARMA2_HW 0x0045a920
-int C2_HOOK_FASTCALL FUN_0045a920(tHeadup_text_buffer* pText_buffer, tHeadup_text* pText, int pSorted) {
+// FUNCTION: CARMA2_HW 0x0045a920
+int C2_NAKED C2_HOOK_FASTCALL FUN_0045a920(tHeadup_text_buffer* pText_buffer, tHeadup_text* pText, int pSorted) {
+#ifndef CARPOCALYPSE2_MATCHING
     tHeadup_text* node;
     tHeadup_text* previous;
     int index;
@@ -1062,6 +1063,155 @@ int C2_HOOK_FASTCALL FUN_0045a920(tHeadup_text_buffer* pText_buffer, tHeadup_tex
         pText_buffer->text_last_add = previous;
     }
     return pText_buffer->pos_last_add;
+#else
+    __asm {
+            sub esp, 0x10
+            push ebx
+            mov ebx, ecx
+            push ebp
+            push edi
+            mov ebp, dword ptr [ebx]
+            xor ecx, ecx
+            xor edi, edi
+            cmp ebp, ecx
+            mov dword ptr [esp + 0x10], edx
+            mov dword ptr [esp + 0x18], ebx
+            mov dword ptr [esp + 0x14], ecx
+            mov dword ptr [esp + 0xc], edi
+            jne L0045a95f
+            mov dword ptr [ebx], edx
+            mov dword ptr [edx + 0x38], ecx
+            mov dword ptr [ebx + 8], 1
+            mov dword ptr [ebx + 0xc], ecx
+            mov dword ptr [ebx + 0x18], edx
+            xor eax, eax
+            pop edi
+            pop ebp
+            pop ebx
+            add esp, 0x10
+            ret 4
+    L0045a95f:
+            push esi
+            mov esi, dword ptr [esp + 0x24]
+            cmp esi, ecx
+            mov eax, ebp
+            jne L0045a98a
+            mov esi, dword ptr [eax + 0x38]
+            cmp esi, ecx
+            je L0045a97f
+    L0045a971:
+            mov eax, esi
+            inc edi
+            mov esi, dword ptr [eax + 0x38]
+            cmp esi, ecx
+            jne L0045a971
+            mov dword ptr [esp + 0x10], edi
+    L0045a97f:
+            mov dword ptr [edx + 0x38], ecx
+            mov dword ptr [eax + 0x38], edx
+            jmp L0045aa42
+    L0045a98a:
+            mov edi, edx
+            mov esi, eax
+    L0045a98e:
+            mov dl, byte ptr [esi]
+            mov bl, dl
+            cmp dl, byte ptr [edi]
+            jne L0045a9b2
+            cmp bl, cl
+            je L0045a9ae
+            mov dl, byte ptr [esi + 1]
+            mov bl, dl
+            cmp dl, byte ptr [edi + 1]
+            jne L0045a9b2
+            add esi, 2
+            add edi, 2
+            cmp bl, cl
+            jne L0045a98e
+    L0045a9ae:
+            xor esi, esi
+            jmp L0045a9b7
+    L0045a9b2:
+            sbb esi, esi
+            sbb esi, -1
+    L0045a9b7:
+            cmp esi, ecx
+            jle L0045a9ca
+            mov ebx, dword ptr [esp + 0x1c]
+            mov ecx, dword ptr [esp + 0x14]
+            mov dword ptr [ebx], ecx
+            mov dword ptr [ecx + 0x38], ebp
+            jmp L0045aa42
+    L0045a9ca:
+            mov eax, ebp
+            mov dword ptr [esp + 0x24], ecx
+            mov ebp, dword ptr [eax + 0x38]
+            cmp ebp, ecx
+            je L0045aa30
+    L0045a9d7:
+            cmp dword ptr [esp + 0x18], ecx
+            jne L0045aa30
+            mov edi, dword ptr [esp + 0x14]
+            mov esi, ebp
+    L0045a9e3:
+            mov dl, byte ptr [esi]
+            mov bl, dl
+            cmp dl, byte ptr [edi]
+            jne L0045aa07
+            cmp bl, cl
+            je L0045aa03
+            mov dl, byte ptr [esi + 1]
+            mov bl, dl
+            cmp dl, byte ptr [edi + 1]
+            jne L0045aa07
+            add esi, 2
+            add edi, 2
+            cmp bl, cl
+            jne L0045a9e3
+    L0045aa03:
+            xor esi, esi
+            jmp L0045aa0c
+    L0045aa07:
+            sbb esi, esi
+            sbb esi, -1
+    L0045aa0c:
+            cmp esi, ecx
+            jle L0045aa1e
+            mov dword ptr [esp + 0x18], 1
+            mov dword ptr [esp + 0x24], ebp
+            jmp L0045aa20
+    L0045aa1e:
+            mov eax, ebp
+    L0045aa20:
+            mov esi, dword ptr [esp + 0x10]
+            mov ebp, dword ptr [eax + 0x38]
+            inc esi
+            cmp ebp, ecx
+            mov dword ptr [esp + 0x10], esi
+            jne L0045a9d7
+    L0045aa30:
+            mov ecx, dword ptr [esp + 0x14]
+            mov edx, dword ptr [esp + 0x24]
+            mov ebx, dword ptr [esp + 0x1c]
+            mov dword ptr [ecx + 0x38], edx
+            mov dword ptr [eax + 0x38], ecx
+    L0045aa42:
+            mov ecx, dword ptr [ebx + 8]
+            pop esi
+            inc ecx
+            pop edi
+            mov dword ptr [ebx + 8], ecx
+            mov ecx, dword ptr [esp + 8]
+            mov dword ptr [ebx + 0xc], ecx
+            mov dword ptr [ebx + 0x18], eax
+            pop ebp
+            mov eax, ecx
+            pop ebx
+            add esp, 0x10
+            ret 4
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0045b3b0
@@ -1737,21 +1887,21 @@ int C2_NAKED C2_HOOK_FASTCALL FUN_0045a7f0(char* pFilename, int* pArg2) {
             lea ecx, [esp + 0x10]
             call DRstrlwr
             lea ecx, [esp + 0x10]
-            push offset gUNK_00596310+0x104
+            push 0x596414
             push ecx
             call strstr
             add esp, 8
             test eax, eax
             jne L0045a90a
             lea edx, [esp + 0x10]
-            push offset gUNK_00596310+0xfc
+            push 0x59640c
             push edx
             call strstr
             add esp, 8
             test eax, eax
             jne L0045a90a
             lea eax, [esp + 0x10]
-            push offset gUNK_00596310+0xf4
+            push 0x596404
             push eax
             call strstr
             add esp, 8
@@ -1764,7 +1914,7 @@ int C2_NAKED C2_HOOK_FASTCALL FUN_0045a7f0(char* pFilename, int* pArg2) {
             add esp, 8
             test eax, eax
             jne L0045a8c3
-            mov esi, offset gUNK_00596310+0xf0
+            mov esi, 0x596400
             mov eax, ebx
     L0045a892:
             mov dl, byte ptr [eax]
@@ -1816,7 +1966,7 @@ int C2_NAKED C2_HOOK_FASTCALL FUN_0045a7f0(char* pFilename, int* pArg2) {
             mov ecx, ebp
             mov byte ptr [esi], al
             push 1
-            call L0045a920
+            call FUN_0045a920
     L0045a90a:
             pop edi
             pop esi
@@ -1834,151 +1984,6 @@ int C2_NAKED C2_HOOK_FASTCALL FUN_0045a7f0(char* pFilename, int* pArg2) {
             nop
             nop
             nop
-    L0045a920:
-            sub esp, 0x10
-            push ebx
-            mov ebx, ecx
-            push ebp
-            push edi
-            mov ebp, dword ptr [ebx]
-            xor ecx, ecx
-            xor edi, edi
-            cmp ebp, ecx
-            mov dword ptr [esp + 0x10], edx
-            mov dword ptr [esp + 0x18], ebx
-            mov dword ptr [esp + 0x14], ecx
-            mov dword ptr [esp + 0xc], edi
-            jne L0045a95f
-            mov dword ptr [ebx], edx
-            mov dword ptr [edx + 0x38], ecx
-            mov dword ptr [ebx + 8], 1
-            mov dword ptr [ebx + 0xc], ecx
-            mov dword ptr [ebx + 0x18], edx
-            xor eax, eax
-            pop edi
-            pop ebp
-            pop ebx
-            add esp, 0x10
-            ret 4
-    L0045a95f:
-            push esi
-            mov esi, dword ptr [esp + 0x24]
-            cmp esi, ecx
-            mov eax, ebp
-            jne L0045a98a
-            mov esi, dword ptr [eax + 0x38]
-            cmp esi, ecx
-            je L0045a97f
-    L0045a971:
-            mov eax, esi
-            inc edi
-            mov esi, dword ptr [eax + 0x38]
-            cmp esi, ecx
-            jne L0045a971
-            mov dword ptr [esp + 0x10], edi
-    L0045a97f:
-            mov dword ptr [edx + 0x38], ecx
-            mov dword ptr [eax + 0x38], edx
-            jmp L0045aa42
-    L0045a98a:
-            mov edi, edx
-            mov esi, eax
-    L0045a98e:
-            mov dl, byte ptr [esi]
-            mov bl, dl
-            cmp dl, byte ptr [edi]
-            jne L0045a9b2
-            cmp bl, cl
-            je L0045a9ae
-            mov dl, byte ptr [esi + 1]
-            mov bl, dl
-            cmp dl, byte ptr [edi + 1]
-            jne L0045a9b2
-            add esi, 2
-            add edi, 2
-            cmp bl, cl
-            jne L0045a98e
-    L0045a9ae:
-            xor esi, esi
-            jmp L0045a9b7
-    L0045a9b2:
-            sbb esi, esi
-            sbb esi, -1
-    L0045a9b7:
-            cmp esi, ecx
-            jle L0045a9ca
-            mov ebx, dword ptr [esp + 0x1c]
-            mov ecx, dword ptr [esp + 0x14]
-            mov dword ptr [ebx], ecx
-            mov dword ptr [ecx + 0x38], ebp
-            jmp L0045aa42
-    L0045a9ca:
-            mov eax, ebp
-            mov dword ptr [esp + 0x24], ecx
-            mov ebp, dword ptr [eax + 0x38]
-            cmp ebp, ecx
-            je L0045aa30
-    L0045a9d7:
-            cmp dword ptr [esp + 0x18], ecx
-            jne L0045aa30
-            mov edi, dword ptr [esp + 0x14]
-            mov esi, ebp
-    L0045a9e3:
-            mov dl, byte ptr [esi]
-            mov bl, dl
-            cmp dl, byte ptr [edi]
-            jne L0045aa07
-            cmp bl, cl
-            je L0045aa03
-            mov dl, byte ptr [esi + 1]
-            mov bl, dl
-            cmp dl, byte ptr [edi + 1]
-            jne L0045aa07
-            add esi, 2
-            add edi, 2
-            cmp bl, cl
-            jne L0045a9e3
-    L0045aa03:
-            xor esi, esi
-            jmp L0045aa0c
-    L0045aa07:
-            sbb esi, esi
-            sbb esi, -1
-    L0045aa0c:
-            cmp esi, ecx
-            jle L0045aa1e
-            mov dword ptr [esp + 0x18], 1
-            mov dword ptr [esp + 0x24], ebp
-            jmp L0045aa20
-    L0045aa1e:
-            mov eax, ebp
-    L0045aa20:
-            mov esi, dword ptr [esp + 0x10]
-            mov ebp, dword ptr [eax + 0x38]
-            inc esi
-            cmp ebp, ecx
-            mov dword ptr [esp + 0x10], esi
-            jne L0045a9d7
-    L0045aa30:
-            mov ecx, dword ptr [esp + 0x14]
-            mov edx, dword ptr [esp + 0x24]
-            mov ebx, dword ptr [esp + 0x1c]
-            mov dword ptr [ecx + 0x38], edx
-            mov dword ptr [eax + 0x38], ecx
-    L0045aa42:
-            mov ecx, dword ptr [ebx + 8]
-            pop esi
-            inc ecx
-            pop edi
-            mov dword ptr [ebx + 8], ecx
-            mov ecx, dword ptr [esp + 8]
-            mov dword ptr [ebx + 0xc], ecx
-            mov dword ptr [ebx + 0x18], eax
-            pop ebp
-            mov eax, ecx
-            pop ebx
-            add esp, 0x10
-            ret 4
     }
 #endif
 }

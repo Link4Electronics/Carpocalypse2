@@ -315,7 +315,7 @@ extern int gSynch_race_start;
 extern int gThis_net_player_index;
 #endif
 /* Defined later in this file; referenced from inline asm above it. */
-static void C2_HOOK_FASTCALL FUN_0049a410(void);
+void C2_HOOK_FASTCALL FUN_0049a410(void);
 #ifdef CARPOCALYPSE2_MATCHING
 extern void C2_HOOK_FASTCALL AddToGuaranteeList(tNet_message* pMessage, void* pAddress, tPlayer_ID pPlayer, void* pNotifyFail);
 extern br_actor* C2_HOOK_CDECL BrActorAdd();
@@ -8126,7 +8126,8 @@ void C2_NAKED C2_HOOK_FASTCALL NetLeaveGame(tNet_game_details* pNet_game) {
 // NetSetPlayerSystemInfo
 
 // FUNCTION: CARMA2_HW 0x0049e3a0
-void C2_HOOK_FASTCALL FillInThisPlayer(tNet_game_details* pGame, tNet_game_player_info* pPlayer, int pCar_index, int pHost) {
+void C2_NAKED C2_HOOK_FASTCALL FillInThisPlayer(tNet_game_details* pGame, tNet_game_player_info* pPlayer, int pCar_index, int pHost) {
+#ifndef CARPOCALYPSE2_MATCHING
     int car_choice;
 
     pPlayer->host = pHost;
@@ -8151,6 +8152,75 @@ void C2_HOOK_FASTCALL FillInThisPlayer(tNet_game_details* pGame, tNet_game_playe
         pPlayer->next_car_index = -1;
     }
     InitialisePlayerScore(pPlayer);
+#else
+    __asm {
+            mov eax, dword ptr [esp + 8]
+            push ebx
+            push ebp
+            mov ebx, edx
+            push esi
+            push edi
+            mov ebp, ecx
+            mov dword ptr [ebx + 0x20], eax
+            _emit 0xe8
+        _emit 0x7c
+        _emit 0xbd
+        _emit 0x07
+        _emit 0x00
+            mov dword ptr [ebx + 0x24], eax
+            mov edi, 0x75d590
+            or ecx, 0xffffffff
+            xor eax, eax
+            repne scasb
+            not ecx
+            sub edi, ecx
+            lea edx, [ebx + 0x28]
+            mov eax, ecx
+            mov esi, edi
+            mov edi, edx
+            shr ecx, 2
+            rep movsd
+            mov ecx, eax
+            and ecx, 3
+            rep movsb
+            call PDGetTotalTime
+            mov ecx, dword ptr [esp + 0x14]
+            mov dword ptr [ebx + 0x10], eax
+            xor eax, eax
+            mov dword ptr [ebx + 0x4c], ecx
+            mov dword ptr [ebx + 0x18], eax
+            mov dword ptr [ebx + 0x1c], eax
+            mov dword ptr [ebx + 0x70], eax
+            mov dword ptr [ebx + 0x58], eax
+            mov dword ptr [ebx + 0x74], 1
+            mov dword ptr [ebx + 0x7c], eax
+            mov dword ptr [ebx + 0x88], eax
+            mov dword ptr [ebx + 0x90], eax
+            mov dword ptr [ebx + 0x80], eax
+            mov dword ptr [ebx + 0x84], eax
+            mov dword ptr [ebx + 0xcc], eax
+            mov dword ptr [ebx + 0xd0], eax
+            mov ebp, dword ptr [ebp + 0x70]
+            cmp ebp, 2
+            je L0049e434
+            cmp ebp, 1
+            jne L0049e43e
+    L0049e434:
+            mov dword ptr [ebx + 0x8c], 0xffffffff
+    L0049e43e:
+            mov ecx, ebx
+            call InitialisePlayerScore
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            ret 8
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0049e100
@@ -12904,7 +12974,8 @@ void C2_NAKED C2_HOOK_FASTCALL DoNetScores2(int pOnly_sort_scores) {
 }
 
 // FUNCTION: CARMA2_HW 0x0049a410
-static void C2_HOOK_FASTCALL FUN_0049a410(void) {
+void C2_NAKED C2_HOOK_FASTCALL FUN_0049a410(void) {
+#ifndef CARPOCALYPSE2_MATCHING
     br_actor** actor_ptr;
     br_camera* camera;
     br_material* material;
@@ -12980,6 +13051,231 @@ static void C2_HOOK_FASTCALL FUN_0049a410(void) {
     camera->height = (float)gScreen->height;
     BrActorAdd(gNet_score_root, gNet_score_camera);
     gNet_score_scene_initialised = 1;
+#else
+    __asm {
+            sub esp, 0x24
+            push ebx
+            push ebp
+            push esi
+            xor esi, esi
+            push edi
+            push esi
+            push esi
+            call BrActorAllocate
+            add esp, 8
+            mov dword ptr [gNet_score_root], eax
+            mov edi, offset gNet_score_actors
+    L0049a42d:
+            push esi
+            push 1
+            call BrActorAllocate
+            add esp, 8
+            cmp eax, esi
+            mov dword ptr [edi], eax
+            jne L0049a44b
+            push 0x659cd8
+            call BrFailure
+            add esp, 4
+    L0049a44b:
+            mov eax, dword ptr [edi]
+            add edi, 4
+            cmp edi, 0x74a770
+            mov byte ptr [eax + 0x20], 4
+            jl L0049a42d
+            mov edi, 2
+            push edi
+            push 4
+            push 0x659cc8
+            call BrModelAllocate
+            mov dword ptr [gNet_score_model], eax
+            mov ecx, dword ptr [eax + 0xc]
+            add esp, 0xc
+            mov word ptr [ecx], si
+            mov edx, dword ptr [gNet_score_model]
+            mov eax, dword ptr [edx + 0xc]
+            mov word ptr [eax + 2], 1
+            mov ecx, dword ptr [gNet_score_model]
+            mov edx, dword ptr [ecx + 0xc]
+            mov word ptr [edx + 4], di
+            mov eax, dword ptr [gNet_score_model]
+            mov ecx, dword ptr [eax + 0xc]
+            mov word ptr [ecx + 0x28], 1
+            mov edx, dword ptr [gNet_score_model]
+            mov eax, dword ptr [edx + 0xc]
+            mov word ptr [eax + 0x2a], 3
+            mov ecx, dword ptr [gNet_score_model]
+            mov edx, dword ptr [ecx + 0xc]
+            mov word ptr [edx + 0x2c], di
+            mov eax, dword ptr [gNet_score_model]
+            mov ecx, dword ptr [eax + 0xc]
+            mov dword ptr [ecx + 8], esi
+            mov edx, dword ptr [gNet_score_model]
+            mov eax, dword ptr [edx + 0xc]
+            mov dword ptr [eax + 0x30], esi
+            mov ecx, dword ptr [gNet_score_model]
+            mov edx, dword ptr [ecx + 8]
+            mov dword ptr [edx], esi
+            mov eax, dword ptr [gNet_score_model]
+            mov ecx, dword ptr [eax + 8]
+            mov eax, 0xc0000000
+            mov dword ptr [ecx + 4], esi
+            mov edx, dword ptr [gNet_score_model]
+            mov ecx, dword ptr [edx + 8]
+            mov dword ptr [ecx + 8], eax
+            mov edx, dword ptr [gNet_score_model]
+            mov ecx, dword ptr [edx + 8]
+            mov edx, 0x42c80000
+            mov dword ptr [ecx + 0x28], edx
+            mov ecx, dword ptr [gNet_score_model]
+            mov ecx, dword ptr [ecx + 8]
+            mov dword ptr [ecx + 0x2c], esi
+            mov ecx, dword ptr [gNet_score_model]
+            mov ecx, dword ptr [ecx + 8]
+            mov dword ptr [ecx + 0x30], eax
+            mov ecx, dword ptr [gNet_score_model]
+            mov ecx, dword ptr [ecx + 8]
+            mov dword ptr [ecx + 0x50], esi
+            mov ecx, dword ptr [gNet_score_model]
+            mov ebx, dword ptr [ecx + 8]
+            mov ecx, 0xc2180000
+            mov dword ptr [ebx + 0x54], ecx
+            mov ebx, dword ptr [gNet_score_model]
+            mov ebx, dword ptr [ebx + 8]
+            mov dword ptr [ebx + 0x58], eax
+            mov ebx, dword ptr [gNet_score_model]
+            mov ebx, dword ptr [ebx + 8]
+            mov dword ptr [ebx + 0x78], edx
+            mov edx, dword ptr [gNet_score_model]
+            mov edx, dword ptr [edx + 8]
+            mov dword ptr [edx + 0x7c], ecx
+            mov ecx, dword ptr [gNet_score_model]
+            mov edx, dword ptr [ecx + 8]
+            mov dword ptr [edx + 0x80], eax
+            mov eax, dword ptr [gNet_score_model]
+            mov ecx, dword ptr [eax + 8]
+            mov dword ptr [ecx + 0xc], esi
+            mov edx, dword ptr [gNet_score_model]
+            mov eax, dword ptr [edx + 8]
+            mov dword ptr [eax + 0x10], esi
+            mov ecx, dword ptr [gNet_score_model]
+            mov edx, dword ptr [ecx + 8]
+            mov ecx, 0x3f480000
+            mov dword ptr [edx + 0x34], ecx
+            mov eax, dword ptr [gNet_score_model]
+            mov edx, dword ptr [eax + 8]
+            mov dword ptr [edx + 0x38], esi
+            mov eax, dword ptr [gNet_score_model]
+            mov edx, dword ptr [eax + 8]
+            mov dword ptr [edx + 0x5c], esi
+            mov eax, dword ptr [gNet_score_model]
+            mov edx, dword ptr [eax + 8]
+            mov eax, 0x3e980000
+            mov dword ptr [edx + 0x60], eax
+            mov edx, dword ptr [gNet_score_model]
+            mov edx, dword ptr [edx + 8]
+            mov dword ptr [edx + 0x84], ecx
+            mov ecx, dword ptr [gNet_score_model]
+            mov edx, dword ptr [ecx + 8]
+            mov dword ptr [edx + 0x88], eax
+            mov eax, dword ptr [gNet_score_model]
+            or word ptr [eax + 0x20], di
+            mov eax, dword ptr [gNet_score_model]
+            push eax
+            call BrModelAdd
+            add esp, 4
+            xor ebx, ebx
+            mov edi, offset gNet_score_materials
+            jmp L0049a607
+    L0049a605:
+            xor esi, esi
+    L0049a607:
+            inc ebx
+            lea ecx, [esp + 0x14]
+            push ebx
+            push 0x659cb8
+            push ecx
+            call sprintf
+            add esp, 0xc
+            lea ecx, [esp + 0x14]
+            call LoadPixelmap
+            mov ebp, eax
+            cmp ebp, esi
+            jne L0049a63c
+            lea edx, [esp + 0x14]
+            push edx
+            push 0x659c98
+            call BrFailure
+            add esp, 8
+    L0049a63c:
+            push ebp
+            call BrMapAdd
+            add esp, 4
+            push 0x659c84
+            call BrMaterialAllocate
+            add esp, 4
+            mov esi, eax
+            push esi
+            mov dword ptr [esi + 8], 0
+            mov dword ptr [esi + 0x40], ebp
+            mov dword ptr [esi + 0x20], 0x2800
+            call BrMaterialAdd
+            mov dword ptr [edi], esi
+            add edi, 4
+            add esp, 4
+            cmp edi, offset gNet_score_camera
+            jl L0049a605
+            push 0
+            push 3
+            call BrActorAllocate
+            mov dword ptr [gNet_score_camera], eax
+            mov dword ptr [eax + 0x14], 0x659c74
+            mov eax, dword ptr [gNet_score_camera]
+            xor ecx, ecx
+            add esp, 8
+            mov eax, dword ptr [eax + 0x5c]
+            mov byte ptr [eax + 4], 0
+            mov dword ptr [eax + 8], 0x3f800000
+            mov dword ptr [eax + 0xc], 0x40400000
+            mov edx, dword ptr [gScreen]
+            mov cx, word ptr [edx + 0x34]
+            mov dword ptr [esp + 0x10], ecx
+            xor ecx, ecx
+            fild dword ptr [esp + 0x10]
+            fstp dword ptr [eax + 0x14]
+            mov edx, dword ptr [gScreen]
+            mov cx, word ptr [edx + 0x36]
+            mov dword ptr [esp + 0x10], ecx
+            fild dword ptr [esp + 0x10]
+            fstp dword ptr [eax + 0x18]
+            mov eax, dword ptr [gNet_score_camera]
+            mov ecx, dword ptr [gNet_score_root]
+            push eax
+            push ecx
+            call BrActorAdd
+            add esp, 8
+            mov dword ptr [gNet_score_scene_initialised], 1
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x24
+            ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 #include <limits.h>
@@ -13399,7 +13695,7 @@ int C2_NAKED C2_HOOK_CDECL SortNetScoresDescending(const void* pFirst, const voi
 #endif
 }
 
-static void C2_HOOK_FASTCALL FUN_0049a410(void);
+void C2_HOOK_FASTCALL FUN_0049a410(void);
 
 // FUNCTION: CARMA2_HW 0x004a64b0
 int C2_HOOK_FASTCALL FUN_004a64b0(unsigned int pArg) {

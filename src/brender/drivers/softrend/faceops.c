@@ -121,7 +121,8 @@ void C2_HOOK_CDECL OpTriangleTwoSidedConstantSurf(brp_block* block, brp_vertex* 
 }
 
 // FUNCTION: CARMA2_HW 0x00545560
-void C2_HOOK_CDECL OpTriangleMappingWrapFix(brp_block* block, brp_vertex* v0, brp_vertex* v1, brp_vertex* v2, undefined4* param_5, undefined4* param_6) {
+void C2_NAKED C2_HOOK_CDECL OpTriangleMappingWrapFix(brp_block* block, brp_vertex* v0, brp_vertex* v1, brp_vertex* v2, undefined4* param_5, undefined4* param_6) {
+#ifndef CARPOCALYPSE2_MATCHING
     br_scalar scale;
     br_scalar half;
     br_scalar d0, d1, d2;
@@ -153,6 +154,166 @@ void C2_HOOK_CDECL OpTriangleMappingWrapFix(brp_block* block, brp_vertex* v0, br
 
     /* FIXME: what are the last arguments? */
     block->chain->render(block->chain, v0, v1, v2, param_5, param_6);
+#else
+    __asm {
+            sub esp, 0xd4
+            mov eax, dword ptr ds:[0x79f9d8]
+            push ebx
+            mov ebx, dword ptr [esp + 0xe4]
+            push ebp
+            fld dword ptr [eax + 0x604]
+            mov ebp, dword ptr [esp + 0xe4]
+            mov edx, dword ptr [esp + 0xec]
+            fabs
+            fld dword ptr [ebx + 0x20]
+            fsub dword ptr [ebp + 0x20]
+            fxch st(1)
+            fst dword ptr [esp + 0x10]
+            fmul dword ptr ds:[0x58c908]
+            fxch st(1)
+            fst dword ptr [esp + 0x14]
+            fxch st(1)
+            fstp dword ptr [esp + 8]
+            fcomp dword ptr [esp + 8]
+            fld dword ptr [ebp + 0x20]
+            fld dword ptr [edx + 0x20]
+            fsub dword ptr [ebx + 0x20]
+            fxch st(1)
+            fsub dword ptr [edx + 0x20]
+            fnstsw ax
+            push esi
+            push edi
+            test ah, 0x41
+            fstp dword ptr [esp + 0x14]
+            je L00545618
+            fld dword ptr [esp + 0x1c]
+            fld dword ptr [esp + 0x10]
+            fchs
+            fstp dword ptr [esp + 0x20]
+            fcomp dword ptr [esp + 0x20]
+            fnstsw ax
+            test ah, 1
+            jne L00545618
+            fcom dword ptr [esp + 0x10]
+            fnstsw ax
+            test ah, 0x41
+            je L00545618
+            fcom dword ptr [esp + 0x20]
+            fnstsw ax
+            test ah, 1
+            jne L00545618
+            fld dword ptr [esp + 0x14]
+            fcomp dword ptr [esp + 0x10]
+            fnstsw ax
+            test ah, 0x41
+            je L00545618
+            fld dword ptr [esp + 0x14]
+            fcomp dword ptr [esp + 0x20]
+            fnstsw ax
+            test ah, 1
+            je L005456e5
+    L00545618:
+            fld dword ptr [esp + 0x1c]
+            fcomp dword ptr [esp + 0x10]
+            fnstsw ax
+            test ah, 0x41
+            je L0054563c
+            fld dword ptr [esp + 0x14]
+            fld dword ptr [esp + 0x10]
+            fchs
+            fxch st(1)
+            fcompp
+            fnstsw ax
+            test ah, 1
+            je L00545659
+    L0054563c:
+            mov ecx, 0x10
+            mov esi, ebp
+            lea edi, [esp + 0x24]
+            lea ebp, [esp + 0x24]
+            rep movsd
+            fld dword ptr [esp + 0x44]
+            fadd dword ptr [esp + 0x18]
+            fstp dword ptr [esp + 0x44]
+    L00545659:
+            fld dword ptr [esp + 0x1c]
+            fld dword ptr [esp + 0x10]
+            fchs
+            fxch st(1)
+            fcomp st(1)
+            fnstsw ax
+            test ah, 1
+            jne L0054567b
+            fld st(1)
+            fcomp dword ptr [esp + 0x10]
+            fnstsw ax
+            test ah, 0x41
+            jne L0054569e
+    L0054567b:
+            mov ecx, 0x10
+            mov esi, ebx
+            lea edi, [esp + 0x64]
+            lea ebx, [esp + 0x64]
+            rep movsd
+            fld dword ptr [esp + 0x84]
+            fadd dword ptr [esp + 0x18]
+            fstp dword ptr [esp + 0x84]
+    L0054569e:
+            fxch st(1)
+            fcomp st(1)
+            fnstsw ax
+            test ah, 1
+            fstp st(0)
+            jne L005456ba
+            fld dword ptr [esp + 0x14]
+            fcomp dword ptr [esp + 0x10]
+            fnstsw ax
+            test ah, 0x41
+            jne L005456e7
+    L005456ba:
+            mov ecx, 0x10
+            mov esi, edx
+            lea edi, [esp + 0xa4]
+            lea edx, [esp + 0xa4]
+            rep movsd
+            fld dword ptr [esp + 0xc4]
+            fadd dword ptr [esp + 0x18]
+            fstp dword ptr [esp + 0xc4]
+            jmp L005456e7
+    L005456e5:
+            fstp st(0)
+    L005456e7:
+            mov ecx, dword ptr [esp + 0xe8]
+            mov eax, dword ptr [ecx + 4]
+            mov ecx, dword ptr [esp + 0xfc]
+            push ecx
+            mov ecx, dword ptr [esp + 0xfc]
+            push ecx
+            push edx
+            push ebx
+            push ebp
+            push eax
+            call dword ptr [eax]
+            add esp, 0x18
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0xd4
+            ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00545720

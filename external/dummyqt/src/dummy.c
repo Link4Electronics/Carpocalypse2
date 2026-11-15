@@ -42,7 +42,7 @@ OSErr C2_HOOK_CDECL InitializeQTML(long flag) {
     return (OSErr)0xf7d3;
 }
 
-// STUB: CARMA2_HW 0x00575340
+// FUNCTION: CARMA2_HW 0x00575340
 C2_NAKED StringPtr C2_HOOK_CDECL c2pstr(char *aStr) {
 #ifdef CARPOCALYPSE2_MATCHING
     __asm {
@@ -60,7 +60,7 @@ skip:
 #endif
 }
 
-// STUB: CARMA2_HW 0x00570ac0
+// FUNCTION: CARMA2_HW 0x00570ac0
 C2_NAKED void C2_HOOK_CDECL DisposeHandle(Handle h) {
 #ifdef CARPOCALYPSE2_MATCHING
     __asm {
@@ -77,7 +77,7 @@ skip:
 #endif
 }
 
-// STUB: CARMA2_HW 0x0056a8e0
+// FUNCTION: CARMA2_HW 0x0056a8e0
 C2_NAKED OSErr C2_HOOK_CDECL EnterMovies(void) {
 #ifdef CARPOCALYPSE2_MATCHING
     __asm {
@@ -94,7 +94,7 @@ skip:
 #endif
 }
 
-// STUB: CARMA2_HW 0x0056a900
+// FUNCTION: CARMA2_HW 0x0056a900
 C2_NAKED OSErr C2_HOOK_CDECL GetMoviesError(void) {
 #ifdef CARPOCALYPSE2_MATCHING
     __asm {
@@ -111,7 +111,7 @@ skip:
 #endif
 }
 
-// STUB: CARMA2_HW 0x0056baa0
+// FUNCTION: CARMA2_HW 0x0056baa0
 C2_NAKED OSErr C2_HOOK_CDECL CloseMovieFile(short resRefNum) {
 #ifdef CARPOCALYPSE2_MATCHING
     __asm {
@@ -129,7 +129,7 @@ skip:
 #endif
 }
 
-// STUB: CARMA2_HW 0x0056abe0
+// FUNCTION: CARMA2_HW 0x0056abe0
 C2_NAKED void C2_HOOK_CDECL DisposeMovie(Movie theMovie) {
 #ifdef CARPOCALYPSE2_MATCHING
     __asm {
@@ -146,7 +146,7 @@ skip:
 #endif
 }
 
-// STUB: CARMA2_HW 0x0056b340
+// FUNCTION: CARMA2_HW 0x0056b340
 C2_NAKED OSErr C2_HOOK_CDECL BeginMediaEdits(Media theMedia) {
 #ifdef CARPOCALYPSE2_MATCHING
     __asm {
@@ -164,7 +164,7 @@ skip:
 #endif
 }
 
-// STUB: CARMA2_HW 0x0056b360
+// FUNCTION: CARMA2_HW 0x0056b360
 C2_NAKED OSErr C2_HOOK_CDECL EndMediaEdits(Media theMedia) {
 #ifdef CARPOCALYPSE2_MATCHING
     __asm {
@@ -182,7 +182,7 @@ skip:
 #endif
 }
 
-// STUB: CARMA2_HW 0x0056b240
+// FUNCTION: CARMA2_HW 0x0056b240
 C2_NAKED TimeValue C2_HOOK_CDECL GetMediaDuration(Media theMedia) {
 #ifdef CARPOCALYPSE2_MATCHING
     __asm {
@@ -200,7 +200,7 @@ skip:
 #endif
 }
 
-// STUB: CARMA2_HW 0x0056dac0
+// FUNCTION: CARMA2_HW 0x0056dac0
 C2_NAKED OSErr C2_HOOK_CDECL CDSequenceEnd(ImageSequence seqID) {
 #ifdef CARPOCALYPSE2_MATCHING
     __asm {
@@ -218,7 +218,7 @@ skip:
 #endif
 }
 
-// STUB: CARMA2_HW 0x0056c600
+// FUNCTION: CARMA2_HW 0x0056c600
 C2_NAKED OSErr C2_HOOK_CDECL InsertMediaIntoTrack(Track theTrack, TimeValue trackStart, TimeValue mediaTime, TimeValue mediaDuration, Fixed mediaRate) {
 #ifdef CARPOCALYPSE2_MATCHING
     __asm {
@@ -240,7 +240,7 @@ skip:
 #endif
 }
 
-// STUB: CARMA2_HW 0x0056c800
+// FUNCTION: CARMA2_HW 0x0056c800
 C2_NAKED Movie C2_HOOK_CDECL FlattenMovieData(Movie theMovie, long movieFlattenFlags, const FSSpec *theFile, OSType creator, ScriptCode scriptTag, long createMovieFileFlags) {
 #ifdef CARPOCALYPSE2_MATCHING
     __asm {
@@ -263,7 +263,7 @@ skip:
 #endif
 }
 
-// STUB: CARMA2_HW 0x0056c720
+// FUNCTION: CARMA2_HW 0x0056c720
 C2_NAKED OSErr C2_HOOK_CDECL CreateMovieFile(const FSSpec* fileSpec, OSType creator, ScriptCode scriptTag, long createMovieFileFlags, short* resRefNum, Movie* newmovie) {
 #ifdef CARPOCALYPSE2_MATCHING
     __asm {

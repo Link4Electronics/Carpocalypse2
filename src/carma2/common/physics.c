@@ -6118,7 +6118,12 @@ tPhysicsError C2_NAKED C2_HOOK_FASTCALL ConvexHull3D(tCollision_shape_polyhedron
     }
 
     original_count_points = pPolyhedron->count_points;
-    memcpy(original_points, pPolyhedron->points, sizeof(original_points));
+    /* Only count_points entries are live in the heap block allocated by
+     * AllocateShapePolyhedron; copying the full 300-entry scratch array would
+     * over-read past the allocation (and the restore below would over-write
+     * it).  The retail 32-bit build gets away with the full copy because its
+     * allocator has enough slack. */
+    memcpy(original_points, pPolyhedron->points, original_count_points * sizeof(br_vector3));
     switch (ProcessTetrahedronPolyhedronCollisionShape(pPolyhedron, indices)) {
     case ePhysicsError_Ok: {
         int new_count_points;
@@ -6167,7 +6172,7 @@ tPhysicsError C2_NAKED C2_HOOK_FASTCALL ConvexHull3D(tCollision_shape_polyhedron
         tPhysicsError err;
 
         pPolyhedron->count_points = original_count_points;
-        memcpy(pPolyhedron->points, original_points, sizeof(original_points));
+        memcpy(pPolyhedron->points, original_points, original_count_points * sizeof(br_vector3));
         err = AddPolyhedronCollisionShapePlanes(pPolyhedron);
         if (err == ePhysicsError_Ok) {
             return ePhysicsError_WireFrameHasNoPoints;
@@ -17851,13 +17856,14 @@ int C2_HOOK_FASTCALL ClampObjectSpinTree(tPhysics_object* pObject);
 // UNLABELED DATA: CARMA2_HW 0x00692dd8
 int gINT_00692dd8 = 0;
 
-// UNLABELED: CARMA2_HW 0x004bd4f0
 // Universal-joint axis builder. FASTCALL: ecx = mA, edx = mB, stack args
 // (c0, p0, c1, p1, outA, outB), ret 0x18. Computes
 // outB = BrVector3Normalise(mB^T*(mA*c0) + p0), falling back to (1,0,0)
 // when |v| <= 2.3841858e-07f, then outA = mB^T*(mA*c1) reflected against
 // outB and against p0.
-extern void C2_HOOK_FASTCALL BuildUniversalJointAxes(br_matrix34* pMatA, br_matrix34* pMatB, br_vector3* pChild0, br_vector3* pParent0, br_vector3* pChild1, br_vector3* pParent1, br_vector3* pAxis, br_vector3* pNormal) {
+// FUNCTION: CARMA2_HW 0x004bd4f0
+extern void C2_NAKED C2_HOOK_FASTCALL BuildUniversalJointAxes(br_matrix34* pMatA, br_matrix34* pMatB, br_vector3* pChild0, br_vector3* pParent0, br_vector3* pChild1, br_vector3* pParent1, br_vector3* pAxis, br_vector3* pNormal) {
+#ifndef CARPOCALYPSE2_MATCHING
     br_vector3 v;
     br_vector3 t;
     float d;
@@ -17892,6 +17898,215 @@ extern void C2_HOOK_FASTCALL BuildUniversalJointAxes(br_matrix34* pMatA, br_matr
     pAxis->v[0] = pAxis->v[0] - d * pParent0->v[0];
     pAxis->v[1] = pAxis->v[1] - pParent0->v[1] * d;
     pAxis->v[2] = pAxis->v[2] - pParent0->v[2] * d;
+#else
+    __asm {
+            sub esp, 0x18
+            push ebx
+            push ebp
+            mov ebp, ecx
+            push esi
+            mov ecx, dword ptr [esp + 0x28]
+            push edi
+            lea eax, [esp + 0x10]
+            push ebp
+            push ecx
+            mov esi, edx
+            push eax
+            call BrMatrix34ApplyV
+            add esp, 0xc
+            lea edx, [esp + 0x10]
+            lea eax, [esp + 0x1c]
+            push esi
+            push edx
+            push eax
+            call BrMatrix34TApplyV
+            mov ebx, dword ptr [esp + 0x3c]
+            mov edi, dword ptr [esp + 0x4c]
+            fld dword ptr [esp + 0x28]
+            _emit 0xd8
+        _emit 0x03
+            fld dword ptr [esp + 0x2c]
+            fld dword ptr [esp + 0x30]
+            fxch st(2)
+            _emit 0xd9
+        _emit 0x1f
+            add esp, 0xc
+            fadd dword ptr [ebx + 4]
+            _emit 0xd9
+        _emit 0x07
+            fxch st(1)
+            fstp dword ptr [edi + 4]
+            fxch st(1)
+            fadd dword ptr [ebx + 8]
+            fld dword ptr [edi + 4]
+            fstp dword ptr [esp + 0x2c]
+            fst dword ptr [esp + 0x40]
+            fld dword ptr [esp + 0x2c]
+            fxch st(1)
+            fst dword ptr [esp + 0x30]
+            fxch st(1)
+            fmul dword ptr [esp + 0x2c]
+            fxch st(1)
+            fmul dword ptr [esp + 0x30]
+            fld st(2)
+            fmul st(0), st(3)
+            fxch st(1)
+            faddp st(2), st(0)
+            fld dword ptr [esp + 0x40]
+            fxch st(1)
+            faddp st(2), st(0)
+            fstp dword ptr [edi + 8]
+            fsqrt
+            fstp st(1)
+            fcom dword ptr [gFLOAT_0058a7fc]
+            fnstsw ax
+            test ah, 0x41
+            jne L004bd5b7
+            fdivr qword ptr [gDOUBLE_0058a780]
+            fld dword ptr [edi + 8]
+            fld dword ptr [edi + 4]
+            fld st(2)
+            _emit 0xd8
+        _emit 0x0f
+            fxch st(1)
+            fmul st(0), st(3)
+            fxch st(2)
+            fmul st(0), st(3)
+            fxch st(1)
+            _emit 0xd9
+        _emit 0x1f
+            fxch st(1)
+            fstp dword ptr [edi + 4]
+            fstp dword ptr [edi + 8]
+            fstp st(0)
+            jmp L004bd5c7
+    L004bd5b7:
+            xor eax, eax
+            mov dword ptr [edi], 0x3f800000
+            fstp st(0)
+            mov dword ptr [edi + 4], eax
+            mov dword ptr [edi + 8], eax
+    L004bd5c7:
+            mov edx, dword ptr [esp + 0x34]
+            push ebp
+            lea ecx, [esp + 0x14]
+            push edx
+            push ecx
+            call BrMatrix34ApplyV
+            add esp, 0xc
+            lea eax, [esp + 0x10]
+            push esi
+            mov esi, dword ptr [esp + 0x40]
+            push eax
+            push esi
+            call BrMatrix34TApplyV
+            fld dword ptr [edi + 8]
+            fld dword ptr [esi + 8]
+            _emit 0xd9
+        _emit 0x07
+            _emit 0xd8
+        _emit 0x0e
+            fld dword ptr [esi + 4]
+            fxch st(3)
+            fmulp st(2), st(0)
+            fxch st(1)
+            faddp st(1), st(0)
+            fxch st(1)
+            fmul dword ptr [edi + 4]
+            fld dword ptr [edi + 4]
+            fxch st(1)
+            faddp st(2), st(0)
+            fld dword ptr [edi + 8]
+            fxch st(2)
+            fadd st(0), st(0)
+            fld dword ptr [esi + 4]
+            fld dword ptr [esi + 8]
+            fxch st(2)
+            fstp dword ptr [esp + 0x38]
+            fxch st(2)
+            fmul dword ptr [esp + 0x38]
+            fld dword ptr [esp + 0x38]
+            fxch st(3)
+            fsub st(0), st(1)
+            fxch st(4)
+            fmul dword ptr [esp + 0x38]
+            fxch st(3)
+            _emit 0xd8
+        _emit 0x0f
+            fxch st(3)
+            fstp dword ptr [esp + 0x24]
+            fxch st(1)
+            fsub dword ptr [esp + 0x24]
+            fxch st(3)
+            fst dword ptr [esp + 0x38]
+            fxch st(2)
+            _emit 0xd8
+        _emit 0x2e
+            fxch st(3)
+            fst dword ptr [esp + 0x3c]
+            fxch st(3)
+            _emit 0xd9
+        _emit 0x1e
+            _emit 0xd9
+        _emit 0x06
+            fxch st(2)
+            fstp dword ptr [esi + 4]
+            fxch st(2)
+            fstp dword ptr [esi + 8]
+            fld dword ptr [ebx + 4]
+            fxch st(1)
+            _emit 0xd8
+        _emit 0x0b
+            fld dword ptr [ebx + 8]
+            fxch st(2)
+            fmul dword ptr [esp + 0x38]
+            fxch st(2)
+            fmul dword ptr [esp + 0x3c]
+            add esp, 0xc
+            fxch st(2)
+            faddp st(1), st(0)
+            fld dword ptr [ebx + 4]
+            fld dword ptr [ebx + 8]
+            fxch st(3)
+            faddp st(2), st(0)
+            fxch st(1)
+            fadd st(0), st(0)
+            pop edi
+            fst dword ptr [esp + 0x28]
+            _emit 0xd8
+        _emit 0x0b
+            fxch st(1)
+            fmul dword ptr [esp + 0x28]
+            fxch st(2)
+            fmul dword ptr [esp + 0x28]
+            fxch st(1)
+            _emit 0xd8
+        _emit 0x2e
+            fxch st(2)
+            fstp st(3)
+            fxch st(1)
+            _emit 0xd9
+        _emit 0x1e
+            fld dword ptr [esi + 8]
+            fld dword ptr [esi + 4]
+            fsub st(0), st(3)
+            fxch st(1)
+            fsub st(0), st(2)
+            fxch st(1)
+            fstp dword ptr [esi + 4]
+            fstp dword ptr [esi + 8]
+            pop esi
+            pop ebp
+            fstp st(0)
+            fstp st(0)
+            pop ebx
+            add esp, 0x18
+            ret 0x18
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // Joint-limit record emitter of the QuickHinge cluster. Signature:
@@ -18188,7 +18403,7 @@ extern int C2_NAKED C2_HOOK_FASTCALL CollectJointLimitsIntoBuffer(tPhysics_objec
             cmp eax, ebx
             mov dword ptr [esp + 0x10], eax
             jne L004bca4c
-            mov edx, offset gDisable_sound+0x8
+            mov edx, 0x676920
             mov ecx, 0xb
             call PhysicsError
     L004bca4c:
@@ -18213,7 +18428,7 @@ extern int C2_NAKED C2_HOOK_FASTCALL CollectJointLimitsIntoBuffer(tPhysics_objec
             je L004bccaa
             dec ecx
             je L004bcab3
-            mov edx, offset gDisable_sound+0x8
+            mov edx, 0x676920
             mov ecx, 8
             call PhysicsError
             jmp L004bcfa6
@@ -18235,7 +18450,7 @@ extern int C2_NAKED C2_HOOK_FASTCALL CollectJointLimitsIntoBuffer(tPhysics_objec
             push eax
             add edx, 0x2c
             add ecx, 0x2c
-            call L004bd4f0
+            call BuildUniversalJointAxes
             mov edx, dword ptr [ebp + 0x188]
             lea ecx, [ebx + edx]
             fld dword ptr [ecx + 0x88]
@@ -18269,7 +18484,7 @@ extern int C2_NAKED C2_HOOK_FASTCALL CollectJointLimitsIntoBuffer(tPhysics_objec
             push eax
             push ecx
             lea ecx, [ebp + 0x8c]
-            call L004bd4f0
+            call BuildUniversalJointAxes
             mov ecx, dword ptr [ebp + 0x188]
             fld dword ptr [ebx + ecx + 0x90]
             lea eax, [ebx + ecx]
@@ -18654,7 +18869,7 @@ extern int C2_NAKED C2_HOOK_FASTCALL CollectJointLimitsIntoBuffer(tPhysics_objec
             je L004bd244
             dec ecx
             je L004bd017
-            mov edx, offset gDisable_sound+0x8
+            mov edx, 0x676920
             mov ecx, 8
             call PhysicsError
             jmp L004bd487
@@ -18828,7 +19043,7 @@ extern int C2_NAKED C2_HOOK_FASTCALL CollectJointLimitsIntoBuffer(tPhysics_objec
             mov edx, dword ptr [esp + 0x84]
             xor ecx, ecx
             test edx, edx
-            mov dword ptr [gFLOAT_00692dd4+0x4], 1
+            mov dword ptr ds:[0x692dd8], 1
             mov dword ptr [esp + 0x24], ecx
             jle L004bd487
             mov eax, edi
@@ -19062,209 +19277,6 @@ extern int C2_NAKED C2_HOOK_FASTCALL CollectJointLimitsIntoBuffer(tPhysics_objec
             nop
             nop
             nop
-    L004bd4f0:
-            sub esp, 0x18
-            push ebx
-            push ebp
-            mov ebp, ecx
-            push esi
-            mov ecx, dword ptr [esp + 0x28]
-            push edi
-            lea eax, [esp + 0x10]
-            push ebp
-            push ecx
-            mov esi, edx
-            push eax
-            call BrMatrix34ApplyV
-            add esp, 0xc
-            lea edx, [esp + 0x10]
-            lea eax, [esp + 0x1c]
-            push esi
-            push edx
-            push eax
-            call BrMatrix34TApplyV
-            mov ebx, dword ptr [esp + 0x3c]
-            mov edi, dword ptr [esp + 0x4c]
-            fld dword ptr [esp + 0x28]
-            _emit 0xd8
-        _emit 0x03
-            fld dword ptr [esp + 0x2c]
-            fld dword ptr [esp + 0x30]
-            fxch st(2)
-            _emit 0xd9
-        _emit 0x1f
-            add esp, 0xc
-            fadd dword ptr [ebx + 4]
-            _emit 0xd9
-        _emit 0x07
-            fxch st(1)
-            fstp dword ptr [edi + 4]
-            fxch st(1)
-            fadd dword ptr [ebx + 8]
-            fld dword ptr [edi + 4]
-            fstp dword ptr [esp + 0x2c]
-            fst dword ptr [esp + 0x40]
-            fld dword ptr [esp + 0x2c]
-            fxch st(1)
-            fst dword ptr [esp + 0x30]
-            fxch st(1)
-            fmul dword ptr [esp + 0x2c]
-            fxch st(1)
-            fmul dword ptr [esp + 0x30]
-            fld st(2)
-            fmul st(0), st(3)
-            fxch st(1)
-            faddp st(2), st(0)
-            fld dword ptr [esp + 0x40]
-            fxch st(1)
-            faddp st(2), st(0)
-            fstp dword ptr [edi + 8]
-            fsqrt
-            fstp st(1)
-            fcom dword ptr [gFLOAT_0058a7fc]
-            fnstsw ax
-            test ah, 0x41
-            jne L004bd5b7
-            fdivr qword ptr [gDOUBLE_0058a780]
-            fld dword ptr [edi + 8]
-            fld dword ptr [edi + 4]
-            fld st(2)
-            _emit 0xd8
-        _emit 0x0f
-            fxch st(1)
-            fmul st(0), st(3)
-            fxch st(2)
-            fmul st(0), st(3)
-            fxch st(1)
-            _emit 0xd9
-        _emit 0x1f
-            fxch st(1)
-            fstp dword ptr [edi + 4]
-            fstp dword ptr [edi + 8]
-            fstp st(0)
-            jmp L004bd5c7
-    L004bd5b7:
-            xor eax, eax
-            mov dword ptr [edi], 0x3f800000
-            fstp st(0)
-            mov dword ptr [edi + 4], eax
-            mov dword ptr [edi + 8], eax
-    L004bd5c7:
-            mov edx, dword ptr [esp + 0x34]
-            push ebp
-            lea ecx, [esp + 0x14]
-            push edx
-            push ecx
-            call BrMatrix34ApplyV
-            add esp, 0xc
-            lea eax, [esp + 0x10]
-            push esi
-            mov esi, dword ptr [esp + 0x40]
-            push eax
-            push esi
-            call BrMatrix34TApplyV
-            fld dword ptr [edi + 8]
-            fld dword ptr [esi + 8]
-            _emit 0xd9
-        _emit 0x07
-            _emit 0xd8
-        _emit 0x0e
-            fld dword ptr [esi + 4]
-            fxch st(3)
-            fmulp st(2), st(0)
-            fxch st(1)
-            faddp st(1), st(0)
-            fxch st(1)
-            fmul dword ptr [edi + 4]
-            fld dword ptr [edi + 4]
-            fxch st(1)
-            faddp st(2), st(0)
-            fld dword ptr [edi + 8]
-            fxch st(2)
-            fadd st(0), st(0)
-            fld dword ptr [esi + 4]
-            fld dword ptr [esi + 8]
-            fxch st(2)
-            fstp dword ptr [esp + 0x38]
-            fxch st(2)
-            fmul dword ptr [esp + 0x38]
-            fld dword ptr [esp + 0x38]
-            fxch st(3)
-            fsub st(0), st(1)
-            fxch st(4)
-            fmul dword ptr [esp + 0x38]
-            fxch st(3)
-            _emit 0xd8
-        _emit 0x0f
-            fxch st(3)
-            fstp dword ptr [esp + 0x24]
-            fxch st(1)
-            fsub dword ptr [esp + 0x24]
-            fxch st(3)
-            fst dword ptr [esp + 0x38]
-            fxch st(2)
-            _emit 0xd8
-        _emit 0x2e
-            fxch st(3)
-            fst dword ptr [esp + 0x3c]
-            fxch st(3)
-            _emit 0xd9
-        _emit 0x1e
-            _emit 0xd9
-        _emit 0x06
-            fxch st(2)
-            fstp dword ptr [esi + 4]
-            fxch st(2)
-            fstp dword ptr [esi + 8]
-            fld dword ptr [ebx + 4]
-            fxch st(1)
-            _emit 0xd8
-        _emit 0x0b
-            fld dword ptr [ebx + 8]
-            fxch st(2)
-            fmul dword ptr [esp + 0x38]
-            fxch st(2)
-            fmul dword ptr [esp + 0x3c]
-            add esp, 0xc
-            fxch st(2)
-            faddp st(1), st(0)
-            fld dword ptr [ebx + 4]
-            fld dword ptr [ebx + 8]
-            fxch st(3)
-            faddp st(2), st(0)
-            fxch st(1)
-            fadd st(0), st(0)
-            pop edi
-            fst dword ptr [esp + 0x28]
-            _emit 0xd8
-        _emit 0x0b
-            fxch st(1)
-            fmul dword ptr [esp + 0x28]
-            fxch st(2)
-            fmul dword ptr [esp + 0x28]
-            fxch st(1)
-            _emit 0xd8
-        _emit 0x2e
-            fxch st(2)
-            fstp st(3)
-            fxch st(1)
-            _emit 0xd9
-        _emit 0x1e
-            fld dword ptr [esi + 8]
-            fld dword ptr [esi + 4]
-            fsub st(0), st(3)
-            fxch st(1)
-            fsub st(0), st(2)
-            fxch st(1)
-            fstp dword ptr [esi + 4]
-            fstp dword ptr [esi + 8]
-            pop esi
-            pop ebp
-            fstp st(0)
-            fstp st(0)
-            pop ebx
-            add esp, 0x18
-            ret 0x18
     }
 #endif
 }
@@ -20209,7 +20221,6 @@ static int C2_HOOK_FASTCALL GenerateObjectObjectContacts(tPhysics_object* pObjec
     return 1;
 }
 
-// UNLABELED: CARMA2_HW 0x004bd9e0
 // Contact-generation glue for one object: refreshes the faces in its box,
 // appends track-face contacts (0x4228b0), then walks the overlap list built by
 // QuickHingeCollect, appending object-object contacts (0x425ca0) and waking the
@@ -20217,7 +20228,9 @@ static int C2_HOOK_FASTCALL GenerateObjectObjectContacts(tPhysics_object* pObjec
 // (0x188) recurse over the subset of the list overlapping their 0x10c box.
 // gReduced_object_list/gINT_006940ac (0x6940a8/0x6940ac) are only live around
 // GetFacesInBox. Returns the running contact count.
-static int C2_HOOK_FASTCALL QuickHingeGen(tPhysics_object* pObject, tPhysics_object** ppPartner_list, tCollision_contact* pContacts, int pCount, tWorld_callbacks* pCallbacks, tPhysics_object* pHead) {
+// FUNCTION: CARMA2_HW 0x004bd9e0
+static int C2_NAKED C2_HOOK_FASTCALL QuickHingeGen(tPhysics_object* pObject, tPhysics_object** ppPartner_list, tCollision_contact* pContacts, int pCount, tWorld_callbacks* pCallbacks, tPhysics_object* pHead) {
+#ifndef CARPOCALYPSE2_MATCHING
     tPhysics_object* partner;
     tPhysics_object* child;
     tPhysics_object* node;
@@ -20300,6 +20313,359 @@ static int C2_HOOK_FASTCALL QuickHingeGen(tPhysics_object* pObject, tPhysics_obj
         pCount = QuickHingeGen(child, slot, pContacts, pCount, pCallbacks, pHead);
     }
     return pCount;
+#else
+    __asm {
+    L004bd9e0:
+            sub esp, 8
+            push ebx
+            push ebp
+            push esi
+            push edi
+            mov esi, edx
+            mov edi, ecx
+            mov dword ptr [gReduced_object_list], esi
+            mov dword ptr [esp + 0x10], esi
+            fld dword ptr [edi + 0x1b4]
+            fld dword ptr [edi + 0x1b8]
+            fld dword ptr [edi + 0x1bc]
+            fxch st(2)
+            fst dword ptr [esp + 0x14]
+            fld st(1)
+            fxch st(1)
+            fmul dword ptr [esp + 0x14]
+            fxch st(1)
+            fmul st(0), st(2)
+            fxch st(3)
+            fst dword ptr [esp + 0x14]
+            fmul dword ptr [esp + 0x14]
+            fxch st(3)
+            faddp st(1), st(0)
+            fxch st(2)
+            faddp st(2), st(0)
+            fxch st(1)
+            fcomp dword ptr [gFLOAT_0058a768]
+            fnstsw ax
+            test ah, 0x40
+            fstp st(0)
+            je L004bda4a
+            mov dword ptr [gINT_006940ac], 1
+            xor ebx, ebx
+            jmp L004bda52
+    L004bda4a:
+            xor ebx, ebx
+            mov dword ptr [gINT_006940ac], ebx
+    L004bda52:
+            mov edx, dword ptr [esp + 0x24]
+            mov ecx, edi
+            call GetFacesInBox
+            mov edx, dword ptr [esp + 0x1c]
+            mov dword ptr [gReduced_object_list], ebx
+            mov dword ptr [gINT_006940ac], ebx
+            mov ebx, dword ptr [esp + 0x20]
+            push ebx
+            mov ecx, edi
+            call CollectPlacementFaces
+            mov ebp, eax
+            test ebp, ebp
+            je L004bdb30
+            cmp dword ptr [edi + 0xf0], 2
+            jne L004bdb26
+            mov ecx, dword ptr [edi + 0x228]
+            lea eax, [edi + 0x228]
+            test ecx, ecx
+            mov esi, edi
+            je L004bdac3
+    L004bdaa2:
+            mov ecx, dword ptr [esi + 0x188]
+            test ecx, ecx
+            je L004bdac3
+            cmp dword ptr [ecx], 0
+            je L004bdac3
+            mov esi, dword ptr [eax]
+            mov ecx, dword ptr [esi + 0x228]
+            lea eax, [esi + 0x228]
+            test ecx, ecx
+            jne L004bdaa2
+    L004bdac3:
+            mov ebx, dword ptr [esi + 0x224]
+            mov dword ptr [esi + 0xf0], 0
+            test ebx, ebx
+            je L004bdaea
+    L004bdad7:
+            xor edx, edx
+            mov ecx, ebx
+            call SetFieldF0Tree
+            mov ebx, dword ptr [ebx + 0x220]
+            test ebx, ebx
+            jne L004bdad7
+    L004bdaea:
+            mov eax, dword ptr [esp + 0x24]
+            test eax, eax
+            je L004bdaff
+            mov eax, dword ptr [eax + 0x1c]
+            test eax, eax
+            je L004bdaff
+            xor edx, edx
+            mov ecx, esi
+            call eax
+    L004bdaff:
+            mov eax, dword ptr [esi + 0x224]
+            test eax, eax
+            jne L004bdb13
+            mov eax, dword ptr [esi + 0x18c]
+            test eax, eax
+            je L004bdb26
+    L004bdb13:
+            mov eax, dword ptr [esi + 0x218]
+            test eax, eax
+            jne L004bdb26
+            push 0
+            mov ecx, esi
+            call MoveJointedObject
+    L004bdb26:
+            mov ebx, dword ptr [esp + 0x20]
+            mov esi, dword ptr [esp + 0x10]
+            add ebx, ebp
+    L004bdb30:
+            mov ebp, dword ptr [esi]
+            mov dword ptr [esp + 0x20], ebx
+            test ebp, ebp
+            je L004bdd0b
+    L004bdb3e:
+            cmp ebp, edi
+            je L004bdcfd
+            mov al, byte ptr [edi + 0x1dc]
+            test al, al
+            je L004bdb60
+            cmp byte ptr [ebp + 0x1dc], al
+            jne L004bdb60
+            cmp ebp, edi
+            jbe L004bdcfd
+    L004bdb60:
+            cmp dword ptr [edi + 0x228], ebp
+            je L004bdcfd
+            cmp dword ptr [ebp + 0x228], edi
+            je L004bdcfd
+            mov eax, dword ptr [ebp + 0x1a4]
+            mov ecx, dword ptr [edi + 0x1a0]
+            test eax, ecx
+            jne L004bdbae
+            mov ecx, dword ptr [ebp + 0x1a0]
+            mov eax, dword ptr [edi + 0x1a4]
+            test ecx, eax
+            jne L004bdbae
+            test byte ptr [edi + 0x19c], 4
+            jne L004bdbae
+            test byte ptr [ebp + 0x19c], 4
+            jne L004bdbae
+            xor eax, eax
+            jmp L004bdbb3
+    L004bdbae:
+            mov eax, 1
+    L004bdbb3:
+            test eax, eax
+            jne L004bdcfd
+            mov edx, dword ptr [esp + 0x1c]
+            push ebx
+            push edx
+            mov edx, ebp
+            mov ecx, edi
+            call FUN_00425ca0
+            test eax, eax
+            mov dword ptr [esp + 0x14], eax
+            je L004bdcfd
+            mov eax, dword ptr [edi + 0xf0]
+            mov ebx, 2
+            cmp eax, ebx
+            jne L004bdc55
+            mov eax, dword ptr [edi + 0x228]
+            mov esi, edi
+            test eax, eax
+            je L004bdc10
+    L004bdbf1:
+            mov eax, dword ptr [esi + 0x188]
+            test eax, eax
+            je L004bdc10
+            cmp dword ptr [eax], 0
+            je L004bdc10
+            mov esi, dword ptr [esi + 0x228]
+            mov eax, dword ptr [esi + 0x228]
+            test eax, eax
+            jne L004bdbf1
+    L004bdc10:
+            xor edx, edx
+            mov ecx, esi
+            call SetFieldF0Tree
+            mov eax, dword ptr [esp + 0x24]
+            test eax, eax
+            je L004bdc2e
+            mov eax, dword ptr [eax + 0x1c]
+            test eax, eax
+            je L004bdc2e
+            mov edx, ebp
+            mov ecx, esi
+            call eax
+    L004bdc2e:
+            mov eax, dword ptr [esi + 0x224]
+            test eax, eax
+            jne L004bdc42
+            mov eax, dword ptr [esi + 0x18c]
+            test eax, eax
+            je L004bdc55
+    L004bdc42:
+            mov eax, dword ptr [esi + 0x218]
+            test eax, eax
+            jne L004bdc55
+            push 0
+            mov ecx, esi
+            call MoveJointedObject
+    L004bdc55:
+            cmp dword ptr [ebp + 0xf0], ebx
+            jne L004bdccd
+            mov eax, dword ptr [ebp + 0x228]
+            mov esi, ebp
+            test eax, eax
+            je L004bdc88
+    L004bdc69:
+            mov eax, dword ptr [esi + 0x188]
+            test eax, eax
+            je L004bdc88
+            cmp dword ptr [eax], 0
+            je L004bdc88
+            mov esi, dword ptr [esi + 0x228]
+            mov eax, dword ptr [esi + 0x228]
+            test eax, eax
+            jne L004bdc69
+    L004bdc88:
+            xor edx, edx
+            mov ecx, esi
+            call SetFieldF0Tree
+            mov eax, dword ptr [esp + 0x24]
+            test eax, eax
+            je L004bdca6
+            mov eax, dword ptr [eax + 0x1c]
+            test eax, eax
+            je L004bdca6
+            mov edx, edi
+            mov ecx, esi
+            call eax
+    L004bdca6:
+            mov eax, dword ptr [esi + 0x224]
+            test eax, eax
+            jne L004bdcba
+            mov eax, dword ptr [esi + 0x18c]
+            test eax, eax
+            je L004bdccd
+    L004bdcba:
+            mov eax, dword ptr [esi + 0x218]
+            test eax, eax
+            jne L004bdccd
+            push 0
+            mov ecx, esi
+            call MoveJointedObject
+    L004bdccd:
+            mov al, byte ptr [ebp + 0xec]
+            test al, al
+            je L004bdce2
+            mov edx, dword ptr [esp + 0x28]
+            mov ecx, ebp
+            call FUN_004be0e0
+    L004bdce2:
+            mov edx, ebp
+            mov ecx, edi
+            call FUN_004bddd0
+            mov ebx, dword ptr [esp + 0x20]
+            mov eax, dword ptr [esp + 0x14]
+            mov esi, dword ptr [esp + 0x10]
+            add ebx, eax
+            mov dword ptr [esp + 0x20], ebx
+    L004bdcfd:
+            mov ebp, dword ptr [ebp + 0x234]
+            test ebp, ebp
+            jne L004bdb3e
+    L004bdd0b:
+            mov dword ptr [esp + 0x20], ebx
+            mov ebx, dword ptr [edi + 0x224]
+            test ebx, ebx
+            je L004bddb4
+            jmp L004bdd23
+    L004bdd1f:
+            mov esi, dword ptr [esp + 0x10]
+    L004bdd23:
+            mov eax, dword ptr [ebx + 0x188]
+            test eax, eax
+            je L004bdda6
+            cmp dword ptr [eax], 0
+            je L004bdda6
+            mov edi, esi
+            mov esi, dword ptr [esi]
+            test esi, esi
+            lea ebp, [esp + 0x14]
+            je L004bdd78
+    L004bdd3e:
+            cmp esi, ebx
+            je L004bdd5f
+            lea edx, [esi + 0x10c]
+            lea ecx, [ebx + 0x10c]
+            call BoundsOverlapTest__finteray
+            test eax, eax
+            jne L004bdd5f
+            lea edi, [esi + 0x234]
+            jmp L004bdd72
+    L004bdd5f:
+            mov ecx, dword ptr [esi + 0x234]
+            lea eax, [esi + 0x234]
+            mov dword ptr [edi], ecx
+            mov dword ptr [ebp], esi
+            mov ebp, eax
+    L004bdd72:
+            mov esi, dword ptr [edi]
+            test esi, esi
+            jne L004bdd3e
+    L004bdd78:
+            mov eax, dword ptr [esp + 0x28]
+            mov ecx, dword ptr [esp + 0x24]
+            mov dword ptr [ebp], 0
+            mov edx, dword ptr [esp + 0x14]
+            mov dword ptr [edi], edx
+            mov edx, dword ptr [esp + 0x20]
+            push eax
+            mov eax, dword ptr [esp + 0x20]
+            push ecx
+            push edx
+            push eax
+            mov edx, edi
+            mov ecx, ebx
+            call L004bd9e0
+            mov dword ptr [esp + 0x20], eax
+    L004bdda6:
+            mov ebx, dword ptr [ebx + 0x220]
+            test ebx, ebx
+            jne L004bdd1f
+    L004bddb4:
+            mov eax, dword ptr [esp + 0x20]
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 8
+            ret 0x10
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 static void ResetObjectAndChildren(tPhysics_object* pObject);
@@ -31034,7 +31400,7 @@ void C2_HOOK_FASTCALL ResetMan(void) {
     PositionChildren(gUnknown_006923d8);
 }
 
-// UNLABELED: CARMA2_HW 0x004b5c00
+// FUNCTION: CARMA2_HW 0x004b5c00
 void C2_HOOK_FASTCALL ResetMan2(tPhysics_object* pObject) {
 
     while (pObject != NULL) {

@@ -436,7 +436,7 @@ void C2_NAKED C2_HOOK_STDCALL FUN_0056a940(Movie pMovie) {
 #endif
 }
 
-// FUNCTION: CARMA2_HW 0x0056abe0
+/* QuickTime trap wrapper; the matching annotation lives in external/dummyqt/src/dummy.c. */
 OSErr C2_HOOK_CDECL FUN_0056abe0(short pResource_file) {
 #ifdef _WIN32
     if (gQuickTime_trap_callback != NULL) {
@@ -448,7 +448,7 @@ OSErr C2_HOOK_CDECL FUN_0056abe0(short pResource_file) {
 #endif
 }
 
-// FUNCTION: CARMA2_HW 0x0056b240
+/* QuickTime trap wrapper; the matching annotation lives in external/dummyqt/src/dummy.c. */
 TimeValue C2_HOOK_STDCALL FUN_0056b240(Media pMedia) {
 #ifdef _WIN32
     if (gQuickTime_trap_callback != NULL) {
@@ -484,7 +484,7 @@ unsigned int C2_NAKED C2_HOOK_CDECL FUN_0056b260(void) {
 #endif
 }
 
-// FUNCTION: CARMA2_HW 0x0056b360
+/* QuickTime trap wrapper; the matching annotation lives in external/dummyqt/src/dummy.c. */
 OSErr C2_HOOK_CDECL FUN_0056b360(Media pMedia) {
 #ifdef _WIN32
     if (gQuickTime_trap_callback != NULL) {
@@ -544,7 +544,7 @@ unsigned int C2_NAKED C2_HOOK_CDECL FUN_0056b460(void) {
 #endif
 }
 
-// FUNCTION: CARMA2_HW 0x0056baa0
+/* QuickTime trap wrapper; the matching annotation lives in external/dummyqt/src/dummy.c. */
 OSErr C2_HOOK_CDECL FUN_0056baa0(short pResource_file) {
 #ifdef _WIN32
     if (gQuickTime_trap_callback != NULL) {
@@ -580,7 +580,7 @@ unsigned int C2_NAKED C2_HOOK_CDECL FUN_0056bac0(void) {
 #endif
 }
 
-// FUNCTION: CARMA2_HW 0x0056c600
+/* QuickTime trap wrapper; the matching annotation lives in external/dummyqt/src/dummy.c. */
 OSErr C2_HOOK_CDECL FUN_0056c600(Track pTrack, TimeValue pTrack_start, TimeValue pMedia_time, TimeValue pMedia_duration, Fixed pMedia_rate) {
 #ifdef _WIN32
     if (gQuickTime_trap_callback != NULL) {
@@ -616,7 +616,7 @@ unsigned int C2_NAKED C2_HOOK_CDECL FUN_0056c620(void) {
 #endif
 }
 
-// FUNCTION: CARMA2_HW 0x0056c800
+/* QuickTime trap wrapper; the matching annotation lives in external/dummyqt/src/dummy.c. */
 Movie C2_HOOK_CDECL FUN_0056c800(Movie pMovie, long pFlatten_flags, const FSSpec* pFile, OSType pCreator, ScriptCode pScript, long pCreate_flags) {
 #ifdef _WIN32
     if (gQuickTime_trap_callback != NULL) {
@@ -653,7 +653,7 @@ unsigned int C2_NAKED C2_HOOK_CDECL FUN_0056d800(void) {
 #endif
 }
 
-// FUNCTION: CARMA2_HW 0x0056dac0
+/* QuickTime trap wrapper; the matching annotation lives in external/dummyqt/src/dummy.c. */
 OSErr C2_HOOK_CDECL FUN_0056dac0(ImageSequence pSequence) {
 #ifdef _WIN32
     if (gQuickTime_trap_callback != NULL) {
@@ -665,7 +665,7 @@ OSErr C2_HOOK_CDECL FUN_0056dac0(ImageSequence pSequence) {
 #endif
 }
 
-// FUNCTION: CARMA2_HW 0x00570ac0
+/* QuickTime trap wrapper; the matching annotation lives in external/dummyqt/src/dummy.c. */
 void C2_HOOK_CDECL FUN_00570ac0(Handle pHandle) {
 #ifdef _WIN32
     if (gQuickTime_trap_callback != NULL) {
@@ -676,7 +676,7 @@ void C2_HOOK_CDECL FUN_00570ac0(Handle pHandle) {
 #endif
 }
 
-// FUNCTION: CARMA2_HW 0x00575340
+/* QuickTime trap wrapper; the matching annotation lives in external/dummyqt/src/dummy.c. */
 unsigned int C2_HOOK_CDECL FUN_00575340(void) {
 #ifdef _WIN32
     if (gQuickTime_trap_callback != NULL) {

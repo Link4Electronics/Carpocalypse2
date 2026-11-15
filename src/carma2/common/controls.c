@@ -6853,7 +6853,7 @@ void C2_HOOK_FASTCALL ShowCurrentJoystickName(void) {
 #endif
 }
 
-// UNLABELED: CARMA2_HW 0x0045c240
+// FUNCTION: CARMA2_HW 0x0045c240
 void C2_HOOK_FASTCALL FUN_0045c240(void) {
     tHeadup_text* text;
     int i;

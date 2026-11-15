@@ -2377,7 +2377,8 @@ void C2_NAKED C2_HOOK_FASTCALL FRONTEND_CreateMenuButton(tFrontend_brender_item*
 }
 
 // FUNCTION: CARMA2_HW 0x0046c970
-int C2_HOOK_FASTCALL FRONTEND_CreateMenu(tFrontend_spec* pFrontend_spec) {
+int C2_NAKED C2_HOOK_FASTCALL FRONTEND_CreateMenu(tFrontend_spec* pFrontend_spec) {
+#ifndef CARPOCALYPSE2_MATCHING
     char s[256];
     char s2[256];
     const char* name;
@@ -2480,6 +2481,261 @@ int C2_HOOK_FASTCALL FRONTEND_CreateMenu(tFrontend_spec* pFrontend_spec) {
     sprintf(s, "END OF FRONTEND_CreateMenu for menu \'%s\'", pFrontend_spec->name);
     PrintMemoryDump(0, s);
     return 1;
+#else
+    __asm {
+            sub esp, 0x204
+            push ebx
+            push ebp
+            push esi
+            mov esi, ecx
+            push edi
+            push esi
+            lea eax, [esp + 0x118]
+            push 0x655854
+            push eax
+            mov dword ptr [esp + 0x1c], esi
+            call sprintf
+            add esp, 0xc
+            lea edx, [esp + 0x114]
+            xor ecx, ecx
+            call PrintMemoryDump
+            mov eax, dword ptr [esi + 0x108]
+            test eax, eax
+            je L0046c9b2
+            mov ecx, esi
+            call eax
+    L0046c9b2:
+            mov dword ptr [gFrontend_count_brender_items], 0
+            mov eax, dword ptr [esi + 0x104]
+            inc eax
+            lea ebx, [esi + 0xae24]
+            lea ebp, [eax - 1]
+            mov eax, dword ptr [esi + 0x11c]
+            and eax, 2
+            test ebx, ebx
+            je L0046cba9
+            mov edi, ebx
+            or ecx, 0xffffffff
+            xor eax, eax
+            repne scasb
+            not ecx
+            dec ecx
+            je L0046cba9
+            mov eax, dword ptr [gFrontend_remove_current_backdrop]
+            test eax, eax
+            jne L0046caae
+            push 0x6556f0
+            mov edx, offset gApplication_path
+            lea ecx, [esp + 0x18]
+            call PathCat
+            lea edx, [esp + 0x14]
+            lea ecx, [esp + 0x14]
+            push 0x655848
+            call PathCat
+            mov edi, ebx
+            or ecx, 0xffffffff
+            xor eax, eax
+            lea edx, [esp + 0x114]
+            repne scasb
+            not ecx
+            sub edi, ecx
+            mov eax, ecx
+            mov esi, edi
+            mov edi, edx
+            lea edx, [esp + 0x114]
+            shr ecx, 2
+            rep movsd
+            mov ecx, eax
+            xor eax, eax
+            and ecx, 3
+            sub edx, 4
+            rep movsb
+            lea edi, [esp + 0x114]
+            or ecx, 0xffffffff
+            repne scasb
+            not ecx
+            dec ecx
+            mov byte ptr [ecx + edx], al
+            lea eax, [esp + 0x114]
+            push eax
+            lea edx, [esp + 0x18]
+            lea ecx, [esp + 0x18]
+            call PathCat
+            lea ecx, [esp + 0x14]
+            call OpenPackFileAndSetTiffLoading
+            mov edx, ebx
+            lea ecx, [esp + 0x14]
+            mov esi, eax
+            call GetThisFuckingPixelmapPleaseMrTwatter
+            mov ecx, esi
+            mov dword ptr [gFrontend_backdrop], eax
+            call ClosePackFileAndSetTiffLoading
+            mov eax, dword ptr [gFrontend_backdrop]
+            test eax, eax
+            jne L0046cb8b
+            jmp L0046cb7c
+    L0046caae:
+            mov eax, dword ptr [gFrontend_backdrop]
+            test eax, eax
+            je L0046cba9
+            push eax
+            call BrMapRemove
+            mov edx, dword ptr [gFrontend_backdrop]
+            add esp, 4
+            push edx
+            call BrPixelmapFree
+            add esp, 4
+            mov edx, offset gApplication_path
+            lea ecx, [esp + 0x14]
+            push 0x6556f0
+            call PathCat
+            lea edx, [esp + 0x14]
+            lea ecx, [esp + 0x14]
+            push 0x655848
+            call PathCat
+            mov edi, ebx
+            or ecx, 0xffffffff
+            xor eax, eax
+            lea edx, [esp + 0x114]
+            repne scasb
+            not ecx
+            sub edi, ecx
+            mov eax, ecx
+            mov esi, edi
+            mov edi, edx
+            lea edx, [esp + 0x114]
+            shr ecx, 2
+            rep movsd
+            mov ecx, eax
+            xor eax, eax
+            and ecx, 3
+            sub edx, 4
+            rep movsb
+            lea edi, [esp + 0x114]
+            or ecx, 0xffffffff
+            repne scasb
+            not ecx
+            dec ecx
+            mov byte ptr [ecx + edx], al
+            lea eax, [esp + 0x114]
+            push eax
+            lea edx, [esp + 0x18]
+            lea ecx, [esp + 0x18]
+            call PathCat
+            lea ecx, [esp + 0x14]
+            call OpenPackFileAndSetTiffLoading
+            mov edx, ebx
+            lea ecx, [esp + 0x14]
+            mov esi, eax
+            call GetThisFuckingPixelmapPleaseMrTwatter
+            mov ecx, esi
+            mov dword ptr [gFrontend_backdrop], eax
+            call ClosePackFileAndSetTiffLoading
+            mov eax, dword ptr [gFrontend_backdrop]
+            test eax, eax
+            jne L0046cb8b
+    L0046cb7c:
+            push 0
+            push 0x655818
+            call BrFailure
+            add esp, 8
+    L0046cb8b:
+            mov ecx, dword ptr [gFrontend_backdrop]
+            call PixelmapSwapByteOrder
+            mov ecx, dword ptr [gFrontend_backdrop]
+            push ecx
+            call BrMapAdd
+            mov esi, dword ptr [esp + 0x14]
+            add esp, 4
+    L0046cba9:
+            call StartMouseCursor
+            xor edi, edi
+            test ebp, ebp
+            jle L0046cc3f
+            mov eax, dword ptr [gFrontend_count_brender_items]
+            add esi, 0x189
+    L0046cbc3:
+            mov ecx, dword ptr [esi - 0x29]
+            test ecx, ecx
+            je L0046cbd3
+            mov ecx, dword ptr [ecx*4 + gFrontend_images]
+            jmp L0046cbd5
+    L0046cbd3:
+            xor ecx, ecx
+    L0046cbd5:
+            mov edx, dword ptr [gFrontend_selected_item_index]
+            push esi
+            cmp edi, edx
+            push ecx
+            jne L0046cbf9
+            mov edx, dword ptr [gFrontend_some_color]
+            mov cx, word ptr [esi - 0x35]
+            push edx
+            mov dx, word ptr [esi - 0x39]
+            push ecx
+            mov cx, word ptr [esi - 0x3d]
+            push edx
+            push ecx
+            jmp L0046cc0f
+    L0046cbf9:
+            mov ecx, dword ptr [gFrontend_some_color]
+            mov dx, word ptr [esi - 0x35]
+            push ecx
+            mov cx, word ptr [esi - 0x39]
+            push edx
+            mov dx, word ptr [esi - 0x3d]
+            push ecx
+            push edx
+    L0046cc0f:
+            mov dx, word ptr [esi - 0x41]
+            lea ecx, [eax + eax*4]
+            lea eax, [eax + ecx*2]
+            lea ecx, [eax*4 + gFrontend_brender_items]
+            call FRONTEND_CreateMenuButton
+            mov eax, dword ptr [gFrontend_count_brender_items]
+            add esi, 0x158
+            inc eax
+            inc edi
+            cmp edi, ebp
+            mov dword ptr [gFrontend_count_brender_items], eax
+            jl L0046cbc3
+            mov esi, dword ptr [esp + 0x10]
+    L0046cc3f:
+            call PDGetTotalTime
+            mov ecx, dword ptr [gFrontend_some_color]
+            xor edx, edx
+            push 0x676920
+            push 0
+            push ecx
+            push 0
+            push 0
+            push 0
+            mov ecx, 0x68834c
+            mov dword ptr [gFrontend_time_last_input], eax
+            call FRONTEND_CreateMenuButton
+            mov edx, dword ptr [gMouse_in_use]
+            lea eax, [esp + 0x114]
+            neg edx
+            sbb edx, edx
+            push esi
+            and edx, 0x63
+            push 0x6557ec
+            push eax
+            mov dword ptr [gFrontend_selected_item_index], edx
+            call sprintf
+            add esp, 0xc
+            lea edx, [esp + 0x114]
+            xor ecx, ecx
+            call PrintMemoryDump
+            mov eax, 1
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x204
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0046ccb0
@@ -9592,7 +9848,8 @@ int C2_NAKED C2_HOOK_FASTCALL Controls_Infunc(tFrontend_spec* pFrontend) {
 
 // FUNCTION: CARMA2_HW 0x00472a30
 
-int C2_HOOK_FASTCALL Controls_Outfunc(tFrontend_spec* pFrontend) {
+int C2_NAKED C2_HOOK_FASTCALL Controls_Outfunc(tFrontend_spec* pFrontend) {
+#ifndef CARPOCALYPSE2_MATCHING
     int i;
 
     Generic_Outfunc(pFrontend);
@@ -9601,6 +9858,81 @@ int C2_HOOK_FASTCALL Controls_Outfunc(tFrontend_spec* pFrontend) {
     }
     SaveKeyMapping();
     return 1;
+#else
+    __asm {
+            sub esp, 0x100
+            push esi
+            push edi
+            mov esi, offset gKey_names
+    L00472a3d:
+            mov eax, dword ptr [esi]
+            push eax
+            call BrMemFree
+            add esi, 4
+            add esp, 4
+            cmp esi, offset gFrontend_C_model_to
+            jl L00472a3d
+            push 0x655ab8
+            mov edx, offset gApplication_path
+            lea ecx, [esp + 0xc]
+            call PathCat
+            mov dl, byte ptr [gKey_map_index]
+            lea edi, [esp + 8]
+            or ecx, 0xffffffff
+            xor eax, eax
+            add dl, 0x30
+            repne scasb
+            not ecx
+            lea eax, [esp + 8]
+            dec ecx
+            sub eax, 5
+            mov byte ptr [ecx + eax], dl
+            lea ecx, [esp + 8]
+            call PDFileUnlock
+            mov edx, 0x655ab4
+            lea ecx, [esp + 8]
+            call DRfopen
+            mov esi, eax
+            test esi, esi
+            jne L00472aae
+            push 9
+            call FatalError
+            add esp, 4
+    L00472aae:
+            mov edi, offset gKey_mapping
+    L00472ab3:
+            mov ecx, dword ptr [edi]
+            push ecx
+            push 0x58f418
+            push esi
+            call fprintf
+            add esp, 0xc
+            push esi
+            push 0xd
+            call fputc
+            add esp, 8
+            push esi
+            push 0xa
+            call fputc
+            add edi, 4
+            add esp, 8
+            cmp edi, 0x74b714
+            jl L00472ab3
+            mov ecx, esi
+            call PFfclose
+            mov eax, 1
+            pop edi
+            pop esi
+            add esp, 0x100
+            ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00472400
@@ -9618,13 +9950,133 @@ int C2_HOOK_FASTCALL Controls_JoystickDpadToggle(tFrontend_spec* pFrontend) {
 
 // FUNCTION: CARMA2_HW 0x00472440
 
-int C2_HOOK_FASTCALL Controls_SwitchKeymapSet(tFrontend_spec* pFrontend) {
+int C2_NAKED C2_HOOK_FASTCALL Controls_SwitchKeymapSet(tFrontend_spec* pFrontend) {
+#ifndef CARPOCALYPSE2_MATCHING
 
     ChangeKeyMapIndex(gFrontend_selected_item_index - 39);
     SelectThisItemIn(pFrontend, 2, gKey_map_index + 39);
     RefreshScrollSet(pFrontend);
     FuckWithWidths(pFrontend);
     return 0;
+#else
+    __asm {
+            mov eax, dword ptr [gFrontend_selected_item_index]
+            sub esp, 0x100
+            mov edx, offset gApplication_path
+            push ebx
+            push ebp
+            push esi
+            mov ebx, ecx
+            push edi
+            push 0x655ab8
+            lea ecx, [esp + 0x14]
+            lea ebp, [eax - 0x27]
+            call PathCat
+            mov dl, byte ptr [gKey_map_index]
+            lea edi, [esp + 0x10]
+            or ecx, 0xffffffff
+            xor eax, eax
+            add dl, 0x30
+            repne scasb
+            not ecx
+            lea eax, [esp + 0x10]
+            dec ecx
+            sub eax, 5
+            mov byte ptr [ecx + eax], dl
+            lea ecx, [esp + 0x10]
+            call PDFileUnlock
+            mov edx, 0x655ab4
+            lea ecx, [esp + 0x10]
+            call DRfopen
+            mov esi, eax
+            test esi, esi
+            jne L004724af
+            push 9
+            call FatalError
+            add esp, 4
+    L004724af:
+            mov edi, offset gKey_mapping
+    L004724b4:
+            mov ecx, dword ptr [edi]
+            push ecx
+            push 0x58f418
+            push esi
+            call fprintf
+            add esp, 0xc
+            push esi
+            push 0xd
+            call fputc
+            add esp, 8
+            push esi
+            push 0xa
+            call fputc
+            add edi, 4
+            add esp, 8
+            cmp edi, 0x74b714
+            jl L004724b4
+            mov ecx, esi
+            call PFfclose
+            mov edx, offset gApplication_path
+            lea ecx, [esp + 0x10]
+            push 0x655ab8
+            mov dword ptr [gKey_map_index], ebp
+            call PathCat
+            mov dl, byte ptr [gKey_map_index]
+            lea edi, [esp + 0x10]
+            or ecx, 0xffffffff
+            xor eax, eax
+            add dl, 0x30
+            repne scasb
+            not ecx
+            lea eax, [esp + 0x10]
+            dec ecx
+            sub eax, 5
+            mov byte ptr [ecx + eax], dl
+            mov edx, 0x58f9e0
+            lea ecx, [esp + 0x10]
+            call DRfopen
+            mov edi, eax
+            test edi, edi
+            jne L00472545
+            push 9
+            call FatalError
+            add esp, 4
+    L00472545:
+            mov esi, offset gKey_mapping
+    L0047254a:
+            push esi
+            push 0x58f418
+            push edi
+            call fscanf
+            add esi, 4
+            add esp, 0xc
+            cmp esi, 0x74b714
+            jl L0047254a
+            mov ecx, edi
+            call PFfclose
+            mov ecx, dword ptr [gKey_map_index]
+            mov edx, 2
+            add ecx, 0x27
+            push ecx
+            mov ecx, ebx
+            call SelectThisItemIn
+            mov ecx, ebx
+            call RefreshScrollSet
+            mov ecx, ebx
+            call FuckWithWidths
+            xor eax, eax
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x100
+            ret
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00472b00

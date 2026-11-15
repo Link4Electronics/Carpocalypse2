@@ -92,6 +92,10 @@ extern char gNext_crush_actor_id[];
 #ifdef CARPOCALYPSE2_MATCHING
 extern char gQuickTime_call_component_with_storage[];
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern int C2_HOOK_FASTCALL DRfgetc2(FILE* pFile);
+extern void C2_NORETURN C2_HOOK_FASTCALL PDFatalError(const char* pThe_str);
+#endif
 // FUNCTION: CARMA2_HW 0x0048f830
 tU32 C2_HOOK_FASTCALL ReadU32(FILE* pF) {
     tU32 raw_long;
@@ -1373,7 +1377,8 @@ void C2_HOOK_FASTCALL DoNotAllowOpenToFail(void) {
 // GetCDPathFromPathsTxtFile
 
 // FUNCTION: CARMA2_HW 0x00491170
-FILE* C2_HOOK_FASTCALL DRfopen(const char* pFilename, const char* pMode) {
+C2_NAKED FILE* C2_HOOK_FASTCALL DRfopen(const char* pFilename, const char* pMode) {
+#ifndef CARPOCALYPSE2_MATCHING
     FILE *result;
 
     result = OldDRfopen(pFilename, pMode);
@@ -1394,6 +1399,820 @@ FILE* C2_HOOK_FASTCALL DRfopen(const char* pFilename, const char* pMode) {
         PDFatalError(buffer);
     }
     return result;
+#else
+    __asm {
+            sub esp, 0x560
+            push ebx
+            push ebp
+            push esi
+            mov ebp, ecx
+            push edi
+            mov dword ptr [esp + 0x1c], edx
+            mov dword ptr [esp + 0x18], ebp
+            call PFfopen
+            xor ebx, ebx
+            mov dword ptr [esp + 0x10], eax
+            cmp eax, ebx
+            jne L004914f5
+            cmp dword ptr [gCD_fully_installed], ebx
+            je L004911a6
+            xor esi, esi
+            jmp L0049186a
+    L004911a6:
+            cmp dword ptr [g_source_exists], 1
+            jne L004913c7
+            mov eax, dword ptr ds:[0x58ff0c]
+            mov cl, byte ptr ds:[0x58ff10]
+            mov edx, dword ptr [gDir_separator]
+            mov byte ptr [esp + 0x124], cl
+            mov dword ptr [esp + 0x120], eax
+            or ecx, 0xffffffff
+            mov edi, edx
+            xor eax, eax
+            repne scasb
+            not ecx
+            sub edi, ecx
+            lea ebp, [esp + 0x120]
+            mov esi, edi
+            mov edi, ebp
+            mov ebp, ecx
+            or ecx, 0xffffffff
+            repne scasb
+            mov ecx, ebp
+            dec edi
+            shr ecx, 2
+            rep movsd
+            mov ecx, ebp
+            lea ebp, [esp + 0x120]
+            and ecx, 3
+            rep movsb
+            or ecx, 0xffffffff
+            mov edi, 0x657a40
+            repne scasb
+            not ecx
+            sub edi, ecx
+            mov byte ptr [esp + 0x220], bl
+            mov esi, edi
+            mov edi, ebp
+            mov ebp, ecx
+            or ecx, 0xffffffff
+            repne scasb
+            mov ecx, ebp
+            dec edi
+            shr ecx, 2
+            rep movsd
+            mov ecx, ebp
+            lea ebp, [esp + 0x220]
+            and ecx, 3
+            rep movsb
+            mov edi, offset gApplication_path
+            or ecx, 0xffffffff
+            repne scasb
+            not ecx
+            sub edi, ecx
+            mov eax, ecx
+            mov esi, edi
+            mov edi, ebp
+            lea ebp, [esp + 0x220]
+            shr ecx, 2
+            rep movsd
+            mov ecx, eax
+            xor eax, eax
+            and ecx, 3
+            rep movsb
+            mov edi, edx
+            or ecx, 0xffffffff
+            repne scasb
+            not ecx
+            sub edi, ecx
+            mov esi, edi
+            mov edx, ecx
+            mov edi, ebp
+            or ecx, 0xffffffff
+            repne scasb
+            mov ecx, edx
+            dec edi
+            shr ecx, 2
+            rep movsd
+            mov ecx, edx
+            lea edx, [esp + 0x220]
+            and ecx, 3
+            rep movsb
+            mov edi, 0x595cfc
+            or ecx, 0xffffffff
+            repne scasb
+            not ecx
+            sub edi, ecx
+            mov esi, edi
+            mov ebp, ecx
+            mov edi, edx
+            or ecx, 0xffffffff
+            repne scasb
+            mov ecx, ebp
+            dec edi
+            shr ecx, 2
+            rep movsd
+            mov ecx, ebp
+            and ecx, 3
+            rep movsb
+            lea ecx, [esp + 0x220]
+            call PDCheckDriveExists
+            test eax, eax
+            jne L004912d7
+            mov dword ptr [g_source_exists], ebx
+            xor esi, esi
+            jmp L0049186a
+    L004912d7:
+            mov edx, 0x58f9e0
+            lea ecx, [esp + 0x220]
+            call PFfopen
+            mov ebp, eax
+            cmp ebp, ebx
+            jne L004912fb
+            mov dword ptr [g_source_exists], ebx
+            xor esi, esi
+            jmp L0049186a
+    L004912fb:
+            mov byte ptr [esp + 0x20], bl
+            call PossibleService
+            lea edx, [esp + 0x20]
+            mov ecx, ebp
+            call GetALineWithNoPossibleService
+            lea edi, [esp + 0x20]
+            or ecx, 0xffffffff
+            xor eax, eax
+            repne scasb
+            not ecx
+            dec ecx
+            movsx eax, byte ptr [esp + ecx + 0x1f]
+            mov ecx, dword ptr [gDir_separator]
+            push eax
+            push ecx
+            call strchr
+            add esp, 8
+            test eax, eax
+            jne L00491363
+            mov edi, dword ptr [gDir_separator]
+            or ecx, 0xffffffff
+            repne scasb
+            not ecx
+            sub edi, ecx
+            lea edx, [esp + 0x20]
+            mov esi, edi
+            mov edi, edx
+            mov edx, ecx
+            or ecx, 0xffffffff
+            repne scasb
+            mov ecx, edx
+            dec edi
+            shr ecx, 2
+            rep movsd
+            mov ecx, edx
+            and ecx, 3
+            rep movsb
+    L00491363:
+            lea edi, [esp + 0x120]
+            or ecx, 0xffffffff
+            xor eax, eax
+            lea edx, [esp + 0x20]
+            repne scasb
+            not ecx
+            sub edi, ecx
+            mov esi, edi
+            mov edi, edx
+            mov edx, ecx
+            or ecx, 0xffffffff
+            repne scasb
+            mov ecx, edx
+            dec edi
+            shr ecx, 2
+            rep movsd
+            mov ecx, edx
+            and ecx, 3
+            rep movsb
+            mov ecx, ebp
+            call PFfclose
+            lea ecx, [esp + 0x20]
+            call PDCheckDriveExists
+            test eax, eax
+            jne L004913c1
+            mov ecx, 0x658724
+            call PDFatalError
+            cmp dword ptr [gCD_fully_installed], ebx
+            je L004913c7
+            mov dword ptr [g_source_exists], ebx
+            jmp L004913c7
+    L004913c1:
+            inc dword ptr [g_source_exists]
+    L004913c7:
+            cmp dword ptr [g_source_exists], ebx
+            je L00491866
+            mov eax, dword ptr [esp + 0x18]
+            push 0x58ff0c
+            push eax
+            call strstr
+            mov ebp, eax
+            add esp, 8
+            cmp ebp, ebx
+            jne L004913f2
+            xor esi, esi
+            jmp L0049186a
+    L004913f2:
+            lea ecx, [esp + 0x10]
+            mov dword ptr [esp + 0x14], 0xff
+            push ecx
+            push 0xf003f
+            push ebx
+            push 0x6586b8
+            push 0x80000002
+            call dword ptr ds:[0x589008]
+            test eax, eax
+            jne L0049185b
+            mov ecx, dword ptr [esp + 0x10]
+            lea edx, [esp + 0x14]
+            lea eax, [esp + 0x20]
+            push edx
+            push eax
+            push ebx
+            push ebx
+            push 0x6586a8
+            push ecx
+            call dword ptr ds:[0x589004]
+            cmp eax, ebx
+            jne L0049196a
+            mov edx, dword ptr [esp + 0x10]
+            push edx
+            call dword ptr ds:[0x589000]
+            lea edi, [esp + 0x20]
+            or ecx, 0xffffffff
+            xor eax, eax
+            mov edx, dword ptr [gDir_separator]
+            repne scasb
+            not ecx
+            dec ecx
+            movsx ecx, byte ptr [esp + ecx + 0x1f]
+            push ecx
+            push edx
+            call strchr
+            add esp, 8
+            test eax, eax
+            jne L004914a0
+            mov edi, dword ptr [gDir_separator]
+            or ecx, 0xffffffff
+            repne scasb
+            not ecx
+            sub edi, ecx
+            lea edx, [esp + 0x20]
+            mov esi, edi
+            mov edi, edx
+            mov edx, ecx
+            or ecx, 0xffffffff
+            repne scasb
+            mov ecx, edx
+            dec edi
+            shr ecx, 2
+            rep movsd
+            mov ecx, edx
+            and ecx, 3
+            rep movsb
+    L004914a0:
+            mov edi, ebp
+            or ecx, 0xffffffff
+            xor eax, eax
+            lea edx, [esp + 0x20]
+            repne scasb
+            not ecx
+            sub edi, ecx
+            mov esi, edi
+            mov ebp, ecx
+            mov edi, edx
+            or ecx, 0xffffffff
+            repne scasb
+            mov ecx, ebp
+            dec edi
+            shr ecx, 2
+            rep movsd
+            mov ecx, ebp
+            and ecx, 3
+            rep movsb
+            lea ecx, [esp + 0x20]
+            call PDCheckDriveExists
+            test eax, eax
+            jne L004914df
+            xor esi, esi
+            jmp L0049186a
+    L004914df:
+            mov edx, dword ptr [esp + 0x1c]
+            lea ecx, [esp + 0x20]
+            call PFfopen
+            mov dword ptr [esp + 0x10], eax
+            jmp L00491866
+    L004914f5:
+            mov edi, ebp
+            or ecx, 0xffffffff
+            xor eax, eax
+            repne scasb
+            mov eax, dword ptr [gDecode_thing]
+            not ecx
+            dec ecx
+            cmp eax, ebx
+            mov edi, ecx
+            mov dword ptr [esp + 0x14], edi
+            je L00491866
+            mov esi, 0x594db8
+            lea eax, [edi + ebp - 4]
+    L0049151d:
+            mov cl, byte ptr [eax]
+            mov dl, cl
+            cmp cl, byte ptr [esi]
+            jne L00491541
+            cmp dl, bl
+            je L0049153d
+            mov cl, byte ptr [eax + 1]
+            mov dl, cl
+            cmp cl, byte ptr [esi + 1]
+            jne L00491541
+            add eax, 2
+            add esi, 2
+            cmp dl, bl
+            jne L0049151d
+    L0049153d:
+            xor eax, eax
+            jmp L00491546
+    L00491541:
+            sbb eax, eax
+            sbb eax, -1
+    L00491546:
+            cmp eax, ebx
+            jne L00491866
+            mov edx, dword ptr [esp + 0x18]
+            mov esi, 0x658698
+            lea ebp, [edi + edx - 0xc]
+            mov eax, ebp
+    L0049155d:
+            mov cl, byte ptr [eax]
+            mov dl, cl
+            cmp cl, byte ptr [esi]
+            jne L00491581
+            cmp dl, bl
+            je L0049157d
+            mov cl, byte ptr [eax + 1]
+            mov dl, cl
+            cmp cl, byte ptr [esi + 1]
+            jne L00491581
+            add eax, 2
+            add esi, 2
+            cmp dl, bl
+            jne L0049155d
+    L0049157d:
+            xor eax, eax
+            jmp L00491586
+    L00491581:
+            sbb eax, eax
+            sbb eax, -1
+    L00491586:
+            cmp eax, ebx
+            je L00491866
+            mov esi, 0x658688
+            mov eax, ebp
+    L00491595:
+            mov cl, byte ptr [eax]
+            mov dl, cl
+            cmp cl, byte ptr [esi]
+            jne L004915b9
+            cmp dl, bl
+            je L004915b5
+            mov cl, byte ptr [eax + 1]
+            mov dl, cl
+            cmp cl, byte ptr [esi + 1]
+            jne L004915b9
+            add eax, 2
+            add esi, 2
+            cmp dl, bl
+            jne L00491595
+    L004915b5:
+            xor eax, eax
+            jmp L004915be
+    L004915b9:
+            sbb eax, eax
+            sbb eax, -1
+    L004915be:
+            cmp eax, ebx
+            je L00491866
+            mov esi, 0x658678
+            mov eax, ebp
+    L004915cd:
+            mov cl, byte ptr [eax]
+            mov dl, cl
+            cmp cl, byte ptr [esi]
+            jne L004915f1
+            cmp dl, bl
+            je L004915ed
+            mov cl, byte ptr [eax + 1]
+            mov dl, cl
+            cmp cl, byte ptr [esi + 1]
+            jne L004915f1
+            add eax, 2
+            add esi, 2
+            cmp dl, bl
+            jne L004915cd
+    L004915ed:
+            xor eax, eax
+            jmp L004915f6
+    L004915f1:
+            sbb eax, eax
+            sbb eax, -1
+    L004915f6:
+            cmp eax, ebx
+            je L00491866
+            mov esi, 0x658668
+            mov eax, ebp
+    L00491605:
+            mov cl, byte ptr [eax]
+            mov dl, cl
+            cmp cl, byte ptr [esi]
+            jne L00491629
+            cmp dl, bl
+            je L00491625
+            mov cl, byte ptr [eax + 1]
+            mov dl, cl
+            cmp cl, byte ptr [esi + 1]
+            jne L00491629
+            add eax, 2
+            add esi, 2
+            cmp dl, bl
+            jne L00491605
+    L00491625:
+            xor eax, eax
+            jmp L0049162e
+    L00491629:
+            sbb eax, eax
+            sbb eax, -1
+    L0049162e:
+            cmp eax, ebx
+            je L00491866
+            mov esi, 0x658658
+            mov eax, ebp
+    L0049163d:
+            mov cl, byte ptr [eax]
+            mov dl, cl
+            cmp cl, byte ptr [esi]
+            jne L00491661
+            cmp dl, bl
+            je L0049165d
+            mov cl, byte ptr [eax + 1]
+            mov dl, cl
+            cmp cl, byte ptr [esi + 1]
+            jne L00491661
+            add eax, 2
+            add esi, 2
+            cmp dl, bl
+            jne L0049163d
+    L0049165d:
+            xor eax, eax
+            jmp L00491666
+    L00491661:
+            sbb eax, eax
+            sbb eax, -1
+    L00491666:
+            cmp eax, ebx
+            je L00491866
+            mov esi, 0x658648
+            mov eax, ebp
+    L00491675:
+            mov cl, byte ptr [eax]
+            mov dl, cl
+            cmp cl, byte ptr [esi]
+            jne L00491699
+            cmp dl, bl
+            je L00491695
+            mov cl, byte ptr [eax + 1]
+            mov dl, cl
+            cmp cl, byte ptr [esi + 1]
+            jne L00491699
+            add eax, 2
+            add esi, 2
+            cmp dl, bl
+            jne L00491675
+    L00491695:
+            xor eax, eax
+            jmp L0049169e
+    L00491699:
+            sbb eax, eax
+            sbb eax, -1
+    L0049169e:
+            cmp eax, ebx
+            je L00491866
+            mov esi, 0x658638
+            mov eax, ebp
+    L004916ad:
+            mov cl, byte ptr [eax]
+            mov dl, cl
+            cmp cl, byte ptr [esi]
+            jne L004916d1
+            cmp dl, bl
+            je L004916cd
+            mov cl, byte ptr [eax + 1]
+            mov dl, cl
+            cmp cl, byte ptr [esi + 1]
+            jne L004916d1
+            add eax, 2
+            add esi, 2
+            cmp dl, bl
+            jne L004916ad
+    L004916cd:
+            xor eax, eax
+            jmp L004916d6
+    L004916d1:
+            sbb eax, eax
+            sbb eax, -1
+    L004916d6:
+            cmp eax, ebx
+            je L00491866
+            mov esi, 0x658628
+            mov eax, ebp
+    L004916e5:
+            mov cl, byte ptr [eax]
+            mov dl, cl
+            cmp cl, byte ptr [esi]
+            jne L00491709
+            cmp dl, bl
+            je L00491705
+            mov cl, byte ptr [eax + 1]
+            mov dl, cl
+            cmp cl, byte ptr [esi + 1]
+            jne L00491709
+            add eax, 2
+            add esi, 2
+            cmp dl, bl
+            jne L004916e5
+    L00491705:
+            xor eax, eax
+            jmp L0049170e
+    L00491709:
+            sbb eax, eax
+            sbb eax, -1
+    L0049170e:
+            cmp eax, ebx
+            je L00491866
+            mov edx, dword ptr [esp + 0x18]
+            mov esi, 0x658108
+            lea edi, [edi + edx - 0xb]
+            mov eax, edi
+    L00491725:
+            mov cl, byte ptr [eax]
+            mov dl, cl
+            cmp cl, byte ptr [esi]
+            jne L00491749
+            cmp dl, bl
+            je L00491745
+            mov cl, byte ptr [eax + 1]
+            mov dl, cl
+            cmp cl, byte ptr [esi + 1]
+            jne L00491749
+            add eax, 2
+            add esi, 2
+            cmp dl, bl
+            jne L00491725
+    L00491745:
+            xor eax, eax
+            jmp L0049174e
+    L00491749:
+            sbb eax, eax
+            sbb eax, -1
+    L0049174e:
+            cmp eax, ebx
+            je L00491866
+            mov esi, 0x655ac8
+            mov eax, ebp
+    L0049175d:
+            mov cl, byte ptr [eax]
+            mov dl, cl
+            cmp cl, byte ptr [esi]
+            jne L00491781
+            cmp dl, bl
+            je L0049177d
+            mov cl, byte ptr [eax + 1]
+            mov dl, cl
+            cmp cl, byte ptr [esi + 1]
+            jne L00491781
+            add eax, 2
+            add esi, 2
+            cmp dl, bl
+            jne L0049175d
+    L0049177d:
+            xor eax, eax
+            jmp L00491786
+    L00491781:
+            sbb eax, eax
+            sbb eax, -1
+    L00491786:
+            cmp eax, ebx
+            je L00491866
+            mov edx, dword ptr [esp + 0x18]
+            mov ebp, dword ptr [esp + 0x14]
+            mov esi, 0x65861c
+            lea eax, [ebp + edx - 0xa]
+    L0049179f:
+            mov cl, byte ptr [eax]
+            mov dl, cl
+            cmp cl, byte ptr [esi]
+            jne L004917c3
+            cmp dl, bl
+            je L004917bf
+            mov cl, byte ptr [eax + 1]
+            mov dl, cl
+            cmp cl, byte ptr [esi + 1]
+            jne L004917c3
+            add eax, 2
+            add esi, 2
+            cmp dl, bl
+            jne L0049179f
+    L004917bf:
+            xor eax, eax
+            jmp L004917c8
+    L004917c3:
+            sbb eax, eax
+            sbb eax, -1
+    L004917c8:
+            cmp eax, ebx
+            je L00491866
+            mov edx, dword ptr [esp + 0x18]
+            mov esi, 0x595cfc
+            lea eax, [ebp + edx - 9]
+    L004917dd:
+            mov dl, byte ptr [eax]
+            mov cl, dl
+            cmp dl, byte ptr [esi]
+            jne L00491801
+            cmp cl, bl
+            je L004917fd
+            mov dl, byte ptr [eax + 1]
+            mov cl, dl
+            cmp dl, byte ptr [esi + 1]
+            jne L00491801
+            add eax, 2
+            add esi, 2
+            cmp cl, bl
+            jne L004917dd
+    L004917fd:
+            xor eax, eax
+            jmp L00491806
+    L00491801:
+            sbb eax, eax
+            sbb eax, -1
+    L00491806:
+            cmp eax, ebx
+            je L00491866
+            mov esi, 0x658718
+            mov eax, edi
+    L00491811:
+            mov dl, byte ptr [eax]
+            mov cl, dl
+            cmp dl, byte ptr [esi]
+            jne L00491835
+            cmp cl, bl
+            je L00491831
+            mov dl, byte ptr [eax + 1]
+            mov cl, dl
+            cmp dl, byte ptr [esi + 1]
+            jne L00491835
+            add eax, 2
+            add esi, 2
+            cmp cl, bl
+            jne L00491811
+    L00491831:
+            xor eax, eax
+            jmp L0049183a
+    L00491835:
+            sbb eax, eax
+            sbb eax, -1
+    L0049183a:
+            cmp eax, ebx
+            je L00491866
+            mov esi, dword ptr [esp + 0x10]
+            mov ecx, esi
+            call DRfgetc2
+            movsx ecx, al
+            cmp ecx, dword ptr [gDecode_thing]
+            je L0049185f
+            mov ecx, esi
+            call PFfclose
+    L0049185b:
+            xor esi, esi
+            jmp L0049186a
+    L0049185f:
+            mov edx, esi
+            call PFungetc
+    L00491866:
+            mov esi, dword ptr [esp + 0x10]
+    L0049186a:
+            cmp esi, ebx
+            jne L0049195d
+            cmp dword ptr [gAllow_open_to_fail], ebx
+            jne L0049195d
+            lea eax, [esp + 0x10]
+            mov dword ptr [esp + 0x14], 0xff
+            push eax
+            push 0xf003f
+            push ebx
+            push 0x6586b8
+            push 0x80000002
+            call dword ptr ds:[0x589008]
+            test eax, eax
+            jne L00491932
+            mov eax, dword ptr [esp + 0x10]
+            lea ecx, [esp + 0x14]
+            lea edx, [esp + 0x320]
+            push ecx
+            push edx
+            push ebx
+            push ebx
+            push 0x6586a8
+            push eax
+            call dword ptr ds:[0x589004]
+            cmp eax, ebx
+            jne L004918d9
+            mov ecx, dword ptr [esp + 0x10]
+            push ecx
+            call dword ptr ds:[0x589000]
+            jmp L00491902
+    L004918d9:
+            mov edx, dword ptr [esp + 0x14]
+            push ebx
+            lea ecx, [esp + 0x124]
+            push edx
+            push ecx
+            push ebx
+            push eax
+            push ebx
+            push 0x1000
+            call dword ptr ds:[0x58907c]
+            mov edx, dword ptr [esp + 0x10]
+            push edx
+            call dword ptr ds:[0x589000]
+            jmp L00491932
+    L00491902:
+            lea ecx, [esp + 0x320]
+            call PDCheckDriveExists
+            test eax, eax
+            jne L00491932
+            cmp dword ptr [gMisc_strings], ebx
+            je L00491928
+            mov ecx, 0xf3
+            call GetMiscString
+            mov ecx, eax
+            jmp L0049192d
+    L00491928:
+            mov ecx, 0x6586f4
+    L0049192d:
+            call PDFatalError
+    L00491932:
+            mov eax, dword ptr [esp + 0x1c]
+            mov ecx, dword ptr [esp + 0x18]
+            push eax
+            push ecx
+            lea edx, [esp + 0x428]
+            push 0x6586d4
+            push edx
+            call sprintf
+            add esp, 0x10
+            lea ecx, [esp + 0x420]
+            call PDFatalError
+    L0049195d:
+            mov eax, esi
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x560
+            ret
+    L0049196a:
+            mov ecx, dword ptr [esp + 0x14]
+            push ebx
+            lea edx, [esp + 0x124]
+            push ecx
+            push edx
+            push ebx
+            push eax
+            push ebx
+            push 0x1000
+            call dword ptr ds:[0x58907c]
+            mov eax, dword ptr [esp + 0x10]
+            push eax
+            call dword ptr ds:[0x589000]
+            xor esi, esi
+            jmp L0049186a
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x0044bb80

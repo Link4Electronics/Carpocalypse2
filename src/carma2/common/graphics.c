@@ -339,6 +339,16 @@ extern int gCheckpoint_digit_height;
 extern br_pixelmap* gCheckpoint_numbers;
 extern int gTrack_version;
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern br_actor* C2_HOOK_CDECL BrActorRemove();
+extern void C2_HOOK_CDECL BrMatrix34Pre();
+extern void C2_HOOK_CDECL BrPixelmapRectangleFill();
+extern void C2_HOOK_FASTCALL PDScreenBufferSwap(int pRendering_area_only);
+extern int gGraf_spec_index;
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern void __cdecl _CIfmod();
+#endif
 // FUNCTION: CARMA2_HW 0x004b5460
 void C2_HOOK_FASTCALL FadePaletteDown(void) {
 }
@@ -801,7 +811,8 @@ void C2_HOOK_FASTCALL CalculateWobblitude(tU32 pThe_time) {
 }
 
 // FUNCTION: CARMA2_HW 0x004e4e40
-void C2_HOOK_FASTCALL RenderAFrame(int pDepth_mask_on) {
+void C2_NAKED C2_HOOK_FASTCALL RenderAFrame(int pDepth_mask_on) {
+#ifndef CARPOCALYPSE2_MATCHING
     int i;
     int x_shift;
     int y_shift;
@@ -977,6 +988,547 @@ void C2_HOOK_FASTCALL RenderAFrame(int pDepth_mask_on) {
     if (gAction_replay_mode) {
         DoActionReplayPostSwap();
     }
+#else
+    __asm {
+            sub esp, 0x7c
+            mov eax, dword ptr [gBack_screen]
+            mov edx, dword ptr [gRender_screen]
+            push ebx
+            push ebp
+            mov ecx, dword ptr [eax + 8]
+            push esi
+            push edi
+            mov dword ptr [edx + 8], ecx
+            call GetTotalTime
+            mov dword ptr [esp + 0x24], eax
+            mov eax, dword ptr [gRender_screen]
+            xor ebp, ebp
+            mov ecx, dword ptr [eax + 8]
+            mov eax, dword ptr ds:[0x75bbcc]
+            cmp eax, ebp
+            mov dword ptr [esp + 0x28], ecx
+            je L004e4e92
+            cmp dword ptr ds:[0x75bbd0], ebp
+            jl L004e4e92
+            mov eax, dword ptr [gMap_view]
+            mov dword ptr [esp + 0x18], 1
+            cmp eax, 2
+            jne L004e4e96
+    L004e4e92:
+            mov dword ptr [esp + 0x18], ebp
+    L004e4e96:
+            cmp dword ptr ds:[0x75bbc4], ebp
+            je L004e4eb8
+            cmp dword ptr [esp + 0x18], ebp
+            je L004e4eb8
+            mov eax, dword ptr ds:[0x75bc10]
+            mov dword ptr [gMirror_on__graphics], 1
+            cmp eax, 2
+            je L004e4ebe
+    L004e4eb8:
+            mov dword ptr [gMirror_on__graphics], ebp
+    L004e4ebe:
+            mov eax, dword ptr [gCount_polyfont_glyph_actors]
+            xor edi, edi
+            cmp eax, ebp
+            jle L004e4eeb
+            mov esi, offset gPolyfont_glyph_actors
+    L004e4ece:
+            mov eax, dword ptr [esi]
+            cmp dword ptr [eax + 0xc], ebp
+            je L004e4ede
+            push eax
+            call BrActorRemove
+            add esp, 4
+    L004e4ede:
+            mov eax, dword ptr [gCount_polyfont_glyph_actors]
+            inc edi
+            add esi, 4
+            cmp edi, eax
+            jl L004e4ece
+    L004e4eeb:
+            mov dword ptr [gCount_polyfont_glyph_actors], ebp
+            mov dword ptr [gHud_actor_storage_size], ebp
+            mov dword ptr [gRender_poly_text], ebp
+            call MapStuffBeforeRender
+            cmp dword ptr [gPed_676914], ebp
+            jne L004e50b0
+            cmp dword ptr ds:[0x75bc14], ebp
+            jne L004e50b0
+            xor ebx, ebx
+            xor eax, eax
+            mov dword ptr [gScreen_wobble_x], ebx
+            mov dword ptr [gScreen_wobble_y], eax
+            mov esi, 0x6a2304
+    L004e4f2e:
+            mov ecx, dword ptr [esi]
+            cmp ecx, ebp
+            je L004e5063
+            mov edi, dword ptr [esp + 0x24]
+            sub edi, ecx
+            cmp edi, 0x3e8
+            jbe L004e4f4d
+            mov dword ptr [esi], ebp
+            jmp L004e5063
+    L004e4f4d:
+            fld qword ptr ds:[0x58ad80]
+            mov dword ptr [esp + 0x1c], edi
+            mov dword ptr [esp + 0x20], ebp
+            fild qword ptr [esp + 0x1c]
+            fdiv dword ptr [esi - 4]
+            fxch st(1)
+            call _CIfmod
+            fcom qword ptr ds:[0x58ad88]
+            fnstsw ax
+            test ah, 0x41
+            jne L004e4f99
+            fld qword ptr ds:[0x58ad80]
+            fsub st(0), st(1)
+            fmul qword ptr ds:[0x58ad90]
+            call _ftol
+            shl eax, 2
+            mov edx, offset gCosine_array
+            sub edx, eax
+            fstp st(0)
+            _emit 0xd9
+        _emit 0x02
+            jmp L004e5010
+    L004e4f99:
+            fcom qword ptr ds:[0x58ad98]
+            fnstsw ax
+            test ah, 0x41
+            jne L004e4fc7
+            fsub qword ptr ds:[0x58ad98]
+            fmul qword ptr ds:[0x58ad90]
+            call _ftol
+            mov ecx, offset gCosine_array
+            shl eax, 2
+            sub ecx, eax
+            _emit 0xd9
+        _emit 0x01
+            fchs
+            jmp L004e5010
+    L004e4fc7:
+            fcom qword ptr ds:[0x58ada0]
+            fnstsw ax
+            test ah, 0x41
+            jne L004e4ff9
+            fld qword ptr ds:[0x58ad98]
+            fsub st(0), st(1)
+            fmul qword ptr ds:[0x58ad90]
+            call _ftol
+            mov edx, offset gCosine_array
+            shl eax, 2
+            sub edx, eax
+            fstp st(0)
+            _emit 0xd9
+        _emit 0x02
+            fchs
+            jmp L004e5010
+    L004e4ff9:
+            fmul qword ptr ds:[0x58ad90]
+            call _ftol
+            shl eax, 2
+            mov ecx, offset gCosine_array
+            sub ecx, eax
+            _emit 0xd9
+        _emit 0x01
+    L004e5010:
+            fld dword ptr [esi - 0xc]
+            mov dword ptr [esp + 0x10], edi
+            mov dword ptr [esp + 0x14], ebp
+            fild qword ptr [esp + 0x10]
+            fmul qword ptr ds:[0x58ada8]
+            fild dword ptr [gScreen_wobble_x]
+            fxch st(1)
+            fsubr qword ptr ds:[0x58ad68]
+            fdivp st(3), st(0)
+            fxch st(1)
+            fmul st(0), st(2)
+            fxch st(1)
+            faddp st(1), st(0)
+            call _ftol
+            fld dword ptr [esi - 8]
+            fmul st(0), st(1)
+            fild dword ptr [gScreen_wobble_y]
+            mov ebx, eax
+            mov dword ptr [gScreen_wobble_x], ebx
+            faddp st(1), st(0)
+            call _ftol
+            fstp st(0)
+            mov dword ptr [gScreen_wobble_y], eax
+    L004e5063:
+            add esi, 0x10
+            cmp esi, 0x6a2354
+            jl L004e4f2e
+            mov edx, dword ptr [gCurrent_graf_data]
+            mov ecx, dword ptr [edx + 0x104]
+            cmp ebx, ecx
+            jg L004e5088
+            neg ecx
+            cmp ebx, ecx
+            jge L004e5090
+    L004e5088:
+            mov ebx, ecx
+            mov dword ptr [gScreen_wobble_x], ebx
+    L004e5090:
+            mov ecx, dword ptr [edx + 0x108]
+            cmp eax, ecx
+            jg L004e50a0
+            neg ecx
+            cmp eax, ecx
+            jge L004e50a7
+    L004e50a0:
+            mov eax, ecx
+            mov dword ptr [gScreen_wobble_y], eax
+    L004e50a7:
+            mov edx, eax
+            mov ecx, ebx
+            call PipeSingleScreenWobble
+    L004e50b0:
+            mov eax, dword ptr [esp + 0x18]
+            mov ebx, dword ptr [gRender_screen]
+            cmp eax, ebp
+            je L004e5142
+            mov esi, dword ptr [gScreen_wobble_x]
+            mov edx, dword ptr [gX_offset]
+            mov edi, dword ptr [gBack_screen]
+            mov eax, esi
+            neg eax
+            cmp eax, edx
+            jle L004e50e4
+            neg edx
+            mov dword ptr [esp + 0x10], edx
+            jmp L004e5107
+    L004e50e4:
+            xor ecx, ecx
+            xor eax, eax
+            mov cx, word ptr [ebx + 0x34]
+            mov ax, word ptr [edi + 0x34]
+            lea ebp, [edx + esi]
+            add ebp, ecx
+            cmp eax, ebp
+            jge L004e5103
+            sub eax, edx
+            sub eax, ecx
+            mov dword ptr [esp + 0x10], eax
+            jmp L004e5107
+    L004e5103:
+            mov dword ptr [esp + 0x10], esi
+    L004e5107:
+            mov esi, dword ptr [gScreen_wobble_y]
+            mov edx, dword ptr [gY_offset]
+            mov ecx, esi
+            neg ecx
+            cmp ecx, edx
+            jle L004e5121
+            neg edx
+            mov ebp, edx
+            jmp L004e5146
+    L004e5121:
+            xor eax, eax
+            xor ecx, ecx
+            mov ax, word ptr [edi + 0x36]
+            mov cx, word ptr [ebx + 0x36]
+            lea edi, [edx + esi]
+            add edi, ecx
+            cmp eax, edi
+            jge L004e513e
+            sub eax, edx
+            sub eax, ecx
+            mov ebp, eax
+            jmp L004e5146
+    L004e513e:
+            mov ebp, esi
+            jmp L004e5146
+    L004e5142:
+            mov dword ptr [esp + 0x10], ebp
+    L004e5146:
+            mov edx, dword ptr [gCamera]
+            mov ecx, 0xc
+            lea edi, [esp + 0x2c]
+            mov dword ptr [esp + 0x1c], ebp
+            lea eax, [edx + 0x2c]
+            mov esi, eax
+            rep movsd
+            mov ecx, dword ptr [gMirror_on__graphics]
+            test ecx, ecx
+            je L004e517e
+            mov ecx, dword ptr [gRearview_camera]
+            lea edi, [esp + 0x5c]
+            lea esi, [ecx + 0x2c]
+            mov ecx, 0xc
+            rep movsd
+    L004e517e:
+            mov ecx, dword ptr [esp + 0x18]
+            test ecx, ecx
+            je L004e524a
+            fild dword ptr [esp + 0x1c]
+            xor edx, edx
+            mov ecx, dword ptr [esp + 0x10]
+            mov dx, word ptr [ebx + 0x36]
+            push offset gSheer_mat
+            mov dword ptr [esp + 0x1c], edx
+            xor edx, edx
+            fild dword ptr [esp + 0x1c]
+            neg ecx
+            mov dword ptr [esp + 0x20], ecx
+            push eax
+            fdivp st(1), st(0)
+            fstp dword ptr ds:[0x65fb3c]
+            mov dx, word ptr [ebx + 0x34]
+            fild dword ptr [esp + 0x24]
+            mov dword ptr [esp + 0x24], edx
+            fild dword ptr [esp + 0x24]
+            fdivp st(1), st(0)
+            fstp dword ptr ds:[0x65fb38]
+            call BrMatrix34Pre
+            mov edx, dword ptr [gRender_screen]
+            xor ecx, ecx
+            fild dword ptr [gScreen_wobble_x]
+            mov cx, word ptr [edx + 0x34]
+            mov eax, dword ptr [gCamera]
+            mov dword ptr [esp + 0x24], ecx
+            add esp, 8
+            fild dword ptr [esp + 0x1c]
+            fxch st(1)
+            fmul dword ptr ds:[0x58adb0]
+            fxch st(1)
+            xor ecx, ecx
+            fdivp st(1), st(0)
+            fmul dword ptr ds:[0x58adb4]
+            fsubr dword ptr [eax + 0x50]
+            fstp dword ptr [eax + 0x50]
+            mov edx, dword ptr [gRender_screen]
+            mov eax, dword ptr [gCamera]
+            fild dword ptr [gScreen_wobble_y]
+            mov cx, word ptr [edx + 0x34]
+            mov dword ptr [esp + 0x1c], ecx
+            fild dword ptr [esp + 0x1c]
+            fxch st(1)
+            fmul dword ptr ds:[0x58adb0]
+            fxch st(1)
+            fdivp st(1), st(0)
+            fmul dword ptr ds:[0x58adb4]
+            fadd dword ptr [eax + 0x54]
+            fstp dword ptr [eax + 0x54]
+            mov ebx, dword ptr [gRender_screen]
+    L004e524a:
+            movsx eax, word ptr [ebx + 0x28]
+            imul eax, ebp
+            mov edx, dword ptr [esp + 0x10]
+            mov ecx, dword ptr [ebx + 8]
+            add eax, edx
+            add ecx, eax
+            mov dword ptr [ebx + 8], ecx
+            mov eax, dword ptr [gRender_indent]
+            test eax, eax
+            mov ebx, 2
+            je L004e5347
+            cmp dword ptr [gMap_view], ebx
+            je L004e5347
+            mov eax, dword ptr [gGraf_spec_index]
+            mov ecx, dword ptr ds:[0x75bbd8]
+            push 0
+            push ecx
+            lea edx, [eax + eax*2]
+            lea eax, [eax + edx*4]
+            mov edx, dword ptr [gBack_screen]
+            mov ecx, dword ptr [eax*4 + 0x662214]
+            push ecx
+            push 0
+            push 0
+            push edx
+            call BrPixelmapRectangleFill
+            mov eax, dword ptr [gGraf_spec_index]
+            add esp, 0x18
+            lea ecx, [eax + eax*2]
+            push 0
+            lea eax, [eax + ecx*4]
+            mov ecx, dword ptr ds:[0x75bbe0]
+            shl eax, 2
+            mov edx, dword ptr [eax + 0x662218]
+            mov eax, dword ptr [eax + 0x662214]
+            sub edx, ecx
+            push edx
+            push eax
+            push ecx
+            mov ecx, dword ptr [gBack_screen]
+            push 0
+            push ecx
+            call BrPixelmapRectangleFill
+            mov edx, dword ptr ds:[0x75bbe0]
+            mov eax, dword ptr ds:[0x75bbd8]
+            mov ecx, dword ptr ds:[0x75bbd4]
+            add esp, 0x18
+            sub edx, eax
+            push 0
+            push edx
+            mov edx, dword ptr [gBack_screen]
+            push ecx
+            push eax
+            push 0
+            push edx
+            call BrPixelmapRectangleFill
+            mov eax, dword ptr ds:[0x75bbe0]
+            mov ecx, dword ptr ds:[0x75bbd8]
+            add esp, 0x18
+            sub eax, ecx
+            push 0
+            push eax
+            mov eax, dword ptr [gGraf_spec_index]
+            lea edx, [eax + eax*2]
+            lea eax, [eax + edx*4]
+            mov edx, dword ptr [eax*4 + 0x662214]
+            mov eax, dword ptr ds:[0x75bbdc]
+            sub edx, eax
+            push edx
+            push ecx
+            push eax
+            mov eax, dword ptr [gBack_screen]
+            push eax
+            call BrPixelmapRectangleFill
+            add esp, 0x18
+    L004e5347:
+            mov dword ptr [gRendering_mirror], 0
+            mov esi, 1
+    L004e5356:
+            mov ecx, dword ptr [gDepth_buffer]
+            mov edx, dword ptr [gRender_screen]
+            mov eax, dword ptr [gCamera]
+            push ecx
+            push edx
+            push eax
+            mov edx, offset gCamera_to_world
+            xor ecx, ecx
+            call DoACompleteRenderPass
+            dec esi
+            jne L004e5356
+            mov ecx, dword ptr [gCamera]
+            lea esi, [esp + 0x2c]
+            lea edi, [ecx + 0x2c]
+            mov ecx, 0xc
+            rep movsd
+            mov eax, dword ptr [gMirror_on__graphics]
+            test eax, eax
+            je L004e53cd
+            mov edx, dword ptr [gRearview_depth_buffer]
+            mov eax, dword ptr [gRearview_screen]
+            mov ecx, dword ptr [gRearview_camera]
+            push edx
+            push eax
+            push ecx
+            mov edx, offset gRearview_camera_to_world
+            mov ecx, 1
+            call DoACompleteRenderPass
+            mov edx, dword ptr [gRearview_camera]
+            mov ecx, 0xc
+            lea esi, [esp + 0x5c]
+            lea edi, [edx + 0x2c]
+            rep movsd
+    L004e53cd:
+            call RenderTintedPolys
+            cmp dword ptr [gMap_view], ebx
+            je L004e5447
+            call DimAFewBits
+            mov esi, dword ptr [esp + 0x24]
+            mov ecx, esi
+            call DoDamageScreen
+            mov eax, dword ptr [gPed_676914]
+            test eax, eax
+            je L004e53fc
+            mov eax, dword ptr [gAR_fudge_headups]
+            test eax, eax
+            je L004e5403
+    L004e53fc:
+            mov ecx, esi
+            call DoHeadups
+    L004e5403:
+            mov ecx, esi
+            call DoInstruments
+            mov eax, dword ptr [gPed_676914]
+            test eax, eax
+            je L004e541c
+            mov eax, dword ptr [gAR_fudge_headups]
+            test eax, eax
+            je L004e5423
+    L004e541c:
+            mov ecx, esi
+            call DrawPowerups
+    L004e5423:
+            cmp dword ptr [gMap_view], ebx
+            je L004e5447
+            mov eax, dword ptr [gPed_676914]
+            test eax, eax
+            je L004e543d
+            mov eax, dword ptr [gAR_fudge_headups]
+            test eax, eax
+            je L004e5447
+    L004e543d:
+            call DoTestHeadup
+            call DoPSPowerupHeadups
+    L004e5447:
+            call MapStuffAfterRender
+            mov eax, dword ptr [gNet_mode]
+            test eax, eax
+            je L004e545a
+            call DisplayUserMessage
+    L004e545a:
+            mov eax, dword ptr [gPed_676914]
+            test eax, eax
+            je L004e548b
+            mov edx, dword ptr [gFrame_period]
+            mov ecx, dword ptr [gBack_screen]
+            call MovieRecordFrame
+            mov eax, dword ptr [gPed_676914]
+            test eax, eax
+            je L004e548b
+            mov eax, dword ptr [gAR_fudge_headups]
+            test eax, eax
+            jne L004e548b
+            call DoActionReplayHeadups
+    L004e548b:
+            call StopRenderingHeadups
+            mov eax, dword ptr [gPed_676914]
+            test eax, eax
+            je L004e54a0
+            call SynchronizeActionReplay
+            jmp L004e54a5
+    L004e54a0:
+            call PipeSingleFrameFinish
+    L004e54a5:
+            mov eax, dword ptr [gRender_screen]
+            mov ecx, dword ptr [esp + 0x28]
+            mov dword ptr [eax + 8], ecx
+            mov eax, dword ptr [gPalette_fade_time]
+            test eax, eax
+            je L004e54cf
+            call GetRaceTime
+            mov edx, dword ptr [gPalette_fade_time]
+            add edx, 0x1f4
+            cmp eax, edx
+            jbe L004e54d6
+    L004e54cf:
+            xor ecx, ecx
+            call PDScreenBufferSwap
+    L004e54d6:
+            mov eax, dword ptr [gPed_676914]
+            test eax, eax
+            je L004e54e4
+            call DoActionReplayPostSwap
+    L004e54e4:
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x7c
+            ret
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x004e4900

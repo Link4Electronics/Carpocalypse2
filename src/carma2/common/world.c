@@ -600,6 +600,13 @@ extern br_pixelmap* gScreen;
 extern br_scalar gSight_distance_squared;
 extern int gTotal_laps;
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern br_scalar C2_HOOK_CDECL BrMatrix34Inverse();
+extern void C2_HOOK_CDECL BrMatrix34PostScale();
+extern void C2_HOOK_CDECL BrMatrix34PostShearX();
+extern void C2_HOOK_CDECL BrMatrix34PostShearY();
+extern void C2_HOOK_CDECL BrMatrix34PostShearZ();
+#endif
 // FUNCTION: CARMA2_HW 0x004488f0
 tWall_texturing_level C2_HOOK_FASTCALL GetWallTexturingLevel(void) {
     return gWall_texturing_level;
@@ -6147,7 +6154,8 @@ void C2_HOOK_FASTCALL FindInverseAndWorlBox(tSpecial_volume* pSpec) {
 }
 
 // FUNCTION: CARMA2_HW 0x004ffd80
-void C2_HOOK_FASTCALL ReadSpecialVolumes(FILE* pF) {
+void C2_NAKED C2_HOOK_FASTCALL ReadSpecialVolumes(FILE* pF) {
+#ifndef CARPOCALYPSE2_MATCHING
     int i;
     int j;
     tSpecial_volume* spec;
@@ -6202,6 +6210,269 @@ void C2_HOOK_FASTCALL ReadSpecialVolumes(FILE* pF) {
             }
         }
     }
+#else
+    __asm {
+            sub esp, 0x30
+            push ebx
+            push edi
+            mov edi, ecx
+            call GetAnInt
+            mov ecx, edi
+            mov dword ptr [gDefault_engine_noise_index], eax
+            mov dword ptr [gDefault_water_spec_vol_real], 0x761b80
+            call GetAnInt
+            test eax, eax
+            mov dword ptr ds:[0x75d77c], eax
+            je L00500050
+            lea ecx, [eax + eax*4]
+            push 0xd2
+            lea eax, [eax + ecx*2]
+            lea edx, [eax + eax*4]
+            shl edx, 2
+            push edx
+            call BrMemAllocate
+            mov dword ptr ds:[0x75d780], eax
+            mov ebx, eax
+            mov eax, dword ptr ds:[0x75d77c]
+            add esp, 8
+            test eax, eax
+            mov dword ptr [esp + 0x18], 0
+            mov dword ptr [esp + 8], ebx
+            jle L00500050
+            push esi
+            push ebp
+            lea esi, [ebx + 8]
+    L004ffdee:
+            call PossibleService
+            mov edx, offset gSpecial_effects_boundary_choices
+            mov ecx, edi
+            push 4
+            call GetALineAndInterpretCommand
+            cmp eax, 3
+            mov dword ptr [ebx], eax
+            mov dword ptr [esp + 0x24], eax
+            jne L004ffe12
+            mov dword ptr [ebx], 0
+    L004ffe12:
+            mov eax, dword ptr [ebx]
+            sub eax, 0
+            je L004ffe6e
+            dec eax
+            je L004ffe49
+            dec eax
+            je L004ffe31
+            push 0x82
+            call FatalError
+            add esp, 4
+            jmp L00500027
+    L004ffe31:
+            push 0
+            push 0
+            mov edx, ebx
+            mov ecx, edi
+            call ParseSpecialVolume
+            mov dword ptr [gDefault_water_spec_vol_real], ebx
+            jmp L00500027
+    L004ffe49:
+            lea eax, [esi + 8]
+            lea ecx, [esi + 4]
+            push eax
+            push ecx
+            push esi
+            lea edx, [esi - 4]
+            mov ecx, edi
+            call GetFourScalars
+            mov edx, ebx
+            mov ecx, edi
+            push 1
+            push 0
+            call ParseSpecialVolume
+            jmp L00500027
+    L004ffe6e:
+            lea edx, [esi + 4]
+            lea ebx, [esi - 4]
+            push edx
+            push esi
+            mov edx, ebx
+            mov ecx, edi
+            call GetThreeScalars
+            lea eax, [esi + 0x10]
+            lea ecx, [esi + 0xc]
+            push eax
+            push ecx
+            lea edx, [esi + 8]
+            mov ecx, edi
+            call GetThreeScalars
+            lea eax, [esi + 0x1c]
+            lea ecx, [esi + 0x18]
+            push eax
+            push ecx
+            lea edx, [esi + 0x14]
+            mov ecx, edi
+            call GetThreeScalars
+            lea eax, [esi + 0x28]
+            lea ecx, [esi + 0x24]
+            push eax
+            push ecx
+            lea edx, [esi + 0x20]
+            mov ecx, edi
+            call GetThreeScalars
+            fld dword ptr ds:[0x58b148]
+            fld dword ptr ds:[0x58b148]
+            fld dword ptr ds:[0x58b14c]
+            fld dword ptr ds:[0x58b14c]
+            fld dword ptr ds:[0x58b14c]
+            fxch st(4)
+            fstp dword ptr [esp + 0x2c]
+            fxch st(2)
+            fstp dword ptr [esp + 0x30]
+            lea ecx, [esi + 0x68]
+            push ebx
+            fstp dword ptr [esp + 0x38]
+            lea edx, [esp + 0x2c]
+            mov dword ptr [esp + 0x2c], 0xbf800000
+            fstp dword ptr [esp + 0x3c]
+            fstp dword ptr [esp + 0x40]
+            call GetNewBoundingBox
+            lea ebp, [esi + 0x2c]
+            push ebx
+            push ebp
+            call BrMatrix34Inverse
+            _emit 0xd9
+        _emit 0x45
+        _emit 0x00
+            fld dword ptr [esi + 0x30]
+            fld dword ptr [esi + 0x34]
+            fxch st(2)
+            fst dword ptr [esp + 0x1c]
+            fxch st(1)
+            fst dword ptr [esp + 0x20]
+            fxch st(1)
+            fmul dword ptr [esp + 0x1c]
+            fxch st(1)
+            fmul dword ptr [esp + 0x20]
+            fxch st(2)
+            fst dword ptr [esp + 0x20]
+            fmul dword ptr [esp + 0x20]
+            fxch st(2)
+            faddp st(1), st(0)
+            fld dword ptr [esi + 0x38]
+            fld dword ptr [esi + 0x3c]
+            fxch st(3)
+            faddp st(2), st(0)
+            fxch st(1)
+            fsqrt
+            add esp, 8
+            fst dword ptr [esp + 0x1c]
+            fstp dword ptr [esi + 0x5c]
+            fstp dword ptr [esp + 0x18]
+            fstp dword ptr [esp + 0x14]
+            mov ebp, dword ptr [esp + 0x24]
+            xor edx, edx
+            fstp st(0)
+            fld dword ptr [esi + 0x44]
+            fld dword ptr [esi + 0x48]
+            fld dword ptr [esi + 0x40]
+            fld dword ptr [esi + 0x4c]
+            fld dword ptr [esp + 0x18]
+            fld dword ptr [esp + 0x14]
+            fxch st(3)
+            fst dword ptr [esp + 0x1c]
+            fxch st(1)
+            fmul dword ptr [esp + 0x18]
+            fxch st(3)
+            fmul dword ptr [esp + 0x14]
+            test ebp, ebp
+            sete dl
+            faddp st(3), st(0)
+            fxch st(4)
+            fst dword ptr [esp + 0x18]
+            push edx
+            mov edx, dword ptr [esp + 0x14]
+            fld st(3)
+            fxch st(1)
+            fmul dword ptr [esp + 0x1c]
+            fxch st(1)
+            fmul st(0), st(4)
+            fxch st(2)
+            fst dword ptr [esp + 0x1c]
+            fxch st(5)
+            fmul dword ptr [esp + 0x20]
+            fxch st(2)
+            faddp st(1), st(0)
+            fxch st(4)
+            fmul dword ptr [esp + 0x1c]
+            fxch st(1)
+            faddp st(2), st(0)
+            push 0
+            mov ecx, edi
+            faddp st(3), st(0)
+            fsqrt
+            fxch st(2)
+            fsqrt
+            fxch st(2)
+            fst dword ptr [esp + 0x2c]
+            fxch st(2)
+            fst dword ptr [esp + 0x2c]
+            fxch st(2)
+            fstp dword ptr [esi + 0x60]
+            fxch st(1)
+            fstp dword ptr [esi + 0x64]
+            fstp st(0)
+            call ParseSpecialVolume
+            cmp dword ptr [esi + 0xac], -1
+            je L00500023
+            lea eax, [esi + 0x68]
+            mov ecx, 3
+    L004ffff9:
+            _emit 0xd9
+        _emit 0x00
+            fsub dword ptr ds:[0x58b150]
+            add eax, 4
+            dec ecx
+            fstp dword ptr [eax - 4]
+            jne L004ffff9
+            lea eax, [esi + 0x74]
+            mov ecx, 3
+    L00500012:
+            _emit 0xd9
+        _emit 0x00
+            fsub dword ptr ds:[0x58b168]
+            add eax, 4
+            dec ecx
+            fstp dword ptr [eax - 4]
+            jne L00500012
+    L00500023:
+            mov ebx, dword ptr [esp + 0x10]
+    L00500027:
+            mov eax, dword ptr [esp + 0x20]
+            mov ecx, dword ptr ds:[0x75d77c]
+            inc eax
+            add ebx, 0xdc
+            add esi, 0xdc
+            cmp eax, ecx
+            mov dword ptr [esp + 0x20], eax
+            mov dword ptr [esp + 0x10], ebx
+            jl L004ffdee
+            pop ebp
+            pop esi
+    L00500050:
+            pop edi
+            pop ebx
+            add esp, 0x30
+            ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 void C2_HOOK_FASTCALL AddExceptionToList(tMaterial_exception** pList, tMaterial_exception* pItem) {
@@ -7551,7 +7822,8 @@ static __inline int C2_HOOK_FASTCALL CalculateTextureBitsValue(tFunk_texturebits
                                                               : ((PERIOD) != 0.0f ? BR_SIN(BrDegreeToAngle(GROOVE_SAW(TIME, PERIOD) * 360.0)) * (AMPLITUDE) : 0.0f)))))))
 
 // FUNCTION: CARMA2_HW 0x00478e30
-void C2_HOOK_FASTCALL PathGrooveBastard(tGroovidelic_spec* pGroove, tU32 pTime, br_matrix34* pMat, int pInterrupt_it) {
+void C2_NAKED C2_HOOK_FASTCALL PathGrooveBastard(tGroovidelic_spec* pGroove, tU32 pTime, br_matrix34* pMat, int pInterrupt_it) {
+#ifndef CARPOCALYPSE2_MATCHING
     br_scalar pos;
 
 #ifndef CARPOCALYPSE2_MATCHING
@@ -7702,11 +7974,894 @@ void C2_HOOK_FASTCALL PathGrooveBastard(tGroovidelic_spec* pGroove, tU32 pTime, 
     default:
         break;
     }
+#else
+    __asm {
+            sub esp, 0x10
+            push ebx
+            push ebp
+            push esi
+            mov esi, ecx
+            xor ebp, ebp
+            mov ebx, edx
+            mov eax, dword ptr [esi + 0x18]
+            push edi
+            sub eax, ebp
+            mov dword ptr [esp + 0x14], ebx
+            je L00479111
+            dec eax
+            jne L00479879
+            mov eax, dword ptr [esi + 0xc]
+            lea edi, [esi + 0x30]
+            mov ecx, edi
+            add eax, 0x50
+            mov ebp, dword ptr [esp + 0x24]
+            mov edx, dword ptr [ecx]
+            mov dword ptr [eax], edx
+            mov edx, dword ptr [ecx + 4]
+            mov dword ptr [eax + 4], edx
+            mov ecx, dword ptr [ecx + 8]
+            mov dword ptr [eax + 8], ecx
+            mov eax, dword ptr [esi + 0x3c]
+            cmp eax, 1
+            jne L00478ed8
+            fld dword ptr [esi + 0x28]
+            fcomp dword ptr ds:[0x58a118]
+            fnstsw ax
+            test ah, 0x40
+            jne L00478f37
+            mov dword ptr [esp + 0x18], ebx
+            mov dword ptr [esp + 0x1c], 0
+            fild qword ptr [esp + 0x18]
+            fld dword ptr [esi + 0x28]
+            call _CIfmod
+            fdiv dword ptr [esi + 0x28]
+            fmul qword ptr ds:[0x58a188]
+            fmul qword ptr ds:[0x58a140]
+            call _ftol
+            and eax, 0xffff
+            mov dword ptr [esp + 0x24], eax
+            fild dword ptr [esp + 0x24]
+            fmul qword ptr ds:[0x58a190]
+            fcos
+            fst dword ptr [esp + 0x24]
+            fmul dword ptr [esi + 0x2c]
+            jmp L00478f3d
+    L00478ed8:
+            cmp eax, 2
+            jne L00478f46
+            fld dword ptr [esi + 0x28]
+            fcomp dword ptr ds:[0x58a118]
+            fnstsw ax
+            test ah, 0x40
+            jne L00478f37
+            mov dword ptr [esp + 0x18], ebx
+            mov dword ptr [esp + 0x1c], 0
+            fild qword ptr [esp + 0x18]
+            fld dword ptr [esi + 0x28]
+            call _CIfmod
+            fdiv dword ptr [esi + 0x28]
+            fmul qword ptr ds:[0x58a188]
+            fmul qword ptr ds:[0x58a140]
+            call _ftol
+            and eax, 0xffff
+            mov dword ptr [esp + 0x24], eax
+            fild dword ptr [esp + 0x24]
+            fmul qword ptr ds:[0x58a190]
+            fsin
+            fst dword ptr [esp + 0x24]
+            fmul dword ptr [esi + 0x2c]
+            jmp L00478f3d
+    L00478f37:
+            fld dword ptr ds:[0x58a118]
+    L00478f3d:
+            _emit 0xd9
+        _emit 0x07
+            fadd st(0), st(1)
+            fstp dword ptr [ebp + 0x24]
+            fstp st(0)
+    L00478f46:
+            mov eax, dword ptr [esi + 0x3c]
+            test eax, eax
+            jne L00478fab
+            fld dword ptr [esi + 0x28]
+            fcomp dword ptr ds:[0x58a118]
+            fnstsw ax
+            test ah, 0x40
+            jne L0047900a
+            mov dword ptr [esp + 0x18], ebx
+            mov dword ptr [esp + 0x1c], 0
+            fild qword ptr [esp + 0x18]
+            fld dword ptr [esi + 0x28]
+            call _CIfmod
+            fdiv dword ptr [esi + 0x28]
+            fmul qword ptr ds:[0x58a188]
+            fmul qword ptr ds:[0x58a140]
+            call _ftol
+            and eax, 0xffff
+            mov dword ptr [esp + 0x24], eax
+            fild dword ptr [esp + 0x24]
+            fmul qword ptr ds:[0x58a190]
+            fsin
+            fst dword ptr [esp + 0x24]
+            fmul dword ptr [esi + 0x2c]
+            jmp L00479010
+    L00478fab:
+            cmp eax, 2
+            jne L0047901a
+            fld dword ptr [esi + 0x28]
+            fcomp dword ptr ds:[0x58a118]
+            fnstsw ax
+            test ah, 0x40
+            jne L0047900a
+            mov dword ptr [esp + 0x18], ebx
+            mov dword ptr [esp + 0x1c], 0
+            fild qword ptr [esp + 0x18]
+            fld dword ptr [esi + 0x28]
+            call _CIfmod
+            fdiv dword ptr [esi + 0x28]
+            fmul qword ptr ds:[0x58a188]
+            fmul qword ptr ds:[0x58a140]
+            call _ftol
+            and eax, 0xffff
+            mov dword ptr [esp + 0x24], eax
+            fild dword ptr [esp + 0x24]
+            fmul qword ptr ds:[0x58a190]
+            fcos
+            fst dword ptr [esp + 0x24]
+            fmul dword ptr [esi + 0x2c]
+            jmp L00479010
+    L0047900a:
+            fld dword ptr ds:[0x58a118]
+    L00479010:
+            fld dword ptr [esi + 0x34]
+            fadd st(0), st(1)
+            fstp dword ptr [ebp + 0x28]
+            fstp st(0)
+    L0047901a:
+            mov eax, dword ptr [esi + 0x3c]
+            test eax, eax
+            jne L0047907f
+            fld dword ptr [esi + 0x28]
+            fcomp dword ptr ds:[0x58a118]
+            fnstsw ax
+            test ah, 0x40
+            jne L004790de
+            mov dword ptr [esp + 0x18], ebx
+            mov dword ptr [esp + 0x1c], 0
+            fild qword ptr [esp + 0x18]
+            fld dword ptr [esi + 0x28]
+            call _CIfmod
+            fdiv dword ptr [esi + 0x28]
+            fmul qword ptr ds:[0x58a188]
+            fmul qword ptr ds:[0x58a140]
+            call _ftol
+            and eax, 0xffff
+            mov dword ptr [esp + 0x24], eax
+            fild dword ptr [esp + 0x24]
+            fmul qword ptr ds:[0x58a190]
+            fcos
+            fst dword ptr [esp + 0x24]
+            fmul dword ptr [esi + 0x2c]
+            jmp L004790e4
+    L0047907f:
+            cmp eax, 1
+            jne L004790ee
+            fld dword ptr [esi + 0x28]
+            fcomp dword ptr ds:[0x58a118]
+            fnstsw ax
+            test ah, 0x40
+            jne L004790de
+            mov dword ptr [esp + 0x18], ebx
+            mov dword ptr [esp + 0x1c], 0
+            fild qword ptr [esp + 0x18]
+            fld dword ptr [esi + 0x28]
+            call _CIfmod
+            fdiv dword ptr [esi + 0x28]
+            fmul qword ptr ds:[0x58a188]
+            fmul qword ptr ds:[0x58a140]
+            call _ftol
+            and eax, 0xffff
+            mov dword ptr [esp + 0x24], eax
+            fild dword ptr [esp + 0x24]
+            fmul qword ptr ds:[0x58a190]
+            fsin
+            fst dword ptr [esp + 0x24]
+            fmul dword ptr [esi + 0x2c]
+            jmp L004790e4
+    L004790de:
+            fld dword ptr ds:[0x58a118]
+    L004790e4:
+            fld dword ptr [esi + 0x38]
+            fadd st(0), st(1)
+            fstp dword ptr [ebp + 0x2c]
+            fstp st(0)
+    L004790ee:
+            mov edx, dword ptr [esi + 0xc]
+            add edx, 0x50
+            add esi, 0x50
+            mov eax, dword ptr [edx]
+            mov dword ptr [esi], eax
+            mov ecx, dword ptr [edx + 4]
+            mov dword ptr [esi + 4], ecx
+            mov edx, dword ptr [edx + 8]
+            mov dword ptr [esi + 8], edx
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x10
+            ret 8
+    L00479111:
+            fld dword ptr [esi + 0x2c]
+            fcomp dword ptr ds:[0x58a118]
+            mov edi, dword ptr [esp + 0x24]
+            fnstsw ax
+            test ah, 0x40
+            jne L00479392
+            mov eax, dword ptr [esi + 0x1c]
+            cmp eax, 5
+            jne L0047916b
+            fld dword ptr [esi + 0x28]
+            fcomp dword ptr ds:[0x58a118]
+            fnstsw ax
+            test ah, 0x40
+            jne L00479160
+            mov dword ptr [esp + 0x18], ebx
+            mov dword ptr [esp + 0x1c], ebp
+            fild qword ptr [esp + 0x18]
+            fld dword ptr [esi + 0x28]
+            call _CIfmod
+            fdiv dword ptr [esi + 0x28]
+            fmul dword ptr [esi + 0x2c]
+            jmp L004792d1
+    L00479160:
+            fld qword ptr ds:[0x58a130]
+            jmp L004792d1
+    L0047916b:
+            cmp eax, 3
+            jne L0047917b
+            fld dword ptr [esi + 0x28]
+            fmul dword ptr [esi + 0x2c]
+            jmp L004792d1
+    L0047917b:
+            cmp eax, 4
+            jne L00479188
+            fld dword ptr [esi + 0x28]
+            jmp L004792d1
+    L00479188:
+            cmp eax, ebp
+            jne L004791e6
+            fld dword ptr [esi + 0x28]
+            fcomp dword ptr ds:[0x58a118]
+            fnstsw ax
+            test ah, 0x40
+            jne L004792cb
+            mov dword ptr [esp + 0x18], ebx
+            mov dword ptr [esp + 0x1c], ebp
+            fild qword ptr [esp + 0x18]
+            fld dword ptr [esi + 0x28]
+            call _CIfmod
+            fdiv dword ptr [esi + 0x28]
+            fcom qword ptr ds:[0x58a168]
+            fmul dword ptr ds:[0x58a170]
+            fnstsw ax
+            test ah, 1
+            je L004791d8
+            fsub dword ptr ds:[0x58a150]
+            fmul dword ptr [esi + 0x2c]
+            jmp L004792d1
+    L004791d8:
+            fsubr dword ptr ds:[0x58a174]
+            fmul dword ptr [esi + 0x2c]
+            jmp L004792d1
+    L004791e6:
+            cmp eax, 2
+            jne L0047921b
+            mov dword ptr [esp + 0x18], ebx
+            mov dword ptr [esp + 0x1c], ebp
+            fild qword ptr [esp + 0x18]
+            fld dword ptr [esi + 0x28]
+            call _CIfmod
+            fadd st(0), st(0)
+            fld dword ptr [esi + 0x28]
+            fcompp
+            fld dword ptr [esi + 0x2c]
+            fnstsw ax
+            test ah, 1
+            je L004792d1
+            fchs
+            jmp L004792d1
+    L0047921b:
+            cmp eax, 6
+            jne L00479275
+            mov edx, dword ptr [esi + 0x28]
+            xor ecx, ecx
+            xor eax, eax
+            mov dword ptr [esp + 0x10], ebp
+            mov cl, byte ptr [edx]
+            test ecx, ecx
+            mov dword ptr [esp + 0x18], ecx
+            jle L0047926d
+            mov ecx, dword ptr [edx + 0x24]
+            mov edi, dword ptr [ecx + 0x18cc]
+    L0047923e:
+            mov cl, byte ptr [eax + edx + 1]
+            mov ebx, 1
+            shl ebx, cl
+            test ebx, edi
+            je L00479258
+            mov ebx, 1
+            mov ecx, eax
+            shl ebx, cl
+            add ebp, ebx
+    L00479258:
+            mov ecx, dword ptr [esp + 0x18]
+            inc eax
+            cmp eax, ecx
+            jl L0047923e
+            mov edi, dword ptr [esp + 0x24]
+            mov ebx, dword ptr [esp + 0x14]
+            mov dword ptr [esp + 0x10], ebp
+    L0047926d:
+            fild dword ptr [esp + 0x10]
+            xor ebp, ebp
+            jmp L004792d1
+    L00479275:
+            fld dword ptr [esi + 0x28]
+            fcomp dword ptr ds:[0x58a118]
+            fnstsw ax
+            test ah, 0x40
+            jne L004792cb
+            mov dword ptr [esp + 0x18], ebx
+            mov dword ptr [esp + 0x1c], ebp
+            fild qword ptr [esp + 0x18]
+            fld dword ptr [esi + 0x28]
+            call _CIfmod
+            fdiv dword ptr [esi + 0x28]
+            fmul qword ptr ds:[0x58a188]
+            fmul qword ptr ds:[0x58a140]
+            call _ftol
+            and eax, 0xffff
+            mov dword ptr [esp + 0x18], eax
+            fild dword ptr [esp + 0x18]
+            fmul qword ptr ds:[0x58a190]
+            fsin
+            fst dword ptr [esp + 0x18]
+            fmul dword ptr [esi + 0x2c]
+            jmp L004792d1
+    L004792cb:
+            fld dword ptr ds:[0x58a118]
+    L004792d1:
+            mov eax, dword ptr [esp + 0x28]
+            fadd dword ptr [esi + 0x38]
+            cmp eax, ebp
+            je L0047931b
+            fld st(0)
+            fld st(1)
+            fxch st(1)
+            fstp dword ptr [esi + 0x24]
+            fcomp dword ptr [edi + 0x24]
+            fnstsw ax
+            test ah, 1
+            je L004792f8
+            mov dword ptr [esi + 0x20], 1
+            jmp L00479374
+    L004792f8:
+            mov edx, dword ptr [esi + 0xc]
+            mov eax, dword ptr [esi + 0x38]
+            add edx, 0x50
+            mov dword ptr [esi + 0x20], 2
+            mov dword ptr [edx], eax
+            mov ecx, dword ptr [esi + 0x3c]
+            mov dword ptr [edx + 4], ecx
+            mov eax, dword ptr [esi + 0x40]
+            mov dword ptr [edx + 8], eax
+            fstp dword ptr [edi + 0x24]
+            jmp L00479392
+    L0047931b:
+            mov eax, dword ptr [esi + 0x20]
+            cmp eax, ebp
+            jne L0047933e
+            mov ecx, dword ptr [esi + 0xc]
+            mov edx, dword ptr [esi + 0x38]
+            add ecx, 0x50
+            mov dword ptr [ecx], edx
+            mov eax, dword ptr [esi + 0x3c]
+            mov dword ptr [ecx + 4], eax
+            mov edx, dword ptr [esi + 0x40]
+            mov dword ptr [ecx + 8], edx
+            fstp dword ptr [edi + 0x24]
+            jmp L00479392
+    L0047933e:
+            fcom dword ptr [esi + 0x24]
+            cmp eax, 1
+            fnstsw ax
+            jne L0047936c
+            test ah, 1
+            je L00479390
+            mov eax, dword ptr [esi + 0xc]
+            mov ecx, dword ptr [esi + 0x38]
+            add eax, 0x50
+            mov dword ptr [esi + 0x20], ebp
+            mov dword ptr [eax], ecx
+            mov edx, dword ptr [esi + 0x3c]
+            mov dword ptr [eax + 4], edx
+            mov ecx, dword ptr [esi + 0x40]
+            mov dword ptr [eax + 8], ecx
+            fstp dword ptr [edi + 0x24]
+            jmp L00479392
+    L0047936c:
+            test ah, 0x41
+            jne L00479390
+            mov dword ptr [esi + 0x20], ebp
+    L00479374:
+            mov edx, dword ptr [esi + 0xc]
+            mov eax, dword ptr [esi + 0x38]
+            add edx, 0x50
+            mov dword ptr [edx], eax
+            mov ecx, dword ptr [esi + 0x3c]
+            mov dword ptr [edx + 4], ecx
+            mov eax, dword ptr [esi + 0x40]
+            mov dword ptr [edx + 8], eax
+            fstp dword ptr [edi + 0x24]
+            jmp L00479392
+    L00479390:
+            fstp st(0)
+    L00479392:
+            fld dword ptr [esi + 0x30]
+            fcomp dword ptr ds:[0x58a118]
+            fnstsw ax
+            test ah, 0x40
+            jne L004795fb
+            mov eax, dword ptr [esi + 0x1c]
+            cmp eax, 5
+            jne L004793e8
+            fld dword ptr [esi + 0x28]
+            fcomp dword ptr ds:[0x58a118]
+            fnstsw ax
+            test ah, 0x40
+            jne L004793dd
+            mov dword ptr [esp + 0x18], ebx
+            mov dword ptr [esp + 0x1c], ebp
+            fild qword ptr [esp + 0x18]
+            fld dword ptr [esi + 0x28]
+            call _CIfmod
+            fdiv dword ptr [esi + 0x28]
+            fmul dword ptr [esi + 0x30]
+            jmp L0047954e
+    L004793dd:
+            fld qword ptr ds:[0x58a130]
+            jmp L0047954e
+    L004793e8:
+            cmp eax, 3
+            jne L004793f8
+            fld dword ptr [esi + 0x28]
+            fmul dword ptr [esi + 0x30]
+            jmp L0047954e
+    L004793f8:
+            cmp eax, 4
+            jne L00479405
+            fld dword ptr [esi + 0x28]
+            jmp L0047954e
+    L00479405:
+            cmp eax, ebp
+            jne L00479463
+            fld dword ptr [esi + 0x28]
+            fcomp dword ptr ds:[0x58a118]
+            fnstsw ax
+            test ah, 0x40
+            jne L00479548
+            mov dword ptr [esp + 0x18], ebx
+            mov dword ptr [esp + 0x1c], ebp
+            fild qword ptr [esp + 0x18]
+            fld dword ptr [esi + 0x28]
+            call _CIfmod
+            fdiv dword ptr [esi + 0x28]
+            fcom qword ptr ds:[0x58a168]
+            fmul dword ptr ds:[0x58a170]
+            fnstsw ax
+            test ah, 1
+            je L00479455
+            fsub dword ptr ds:[0x58a150]
+            fmul dword ptr [esi + 0x30]
+            jmp L0047954e
+    L00479455:
+            fsubr dword ptr ds:[0x58a174]
+            fmul dword ptr [esi + 0x30]
+            jmp L0047954e
+    L00479463:
+            cmp eax, 2
+            jne L00479498
+            mov dword ptr [esp + 0x18], ebx
+            mov dword ptr [esp + 0x1c], ebp
+            fild qword ptr [esp + 0x18]
+            fld dword ptr [esi + 0x28]
+            call _CIfmod
+            fadd st(0), st(0)
+            fld dword ptr [esi + 0x28]
+            fcompp
+            fld dword ptr [esi + 0x30]
+            fnstsw ax
+            test ah, 1
+            je L0047954e
+            fchs
+            jmp L0047954e
+    L00479498:
+            cmp eax, 6
+            jne L004794f2
+            mov edx, dword ptr [esi + 0x28]
+            xor ecx, ecx
+            xor eax, eax
+            mov dword ptr [esp + 0x10], ebp
+            mov cl, byte ptr [edx]
+            test ecx, ecx
+            mov dword ptr [esp + 0x18], ecx
+            jle L004794ea
+            mov ecx, dword ptr [edx + 0x24]
+            mov edi, dword ptr [ecx + 0x18cc]
+    L004794bb:
+            mov cl, byte ptr [eax + edx + 1]
+            mov ebx, 1
+            shl ebx, cl
+            test ebx, edi
+            je L004794d5
+            mov ebx, 1
+            mov ecx, eax
+            shl ebx, cl
+            add ebp, ebx
+    L004794d5:
+            mov ecx, dword ptr [esp + 0x18]
+            inc eax
+            cmp eax, ecx
+            jl L004794bb
+            mov ebx, dword ptr [esp + 0x14]
+            mov edi, dword ptr [esp + 0x24]
+            mov dword ptr [esp + 0x10], ebp
+    L004794ea:
+            fild dword ptr [esp + 0x10]
+            xor ebp, ebp
+            jmp L0047954e
+    L004794f2:
+            fld dword ptr [esi + 0x28]
+            fcomp dword ptr ds:[0x58a118]
+            fnstsw ax
+            test ah, 0x40
+            jne L00479548
+            mov dword ptr [esp + 0x18], ebx
+            mov dword ptr [esp + 0x1c], ebp
+            fild qword ptr [esp + 0x18]
+            fld dword ptr [esi + 0x28]
+            call _CIfmod
+            fdiv dword ptr [esi + 0x28]
+            fmul qword ptr ds:[0x58a188]
+            fmul qword ptr ds:[0x58a140]
+            call _ftol
+            and eax, 0xffff
+            mov dword ptr [esp + 0x18], eax
+            fild dword ptr [esp + 0x18]
+            fmul qword ptr ds:[0x58a190]
+            fsin
+            fst dword ptr [esp + 0x18]
+            fmul dword ptr [esi + 0x30]
+            jmp L0047954e
+    L00479548:
+            fld dword ptr ds:[0x58a118]
+    L0047954e:
+            mov eax, dword ptr [esp + 0x28]
+            fadd dword ptr [esi + 0x3c]
+            cmp eax, ebp
+            je L0047957e
+            fld st(0)
+            fld st(1)
+            fxch st(1)
+            fstp dword ptr [esi + 0x24]
+            fcomp dword ptr [edi + 0x28]
+            fnstsw ax
+            test ah, 1
+            je L00479575
+            mov dword ptr [esi + 0x20], 1
+            jmp L004795db
+    L00479575:
+            mov dword ptr [esi + 0x20], 2
+            jmp L004795db
+    L0047957e:
+            mov eax, dword ptr [esi + 0x20]
+            cmp eax, ebp
+            jne L004795a3
+            mov ecx, dword ptr [esi + 0xc]
+            lea eax, [esi + 0x38]
+            add ecx, 0x50
+            mov edx, dword ptr [eax]
+            mov dword ptr [ecx], edx
+            mov edx, dword ptr [eax + 4]
+            mov dword ptr [ecx + 4], edx
+            mov eax, dword ptr [eax + 8]
+            mov dword ptr [ecx + 8], eax
+            fstp dword ptr [edi + 0x28]
+            jmp L004795fb
+    L004795a3:
+            fcom dword ptr [esi + 0x24]
+            cmp eax, 1
+            fnstsw ax
+            jne L004795d3
+            test ah, 1
+            je L004795f9
+            mov edx, dword ptr [esi + 0xc]
+            lea ecx, [esi + 0x38]
+            add edx, 0x50
+            mov dword ptr [esi + 0x20], ebp
+            mov eax, dword ptr [ecx]
+            mov dword ptr [edx], eax
+            mov eax, dword ptr [ecx + 4]
+            mov dword ptr [edx + 4], eax
+            mov ecx, dword ptr [ecx + 8]
+            mov dword ptr [edx + 8], ecx
+            fstp dword ptr [edi + 0x28]
+            jmp L004795fb
+    L004795d3:
+            test ah, 0x41
+            jne L004795f9
+            mov dword ptr [esi + 0x20], ebp
+    L004795db:
+            mov eax, dword ptr [esi + 0xc]
+            lea edx, [esi + 0x38]
+            add eax, 0x50
+            mov ecx, dword ptr [edx]
+            mov dword ptr [eax], ecx
+            mov ecx, dword ptr [edx + 4]
+            mov dword ptr [eax + 4], ecx
+            mov edx, dword ptr [edx + 8]
+            mov dword ptr [eax + 8], edx
+            fstp dword ptr [edi + 0x28]
+            jmp L004795fb
+    L004795f9:
+            fstp st(0)
+    L004795fb:
+            fld dword ptr [esi + 0x34]
+            fcomp dword ptr ds:[0x58a118]
+            fnstsw ax
+            test ah, 0x40
+            jne L00479860
+            mov eax, dword ptr [esi + 0x1c]
+            cmp eax, 5
+            jne L00479651
+            fld dword ptr [esi + 0x28]
+            fcomp dword ptr ds:[0x58a118]
+            fnstsw ax
+            test ah, 0x40
+            jne L00479646
+            mov dword ptr [esp + 0x18], ebx
+            mov dword ptr [esp + 0x1c], ebp
+            fild qword ptr [esp + 0x18]
+            fld dword ptr [esi + 0x28]
+            call _CIfmod
+            fdiv dword ptr [esi + 0x28]
+            fmul dword ptr [esi + 0x34]
+            jmp L004797b3
+    L00479646:
+            fld qword ptr ds:[0x58a130]
+            jmp L004797b3
+    L00479651:
+            cmp eax, 3
+            jne L00479661
+            fld dword ptr [esi + 0x28]
+            fmul dword ptr [esi + 0x34]
+            jmp L004797b3
+    L00479661:
+            cmp eax, 4
+            jne L0047966e
+            fld dword ptr [esi + 0x28]
+            jmp L004797b3
+    L0047966e:
+            cmp eax, ebp
+            jne L004796cc
+            fld dword ptr [esi + 0x28]
+            fcomp dword ptr ds:[0x58a118]
+            fnstsw ax
+            test ah, 0x40
+            jne L004797ad
+            mov dword ptr [esp + 0x18], ebx
+            mov dword ptr [esp + 0x1c], ebp
+            fild qword ptr [esp + 0x18]
+            fld dword ptr [esi + 0x28]
+            call _CIfmod
+            fdiv dword ptr [esi + 0x28]
+            fcom qword ptr ds:[0x58a168]
+            fmul dword ptr ds:[0x58a170]
+            fnstsw ax
+            test ah, 1
+            je L004796be
+            fsub dword ptr ds:[0x58a150]
+            fmul dword ptr [esi + 0x34]
+            jmp L004797b3
+    L004796be:
+            fsubr dword ptr ds:[0x58a174]
+            fmul dword ptr [esi + 0x34]
+            jmp L004797b3
+    L004796cc:
+            cmp eax, 2
+            jne L00479701
+            mov dword ptr [esp + 0x18], ebx
+            mov dword ptr [esp + 0x1c], ebp
+            fild qword ptr [esp + 0x18]
+            fld dword ptr [esi + 0x28]
+            call _CIfmod
+            fadd st(0), st(0)
+            fld dword ptr [esi + 0x28]
+            fcompp
+            fld dword ptr [esi + 0x34]
+            fnstsw ax
+            test ah, 1
+            je L004797b3
+            fchs
+            jmp L004797b3
+    L00479701:
+            cmp eax, 6
+            jne L00479757
+            mov edx, dword ptr [esi + 0x28]
+            xor ecx, ecx
+            xor eax, eax
+            mov dword ptr [esp + 0x14], ebp
+            mov cl, byte ptr [edx]
+            cmp ecx, ebp
+            mov dword ptr [esp + 0x18], ecx
+            jle L0047974f
+            mov ecx, dword ptr [edx + 0x24]
+            mov edi, dword ptr [ecx + 0x18cc]
+    L00479724:
+            mov cl, byte ptr [eax + edx + 1]
+            mov ebx, 1
+            shl ebx, cl
+            test ebx, edi
+            je L0047973e
+            mov ebx, 1
+            mov ecx, eax
+            shl ebx, cl
+            add ebp, ebx
+    L0047973e:
+            mov ecx, dword ptr [esp + 0x18]
+            inc eax
+            cmp eax, ecx
+            jl L00479724
+            mov edi, dword ptr [esp + 0x24]
+            mov dword ptr [esp + 0x14], ebp
+    L0047974f:
+            fild dword ptr [esp + 0x14]
+            xor ebp, ebp
+            jmp L004797b3
+    L00479757:
+            fld dword ptr [esi + 0x28]
+            fcomp dword ptr ds:[0x58a118]
+            fnstsw ax
+            test ah, 0x40
+            jne L004797ad
+            mov dword ptr [esp + 0x18], ebx
+            mov dword ptr [esp + 0x1c], ebp
+            fild qword ptr [esp + 0x18]
+            fld dword ptr [esi + 0x28]
+            call _CIfmod
+            fdiv dword ptr [esi + 0x28]
+            fmul qword ptr ds:[0x58a188]
+            fmul qword ptr ds:[0x58a140]
+            call _ftol
+            and eax, 0xffff
+            mov dword ptr [esp + 0x24], eax
+            fild dword ptr [esp + 0x24]
+            fmul qword ptr ds:[0x58a190]
+            fsin
+            fst dword ptr [esp + 0x24]
+            fmul dword ptr [esi + 0x34]
+            jmp L004797b3
+    L004797ad:
+            fld dword ptr ds:[0x58a118]
+    L004797b3:
+            mov eax, dword ptr [esp + 0x28]
+            fadd dword ptr [esi + 0x40]
+            cmp eax, ebp
+            je L004797e3
+            fld st(0)
+            fld st(1)
+            fxch st(1)
+            fstp dword ptr [esi + 0x24]
+            fcomp dword ptr [edi + 0x2c]
+            fnstsw ax
+            test ah, 1
+            je L004797da
+            mov dword ptr [esi + 0x20], 1
+            jmp L00479840
+    L004797da:
+            mov dword ptr [esi + 0x20], 2
+            jmp L00479840
+    L004797e3:
+            mov eax, dword ptr [esi + 0x20]
+            cmp eax, ebp
+            jne L00479808
+            mov ecx, dword ptr [esi + 0xc]
+            lea eax, [esi + 0x38]
+            add ecx, 0x50
+            mov edx, dword ptr [eax]
+            mov dword ptr [ecx], edx
+            mov edx, dword ptr [eax + 4]
+            mov dword ptr [ecx + 4], edx
+            mov eax, dword ptr [eax + 8]
+            mov dword ptr [ecx + 8], eax
+            fstp dword ptr [edi + 0x2c]
+            jmp L00479860
+    L00479808:
+            fcom dword ptr [esi + 0x24]
+            cmp eax, 1
+            fnstsw ax
+            jne L00479838
+            test ah, 1
+            je L0047985e
+            mov edx, dword ptr [esi + 0xc]
+            lea ecx, [esi + 0x38]
+            add edx, 0x50
+            mov dword ptr [esi + 0x20], ebp
+            mov eax, dword ptr [ecx]
+            mov dword ptr [edx], eax
+            mov eax, dword ptr [ecx + 4]
+            mov dword ptr [edx + 4], eax
+            mov ecx, dword ptr [ecx + 8]
+            mov dword ptr [edx + 8], ecx
+            fstp dword ptr [edi + 0x2c]
+            jmp L00479860
+    L00479838:
+            test ah, 0x41
+            jne L0047985e
+            mov dword ptr [esi + 0x20], ebp
+    L00479840:
+            mov eax, dword ptr [esi + 0xc]
+            lea edx, [esi + 0x38]
+            add eax, 0x50
+            mov ecx, dword ptr [edx]
+            mov dword ptr [eax], ecx
+            mov ecx, dword ptr [edx + 4]
+            mov dword ptr [eax + 4], ecx
+            mov edx, dword ptr [edx + 8]
+            mov dword ptr [eax + 8], edx
+            fstp dword ptr [edi + 0x2c]
+            jmp L00479860
+    L0047985e:
+            fstp st(0)
+    L00479860:
+            mov eax, dword ptr [esi + 0xc]
+            add eax, 0x50
+            add esi, 0x50
+            mov ecx, dword ptr [eax]
+            mov dword ptr [esi], ecx
+            mov edx, dword ptr [eax + 4]
+            mov dword ptr [esi + 4], edx
+            mov eax, dword ptr [eax + 8]
+            mov dword ptr [esi + 8], eax
+    L00479879:
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x10
+            ret 8
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 
 // FUNCTION: CARMA2_HW 0x00479890
-void C2_HOOK_FASTCALL ObjectGrooveBastard(tGroovidelic_spec* pGroove, tU32 pTime, br_matrix34* pMat, int pInterrupt_it) {
+void C2_NAKED C2_HOOK_FASTCALL ObjectGrooveBastard(tGroovidelic_spec* pGroove, tU32 pTime, br_matrix34* pMat, int pInterrupt_it) {
+#ifndef CARPOCALYPSE2_MATCHING
     int rock_it;
     br_scalar x_size;
     br_scalar y_size;
@@ -7837,6 +8992,2006 @@ void C2_HOOK_FASTCALL ObjectGrooveBastard(tGroovidelic_spec* pGroove, tU32 pTime
     default:
         break;
     }
+#else
+    __asm {
+            sub esp, 0x20
+            push ebx
+            push ebp
+            push esi
+            mov esi, ecx
+            mov ebx, edx
+            push edi
+            mov eax, dword ptr [esi + 0x5c]
+            mov dword ptr [esp + 0x10], ebx
+            cmp eax, 3
+            ja L0047b0b8
+            xor edi, edi
+            jmp dword ptr [eax*4 + 0x47b0c4]
+            mov eax, dword ptr [esi + 0x70]
+            xor edi, edi
+            sub eax, edi
+            je L00479c29
+            dec eax
+            je L00479a7c
+            dec eax
+            jne L0047b0b8
+            mov eax, dword ptr [esi + 0x60]
+            cmp eax, 5
+            jne L0047990d
+            fld dword ptr [esi + 0x6c]
+            fcomp dword ptr ds:[0x58a118]
+            fnstsw ax
+            test ah, 0x40
+            jne L00479a71
+            mov dword ptr [esp + 0x28], ebx
+            mov dword ptr [esp + 0x2c], edi
+            fild qword ptr [esp + 0x28]
+            fld dword ptr [esi + 0x6c]
+            call _CIfmod
+            fdiv dword ptr [esi + 0x6c]
+            fmul qword ptr ds:[0x58a188]
+            jmp L0047a006
+    L0047990d:
+            cmp eax, 3
+            jne L00479920
+            fld dword ptr [esi + 0x6c]
+            fmul qword ptr ds:[0x58a188]
+            jmp L0047a006
+    L00479920:
+            cmp eax, 4
+            jne L0047992d
+            fld dword ptr [esi + 0x6c]
+            jmp L0047a006
+    L0047992d:
+            cmp eax, edi
+            jne L00479991
+            fld dword ptr [esi + 0x6c]
+            fcomp dword ptr ds:[0x58a118]
+            fnstsw ax
+            test ah, 0x40
+            jne L00479a71
+            mov dword ptr [esp + 0x28], ebx
+            mov dword ptr [esp + 0x2c], edi
+            fild qword ptr [esp + 0x28]
+            fld dword ptr [esi + 0x6c]
+            call _CIfmod
+            fdiv dword ptr [esi + 0x6c]
+            fcom qword ptr ds:[0x58a168]
+            fmul dword ptr ds:[0x58a170]
+            fnstsw ax
+            test ah, 1
+            je L00479980
+            fsub dword ptr ds:[0x58a150]
+            fmul qword ptr ds:[0x58a188]
+            jmp L0047a006
+    L00479980:
+            fsubr dword ptr ds:[0x58a174]
+            fmul qword ptr ds:[0x58a188]
+            jmp L0047a006
+    L00479991:
+            cmp eax, 2
+            jne L004799ce
+            mov dword ptr [esp + 0x28], ebx
+            mov dword ptr [esp + 0x2c], edi
+            fild qword ptr [esp + 0x28]
+            fld dword ptr [esi + 0x6c]
+            call _CIfmod
+            fadd st(0), st(0)
+            fld dword ptr [esi + 0x6c]
+            fcompp
+            fnstsw ax
+            test ah, 1
+            je L004799c3
+            fld qword ptr ds:[0x58a1b0]
+            jmp L0047a006
+    L004799c3:
+            fld qword ptr ds:[0x58a188]
+            jmp L0047a006
+    L004799ce:
+            cmp eax, 6
+            jne L00479a19
+            mov esi, dword ptr [esi + 0x6c]
+            xor ebx, ebx
+            xor eax, eax
+            mov dword ptr [esp + 0x38], edi
+            mov bl, byte ptr [esi]
+            cmp ebx, edi
+            jle L00479a10
+            mov ecx, dword ptr [esi + 0x24]
+            mov edx, dword ptr [ecx + 0x18cc]
+    L004799ed:
+            mov cl, byte ptr [eax + esi + 1]
+            mov ebp, 1
+            shl ebp, cl
+            test ebp, edx
+            je L00479a07
+            mov ebp, 1
+            mov ecx, eax
+            shl ebp, cl
+            add edi, ebp
+    L00479a07:
+            inc eax
+            cmp eax, ebx
+            jl L004799ed
+            mov dword ptr [esp + 0x38], edi
+    L00479a10:
+            fild dword ptr [esp + 0x38]
+            jmp L0047a006
+    L00479a19:
+            fld dword ptr [esi + 0x6c]
+            fcomp dword ptr ds:[0x58a118]
+            fnstsw ax
+            test ah, 0x40
+            jne L00479a71
+            mov dword ptr [esp + 0x28], ebx
+            mov dword ptr [esp + 0x2c], edi
+            fild qword ptr [esp + 0x28]
+            fld dword ptr [esi + 0x6c]
+            call _CIfmod
+            fdiv dword ptr [esi + 0x6c]
+            fmul qword ptr ds:[0x58a188]
+            fmul qword ptr ds:[0x58a140]
+            call _ftol
+            and eax, 0xffff
+            mov dword ptr [esp + 0x38], eax
+            fild dword ptr [esp + 0x38]
+            fmul qword ptr ds:[0x58a190]
+            fsin
+            fmul qword ptr ds:[0x58a188]
+            jmp L0047a006
+    L00479a71:
+            fld qword ptr ds:[0x58a130]
+            jmp L0047a006
+    L00479a7c:
+            mov eax, dword ptr [esi + 0x60]
+            cmp eax, 5
+            jne L00479aba
+            fld dword ptr [esi + 0x6c]
+            fcomp dword ptr ds:[0x58a118]
+            fnstsw ax
+            test ah, 0x40
+            jne L00479c1e
+            mov dword ptr [esp + 0x28], ebx
+            mov dword ptr [esp + 0x2c], edi
+            fild qword ptr [esp + 0x28]
+            fld dword ptr [esi + 0x6c]
+            call _CIfmod
+            fdiv dword ptr [esi + 0x6c]
+            fmul qword ptr ds:[0x58a188]
+            jmp L0047a029
+    L00479aba:
+            cmp eax, 3
+            jne L00479acd
+            fld dword ptr [esi + 0x6c]
+            fmul qword ptr ds:[0x58a188]
+            jmp L0047a029
+    L00479acd:
+            cmp eax, 4
+            jne L00479ada
+            fld dword ptr [esi + 0x6c]
+            jmp L0047a029
+    L00479ada:
+            cmp eax, edi
+            jne L00479b3e
+            fld dword ptr [esi + 0x6c]
+            fcomp dword ptr ds:[0x58a118]
+            fnstsw ax
+            test ah, 0x40
+            jne L00479c1e
+            mov dword ptr [esp + 0x28], ebx
+            mov dword ptr [esp + 0x2c], edi
+            fild qword ptr [esp + 0x28]
+            fld dword ptr [esi + 0x6c]
+            call _CIfmod
+            fdiv dword ptr [esi + 0x6c]
+            fcom qword ptr ds:[0x58a168]
+            fmul dword ptr ds:[0x58a170]
+            fnstsw ax
+            test ah, 1
+            je L00479b2d
+            fsub dword ptr ds:[0x58a150]
+            fmul qword ptr ds:[0x58a188]
+            jmp L0047a029
+    L00479b2d:
+            fsubr dword ptr ds:[0x58a174]
+            fmul qword ptr ds:[0x58a188]
+            jmp L0047a029
+    L00479b3e:
+            cmp eax, 2
+            jne L00479b7b
+            mov dword ptr [esp + 0x28], ebx
+            mov dword ptr [esp + 0x2c], edi
+            fild qword ptr [esp + 0x28]
+            fld dword ptr [esi + 0x6c]
+            call _CIfmod
+            fadd st(0), st(0)
+            fld dword ptr [esi + 0x6c]
+            fcompp
+            fnstsw ax
+            test ah, 1
+            je L00479b70
+            fld qword ptr ds:[0x58a1b0]
+            jmp L0047a029
+    L00479b70:
+            fld qword ptr ds:[0x58a188]
+            jmp L0047a029
+    L00479b7b:
+            cmp eax, 6
+            jne L00479bc6
+            mov esi, dword ptr [esi + 0x6c]
+            xor ebx, ebx
+            xor eax, eax
+            mov dword ptr [esp + 0x38], edi
+            mov bl, byte ptr [esi]
+            cmp ebx, edi
+            jle L00479bbd
+            mov edx, dword ptr [esi + 0x24]
+            mov edx, dword ptr [edx + 0x18cc]
+    L00479b9a:
+            mov cl, byte ptr [eax + esi + 1]
+            mov ebp, 1
+            shl ebp, cl
+            test ebp, edx
+            je L00479bb4
+            mov ebp, 1
+            mov ecx, eax
+            shl ebp, cl
+            add edi, ebp
+    L00479bb4:
+            inc eax
+            cmp eax, ebx
+            jl L00479b9a
+            mov dword ptr [esp + 0x38], edi
+    L00479bbd:
+            fild dword ptr [esp + 0x38]
+            jmp L0047a029
+    L00479bc6:
+            fld dword ptr [esi + 0x6c]
+            fcomp dword ptr ds:[0x58a118]
+            fnstsw ax
+            test ah, 0x40
+            jne L00479c1e
+            mov dword ptr [esp + 0x28], ebx
+            mov dword ptr [esp + 0x2c], edi
+            fild qword ptr [esp + 0x28]
+            fld dword ptr [esi + 0x6c]
+            call _CIfmod
+            fdiv dword ptr [esi + 0x6c]
+            fmul qword ptr ds:[0x58a188]
+            fmul qword ptr ds:[0x58a140]
+            call _ftol
+            and eax, 0xffff
+            mov dword ptr [esp + 0x38], eax
+            fild dword ptr [esp + 0x38]
+            fmul qword ptr ds:[0x58a190]
+            fsin
+            fmul qword ptr ds:[0x58a188]
+            jmp L0047a029
+    L00479c1e:
+            fld qword ptr ds:[0x58a130]
+            jmp L0047a029
+    L00479c29:
+            mov eax, dword ptr [esi + 0x60]
+            cmp eax, 5
+            jne L00479c67
+            fld dword ptr [esi + 0x6c]
+            fcomp dword ptr ds:[0x58a118]
+            fnstsw ax
+            test ah, 0x40
+            jne L00479dcb
+            mov dword ptr [esp + 0x28], ebx
+            mov dword ptr [esp + 0x2c], edi
+            fild qword ptr [esp + 0x28]
+            fld dword ptr [esi + 0x6c]
+            call _CIfmod
+            fdiv dword ptr [esi + 0x6c]
+            fmul qword ptr ds:[0x58a188]
+            jmp L0047a04c
+    L00479c67:
+            cmp eax, 3
+            jne L00479c7a
+            fld dword ptr [esi + 0x6c]
+            fmul qword ptr ds:[0x58a188]
+            jmp L0047a04c
+    L00479c7a:
+            cmp eax, 4
+            jne L00479c87
+            fld dword ptr [esi + 0x6c]
+            jmp L0047a04c
+    L00479c87:
+            cmp eax, edi
+            jne L00479ceb
+            fld dword ptr [esi + 0x6c]
+            fcomp dword ptr ds:[0x58a118]
+            fnstsw ax
+            test ah, 0x40
+            jne L00479dcb
+            mov dword ptr [esp + 0x28], ebx
+            mov dword ptr [esp + 0x2c], edi
+            fild qword ptr [esp + 0x28]
+            fld dword ptr [esi + 0x6c]
+            call _CIfmod
+            fdiv dword ptr [esi + 0x6c]
+            fcom qword ptr ds:[0x58a168]
+            fmul dword ptr ds:[0x58a170]
+            fnstsw ax
+            test ah, 1
+            je L00479cda
+            fsub dword ptr ds:[0x58a150]
+            fmul qword ptr ds:[0x58a188]
+            jmp L0047a04c
+    L00479cda:
+            fsubr dword ptr ds:[0x58a174]
+            fmul qword ptr ds:[0x58a188]
+            jmp L0047a04c
+    L00479ceb:
+            cmp eax, 2
+            jne L00479d28
+            mov dword ptr [esp + 0x28], ebx
+            mov dword ptr [esp + 0x2c], edi
+            fild qword ptr [esp + 0x28]
+            fld dword ptr [esi + 0x6c]
+            call _CIfmod
+            fadd st(0), st(0)
+            fld dword ptr [esi + 0x6c]
+            fcompp
+            fnstsw ax
+            test ah, 1
+            je L00479d1d
+            fld qword ptr ds:[0x58a1b0]
+            jmp L0047a04c
+    L00479d1d:
+            fld qword ptr ds:[0x58a188]
+            jmp L0047a04c
+    L00479d28:
+            cmp eax, 6
+            jne L00479d73
+            mov esi, dword ptr [esi + 0x6c]
+            xor ebx, ebx
+            xor eax, eax
+            mov dword ptr [esp + 0x38], edi
+            mov bl, byte ptr [esi]
+            cmp ebx, edi
+            jle L00479d6a
+            mov ecx, dword ptr [esi + 0x24]
+            mov edx, dword ptr [ecx + 0x18cc]
+    L00479d47:
+            mov cl, byte ptr [eax + esi + 1]
+            mov ebp, 1
+            shl ebp, cl
+            test ebp, edx
+            je L00479d61
+            mov ebp, 1
+            mov ecx, eax
+            shl ebp, cl
+            add edi, ebp
+    L00479d61:
+            inc eax
+            cmp eax, ebx
+            jl L00479d47
+            mov dword ptr [esp + 0x38], edi
+    L00479d6a:
+            fild dword ptr [esp + 0x38]
+            jmp L0047a04c
+    L00479d73:
+            fld dword ptr [esi + 0x6c]
+            fcomp dword ptr ds:[0x58a118]
+            fnstsw ax
+            test ah, 0x40
+            jne L00479dcb
+            mov dword ptr [esp + 0x28], ebx
+            mov dword ptr [esp + 0x2c], edi
+            fild qword ptr [esp + 0x28]
+            fld dword ptr [esi + 0x6c]
+            call _CIfmod
+            fdiv dword ptr [esi + 0x6c]
+            fmul qword ptr ds:[0x58a188]
+            fmul qword ptr ds:[0x58a140]
+            call _ftol
+            and eax, 0xffff
+            mov dword ptr [esp + 0x38], eax
+            fild dword ptr [esp + 0x38]
+            fmul qword ptr ds:[0x58a190]
+            fsin
+            fmul qword ptr ds:[0x58a188]
+            jmp L0047a04c
+    L00479dcb:
+            fld qword ptr ds:[0x58a130]
+            jmp L0047a04c
+            mov eax, dword ptr [esi + 0x60]
+            mov edi, 1
+            xor ebp, ebp
+            cmp eax, 5
+            mov dword ptr [esp + 0x20], edi
+            jne L00479e23
+            fld dword ptr [esi + 0x6c]
+            fcomp dword ptr ds:[0x58a118]
+            fnstsw ax
+            test ah, 0x40
+            jne L00479e18
+            mov dword ptr [esp + 0x28], ebx
+            mov dword ptr [esp + 0x2c], ebp
+            fild qword ptr [esp + 0x28]
+            fld dword ptr [esi + 0x6c]
+            call _CIfmod
+            fdiv dword ptr [esi + 0x6c]
+            fmul dword ptr [esi + 0x70]
+            jmp L00479f85
+    L00479e18:
+            fld qword ptr ds:[0x58a130]
+            jmp L00479f85
+    L00479e23:
+            cmp eax, 3
+            jne L00479e33
+            fld dword ptr [esi + 0x6c]
+            fmul dword ptr [esi + 0x70]
+            jmp L00479f85
+    L00479e33:
+            cmp eax, 4
+            jne L00479e40
+            fld dword ptr [esi + 0x6c]
+            jmp L00479f85
+    L00479e40:
+            cmp eax, ebp
+            jne L00479e9e
+            fld dword ptr [esi + 0x6c]
+            fcomp dword ptr ds:[0x58a118]
+            fnstsw ax
+            test ah, 0x40
+            jne L00479f7f
+            mov dword ptr [esp + 0x28], ebx
+            mov dword ptr [esp + 0x2c], ebp
+            fild qword ptr [esp + 0x28]
+            fld dword ptr [esi + 0x6c]
+            call _CIfmod
+            fdiv dword ptr [esi + 0x6c]
+            fcom qword ptr ds:[0x58a168]
+            fmul dword ptr ds:[0x58a170]
+            fnstsw ax
+            test ah, 1
+            je L00479e90
+            fsub dword ptr ds:[0x58a150]
+            fmul dword ptr [esi + 0x70]
+            jmp L00479f85
+    L00479e90:
+            fsubr dword ptr ds:[0x58a174]
+            fmul dword ptr [esi + 0x70]
+            jmp L00479f85
+    L00479e9e:
+            cmp eax, 2
+            jne L00479ed3
+            mov dword ptr [esp + 0x28], ebx
+            mov dword ptr [esp + 0x2c], ebp
+            fild qword ptr [esp + 0x28]
+            fld dword ptr [esi + 0x6c]
+            call _CIfmod
+            fadd st(0), st(0)
+            fld dword ptr [esi + 0x6c]
+            fcompp
+            fld dword ptr [esi + 0x70]
+            fnstsw ax
+            test ah, 1
+            je L00479f85
+            fchs
+            jmp L00479f85
+    L00479ed3:
+            cmp eax, 6
+            jne L00479f29
+            mov edx, dword ptr [esi + 0x6c]
+            xor ecx, ecx
+            xor eax, eax
+            mov dword ptr [esp + 0x10], ebp
+            mov cl, byte ptr [edx]
+            cmp ecx, ebp
+            mov dword ptr [esp + 0x28], ecx
+            jle L00479f1d
+            mov ecx, dword ptr [edx + 0x24]
+            mov edi, dword ptr [ecx + 0x18cc]
+    L00479ef6:
+            mov cl, byte ptr [eax + edx + 1]
+            mov ebx, 1
+            shl ebx, cl
+            test ebx, edi
+            je L00479f10
+            mov ebx, 1
+            mov ecx, eax
+            shl ebx, cl
+            add ebp, ebx
+    L00479f10:
+            mov ecx, dword ptr [esp + 0x28]
+            inc eax
+            cmp eax, ecx
+            jl L00479ef6
+            mov dword ptr [esp + 0x10], ebp
+    L00479f1d:
+            fild dword ptr [esp + 0x10]
+            mov edi, dword ptr [esp + 0x20]
+            xor ebp, ebp
+            jmp L00479f85
+    L00479f29:
+            fld dword ptr [esi + 0x6c]
+            fcomp dword ptr ds:[0x58a118]
+            fnstsw ax
+            test ah, 0x40
+            jne L00479f7f
+            mov dword ptr [esp + 0x28], ebx
+            mov dword ptr [esp + 0x2c], ebp
+            fild qword ptr [esp + 0x28]
+            fld dword ptr [esi + 0x6c]
+            call _CIfmod
+            fdiv dword ptr [esi + 0x6c]
+            fmul qword ptr ds:[0x58a188]
+            fmul qword ptr ds:[0x58a140]
+            call _ftol
+            and eax, 0xffff
+            mov dword ptr [esp + 0x28], eax
+            fild dword ptr [esp + 0x28]
+            fmul qword ptr ds:[0x58a190]
+            fsin
+            fst dword ptr [esp + 0x28]
+            fmul dword ptr [esi + 0x70]
+            jmp L00479f85
+    L00479f7f:
+            fld dword ptr ds:[0x58a118]
+    L00479f85:
+            cmp dword ptr [esp + 0x38], ebp
+            je L00479faa
+            fcom dword ptr [esi + 0x74]
+            fst dword ptr [esi + 0x68]
+            fnstsw ax
+            test ah, 1
+            je L00479fa1
+            mov dword ptr [esi + 0x64], 1
+            jmp L00479fe7
+    L00479fa1:
+            mov dword ptr [esi + 0x64], 2
+            jmp L00479fe7
+    L00479faa:
+            mov eax, dword ptr [esi + 0x64]
+            cmp eax, 1
+            jne L00479fc9
+            fcom dword ptr [esi + 0x68]
+            fnstsw ax
+            test ah, 1
+            je L00479fe5
+            cmp dword ptr [gPed_676914], ebp
+            jne L00479fe5
+            mov dword ptr [esi + 0x64], ebp
+            jmp L00479fe7
+    L00479fc9:
+            cmp eax, 2
+            jne L00479fe7
+            fcom dword ptr [esi + 0x68]
+            fnstsw ax
+            test ah, 0x41
+            jne L00479fe5
+            cmp dword ptr [gPed_676914], ebp
+            jne L00479fe5
+            mov dword ptr [esi + 0x64], ebp
+            jmp L00479fe7
+    L00479fe5:
+            xor edi, edi
+    L00479fe7:
+            cmp edi, ebp
+            je L00479ff0
+            fstp dword ptr [esi + 0x74]
+            jmp L00479ff2
+    L00479ff0:
+            fstp st(0)
+    L00479ff2:
+            mov eax, dword ptr [esi + 0x78]
+            sub eax, ebp
+            je L0047a049
+            dec eax
+            je L0047a026
+            dec eax
+            jne L0047b0b8
+            fld dword ptr [esi + 0x74]
+    L0047a006:
+            fmul qword ptr ds:[0x58a140]
+            call _ftol
+            mov ecx, dword ptr [esp + 0x34]
+            mov edx, eax
+            call DRMatrix34PostRotateZ
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x20
+            ret 8
+    L0047a026:
+            fld dword ptr [esi + 0x74]
+    L0047a029:
+            fmul qword ptr ds:[0x58a140]
+            call _ftol
+            mov ecx, dword ptr [esp + 0x34]
+            mov edx, eax
+            call DRMatrix34PostRotateY
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x20
+            ret 8
+    L0047a049:
+            fld dword ptr [esi + 0x74]
+    L0047a04c:
+            fmul qword ptr ds:[0x58a140]
+            call _ftol
+            mov ecx, dword ptr [esp + 0x34]
+            mov edx, eax
+            call DRMatrix34PostRotateX
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x20
+            ret 8
+            mov eax, dword ptr [esi + 0x60]
+            cmp eax, 5
+            jne L0047a0bf
+            fld dword ptr [esi + 0x74]
+            fcomp dword ptr ds:[0x58a118]
+            fnstsw ax
+            test ah, 0x40
+            jne L0047a0aa
+            mov dword ptr [esp + 0x28], ebx
+            mov dword ptr [esp + 0x2c], edi
+            fild qword ptr [esp + 0x28]
+            fld dword ptr [esi + 0x74]
+            call _CIfmod
+            fdiv dword ptr [esi + 0x74]
+            fmul dword ptr [esi + 0x80]
+            fstp qword ptr [esp + 0x20]
+            jmp L0047a230
+    L0047a0aa:
+            mov dword ptr [esp + 0x20], 0
+            mov dword ptr [esp + 0x24], 0
+            jmp L0047a230
+    L0047a0bf:
+            cmp eax, 3
+            jne L0047a0d2
+            fld dword ptr [esi + 0x74]
+            fmul dword ptr [esi + 0x80]
+            jmp L0047a22c
+    L0047a0d2:
+            cmp eax, 4
+            jne L0047a0df
+            fld dword ptr [esi + 0x74]
+            jmp L0047a22c
+    L0047a0df:
+            cmp eax, edi
+            jne L0047a143
+            fld dword ptr [esi + 0x74]
+            fcomp dword ptr ds:[0x58a118]
+            fnstsw ax
+            test ah, 0x40
+            jne L0047a226
+            mov dword ptr [esp + 0x28], ebx
+            mov dword ptr [esp + 0x2c], edi
+            fild qword ptr [esp + 0x28]
+            fld dword ptr [esi + 0x74]
+            call _CIfmod
+            fdiv dword ptr [esi + 0x74]
+            fcom qword ptr ds:[0x58a168]
+            fmul dword ptr ds:[0x58a170]
+            fnstsw ax
+            test ah, 1
+            je L0047a132
+            fsub dword ptr ds:[0x58a150]
+            fmul dword ptr [esi + 0x80]
+            jmp L0047a22c
+    L0047a132:
+            fsubr dword ptr ds:[0x58a174]
+            fmul dword ptr [esi + 0x80]
+            jmp L0047a22c
+    L0047a143:
+            cmp eax, 2
+            jne L0047a17b
+            mov dword ptr [esp + 0x28], ebx
+            mov dword ptr [esp + 0x2c], edi
+            fild qword ptr [esp + 0x28]
+            fld dword ptr [esi + 0x74]
+            call _CIfmod
+            fadd st(0), st(0)
+            fld dword ptr [esi + 0x74]
+            fcompp
+            fld dword ptr [esi + 0x80]
+            fnstsw ax
+            test ah, 1
+            je L0047a22c
+            fchs
+            jmp L0047a22c
+    L0047a17b:
+            cmp eax, 6
+            jne L0047a1cd
+            mov edx, dword ptr [esi + 0x74]
+            xor ecx, ecx
+            mov dword ptr [esp + 0x38], edi
+            xor edi, edi
+            mov cl, byte ptr [edx]
+            xor eax, eax
+            cmp ecx, edi
+            mov dword ptr [esp + 0x28], ecx
+            jle L0047a1c7
+            mov ecx, dword ptr [edx + 0x24]
+            mov edi, dword ptr [ecx + 0x18cc]
+    L0047a1a0:
+            mov cl, byte ptr [eax + edx + 1]
+            mov ebp, 1
+            shl ebp, cl
+            test ebp, edi
+            je L0047a1bc
+            mov ebp, 1
+            mov ecx, eax
+            shl ebp, cl
+            add dword ptr [esp + 0x38], ebp
+    L0047a1bc:
+            mov ecx, dword ptr [esp + 0x28]
+            inc eax
+            cmp eax, ecx
+            jl L0047a1a0
+            xor edi, edi
+    L0047a1c7:
+            fild dword ptr [esp + 0x38]
+            jmp L0047a22c
+    L0047a1cd:
+            fld dword ptr [esi + 0x74]
+            fcomp dword ptr ds:[0x58a118]
+            fnstsw ax
+            test ah, 0x40
+            jne L0047a226
+            mov dword ptr [esp + 0x28], ebx
+            mov dword ptr [esp + 0x2c], edi
+            fild qword ptr [esp + 0x28]
+            fld dword ptr [esi + 0x74]
+            call _CIfmod
+            fdiv dword ptr [esi + 0x74]
+            fmul qword ptr ds:[0x58a188]
+            fmul qword ptr ds:[0x58a140]
+            call _ftol
+            and eax, 0xffff
+            mov dword ptr [esp + 0x38], eax
+            fild dword ptr [esp + 0x38]
+            fmul qword ptr ds:[0x58a190]
+            fsin
+            fst dword ptr [esp + 0x38]
+            fmul dword ptr [esi + 0x80]
+            jmp L0047a22c
+    L0047a226:
+            fld dword ptr ds:[0x58a118]
+    L0047a22c:
+            fstp qword ptr [esp + 0x20]
+    L0047a230:
+            mov eax, dword ptr [esi + 0x60]
+            cmp eax, 5
+            jne L0047a280
+            fld dword ptr [esi + 0x70]
+            fcomp dword ptr ds:[0x58a118]
+            fnstsw ax
+            test ah, 0x40
+            jne L0047a26b
+            mov dword ptr [esp + 0x28], ebx
+            mov dword ptr [esp + 0x2c], edi
+            fild qword ptr [esp + 0x28]
+            fld dword ptr [esi + 0x70]
+            call _CIfmod
+            fdiv dword ptr [esi + 0x70]
+            fmul dword ptr [esi + 0x7c]
+            fstp qword ptr [esp + 0x18]
+            jmp L0047a3e8
+    L0047a26b:
+            mov dword ptr [esp + 0x18], 0
+            mov dword ptr [esp + 0x1c], 0
+            jmp L0047a3e8
+    L0047a280:
+            cmp eax, 3
+            jne L0047a290
+            fld dword ptr [esi + 0x70]
+            fmul dword ptr [esi + 0x7c]
+            jmp L0047a3e4
+    L0047a290:
+            cmp eax, 4
+            jne L0047a29d
+            fld dword ptr [esi + 0x70]
+            jmp L0047a3e4
+    L0047a29d:
+            cmp eax, edi
+            jne L0047a2fb
+            fld dword ptr [esi + 0x70]
+            fcomp dword ptr ds:[0x58a118]
+            fnstsw ax
+            test ah, 0x40
+            jne L0047a3de
+            mov dword ptr [esp + 0x28], ebx
+            mov dword ptr [esp + 0x2c], edi
+            fild qword ptr [esp + 0x28]
+            fld dword ptr [esi + 0x70]
+            call _CIfmod
+            fdiv dword ptr [esi + 0x70]
+            fcom qword ptr ds:[0x58a168]
+            fmul dword ptr ds:[0x58a170]
+            fnstsw ax
+            test ah, 1
+            je L0047a2ed
+            fsub dword ptr ds:[0x58a150]
+            fmul dword ptr [esi + 0x7c]
+            jmp L0047a3e4
+    L0047a2ed:
+            fsubr dword ptr ds:[0x58a174]
+            fmul dword ptr [esi + 0x7c]
+            jmp L0047a3e4
+    L0047a2fb:
+            cmp eax, 2
+            jne L0047a330
+            mov dword ptr [esp + 0x28], ebx
+            mov dword ptr [esp + 0x2c], edi
+            fild qword ptr [esp + 0x28]
+            fld dword ptr [esi + 0x70]
+            call _CIfmod
+            fadd st(0), st(0)
+            fld dword ptr [esi + 0x70]
+            fcompp
+            fld dword ptr [esi + 0x7c]
+            fnstsw ax
+            test ah, 1
+            je L0047a3e4
+            fchs
+            jmp L0047a3e4
+    L0047a330:
+            cmp eax, 6
+            jne L0047a388
+            mov edx, dword ptr [esi + 0x70]
+            xor ecx, ecx
+            xor ebp, ebp
+            xor eax, eax
+            mov cl, byte ptr [edx]
+            mov dword ptr [esp + 0x38], ebp
+            test ecx, ecx
+            mov dword ptr [esp + 0x28], ecx
+            jle L0047a380
+            mov ecx, dword ptr [edx + 0x24]
+            mov edi, dword ptr [ecx + 0x18cc]
+    L0047a355:
+            mov cl, byte ptr [eax + edx + 1]
+            mov ebx, 1
+            shl ebx, cl
+            test ebx, edi
+            je L0047a36f
+            mov ebx, 1
+            mov ecx, eax
+            shl ebx, cl
+            add ebp, ebx
+    L0047a36f:
+            mov ecx, dword ptr [esp + 0x28]
+            inc eax
+            cmp eax, ecx
+            jl L0047a355
+            mov ebx, dword ptr [esp + 0x10]
+            mov dword ptr [esp + 0x38], ebp
+    L0047a380:
+            fild dword ptr [esp + 0x38]
+            xor edi, edi
+            jmp L0047a3e4
+    L0047a388:
+            fld dword ptr [esi + 0x70]
+            fcomp dword ptr ds:[0x58a118]
+            fnstsw ax
+            test ah, 0x40
+            jne L0047a3de
+            mov dword ptr [esp + 0x28], ebx
+            mov dword ptr [esp + 0x2c], edi
+            fild qword ptr [esp + 0x28]
+            fld dword ptr [esi + 0x70]
+            call _CIfmod
+            fdiv dword ptr [esi + 0x70]
+            fmul qword ptr ds:[0x58a188]
+            fmul qword ptr ds:[0x58a140]
+            call _ftol
+            and eax, 0xffff
+            mov dword ptr [esp + 0x38], eax
+            fild dword ptr [esp + 0x38]
+            fmul qword ptr ds:[0x58a190]
+            fsin
+            fst dword ptr [esp + 0x38]
+            fmul dword ptr [esi + 0x7c]
+            jmp L0047a3e4
+    L0047a3de:
+            fld dword ptr ds:[0x58a118]
+    L0047a3e4:
+            fstp qword ptr [esp + 0x18]
+    L0047a3e8:
+            mov eax, dword ptr [esi + 0x60]
+            cmp eax, 5
+            jne L0047a42a
+            fld dword ptr [esi + 0x6c]
+            fcomp dword ptr ds:[0x58a118]
+            fnstsw ax
+            test ah, 0x40
+            jne L0047a41f
+            mov dword ptr [esp + 0x28], ebx
+            mov dword ptr [esp + 0x2c], edi
+            fild qword ptr [esp + 0x28]
+            fld dword ptr [esi + 0x6c]
+            call _CIfmod
+            fdiv dword ptr [esi + 0x6c]
+            fmul dword ptr [esi + 0x78]
+            jmp L0047a58e
+    L0047a41f:
+            fld qword ptr ds:[0x58a130]
+            jmp L0047a58e
+    L0047a42a:
+            cmp eax, 3
+            jne L0047a43a
+            fld dword ptr [esi + 0x6c]
+            fmul dword ptr [esi + 0x78]
+            jmp L0047a58e
+    L0047a43a:
+            cmp eax, 4
+            jne L0047a447
+            fld dword ptr [esi + 0x6c]
+            jmp L0047a58e
+    L0047a447:
+            cmp eax, edi
+            jne L0047a4a5
+            fld dword ptr [esi + 0x6c]
+            fcomp dword ptr ds:[0x58a118]
+            fnstsw ax
+            test ah, 0x40
+            jne L0047a588
+            mov dword ptr [esp + 0x28], ebx
+            mov dword ptr [esp + 0x2c], edi
+            fild qword ptr [esp + 0x28]
+            fld dword ptr [esi + 0x6c]
+            call _CIfmod
+            fdiv dword ptr [esi + 0x6c]
+            fcom qword ptr ds:[0x58a168]
+            fmul dword ptr ds:[0x58a170]
+            fnstsw ax
+            test ah, 1
+            je L0047a497
+            fsub dword ptr ds:[0x58a150]
+            fmul dword ptr [esi + 0x78]
+            jmp L0047a58e
+    L0047a497:
+            fsubr dword ptr ds:[0x58a174]
+            fmul dword ptr [esi + 0x78]
+            jmp L0047a58e
+    L0047a4a5:
+            cmp eax, 2
+            jne L0047a4da
+            mov dword ptr [esp + 0x28], ebx
+            mov dword ptr [esp + 0x2c], edi
+            fild qword ptr [esp + 0x28]
+            fld dword ptr [esi + 0x6c]
+            call _CIfmod
+            fadd st(0), st(0)
+            fld dword ptr [esi + 0x6c]
+            fcompp
+            fld dword ptr [esi + 0x78]
+            fnstsw ax
+            test ah, 1
+            je L0047a58e
+            fchs
+            jmp L0047a58e
+    L0047a4da:
+            cmp eax, 6
+            jne L0047a532
+            mov edx, dword ptr [esi + 0x6c]
+            xor ecx, ecx
+            xor ebp, ebp
+            xor eax, eax
+            mov cl, byte ptr [edx]
+            mov dword ptr [esp + 0x38], ebp
+            test ecx, ecx
+            mov dword ptr [esp + 0x28], ecx
+            jle L0047a52a
+            mov ecx, dword ptr [edx + 0x24]
+            mov edi, dword ptr [ecx + 0x18cc]
+    L0047a4ff:
+            mov cl, byte ptr [eax + edx + 1]
+            mov ebx, 1
+            shl ebx, cl
+            test ebx, edi
+            je L0047a519
+            mov ebx, 1
+            mov ecx, eax
+            shl ebx, cl
+            add ebp, ebx
+    L0047a519:
+            mov ecx, dword ptr [esp + 0x28]
+            inc eax
+            cmp eax, ecx
+            jl L0047a4ff
+            mov ebx, dword ptr [esp + 0x10]
+            mov dword ptr [esp + 0x38], ebp
+    L0047a52a:
+            fild dword ptr [esp + 0x38]
+            xor edi, edi
+            jmp L0047a58e
+    L0047a532:
+            fld dword ptr [esi + 0x6c]
+            fcomp dword ptr ds:[0x58a118]
+            fnstsw ax
+            test ah, 0x40
+            jne L0047a588
+            mov dword ptr [esp + 0x28], ebx
+            mov dword ptr [esp + 0x2c], edi
+            fild qword ptr [esp + 0x28]
+            fld dword ptr [esi + 0x6c]
+            call _CIfmod
+            fdiv dword ptr [esi + 0x6c]
+            fmul qword ptr ds:[0x58a188]
+            fmul qword ptr ds:[0x58a140]
+            call _ftol
+            and eax, 0xffff
+            mov dword ptr [esp + 0x38], eax
+            fild dword ptr [esp + 0x38]
+            fmul qword ptr ds:[0x58a190]
+            fsin
+            fst dword ptr [esp + 0x38]
+            fmul dword ptr [esi + 0x78]
+            jmp L0047a58e
+    L0047a588:
+            fld dword ptr ds:[0x58a118]
+    L0047a58e:
+            fld qword ptr [esp + 0x20]
+            fsub qword ptr ds:[0x58a1a0]
+            fld qword ptr [esp + 0x18]
+            fsub qword ptr ds:[0x58a1a0]
+            fxch st(2)
+            fsub qword ptr ds:[0x58a1a0]
+            fxch st(1)
+            fxch st(2)
+            fst dword ptr [esp + 0x38]
+            push ecx
+            mov edx, dword ptr [esp + 0x38]
+            fxch st(2)
+            _emit 0xd9
+        _emit 0x1c
+        _emit 0x24
+            push ecx
+            fst dword ptr [esp + 0x40]
+            fxch st(1)
+            _emit 0xd9
+        _emit 0x1c
+        _emit 0x24
+            push ecx
+            _emit 0xd9
+        _emit 0x1c
+        _emit 0x24
+            push edx
+            call BrMatrix34PostScale
+            add esp, 0x10
+            mov eax, dword ptr [esi + 0xc]
+            fld dword ptr [esi + 0x78]
+            mov eax, dword ptr [eax + 0x18]
+            fcomp dword ptr ds:[0x58a118]
+            fld dword ptr [eax + 0x40]
+            fld dword ptr [eax + 0x44]
+            fld dword ptr [eax + 0x48]
+            fxch st(2)
+            fsub dword ptr [eax + 0x34]
+            fxch st(1)
+            fsub dword ptr [eax + 0x38]
+            fxch st(2)
+            fsub dword ptr [eax + 0x3c]
+            fxch st(1)
+            fstp dword ptr [esp + 0x28]
+            add eax, 0x34
+            fxch st(1)
+            fstp dword ptr [esp + 0x20]
+            fnstsw ax
+            fstp dword ptr [esp + 0x18]
+            test ah, 0x40
+            je L0047a9a7
+            mov eax, dword ptr [esi + 0x60]
+            cmp eax, 5
+            jne L0047a66b
+            fld dword ptr [esi + 0x74]
+            fcomp dword ptr ds:[0x58a118]
+            fnstsw ax
+            test ah, 0x40
+            jne L0047a656
+            mov dword ptr [esp + 0x28], ebx
+            mov dword ptr [esp + 0x2c], edi
+            fild qword ptr [esp + 0x28]
+            fld dword ptr [esi + 0x74]
+            call _CIfmod
+            fdiv dword ptr [esi + 0x74]
+            fmul dword ptr [esi + 0x80]
+            fstp qword ptr [esp + 0x28]
+            jmp L0047a7e2
+    L0047a656:
+            mov dword ptr [esp + 0x28], 0
+            mov dword ptr [esp + 0x2c], 0
+            jmp L0047a7e2
+    L0047a66b:
+            cmp eax, 3
+            jne L0047a67e
+            fld dword ptr [esi + 0x74]
+            fmul dword ptr [esi + 0x80]
+            jmp L0047a7de
+    L0047a67e:
+            cmp eax, 4
+            jne L0047a68b
+            fld dword ptr [esi + 0x74]
+            jmp L0047a7de
+    L0047a68b:
+            cmp eax, edi
+            jne L0047a6ef
+            fld dword ptr [esi + 0x74]
+            fcomp dword ptr ds:[0x58a118]
+            fnstsw ax
+            test ah, 0x40
+            jne L0047a7d8
+            mov dword ptr [esp + 0x28], ebx
+            mov dword ptr [esp + 0x2c], edi
+            fild qword ptr [esp + 0x28]
+            fld dword ptr [esi + 0x74]
+            call _CIfmod
+            fdiv dword ptr [esi + 0x74]
+            fcom qword ptr ds:[0x58a168]
+            fmul dword ptr ds:[0x58a170]
+            fnstsw ax
+            test ah, 1
+            je L0047a6de
+            fsub dword ptr ds:[0x58a150]
+            fmul dword ptr [esi + 0x80]
+            jmp L0047a7de
+    L0047a6de:
+            fsubr dword ptr ds:[0x58a174]
+            fmul dword ptr [esi + 0x80]
+            jmp L0047a7de
+    L0047a6ef:
+            cmp eax, 2
+            jne L0047a727
+            mov dword ptr [esp + 0x28], ebx
+            mov dword ptr [esp + 0x2c], edi
+            fild qword ptr [esp + 0x28]
+            fld dword ptr [esi + 0x74]
+            call _CIfmod
+            fadd st(0), st(0)
+            fld dword ptr [esi + 0x74]
+            fcompp
+            fld dword ptr [esi + 0x80]
+            fnstsw ax
+            test ah, 1
+            je L0047a7de
+            fchs
+            jmp L0047a7de
+    L0047a727:
+            cmp eax, 6
+            jne L0047a77f
+            mov edx, dword ptr [esi + 0x74]
+            xor ecx, ecx
+            xor ebp, ebp
+            xor eax, eax
+            mov cl, byte ptr [edx]
+            mov dword ptr [esp + 0x38], ebp
+            test ecx, ecx
+            mov dword ptr [esp + 0x28], ecx
+            jle L0047a777
+            mov ecx, dword ptr [edx + 0x24]
+            mov edi, dword ptr [ecx + 0x18cc]
+    L0047a74c:
+            mov cl, byte ptr [eax + edx + 1]
+            mov ebx, 1
+            shl ebx, cl
+            test ebx, edi
+            je L0047a766
+            mov ebx, 1
+            mov ecx, eax
+            shl ebx, cl
+            add ebp, ebx
+    L0047a766:
+            mov ecx, dword ptr [esp + 0x28]
+            inc eax
+            cmp eax, ecx
+            jl L0047a74c
+            mov ebx, dword ptr [esp + 0x10]
+            mov dword ptr [esp + 0x38], ebp
+    L0047a777:
+            fild dword ptr [esp + 0x38]
+            xor edi, edi
+            jmp L0047a7de
+    L0047a77f:
+            fld dword ptr [esi + 0x74]
+            fcomp dword ptr ds:[0x58a118]
+            fnstsw ax
+            test ah, 0x40
+            jne L0047a7d8
+            mov dword ptr [esp + 0x28], ebx
+            mov dword ptr [esp + 0x2c], edi
+            fild qword ptr [esp + 0x28]
+            fld dword ptr [esi + 0x74]
+            call _CIfmod
+            fdiv dword ptr [esi + 0x74]
+            fmul qword ptr ds:[0x58a188]
+            fmul qword ptr ds:[0x58a140]
+            call _ftol
+            and eax, 0xffff
+            mov dword ptr [esp + 0x38], eax
+            fild dword ptr [esp + 0x38]
+            fmul qword ptr ds:[0x58a190]
+            fsin
+            fst dword ptr [esp + 0x38]
+            fmul dword ptr [esi + 0x80]
+            jmp L0047a7de
+    L0047a7d8:
+            fld dword ptr ds:[0x58a118]
+    L0047a7de:
+            fstp qword ptr [esp + 0x28]
+    L0047a7e2:
+            mov eax, dword ptr [esi + 0x60]
+            cmp eax, 5
+            jne L0047a824
+            fld dword ptr [esi + 0x70]
+            fcomp dword ptr ds:[0x58a118]
+            fnstsw ax
+            test ah, 0x40
+            jne L0047a819
+            mov dword ptr [esp + 0x10], ebx
+            mov dword ptr [esp + 0x14], edi
+            fild qword ptr [esp + 0x10]
+            fld dword ptr [esi + 0x70]
+            call _CIfmod
+            fdiv dword ptr [esi + 0x70]
+            fmul dword ptr [esi + 0x7c]
+            jmp L0047a97c
+    L0047a819:
+            fld qword ptr ds:[0x58a130]
+            jmp L0047a97c
+    L0047a824:
+            cmp eax, 3
+            jne L0047a834
+            fld dword ptr [esi + 0x70]
+            fmul dword ptr [esi + 0x7c]
+            jmp L0047a97c
+    L0047a834:
+            cmp eax, 4
+            jne L0047a841
+            fld dword ptr [esi + 0x70]
+            jmp L0047a97c
+    L0047a841:
+            cmp eax, edi
+            jne L0047a89f
+            fld dword ptr [esi + 0x70]
+            fcomp dword ptr ds:[0x58a118]
+            fnstsw ax
+            test ah, 0x40
+            jne L0047a976
+            mov dword ptr [esp + 0x10], ebx
+            mov dword ptr [esp + 0x14], edi
+            fild qword ptr [esp + 0x10]
+            fld dword ptr [esi + 0x70]
+            call _CIfmod
+            fdiv dword ptr [esi + 0x70]
+            fcom qword ptr ds:[0x58a168]
+            fmul dword ptr ds:[0x58a170]
+            fnstsw ax
+            test ah, 1
+            je L0047a891
+            fsub dword ptr ds:[0x58a150]
+            fmul dword ptr [esi + 0x7c]
+            jmp L0047a97c
+    L0047a891:
+            fsubr dword ptr ds:[0x58a174]
+            fmul dword ptr [esi + 0x7c]
+            jmp L0047a97c
+    L0047a89f:
+            cmp eax, 2
+            jne L0047a8d4
+            mov dword ptr [esp + 0x10], ebx
+            mov dword ptr [esp + 0x14], edi
+            fild qword ptr [esp + 0x10]
+            fld dword ptr [esi + 0x70]
+            call _CIfmod
+            fadd st(0), st(0)
+            fld dword ptr [esi + 0x70]
+            fcompp
+            fld dword ptr [esi + 0x7c]
+            fnstsw ax
+            test ah, 1
+            je L0047a97c
+            fchs
+            jmp L0047a97c
+    L0047a8d4:
+            cmp eax, 6
+            jne L0047a920
+            mov esi, dword ptr [esi + 0x70]
+            xor edx, edx
+            xor edi, edi
+            xor eax, eax
+            mov dl, byte ptr [esi]
+            mov dword ptr [esp + 0x38], edi
+            mov ebp, edx
+            test ebp, ebp
+            jle L0047a91a
+            mov ecx, dword ptr [esi + 0x24]
+            mov edx, dword ptr [ecx + 0x18cc]
+    L0047a8f7:
+            mov cl, byte ptr [eax + esi + 1]
+            mov ebx, 1
+            shl ebx, cl
+            test ebx, edx
+            je L0047a911
+            mov ebx, 1
+            mov ecx, eax
+            shl ebx, cl
+            add edi, ebx
+    L0047a911:
+            inc eax
+            cmp eax, ebp
+            jl L0047a8f7
+            mov dword ptr [esp + 0x38], edi
+    L0047a91a:
+            fild dword ptr [esp + 0x38]
+            jmp L0047a97c
+    L0047a920:
+            fld dword ptr [esi + 0x70]
+            fcomp dword ptr ds:[0x58a118]
+            fnstsw ax
+            test ah, 0x40
+            jne L0047a976
+            mov dword ptr [esp + 0x10], ebx
+            mov dword ptr [esp + 0x14], edi
+            fild qword ptr [esp + 0x10]
+            fld dword ptr [esi + 0x70]
+            call _CIfmod
+            fdiv dword ptr [esi + 0x70]
+            fmul qword ptr ds:[0x58a188]
+            fmul qword ptr ds:[0x58a140]
+            call _ftol
+            and eax, 0xffff
+            mov dword ptr [esp + 0x38], eax
+            fild dword ptr [esp + 0x38]
+            fmul qword ptr ds:[0x58a190]
+            fsin
+            fst dword ptr [esp + 0x38]
+            fmul dword ptr [esi + 0x7c]
+            jmp L0047a97c
+    L0047a976:
+            fld dword ptr ds:[0x58a118]
+    L0047a97c:
+            fld dword ptr [esp + 0x18]
+            fdivr qword ptr [esp + 0x28]
+            push ecx
+            mov edx, dword ptr [esp + 0x38]
+            _emit 0xd9
+        _emit 0x1c
+        _emit 0x24
+            push ecx
+            fdiv dword ptr [esp + 0x28]
+            _emit 0xd9
+        _emit 0x1c
+        _emit 0x24
+            push edx
+            call BrMatrix34PostShearX
+            add esp, 0xc
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x20
+            ret 8
+    L0047a9a7:
+            fld dword ptr [esi + 0x7c]
+            fcomp dword ptr ds:[0x58a118]
+            fnstsw ax
+            test ah, 0x40
+            mov eax, dword ptr [esi + 0x60]
+            je L0047ad4a
+            cmp eax, 5
+            jne L0047aa0e
+            fld dword ptr [esi + 0x74]
+            fcomp dword ptr ds:[0x58a118]
+            fnstsw ax
+            test ah, 0x40
+            jne L0047a9f9
+            mov dword ptr [esp + 0x20], ebx
+            mov dword ptr [esp + 0x24], edi
+            fild qword ptr [esp + 0x20]
+            fld dword ptr [esi + 0x74]
+            call _CIfmod
+            fdiv dword ptr [esi + 0x74]
+            fmul dword ptr [esi + 0x80]
+            fstp qword ptr [esp + 0x20]
+            jmp L0047ab85
+    L0047a9f9:
+            mov dword ptr [esp + 0x20], 0
+            mov dword ptr [esp + 0x24], 0
+            jmp L0047ab85
+    L0047aa0e:
+            cmp eax, 3
+            jne L0047aa21
+            fld dword ptr [esi + 0x74]
+            fmul dword ptr [esi + 0x80]
+            jmp L0047ab81
+    L0047aa21:
+            cmp eax, 4
+            jne L0047aa2e
+            fld dword ptr [esi + 0x74]
+            jmp L0047ab81
+    L0047aa2e:
+            cmp eax, edi
+            jne L0047aa92
+            fld dword ptr [esi + 0x74]
+            fcomp dword ptr ds:[0x58a118]
+            fnstsw ax
+            test ah, 0x40
+            jne L0047ab7b
+            mov dword ptr [esp + 0x20], ebx
+            mov dword ptr [esp + 0x24], edi
+            fild qword ptr [esp + 0x20]
+            fld dword ptr [esi + 0x74]
+            call _CIfmod
+            fdiv dword ptr [esi + 0x74]
+            fcom qword ptr ds:[0x58a168]
+            fmul dword ptr ds:[0x58a170]
+            fnstsw ax
+            test ah, 1
+            je L0047aa81
+            fsub dword ptr ds:[0x58a150]
+            fmul dword ptr [esi + 0x80]
+            jmp L0047ab81
+    L0047aa81:
+            fsubr dword ptr ds:[0x58a174]
+            fmul dword ptr [esi + 0x80]
+            jmp L0047ab81
+    L0047aa92:
+            cmp eax, 2
+            jne L0047aaca
+            mov dword ptr [esp + 0x20], ebx
+            mov dword ptr [esp + 0x24], edi
+            fild qword ptr [esp + 0x20]
+            fld dword ptr [esi + 0x74]
+            call _CIfmod
+            fadd st(0), st(0)
+            fld dword ptr [esi + 0x74]
+            fcompp
+            fld dword ptr [esi + 0x80]
+            fnstsw ax
+            test ah, 1
+            je L0047ab81
+            fchs
+            jmp L0047ab81
+    L0047aaca:
+            cmp eax, 6
+            jne L0047ab22
+            mov edx, dword ptr [esi + 0x74]
+            xor ecx, ecx
+            xor ebp, ebp
+            xor eax, eax
+            mov cl, byte ptr [edx]
+            mov dword ptr [esp + 0x38], ebp
+            test ecx, ecx
+            mov dword ptr [esp + 0x20], ecx
+            jle L0047ab1a
+            mov ecx, dword ptr [edx + 0x24]
+            mov edi, dword ptr [ecx + 0x18cc]
+    L0047aaef:
+            mov cl, byte ptr [eax + edx + 1]
+            mov ebx, 1
+            shl ebx, cl
+            test ebx, edi
+            je L0047ab09
+            mov ebx, 1
+            mov ecx, eax
+            shl ebx, cl
+            add ebp, ebx
+    L0047ab09:
+            mov ecx, dword ptr [esp + 0x20]
+            inc eax
+            cmp eax, ecx
+            jl L0047aaef
+            mov ebx, dword ptr [esp + 0x10]
+            mov dword ptr [esp + 0x38], ebp
+    L0047ab1a:
+            fild dword ptr [esp + 0x38]
+            xor edi, edi
+            jmp L0047ab81
+    L0047ab22:
+            fld dword ptr [esi + 0x74]
+            fcomp dword ptr ds:[0x58a118]
+            fnstsw ax
+            test ah, 0x40
+            jne L0047ab7b
+            mov dword ptr [esp + 0x20], ebx
+            mov dword ptr [esp + 0x24], edi
+            fild qword ptr [esp + 0x20]
+            fld dword ptr [esi + 0x74]
+            call _CIfmod
+            fdiv dword ptr [esi + 0x74]
+            fmul qword ptr ds:[0x58a188]
+            fmul qword ptr ds:[0x58a140]
+            call _ftol
+            and eax, 0xffff
+            mov dword ptr [esp + 0x38], eax
+            fild dword ptr [esp + 0x38]
+            fmul qword ptr ds:[0x58a190]
+            fsin
+            fst dword ptr [esp + 0x38]
+            fmul dword ptr [esi + 0x80]
+            jmp L0047ab81
+    L0047ab7b:
+            fld dword ptr ds:[0x58a118]
+    L0047ab81:
+            fstp qword ptr [esp + 0x20]
+    L0047ab85:
+            mov eax, dword ptr [esi + 0x60]
+            cmp eax, 5
+            jne L0047abc7
+            fld dword ptr [esi + 0x6c]
+            fcomp dword ptr ds:[0x58a118]
+            fnstsw ax
+            test ah, 0x40
+            jne L0047abbc
+            mov dword ptr [esp + 0x10], ebx
+            mov dword ptr [esp + 0x14], edi
+            fild qword ptr [esp + 0x10]
+            fld dword ptr [esi + 0x6c]
+            call _CIfmod
+            fdiv dword ptr [esi + 0x6c]
+            fmul dword ptr [esi + 0x78]
+            jmp L0047ad1f
+    L0047abbc:
+            fld qword ptr ds:[0x58a130]
+            jmp L0047ad1f
+    L0047abc7:
+            cmp eax, 3
+            jne L0047abd7
+            fld dword ptr [esi + 0x6c]
+            fmul dword ptr [esi + 0x78]
+            jmp L0047ad1f
+    L0047abd7:
+            cmp eax, 4
+            jne L0047abe4
+            fld dword ptr [esi + 0x6c]
+            jmp L0047ad1f
+    L0047abe4:
+            cmp eax, edi
+            jne L0047ac42
+            fld dword ptr [esi + 0x6c]
+            fcomp dword ptr ds:[0x58a118]
+            fnstsw ax
+            test ah, 0x40
+            jne L0047ad19
+            mov dword ptr [esp + 0x10], ebx
+            mov dword ptr [esp + 0x14], edi
+            fild qword ptr [esp + 0x10]
+            fld dword ptr [esi + 0x6c]
+            call _CIfmod
+            fdiv dword ptr [esi + 0x6c]
+            fcom qword ptr ds:[0x58a168]
+            fmul dword ptr ds:[0x58a170]
+            fnstsw ax
+            test ah, 1
+            je L0047ac34
+            fsub dword ptr ds:[0x58a150]
+            fmul dword ptr [esi + 0x78]
+            jmp L0047ad1f
+    L0047ac34:
+            fsubr dword ptr ds:[0x58a174]
+            fmul dword ptr [esi + 0x78]
+            jmp L0047ad1f
+    L0047ac42:
+            cmp eax, 2
+            jne L0047ac77
+            mov dword ptr [esp + 0x10], ebx
+            mov dword ptr [esp + 0x14], edi
+            fild qword ptr [esp + 0x10]
+            fld dword ptr [esi + 0x6c]
+            call _CIfmod
+            fadd st(0), st(0)
+            fld dword ptr [esi + 0x6c]
+            fcompp
+            fld dword ptr [esi + 0x78]
+            fnstsw ax
+            test ah, 1
+            je L0047ad1f
+            fchs
+            jmp L0047ad1f
+    L0047ac77:
+            cmp eax, 6
+            jne L0047acc3
+            mov esi, dword ptr [esi + 0x6c]
+            xor edx, edx
+            xor edi, edi
+            xor eax, eax
+            mov dl, byte ptr [esi]
+            mov dword ptr [esp + 0x38], edi
+            mov ebp, edx
+            test ebp, ebp
+            jle L0047acbd
+            mov ecx, dword ptr [esi + 0x24]
+            mov edx, dword ptr [ecx + 0x18cc]
+    L0047ac9a:
+            mov cl, byte ptr [eax + esi + 1]
+            mov ebx, 1
+            shl ebx, cl
+            test ebx, edx
+            je L0047acb4
+            mov ebx, 1
+            mov ecx, eax
+            shl ebx, cl
+            add edi, ebx
+    L0047acb4:
+            inc eax
+            cmp eax, ebp
+            jl L0047ac9a
+            mov dword ptr [esp + 0x38], edi
+    L0047acbd:
+            fild dword ptr [esp + 0x38]
+            jmp L0047ad1f
+    L0047acc3:
+            fld dword ptr [esi + 0x6c]
+            fcomp dword ptr ds:[0x58a118]
+            fnstsw ax
+            test ah, 0x40
+            jne L0047ad19
+            mov dword ptr [esp + 0x10], ebx
+            mov dword ptr [esp + 0x14], edi
+            fild qword ptr [esp + 0x10]
+            fld dword ptr [esi + 0x6c]
+            call _CIfmod
+            fdiv dword ptr [esi + 0x6c]
+            fmul qword ptr ds:[0x58a188]
+            fmul qword ptr ds:[0x58a140]
+            call _ftol
+            and eax, 0xffff
+            mov dword ptr [esp + 0x38], eax
+            fild dword ptr [esp + 0x38]
+            fmul qword ptr ds:[0x58a190]
+            fsin
+            fst dword ptr [esp + 0x38]
+            fmul dword ptr [esi + 0x78]
+            jmp L0047ad1f
+    L0047ad19:
+            fld dword ptr ds:[0x58a118]
+    L0047ad1f:
+            fld dword ptr [esp + 0x18]
+            fdivr qword ptr [esp + 0x20]
+            push ecx
+            mov edx, dword ptr [esp + 0x38]
+            _emit 0xd9
+        _emit 0x1c
+        _emit 0x24
+            push ecx
+            fdiv dword ptr [esp + 0x30]
+            _emit 0xd9
+        _emit 0x1c
+        _emit 0x24
+            push edx
+            call BrMatrix34PostShearY
+            add esp, 0xc
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x20
+            ret 8
+    L0047ad4a:
+            cmp eax, 5
+            jne L0047ad97
+            fld dword ptr [esi + 0x70]
+            fcomp dword ptr ds:[0x58a118]
+            fnstsw ax
+            test ah, 0x40
+            jne L0047ad82
+            mov dword ptr [esp + 0x18], ebx
+            mov dword ptr [esp + 0x1c], edi
+            fild qword ptr [esp + 0x18]
+            fld dword ptr [esi + 0x70]
+            call _CIfmod
+            fdiv dword ptr [esi + 0x70]
+            fmul dword ptr [esi + 0x7c]
+            fstp qword ptr [esp + 0x18]
+            jmp L0047aeff
+    L0047ad82:
+            mov dword ptr [esp + 0x18], 0
+            mov dword ptr [esp + 0x1c], 0
+            jmp L0047aeff
+    L0047ad97:
+            cmp eax, 3
+            jne L0047ada7
+            fld dword ptr [esi + 0x70]
+            fmul dword ptr [esi + 0x7c]
+            jmp L0047aefb
+    L0047ada7:
+            cmp eax, 4
+            jne L0047adb4
+            fld dword ptr [esi + 0x70]
+            jmp L0047aefb
+    L0047adb4:
+            cmp eax, edi
+            jne L0047ae12
+            fld dword ptr [esi + 0x70]
+            fcomp dword ptr ds:[0x58a118]
+            fnstsw ax
+            test ah, 0x40
+            jne L0047aef5
+            mov dword ptr [esp + 0x18], ebx
+            mov dword ptr [esp + 0x1c], edi
+            fild qword ptr [esp + 0x18]
+            fld dword ptr [esi + 0x70]
+            call _CIfmod
+            fdiv dword ptr [esi + 0x70]
+            fcom qword ptr ds:[0x58a168]
+            fmul dword ptr ds:[0x58a170]
+            fnstsw ax
+            test ah, 1
+            je L0047ae04
+            fsub dword ptr ds:[0x58a150]
+            fmul dword ptr [esi + 0x7c]
+            jmp L0047aefb
+    L0047ae04:
+            fsubr dword ptr ds:[0x58a174]
+            fmul dword ptr [esi + 0x7c]
+            jmp L0047aefb
+    L0047ae12:
+            cmp eax, 2
+            jne L0047ae47
+            mov dword ptr [esp + 0x18], ebx
+            mov dword ptr [esp + 0x1c], edi
+            fild qword ptr [esp + 0x18]
+            fld dword ptr [esi + 0x70]
+            call _CIfmod
+            fadd st(0), st(0)
+            fld dword ptr [esi + 0x70]
+            fcompp
+            fld dword ptr [esi + 0x7c]
+            fnstsw ax
+            test ah, 1
+            je L0047aefb
+            fchs
+            jmp L0047aefb
+    L0047ae47:
+            cmp eax, 6
+            jne L0047ae9f
+            mov edx, dword ptr [esi + 0x70]
+            xor ecx, ecx
+            xor ebp, ebp
+            xor eax, eax
+            mov cl, byte ptr [edx]
+            mov dword ptr [esp + 0x38], ebp
+            test ecx, ecx
+            mov dword ptr [esp + 0x18], ecx
+            jle L0047ae97
+            mov ecx, dword ptr [edx + 0x24]
+            mov edi, dword ptr [ecx + 0x18cc]
+    L0047ae6c:
+            mov cl, byte ptr [eax + edx + 1]
+            mov ebx, 1
+            shl ebx, cl
+            test ebx, edi
+            je L0047ae86
+            mov ebx, 1
+            mov ecx, eax
+            shl ebx, cl
+            add ebp, ebx
+    L0047ae86:
+            mov ecx, dword ptr [esp + 0x18]
+            inc eax
+            cmp eax, ecx
+            jl L0047ae6c
+            mov ebx, dword ptr [esp + 0x10]
+            mov dword ptr [esp + 0x38], ebp
+    L0047ae97:
+            fild dword ptr [esp + 0x38]
+            xor edi, edi
+            jmp L0047aefb
+    L0047ae9f:
+            fld dword ptr [esi + 0x70]
+            fcomp dword ptr ds:[0x58a118]
+            fnstsw ax
+            test ah, 0x40
+            jne L0047aef5
+            mov dword ptr [esp + 0x18], ebx
+            mov dword ptr [esp + 0x1c], edi
+            fild qword ptr [esp + 0x18]
+            fld dword ptr [esi + 0x70]
+            call _CIfmod
+            fdiv dword ptr [esi + 0x70]
+            fmul qword ptr ds:[0x58a188]
+            fmul qword ptr ds:[0x58a140]
+            call _ftol
+            and eax, 0xffff
+            mov dword ptr [esp + 0x38], eax
+            fild dword ptr [esp + 0x38]
+            fmul qword ptr ds:[0x58a190]
+            fsin
+            fst dword ptr [esp + 0x38]
+            fmul dword ptr [esi + 0x7c]
+            jmp L0047aefb
+    L0047aef5:
+            fld dword ptr ds:[0x58a118]
+    L0047aefb:
+            fstp qword ptr [esp + 0x18]
+    L0047aeff:
+            mov eax, dword ptr [esi + 0x60]
+            cmp eax, 5
+            jne L0047af41
+            fld dword ptr [esi + 0x6c]
+            fcomp dword ptr ds:[0x58a118]
+            fnstsw ax
+            test ah, 0x40
+            jne L0047af36
+            mov dword ptr [esp + 0x10], ebx
+            mov dword ptr [esp + 0x14], edi
+            fild qword ptr [esp + 0x10]
+            fld dword ptr [esi + 0x6c]
+            call _CIfmod
+            fdiv dword ptr [esi + 0x6c]
+            fmul dword ptr [esi + 0x78]
+            jmp L0047b097
+    L0047af36:
+            fld qword ptr ds:[0x58a130]
+            jmp L0047b097
+    L0047af41:
+            cmp eax, 3
+            jne L0047af51
+            fld dword ptr [esi + 0x6c]
+            fmul dword ptr [esi + 0x78]
+            jmp L0047b097
+    L0047af51:
+            cmp eax, 4
+            jne L0047af5e
+            fld dword ptr [esi + 0x6c]
+            jmp L0047b097
+    L0047af5e:
+            cmp eax, edi
+            jne L0047afbc
+            fld dword ptr [esi + 0x6c]
+            fcomp dword ptr ds:[0x58a118]
+            fnstsw ax
+            test ah, 0x40
+            jne L0047b091
+            mov dword ptr [esp + 0x10], ebx
+            mov dword ptr [esp + 0x14], edi
+            fild qword ptr [esp + 0x10]
+            fld dword ptr [esi + 0x6c]
+            call _CIfmod
+            fdiv dword ptr [esi + 0x6c]
+            fcom qword ptr ds:[0x58a168]
+            fmul dword ptr ds:[0x58a170]
+            fnstsw ax
+            test ah, 1
+            je L0047afae
+            fsub dword ptr ds:[0x58a150]
+            fmul dword ptr [esi + 0x78]
+            jmp L0047b097
+    L0047afae:
+            fsubr dword ptr ds:[0x58a174]
+            fmul dword ptr [esi + 0x78]
+            jmp L0047b097
+    L0047afbc:
+            cmp eax, 2
+            jne L0047aff1
+            mov dword ptr [esp + 0x10], ebx
+            mov dword ptr [esp + 0x14], edi
+            fild qword ptr [esp + 0x10]
+            fld dword ptr [esi + 0x6c]
+            call _CIfmod
+            fadd st(0), st(0)
+            fld dword ptr [esi + 0x6c]
+            fcompp
+            fld dword ptr [esi + 0x78]
+            fnstsw ax
+            test ah, 1
+            je L0047b097
+            fchs
+            jmp L0047b097
+    L0047aff1:
+            cmp eax, 6
+            jne L0047b03b
+            mov esi, dword ptr [esi + 0x6c]
+            xor ebx, ebx
+            xor edi, edi
+            xor eax, eax
+            mov bl, byte ptr [esi]
+            mov dword ptr [esp + 0x38], edi
+            test ebx, ebx
+            jle L0047b035
+            mov edx, dword ptr [esi + 0x24]
+            mov edx, dword ptr [edx + 0x18cc]
+    L0047b012:
+            mov cl, byte ptr [eax + esi + 1]
+            mov ebp, 1
+            shl ebp, cl
+            test ebp, edx
+            je L0047b02c
+            mov ebp, 1
+            mov ecx, eax
+            shl ebp, cl
+            add edi, ebp
+    L0047b02c:
+            inc eax
+            cmp eax, ebx
+            jl L0047b012
+            mov dword ptr [esp + 0x38], edi
+    L0047b035:
+            fild dword ptr [esp + 0x38]
+            jmp L0047b097
+    L0047b03b:
+            fld dword ptr [esi + 0x6c]
+            fcomp dword ptr ds:[0x58a118]
+            fnstsw ax
+            test ah, 0x40
+            jne L0047b091
+            mov dword ptr [esp + 0x10], ebx
+            mov dword ptr [esp + 0x14], edi
+            fild qword ptr [esp + 0x10]
+            fld dword ptr [esi + 0x6c]
+            call _CIfmod
+            fdiv dword ptr [esi + 0x6c]
+            fmul qword ptr ds:[0x58a188]
+            fmul qword ptr ds:[0x58a140]
+            call _ftol
+            and eax, 0xffff
+            mov dword ptr [esp + 0x38], eax
+            fild dword ptr [esp + 0x38]
+            fmul qword ptr ds:[0x58a190]
+            fsin
+            fst dword ptr [esp + 0x38]
+            fmul dword ptr [esi + 0x78]
+            jmp L0047b097
+    L0047b091:
+            fld dword ptr ds:[0x58a118]
+    L0047b097:
+            fld dword ptr [esp + 0x20]
+            fdivr qword ptr [esp + 0x18]
+            push ecx
+            mov eax, dword ptr [esp + 0x38]
+            _emit 0xd9
+        _emit 0x1c
+        _emit 0x24
+            push ecx
+            fdiv dword ptr [esp + 0x30]
+            _emit 0xd9
+        _emit 0x1c
+        _emit 0x24
+            push eax
+            call BrMatrix34PostShearZ
+            add esp, 0xc
+    L0047b0b8:
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0x20
+            ret 8
+            mov edi, edi
+            _emit 0xb4
+            _emit 0x98
+            _emit 0x47
+            _emit 0x00
+            _emit 0xd6
+            _emit 0x9d
+            _emit 0x47
+            _emit 0x00
+            _emit 0x6c
+            _emit 0xa0
+            _emit 0x47
+            _emit 0x00
+            _emit 0xd3
+            _emit 0xa5
+            _emit 0x47
+            _emit 0x00
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+    }
+#endif
 }
 
 

@@ -186,7 +186,8 @@ extern void C2_HOOK_FASTCALL PhysicsError(tPhysicsError pError, const char* pMes
 extern void C2_HOOK_FASTCALL SphereFaceCollide(tFace_ref* pFace, br_vector3* pStart, br_vector3* pEnd, br_scalar pRadius, void* pUnused_point, br_vector3* pNormal, br_scalar* pT);
 #endif
 // FUNCTION: CARMA2_HW 0x004e3a30
-int C2_HOOK_FASTCALL PickBoundsTestRay__raycast(br_bounds* b, br_vector3* rp, br_vector3* rd, br_scalar t_near, br_scalar t_far, br_scalar* new_t_near, br_scalar* new_t_far) {
+int C2_NAKED C2_HOOK_FASTCALL PickBoundsTestRay__raycast(br_bounds* b, br_vector3* rp, br_vector3* rd, br_scalar t_near, br_scalar t_far, br_scalar* new_t_near, br_scalar* new_t_far) {
+#ifndef CARPOCALYPSE2_MATCHING
     int i;
     float s;
     float t;
@@ -228,6 +229,168 @@ int C2_HOOK_FASTCALL PickBoundsTestRay__raycast(br_bounds* b, br_vector3* rp, br
         return 1;
     }
     return 0;
+#else
+    __asm {
+            fld dword ptr [esp + 8]
+            push esi
+            mov esi, dword ptr [esp + 8]
+            push edi
+            xor edi, edi
+            sub esi, edx
+            sub ecx, edx
+    L004e3a40:
+            fld dword ptr [esi + edx]
+            fcomp dword ptr ds:[0x58ad08]
+            fld dword ptr [esi + edx]
+            fnstsw ax
+            test ah, 0x41
+            jne L004e3ad8
+            fdivr dword ptr ds:[0x58ad0c]
+            _emit 0xd9
+        _emit 0x02
+            fsub dword ptr [ecx + edx + 0xc]
+            fxch st(1)
+            fstp dword ptr [esp + 0x10]
+            fmul dword ptr [esp + 0x10]
+            fst dword ptr [esp + 0xc]
+            fcomp dword ptr ds:[0x58ad10]
+            fnstsw ax
+            test ah, 0x41
+            jne L004e3a88
+            fstp st(0)
+            fld dword ptr ds:[0x58ad10]
+            jmp L004e3a9b
+    L004e3a88:
+            fld dword ptr [esp + 0xc]
+            fcomp st(1)
+            fnstsw ax
+            test ah, 0x41
+            jne L004e3a9b
+            fstp st(0)
+            fld dword ptr [esp + 0xc]
+    L004e3a9b:
+            _emit 0xd9
+        _emit 0x02
+            fsub dword ptr [ecx + edx]
+            fmul dword ptr [esp + 0x10]
+            fcom dword ptr ds:[0x58ad14]
+            fnstsw ax
+            test ah, 1
+            je L004e3ac0
+            fstp st(0)
+            mov dword ptr [esp + 0x14], 0xff7fffff
+            jmp L004e3b7c
+    L004e3ac0:
+            fcom dword ptr [esp + 0x14]
+            fnstsw ax
+            test ah, 1
+            je L004e3b7a
+            fstp dword ptr [esp + 0x14]
+            jmp L004e3b7c
+    L004e3ad8:
+            fcomp dword ptr ds:[0x58ad18]
+            fnstsw ax
+            test ah, 1
+            je L004e3b5f
+            fld dword ptr [esi + edx]
+            fdivr dword ptr ds:[0x58ad0c]
+            _emit 0xd9
+        _emit 0x02
+            fsub dword ptr [ecx + edx + 0xc]
+            fmul st(0), st(1)
+            fcom dword ptr ds:[0x58ad14]
+            fnstsw ax
+            test ah, 1
+            je L004e3b0f
+            fstp st(0)
+            mov dword ptr [esp + 0x14], 0xff7fffff
+            jmp L004e3b22
+    L004e3b0f:
+            fcom dword ptr [esp + 0x14]
+            fnstsw ax
+            test ah, 1
+            je L004e3b20
+            fstp dword ptr [esp + 0x14]
+            jmp L004e3b22
+    L004e3b20:
+            fstp st(0)
+    L004e3b22:
+            _emit 0xd9
+        _emit 0x02
+            fsub dword ptr [ecx + edx]
+            fmul st(0), st(1)
+            fstp dword ptr [esp + 0xc]
+            fstp st(0)
+            fld dword ptr [esp + 0xc]
+            fcomp dword ptr ds:[0x58ad10]
+            fnstsw ax
+            test ah, 0x41
+            jne L004e3b4a
+            fstp st(0)
+            fld dword ptr ds:[0x58ad10]
+            jmp L004e3b7c
+    L004e3b4a:
+            fld dword ptr [esp + 0xc]
+            fcomp st(1)
+            fnstsw ax
+            test ah, 0x41
+            jne L004e3b7c
+            fstp st(0)
+            fld dword ptr [esp + 0xc]
+            jmp L004e3b7c
+    L004e3b5f:
+            _emit 0xd9
+        _emit 0x02
+            fcomp dword ptr [ecx + edx + 0xc]
+            fnstsw ax
+            test ah, 0x41
+            je L004e3bae
+            _emit 0xd9
+        _emit 0x02
+            fcomp dword ptr [ecx + edx]
+            fnstsw ax
+            test ah, 1
+            jne L004e3bae
+            jmp L004e3b7c
+    L004e3b7a:
+            fstp st(0)
+    L004e3b7c:
+            inc edi
+            add edx, 4
+            cmp edi, 3
+            jl L004e3a40
+            fcom dword ptr [esp + 0x14]
+            fnstsw ax
+            test ah, 0x41
+            je L004e3bae
+            mov eax, dword ptr [esp + 0x18]
+            mov ecx, dword ptr [esp + 0x1c]
+            _emit 0xd9
+        _emit 0x18
+            fld dword ptr [esp + 0x14]
+            mov eax, 1
+            _emit 0xd9
+        _emit 0x19
+            pop edi
+            pop esi
+            ret 0x14
+    L004e3bae:
+            pop edi
+            xor eax, eax
+            fstp st(0)
+            pop esi
+            ret 0x14
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x004e3840

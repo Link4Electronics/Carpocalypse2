@@ -609,7 +609,8 @@ void C2_NAKED C2_HOOK_FASTCALL ProcessModelFaceMaterials2(br_model* pModel, mate
 #endif
 }
 
-// FUNCTION: CARMA2_HW 0x00449070
+/* Same original function as displays.c:TimerStringGlobalTimer; the matching
+ * annotation lives there. */
 void C2_HOOK_FASTCALL ShowTimerString(char* pStr, tU32 pArg3) {
     TimerString(gTimer, pStr, pArg3, 0, 0);
 }
@@ -1767,7 +1768,8 @@ br_material* C2_HOOK_FASTCALL RoadUntexToPersp(br_model* pModel, tU16 pFace) {
 }
 
 // FUNCTION: CARMA2_HW 0x004481d0
-br_material* C2_HOOK_FASTCALL WallUntexToPersp(br_model* pModel, tU16 pFace) {
+C2_NAKED br_material* C2_HOOK_FASTCALL WallUntexToPersp(br_model* pModel, tU16 pFace) {
+#ifndef CARPOCALYPSE2_MATCHING
     br_material* old_mat;
     br_material* new_mat;
 
@@ -1780,10 +1782,229 @@ br_material* C2_HOOK_FASTCALL WallUntexToPersp(br_model* pModel, tU16 pFace) {
         new_mat = NULL;
     }
     return new_mat;
+#else
+    __asm {
+            push ecx
+            mov ecx, dword ptr [ecx + 0xc]
+            mov word ptr [esp], dx
+            mov eax, dword ptr [esp]
+            push ebx
+            and eax, 0xffff
+            push ebp
+            push esi
+            push edi
+            lea eax, [eax + eax*4]
+            mov eax, dword ptr [ecx + eax*8 + 8]
+            or ecx, 0xffffffff
+            mov ebp, dword ptr [eax + 4]
+            xor eax, eax
+            mov edi, ebp
+            repne scasb
+            not ecx
+            dec ecx
+            mov edi, 0x5913ac
+            mov edx, ecx
+            or ecx, 0xffffffff
+            repne scasb
+            not ecx
+            dec ecx
+            test ebp, ebp
+            je L00448258
+            cmp edx, ecx
+            jae L00448217
+            xor eax, eax
+            jmp L00448258
+    L00448217:
+            lea eax, [ebp + edx]
+            mov esi, 0x5913ac
+            sub eax, ecx
+    L00448222:
+            mov dl, byte ptr [eax]
+            mov bl, byte ptr [esi]
+            mov cl, dl
+            cmp dl, bl
+            jne L0044824a
+            test cl, cl
+            je L00448246
+            mov dl, byte ptr [eax + 1]
+            mov bl, byte ptr [esi + 1]
+            mov cl, dl
+            cmp dl, bl
+            jne L0044824a
+            add eax, 2
+            add esi, 2
+            test cl, cl
+            jne L00448222
+    L00448246:
+            xor eax, eax
+            jmp L0044824f
+    L0044824a:
+            sbb eax, eax
+            sbb eax, -1
+    L0044824f:
+            xor ecx, ecx
+            test eax, eax
+            sete cl
+            mov eax, ecx
+    L00448258:
+            test eax, eax
+            mov edi, ebp
+            je L004482b8
+            or ecx, 0xffffffff
+            xor eax, eax
+            repne scasb
+            not ecx
+            dec ecx
+            mov edi, 0x5913ac
+            mov esi, ecx
+            or ecx, 0xffffffff
+            repne scasb
+            not ecx
+            dec ecx
+            push 0xcf
+            sub esi, ecx
+            lea edx, [esi + 1]
+            push edx
+            call BrMemAllocate
+            add esp, 8
+            mov edi, eax
+            push ebp
+            push esi
+            push 0x5913c4
+            push edi
+            call sprintf
+            add esp, 0x10
+            push edi
+            call BrMaterialFind
+            add esp, 4
+            mov esi, eax
+            push edi
+            call BrMemFree
+            add esp, 4
+            mov eax, esi
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            pop ecx
+            ret
+    L004482b8:
+            or ecx, 0xffffffff
+            xor eax, eax
+            repne scasb
+            not ecx
+            dec ecx
+            mov edi, 0x5913b4
+            mov edx, ecx
+            or ecx, 0xffffffff
+            repne scasb
+            not ecx
+            dec ecx
+            test ebp, ebp
+            je L0044831e
+            cmp edx, ecx
+            jae L004482dd
+            xor eax, eax
+            jmp L0044831e
+    L004482dd:
+            lea eax, [ebp + edx]
+            mov esi, 0x5913b4
+            sub eax, ecx
+    L004482e8:
+            mov dl, byte ptr [eax]
+            mov bl, byte ptr [esi]
+            mov cl, dl
+            cmp dl, bl
+            jne L00448310
+            test cl, cl
+            je L0044830c
+            mov dl, byte ptr [eax + 1]
+            mov bl, byte ptr [esi + 1]
+            mov cl, dl
+            cmp dl, bl
+            jne L00448310
+            add eax, 2
+            add esi, 2
+            test cl, cl
+            jne L004482e8
+    L0044830c:
+            xor eax, eax
+            jmp L00448315
+    L00448310:
+            sbb eax, eax
+            sbb eax, -1
+    L00448315:
+            xor ecx, ecx
+            test eax, eax
+            sete cl
+            mov eax, ecx
+    L0044831e:
+            test eax, eax
+            je L0044837e
+            mov edi, ebp
+            or ecx, 0xffffffff
+            xor eax, eax
+            push 0xcf
+            repne scasb
+            not ecx
+            dec ecx
+            mov edi, 0x5913b4
+            mov esi, ecx
+            or ecx, 0xffffffff
+            repne scasb
+            not ecx
+            dec ecx
+            sub esi, ecx
+            lea edx, [esi + 1]
+            push edx
+            call BrMemAllocate
+            add esp, 8
+            mov edi, eax
+            push ebp
+            push esi
+            push 0x5913c4
+            push edi
+            call sprintf
+            add esp, 0x10
+            push edi
+            call BrMaterialFind
+            add esp, 4
+            mov esi, eax
+            push edi
+            call BrMemFree
+            add esp, 4
+            mov eax, esi
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            pop ecx
+            ret
+    L0044837e:
+            pop edi
+            pop esi
+            pop ebp
+            xor eax, eax
+            pop ebx
+            pop ecx
+            ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00448390
-br_material* C2_HOOK_FASTCALL WallLinearToPersp(br_model* pModel, tU16 pFace) {
+C2_NAKED br_material* C2_HOOK_FASTCALL WallLinearToPersp(br_model* pModel, tU16 pFace) {
+#ifndef CARPOCALYPSE2_MATCHING
     br_material* old_mat;
     br_material* new_mat;
 
@@ -1794,10 +2015,127 @@ br_material* C2_HOOK_FASTCALL WallLinearToPersp(br_model* pModel, tU16 pFace) {
         new_mat = NULL;
     }
     return new_mat;
+#else
+    __asm {
+            push ecx
+            mov ecx, dword ptr [ecx + 0xc]
+            mov word ptr [esp], dx
+            mov eax, dword ptr [esp]
+            push ebx
+            and eax, 0xffff
+            push ebp
+            push esi
+            push edi
+            lea eax, [eax + eax*4]
+            mov eax, dword ptr [ecx + eax*8 + 8]
+            or ecx, 0xffffffff
+            mov ebp, dword ptr [eax + 4]
+            xor eax, eax
+            mov edi, ebp
+            repne scasb
+            not ecx
+            dec ecx
+            mov edi, 0x5913b4
+            mov edx, ecx
+            or ecx, 0xffffffff
+            repne scasb
+            not ecx
+            dec ecx
+            test ebp, ebp
+            je L00448418
+            cmp edx, ecx
+            jae L004483d7
+            xor eax, eax
+            jmp L00448418
+    L004483d7:
+            lea eax, [ebp + edx]
+            mov esi, 0x5913b4
+            sub eax, ecx
+    L004483e2:
+            mov dl, byte ptr [eax]
+            mov bl, byte ptr [esi]
+            mov cl, dl
+            cmp dl, bl
+            jne L0044840a
+            test cl, cl
+            je L00448406
+            mov dl, byte ptr [eax + 1]
+            mov bl, byte ptr [esi + 1]
+            mov cl, dl
+            cmp dl, bl
+            jne L0044840a
+            add eax, 2
+            add esi, 2
+            test cl, cl
+            jne L004483e2
+    L00448406:
+            xor eax, eax
+            jmp L0044840f
+    L0044840a:
+            sbb eax, eax
+            sbb eax, -1
+    L0044840f:
+            xor ecx, ecx
+            test eax, eax
+            sete cl
+            mov eax, ecx
+    L00448418:
+            test eax, eax
+            je L00448478
+            mov edi, ebp
+            or ecx, 0xffffffff
+            xor eax, eax
+            push 0xcf
+            repne scasb
+            not ecx
+            dec ecx
+            mov edi, 0x5913b4
+            mov esi, ecx
+            or ecx, 0xffffffff
+            repne scasb
+            not ecx
+            dec ecx
+            sub esi, ecx
+            lea edx, [esi + 1]
+            push edx
+            call BrMemAllocate
+            add esp, 8
+            mov edi, eax
+            push ebp
+            push esi
+            push 0x5913c4
+            push edi
+            call sprintf
+            add esp, 0x10
+            push edi
+            call BrMaterialFind
+            add esp, 4
+            mov esi, eax
+            push edi
+            call BrMemFree
+            add esp, 4
+            mov eax, esi
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            pop ecx
+            ret
+    L00448478:
+            pop edi
+            pop esi
+            pop ebp
+            xor eax, eax
+            pop ebx
+            pop ecx
+            ret
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00448000
-br_material* C2_HOOK_FASTCALL WallUntexToLinear(br_model* pModel, tU16 pFace) {
+C2_NAKED br_material* C2_HOOK_FASTCALL WallUntexToLinear(br_model* pModel, tU16 pFace) {
+#ifndef CARPOCALYPSE2_MATCHING
     br_material* old_mat;
     br_material* new_mat;
 
@@ -1812,6 +2150,225 @@ br_material* C2_HOOK_FASTCALL WallUntexToLinear(br_model* pModel, tU16 pFace) {
         BrMaterialUpdate(old_mat, BR_MATU_ALL);
     }
     return NULL;
+#else
+    __asm {
+            push ecx
+            mov ecx, dword ptr [ecx + 0xc]
+            mov word ptr [esp], dx
+            mov eax, dword ptr [esp]
+            push ebx
+            and eax, 0xffff
+            push ebp
+            push esi
+            push edi
+            lea eax, [eax + eax*4]
+            mov ebx, dword ptr [ecx + eax*8 + 8]
+            or ecx, 0xffffffff
+            xor eax, eax
+            mov ebp, dword ptr [ebx + 4]
+            mov edi, ebp
+            repne scasb
+            not ecx
+            dec ecx
+            mov edi, 0x5913ac
+            mov edx, ecx
+            or ecx, 0xffffffff
+            repne scasb
+            not ecx
+            dec ecx
+            test ebp, ebp
+            je L00448084
+            cmp edx, ecx
+            jae L00448047
+            xor eax, eax
+            jmp L00448084
+    L00448047:
+            lea eax, [ebp + edx]
+            mov esi, 0x5913ac
+            sub eax, ecx
+    L00448052:
+            mov dl, byte ptr [eax]
+            mov cl, dl
+            cmp dl, byte ptr [esi]
+            jne L00448076
+            test cl, cl
+            je L00448072
+            mov dl, byte ptr [eax + 1]
+            mov cl, dl
+            cmp dl, byte ptr [esi + 1]
+            jne L00448076
+            add eax, 2
+            add esi, 2
+            test cl, cl
+            jne L00448052
+    L00448072:
+            xor eax, eax
+            jmp L0044807b
+    L00448076:
+            sbb eax, eax
+            sbb eax, -1
+    L0044807b:
+            xor ecx, ecx
+            test eax, eax
+            sete cl
+            mov eax, ecx
+    L00448084:
+            test eax, eax
+            mov edi, ebp
+            je L004480e4
+            or ecx, 0xffffffff
+            xor eax, eax
+            repne scasb
+            not ecx
+            dec ecx
+            mov edi, 0x5913ac
+            mov esi, ecx
+            or ecx, 0xffffffff
+            repne scasb
+            not ecx
+            dec ecx
+            push 0xcf
+            sub esi, ecx
+            lea edx, [esi + 1]
+            push edx
+            call BrMemAllocate
+            add esp, 8
+            mov edi, eax
+            push ebp
+            push esi
+            push 0x5913c4
+            push edi
+            call sprintf
+            add esp, 0x10
+            push edi
+            call BrMaterialFind
+            add esp, 4
+            mov esi, eax
+            push edi
+            call BrMemFree
+            add esp, 4
+            mov eax, esi
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            pop ecx
+            ret
+    L004480e4:
+            or ecx, 0xffffffff
+            xor eax, eax
+            repne scasb
+            not ecx
+            dec ecx
+            mov edi, 0x5913b4
+            mov edx, ecx
+            or ecx, 0xffffffff
+            repne scasb
+            not ecx
+            dec ecx
+            test ebp, ebp
+            je L00448146
+            cmp edx, ecx
+            jae L00448109
+            xor eax, eax
+            jmp L00448146
+    L00448109:
+            lea eax, [ebp + edx]
+            mov esi, 0x5913b4
+            sub eax, ecx
+    L00448114:
+            mov dl, byte ptr [eax]
+            mov cl, dl
+            cmp dl, byte ptr [esi]
+            jne L00448138
+            test cl, cl
+            je L00448134
+            mov dl, byte ptr [eax + 1]
+            mov cl, dl
+            cmp dl, byte ptr [esi + 1]
+            jne L00448138
+            add eax, 2
+            add esi, 2
+            test cl, cl
+            jne L00448114
+    L00448134:
+            xor eax, eax
+            jmp L0044813d
+    L00448138:
+            sbb eax, eax
+            sbb eax, -1
+    L0044813d:
+            xor ecx, ecx
+            test eax, eax
+            sete cl
+            mov eax, ecx
+    L00448146:
+            test eax, eax
+            je L004481bb
+            mov edi, ebp
+            or ecx, 0xffffffff
+            xor eax, eax
+            push 0xcf
+            repne scasb
+            not ecx
+            dec ecx
+            mov edi, 0x5913b4
+            mov esi, ecx
+            or ecx, 0xffffffff
+            repne scasb
+            not ecx
+            dec ecx
+            sub esi, ecx
+            lea edx, [esi + 1]
+            push edx
+            call BrMemAllocate
+            add esp, 8
+            mov edi, eax
+            push ebp
+            push esi
+            push 0x5913c4
+            push edi
+            call sprintf
+            add esp, 0x10
+            push edi
+            call BrMaterialFind
+            add esp, 4
+            mov esi, eax
+            push edi
+            call BrMemFree
+            mov eax, dword ptr [esi + 0x40]
+            mov esi, dword ptr [ebx + 0x20]
+            add esp, 4
+            and esi, 0xffffffdf
+            mov dword ptr [ebx + 0x40], eax
+            mov dword ptr [ebx + 0x20], esi
+            push 0x7fff
+            push ebx
+            call BrMaterialUpdate
+            add esp, 8
+    L004481bb:
+            pop edi
+            pop esi
+            pop ebp
+            xor eax, eax
+            pop ebx
+            pop ecx
+            ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00448560

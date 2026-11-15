@@ -163,6 +163,15 @@ extern br_actor* gNon_track_actor;
 extern tProgram_state gProgram_state;
 extern br_actor* gTrack_actor;
 #endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern void C2_HOOK_CDECL BrMatrix34RotateY();
+extern void C2_HOOK_CDECL BrZbsSceneRenderAdd();
+extern tU32 C2_HOOK_FASTCALL PDGetTotalTime(void);
+#endif
+#ifdef CARPOCALYPSE2_MATCHING
+extern void __cdecl _CIfmod();
+extern void __cdecl _CIpow();
+#endif
 // FUNCTION: CARMA2_HW 0x00413f10
 intptr_t C2_HOOK_CDECL SwitchCarModel(br_actor* pActor, void* pData) {
     if (pActor->user != NULL) {
@@ -1255,7 +1264,8 @@ void C2_HOOK_FASTCALL ChangeDepthEffect(void) {
 }
 
 // FUNCTION: CARMA2_HW 0x00445cb0
-void C2_HOOK_FASTCALL DepthEffectSky(br_pixelmap* pRender_buffer, br_pixelmap* pDepth_buffer, br_actor* pCamera, br_matrix34* pCamera_to_world) {
+void C2_NAKED C2_HOOK_FASTCALL DepthEffectSky(br_pixelmap* pRender_buffer, br_pixelmap* pDepth_buffer, br_actor* pCamera, br_matrix34* pCamera_to_world) {
+#ifndef CARPOCALYPSE2_MATCHING
     br_angle yaw;
     br_actor* actor;
 
@@ -1286,10 +1296,125 @@ void C2_HOOK_FASTCALL DepthEffectSky(br_pixelmap* pRender_buffer, br_pixelmap* p
         BrZbsSceneRenderAdd(actor);
         actor->render_style = BR_RSTYLE_NONE;
     }
+#else
+    __asm {
+            push ebx
+            mov ebx, dword ptr [esp + 0xc]
+            push esi
+            push edi
+            fld dword ptr [ebx + 0x18]
+            fld dword ptr [ebx + 0x20]
+            fpatan
+            fmul qword ptr ds:[0x589cd8]
+            call _ftol
+            mov ecx, dword ptr ds:[0x75bbcc]
+            mov edi, eax
+            test ecx, ecx
+            jne L00445cfa
+            mov eax, dword ptr [gAction_replay_camera_mode]
+            mov ecx, eax
+            imul ecx, dword ptr [gPed_676914]
+            test ecx, ecx
+            jne L00445cfa
+            cmp eax, 8
+            je L00445cfa
+            mov eax, dword ptr [gAdapt_sky_model_for_cockpit]
+            test eax, eax
+            je L00445e11
+    L00445cfa:
+            mov eax, dword ptr [gRendering_mirror]
+            test eax, eax
+            je L00445d0b
+            mov esi, dword ptr [gRearview_sky_actor]
+            jmp L00445d54
+    L00445d0b:
+            mov ecx, dword ptr [gCamera]
+            mov esi, dword ptr [gForward_sky_actor]
+            mov eax, dword ptr [ecx + 0x5c]
+            mov dx, word ptr [eax + 6]
+            cmp word ptr [gOld_fov], dx
+            jne L00445d37
+            fld dword ptr [gOld_yon]
+            fcomp dword ptr [eax + 0xc]
+            fnstsw ax
+            test ah, 0x40
+            jne L00445d54
+    L00445d37:
+            mov word ptr [gOld_fov], dx
+            mov edx, dword ptr [ecx + 0x5c]
+            mov eax, dword ptr [edx + 0xc]
+            mov edx, dword ptr [gForward_sky_model]
+            mov dword ptr [gOld_yon], eax
+            call MungeSkyModel
+    L00445d54:
+            lea ecx, [esi + 0x2c]
+            push edi
+            push ecx
+            call BrMatrix34RotateY
+            mov edx, dword ptr [ebx + 0x24]
+            and edi, 0xffff
+            mov dword ptr [esi + 0x50], edx
+            mov eax, dword ptr [ebx + 0x28]
+            mov dword ptr [esi + 0x54], eax
+            mov ecx, dword ptr [ebx + 0x2c]
+            mov dword ptr [esi + 0x58], ecx
+            mov edx, dword ptr [gHorizon_material]
+            mov eax, 0x3f800000
+            mov dword ptr [esp + 0x1c], edi
+            fild dword ptr [esp + 0x1c]
+            mov dword ptr [edx + 0x24], eax
+            mov ecx, dword ptr [gHorizon_material]
+            add esp, 8
+            fmul qword ptr ds:[0x589ce0]
+            mov dword ptr [ecx + 0x28], 0
+            mov edx, dword ptr [gHorizon_material]
+            push 0x7fff
+            mov dword ptr [edx + 0x2c], 0
+            mov ecx, dword ptr [gHorizon_material]
+            xor edx, edx
+            mov dword ptr [ecx + 0x30], eax
+            mov dx, word ptr [gSky_image_width]
+            mov dword ptr [esp + 0x18], edx
+            mov eax, dword ptr [gHorizon_material]
+            fild dword ptr [esp + 0x18]
+            fmul qword ptr ds:[0x589ce0]
+            fxch st(1)
+            fxch st(1)
+            fdivp st(1), st(0)
+            fchs
+            fstp dword ptr [eax + 0x34]
+            mov ecx, dword ptr [gHorizon_material]
+            mov dword ptr [ecx + 0x38], 0
+            mov edx, dword ptr [gHorizon_material]
+            push edx
+            call BrMaterialUpdate
+            add esp, 8
+            mov byte ptr [esi + 0x20], 4
+            push esi
+            call BrZbsSceneRenderAdd
+            add esp, 4
+            mov byte ptr [esi + 0x20], 1
+    L00445e11:
+            pop edi
+            pop esi
+            pop ebx
+            ret 8
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00446680
-void C2_HOOK_FASTCALL DoWobbleCamera(br_actor* pCamera) {
+void C2_NAKED C2_HOOK_FASTCALL DoWobbleCamera(br_actor* pCamera) {
+#ifndef CARPOCALYPSE2_MATCHING
     float f_time;
 
     // GLOBAL: CARMA2_HW 0x00591194
@@ -1339,10 +1464,144 @@ void C2_HOOK_FASTCALL DoWobbleCamera(br_actor* pCamera) {
     pCamera->t.t.mat.m[2][0] += FastScalarSin((int)fmod(f_time / period20 * 360.f, 360.f)) * mag20;
     pCamera->t.t.mat.m[2][1] += FastScalarSin((int)fmod(f_time / period21 * 360.f, 360.f)) * mag21;
     pCamera->t.t.mat.m[2][2] += FastScalarSin((int)fmod(f_time / period22 * 360.f, 360.f)) * mag22;
+#else
+    __asm {
+            sub esp, 8
+            push esi
+            mov esi, ecx
+            call GetTotalTime
+            fld qword ptr ds:[0x589d10]
+            mov dword ptr [esp + 4], eax
+            mov dword ptr [esp + 8], 0
+            fild qword ptr [esp + 4]
+            fst dword ptr [esp + 4]
+            fdiv dword ptr ds:[0x5911ac]
+            fmul dword ptr ds:[0x589d0c]
+            fxch st(1)
+            call _CIfmod
+            call _ftol
+            mov ecx, eax
+            call FastScalarSin
+            fmul dword ptr ds:[0x591194]
+            fld dword ptr [esp + 4]
+            fld qword ptr ds:[0x589d10]
+            fxch st(2)
+            fadd dword ptr [esi + 0x2c]
+            fstp dword ptr [esi + 0x2c]
+            fdiv dword ptr ds:[0x5911b0]
+            fmul dword ptr ds:[0x589d0c]
+            fxch st(1)
+            call _CIfmod
+            call _ftol
+            mov ecx, eax
+            call FastScalarSin
+            fmul dword ptr ds:[0x591198]
+            fld dword ptr [esp + 4]
+            fld qword ptr ds:[0x589d10]
+            fxch st(2)
+            fadd dword ptr [esi + 0x30]
+            fstp dword ptr [esi + 0x30]
+            fdiv dword ptr ds:[0x5911b4]
+            fmul dword ptr ds:[0x589d0c]
+            fxch st(1)
+            call _CIfmod
+            call _ftol
+            mov ecx, eax
+            call FastScalarSin
+            fmul dword ptr ds:[0x59119c]
+            fld dword ptr [esp + 4]
+            fld qword ptr ds:[0x589d10]
+            fxch st(2)
+            fadd dword ptr [esi + 0x34]
+            fstp dword ptr [esi + 0x34]
+            fdiv dword ptr ds:[0x5911b8]
+            fmul dword ptr ds:[0x589d0c]
+            fxch st(1)
+            call _CIfmod
+            call _ftol
+            mov ecx, eax
+            call FastScalarSin
+            fmul dword ptr ds:[0x5911a0]
+            fld dword ptr [esp + 4]
+            fld qword ptr ds:[0x589d10]
+            fxch st(2)
+            fadd dword ptr [esi + 0x38]
+            fstp dword ptr [esi + 0x38]
+            fdiv dword ptr ds:[0x5911bc]
+            fmul dword ptr ds:[0x589d0c]
+            fxch st(1)
+            call _CIfmod
+            call _ftol
+            mov ecx, eax
+            call FastScalarSin
+            fmul dword ptr ds:[0x5911a4]
+            fld dword ptr [esp + 4]
+            fld qword ptr ds:[0x589d10]
+            fxch st(2)
+            fadd dword ptr [esi + 0x3c]
+            fstp dword ptr [esi + 0x3c]
+            fdiv dword ptr ds:[0x5911c0]
+            fmul dword ptr ds:[0x589d0c]
+            fxch st(1)
+            call _CIfmod
+            call _ftol
+            mov ecx, eax
+            call FastScalarSin
+            fmul dword ptr ds:[0x5911a8]
+            fld dword ptr [esp + 4]
+            fld qword ptr ds:[0x589d10]
+            fxch st(2)
+            fadd dword ptr [esi + 0x40]
+            fstp dword ptr [esi + 0x40]
+            fdiv dword ptr ds:[0x5911c4]
+            fmul dword ptr ds:[0x589d0c]
+            fxch st(1)
+            call _CIfmod
+            call _ftol
+            mov ecx, eax
+            call FastScalarSin
+            fmul dword ptr ds:[0x67c4e4]
+            fld dword ptr [esp + 4]
+            fld qword ptr ds:[0x589d10]
+            fxch st(2)
+            fadd dword ptr [esi + 0x44]
+            fstp dword ptr [esi + 0x44]
+            fdiv dword ptr ds:[0x5911c8]
+            fmul dword ptr ds:[0x589d0c]
+            fxch st(1)
+            call _CIfmod
+            call _ftol
+            mov ecx, eax
+            call FastScalarSin
+            fmul dword ptr ds:[0x67c4e8]
+            fld dword ptr [esp + 4]
+            fld qword ptr ds:[0x589d10]
+            fxch st(2)
+            fadd dword ptr [esi + 0x48]
+            fstp dword ptr [esi + 0x48]
+            fdiv dword ptr ds:[0x5911cc]
+            fmul dword ptr ds:[0x589d0c]
+            fxch st(1)
+            call _CIfmod
+            call _ftol
+            mov ecx, eax
+            call FastScalarSin
+            fmul dword ptr ds:[0x67c4ec]
+            fadd dword ptr [esi + 0x4c]
+            fstp dword ptr [esi + 0x4c]
+            pop esi
+            add esp, 8
+            ret
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00446340
-void C2_HOOK_FASTCALL DoSpecialCameraEffect(br_actor* pCamera, br_matrix34* pCamera_to_world) {
+void C2_NAKED C2_HOOK_FASTCALL DoSpecialCameraEffect(br_actor* pCamera, br_matrix34* pCamera_to_world) {
+#ifndef CARPOCALYPSE2_MATCHING
     float f_time;
     // GLOBAL: CARMA2_HW 0x005911d0
     static float mag00 = 0.03f;
@@ -1415,6 +1674,237 @@ void C2_HOOK_FASTCALL DoSpecialCameraEffect(br_actor* pCamera, br_matrix34* pCam
     } else {
         TurnTintedPolyOff(gHud_tinted1);
     }
+#else
+    __asm {
+            push ecx
+            push esi
+            push edi
+            mov edi, edx
+            mov esi, ecx
+            call UpdateTintedPolys
+            mov eax, dword ptr [gOn_drugs]
+            test eax, eax
+            je L00446570
+            mov eax, dword ptr [gPed_676914]
+            test eax, eax
+            jne L00446570
+            mov ecx, dword ptr [gHud_tinted2]
+            call TurnTintedPolyOn
+            call PDGetTotalTime
+            fld qword ptr ds:[0x589d10]
+            mov dword ptr [esp + 8], eax
+            fild dword ptr [esp + 8]
+            fst dword ptr [esp + 8]
+            fdiv dword ptr ds:[0x5911f4]
+            fmul dword ptr ds:[0x589d0c]
+            fxch st(1)
+            call _CIfmod
+            call _ftol
+            mov ecx, eax
+            call FastScalarSin
+            fmul dword ptr ds:[0x5911d0]
+            fld dword ptr [esp + 8]
+            fld qword ptr ds:[0x589d10]
+            fxch st(2)
+            fadd dword ptr [esi + 0x2c]
+            fstp dword ptr [esi + 0x2c]
+            fdiv dword ptr ds:[0x5911f8]
+            fmul dword ptr ds:[0x589d0c]
+            fxch st(1)
+            call _CIfmod
+            call _ftol
+            mov ecx, eax
+            call FastScalarSin
+            fmul dword ptr ds:[0x5911d4]
+            fld dword ptr [esp + 8]
+            fld qword ptr ds:[0x589d10]
+            fxch st(2)
+            fadd dword ptr [esi + 0x30]
+            fstp dword ptr [esi + 0x30]
+            fdiv dword ptr ds:[0x5911fc]
+            fmul dword ptr ds:[0x589d0c]
+            fxch st(1)
+            call _CIfmod
+            call _ftol
+            mov ecx, eax
+            call FastScalarSin
+            fmul dword ptr ds:[0x5911d8]
+            fld dword ptr [esp + 8]
+            fld qword ptr ds:[0x589d10]
+            fxch st(2)
+            fadd dword ptr [esi + 0x34]
+            fstp dword ptr [esi + 0x34]
+            fdiv dword ptr ds:[0x591200]
+            fmul dword ptr ds:[0x589d0c]
+            fxch st(1)
+            call _CIfmod
+            call _ftol
+            mov ecx, eax
+            call FastScalarSin
+            fmul dword ptr ds:[0x5911dc]
+            fld dword ptr [esp + 8]
+            fld qword ptr ds:[0x589d10]
+            fxch st(2)
+            fadd dword ptr [esi + 0x38]
+            fstp dword ptr [esi + 0x38]
+            fdiv dword ptr ds:[0x591204]
+            fmul dword ptr ds:[0x589d0c]
+            fxch st(1)
+            call _CIfmod
+            call _ftol
+            mov ecx, eax
+            call FastScalarSin
+            fmul dword ptr ds:[0x5911e0]
+            fld dword ptr [esp + 8]
+            fld qword ptr ds:[0x589d10]
+            fxch st(2)
+            fadd dword ptr [esi + 0x3c]
+            fstp dword ptr [esi + 0x3c]
+            fdiv dword ptr ds:[0x591208]
+            fmul dword ptr ds:[0x589d0c]
+            fxch st(1)
+            call _CIfmod
+            call _ftol
+            mov ecx, eax
+            call FastScalarSin
+            fmul dword ptr ds:[0x5911e4]
+            fld dword ptr [esp + 8]
+            fld qword ptr ds:[0x589d10]
+            fxch st(2)
+            fadd dword ptr [esi + 0x40]
+            fstp dword ptr [esi + 0x40]
+            fdiv dword ptr ds:[0x59120c]
+            fmul dword ptr ds:[0x589d0c]
+            fxch st(1)
+            call _CIfmod
+            call _ftol
+            mov ecx, eax
+            call FastScalarSin
+            fmul dword ptr ds:[0x5911e8]
+            fld dword ptr [esp + 8]
+            fld qword ptr ds:[0x589d10]
+            fxch st(2)
+            fadd dword ptr [esi + 0x44]
+            fstp dword ptr [esi + 0x44]
+            fdiv dword ptr ds:[0x591210]
+            fmul dword ptr ds:[0x589d0c]
+            fxch st(1)
+            call _CIfmod
+            call _ftol
+            mov ecx, eax
+            call FastScalarSin
+            fmul dword ptr ds:[0x5911ec]
+            fld dword ptr [esp + 8]
+            fld qword ptr ds:[0x589d10]
+            fxch st(2)
+            fadd dword ptr [esi + 0x48]
+            fstp dword ptr [esi + 0x48]
+            fdiv dword ptr ds:[0x591214]
+            fmul dword ptr ds:[0x589d0c]
+            fxch st(1)
+            call _CIfmod
+            call _ftol
+            mov ecx, eax
+            call FastScalarSin
+            fmul dword ptr ds:[0x5911f0]
+            fadd dword ptr [esi + 0x4c]
+            fstp dword ptr [esi + 0x4c]
+            jmp L0044662f
+    L00446570:
+            mov ecx, dword ptr [gHud_tinted2]
+            call TurnTintedPolyOff
+            mov edx, dword ptr [gDAT_0079ec44]
+            lea ecx, [edi + 0x24]
+            push 0
+            call FindSpecialVolume
+            test eax, eax
+            mov dword ptr [gDAT_0079ec44], eax
+            je L004465aa
+            mov ecx, dword ptr [eax + 0x98]
+            test ecx, ecx
+            jne L004465aa
+            mov ecx, esi
+            call DoWobbleCamera
+            mov eax, dword ptr [gDAT_0079ec44]
+    L004465aa:
+            mov ecx, dword ptr [gHas_sky_texture]
+            test ecx, ecx
+            je L0044662f
+            mov ecx, dword ptr [gSky_on]
+            test ecx, ecx
+            je L0044662f
+            test eax, eax
+            je L004465d2
+            cmp dword ptr [eax + 0x9c], -2
+            jne L004465d2
+            mov eax, 1
+            jmp L004465d4
+    L004465d2:
+            xor eax, eax
+    L004465d4:
+            mov ecx, dword ptr ds:[0x75d778]
+            xor edx, edx
+            test ecx, ecx
+            setne dl
+            cmp edx, eax
+            jne L0044662f
+            mov eax, dword ptr [gSwap_sky_texture]
+            mov dword ptr [gSwap_sky_texture], ecx
+            mov ecx, dword ptr [gHorizon_material]
+            mov dword ptr ds:[0x75d778], eax
+            test ecx, ecx
+            mov dword ptr ds:[0x75d75c], eax
+            je L0044662f
+            test eax, eax
+            je L0044662f
+            mov dword ptr [ecx + 0x40], eax
+            mov eax, dword ptr [gHorizon_material]
+            push 0x7fff
+            push eax
+            call BrMaterialUpdate
+            mov edx, dword ptr [gHorizon_material]
+            mov ecx, dword ptr [gForward_sky_model]
+            add esp, 8
+            call MungeSkyVs
+    L0044662f:
+            mov ecx, dword ptr [gHud_tinted1]
+            lea edx, [edi + 0x24]
+            call SetTintedFromSpecialVolume
+            mov ecx, dword ptr [gHud_tinted1]
+            xor edi, edi
+            call InWater
+            mov ecx, dword ptr [gHud_tinted1]
+            test eax, eax
+            je L00446660
+            call TurnTintedPolyOn
+            mov edi, 1
+            jmp L00446665
+    L00446660:
+            call TurnTintedPolyOff
+    L00446665:
+            test edi, edi
+            je L00446670
+            mov ecx, esi
+            call DoWobbleCamera
+    L00446670:
+            pop edi
+            pop esi
+            pop ecx
+            ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 // Log2
 
@@ -1426,7 +1916,8 @@ br_scalar C2_HOOK_FASTCALL DepthCueingShiftToDistance(int pDistance) {
 }
 
 // FUNCTION: CARMA2_HW 0x004451a0
-void C2_HOOK_FASTCALL FogAccordingToGPSCDE(br_material* pMaterial) {
+void C2_NAKED C2_HOOK_FASTCALL FogAccordingToGPSCDE(br_material* pMaterial) {
+#ifndef CARPOCALYPSE2_MATCHING
     int start;
     int end;
     int red;
@@ -1463,6 +1954,134 @@ void C2_HOOK_FASTCALL FogAccordingToGPSCDE(br_material* pMaterial) {
         break;
     }
     BrMaterialUpdate(pMaterial, BR_MATU_ALL);
+#else
+    __asm {
+            sub esp, 8
+            mov edx, dword ptr ds:[0x75d760]
+            push ebx
+            push ebp
+            push esi
+            mov esi, ecx
+            mov eax, dword ptr ds:[0x75d764]
+            mov ecx, dword ptr ds:[0x75d768]
+            mov ebx, dword ptr ds:[0x75d770]
+            mov ebp, dword ptr ds:[0x75d774]
+            mov dword ptr [esp + 0xc], ecx
+            lea ecx, [edx + 1]
+            push edi
+            mov edi, dword ptr ds:[0x75d76c]
+            cmp ecx, 3
+            ja L00445310
+            jmp dword ptr [ecx*4 + 0x445328]
+            and dword ptr [esi + 0x20], 0xfff7ffff
+            jmp L00445310
+            fld qword ptr ds:[0x589ca8]
+            neg eax
+            mov dword ptr [esp + 0x14], eax
+            fild dword ptr [esp + 0x14]
+            fmul qword ptr ds:[0x589cb0]
+            call _CIpow
+            fmul dword ptr [gCamera_yon]
+            fld qword ptr ds:[0x589ca8]
+            fild dword ptr [esp + 0x10]
+            fmul qword ptr ds:[0x589cb0]
+            fxch st(2)
+            fst dword ptr [esp + 0x14]
+            fstp dword ptr [esi + 0x5c]
+            fxch st(1)
+            call _CIpow
+            fmul dword ptr [gCamera_yon]
+            mov eax, dword ptr [esi + 0x20]
+            mov dword ptr [esi + 0x64], 0
+            or eax, 0x80000
+            fstp dword ptr [esi + 0x60]
+            mov dword ptr [esi + 0x20], eax
+            jmp L00445310
+            fld qword ptr ds:[0x589ca8]
+            neg eax
+            mov dword ptr [esp + 0x14], eax
+            fild dword ptr [esp + 0x14]
+            fmul qword ptr ds:[0x589cb0]
+            call _CIpow
+            fmul dword ptr [gCamera_yon]
+            fld qword ptr ds:[0x589ca8]
+            fild dword ptr [esp + 0x10]
+            fmul qword ptr ds:[0x589cb0]
+            fxch st(2)
+            fst dword ptr [esp + 0x14]
+            fstp dword ptr [esi + 0x5c]
+            fxch st(1)
+            call _CIpow
+            fmul dword ptr [gCamera_yon]
+            mov eax, dword ptr [esi + 0x20]
+            mov dword ptr [esi + 0x64], 0xf8f8f8
+            or eax, 0x80000
+            fstp dword ptr [esi + 0x60]
+            mov dword ptr [esi + 0x20], eax
+            jmp L00445310
+            fld qword ptr ds:[0x589ca8]
+            neg eax
+            mov dword ptr [esp + 0x14], eax
+            fild dword ptr [esp + 0x14]
+            fmul qword ptr ds:[0x589cb0]
+            call _CIpow
+            fmul dword ptr [gCamera_yon]
+            fld qword ptr ds:[0x589ca8]
+            fild dword ptr [esp + 0x10]
+            fmul qword ptr ds:[0x589cb0]
+            fxch st(2)
+            fst dword ptr [esp + 0x14]
+            fstp dword ptr [esi + 0x5c]
+            fxch st(1)
+            call _CIpow
+            fmul dword ptr [gCamera_yon]
+            mov eax, dword ptr [esi + 0x20]
+            shl edi, 8
+            or edi, ebx
+            shl edi, 8
+            or edi, ebp
+            or eax, 0x80000
+            fstp dword ptr [esi + 0x60]
+            mov dword ptr [esi + 0x20], eax
+            mov dword ptr [esi + 0x64], edi
+    L00445310:
+            push 0x7fff
+            push esi
+            call BrMaterialUpdate
+            add esp, 8
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 8
+            ret
+            mov edi, edi
+            _emit 0xe3
+            _emit 0x51
+            _emit 0x44
+            _emit 0x00
+            _emit 0xef
+            _emit 0x51
+            _emit 0x44
+            _emit 0x00
+            _emit 0x50
+            _emit 0x52
+            _emit 0x44
+            _emit 0x00
+            _emit 0xae
+            _emit 0x52
+            _emit 0x44
+            _emit 0x00
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+            _emit 0x90
+    }
+#endif
 }
 
 void C2_HOOK_FASTCALL FogCars(void) {

@@ -6729,7 +6729,8 @@ void C2_NAKED C2_HOOK_FASTCALL DRPixelmapCopy(br_pixelmap* dst, br_pixelmap* src
 }
 
 // FUNCTION: CARMA2_HW 0x00517f10
-static tMaterial_exception* C2_HOOK_FASTCALL FindExceptionInList(const char* pIdentifier, tMaterial_exception* pList) {
+C2_NAKED tMaterial_exception* C2_HOOK_FASTCALL FindExceptionInList(const char* pIdentifier, tMaterial_exception* pList) {
+#ifndef CARPOCALYPSE2_MATCHING
 
     for (; pList != NULL; pList = pList->next) {
         if (DRStricmp(pIdentifier, pList->texture_name) == 0) {
@@ -6737,6 +6738,84 @@ static tMaterial_exception* C2_HOOK_FASTCALL FindExceptionInList(const char* pId
         }
     }
     return pList;
+#else
+    __asm {
+            sub esp, 8
+            push ebx
+            push ebp
+            mov ebp, edx
+            mov ebx, ecx
+            push esi
+            push edi
+            test ebp, ebp
+            mov dword ptr [esp + 0x10], ebx
+            je L00517f8b
+            jmp L00517f29
+    L00517f25:
+            mov ebx, dword ptr [esp + 0x10]
+    L00517f29:
+            mov edi, dword ptr [ebp + 4]
+            movsx eax, byte ptr [edi]
+            push eax
+            call tolower
+            movsx ecx, byte ptr [ebx]
+            add esp, 4
+            mov esi, eax
+            push ecx
+            call tolower
+            mov dword ptr [esp + 0x18], esi
+            mov esi, eax
+            mov edx, dword ptr [esp + 0x18]
+            add esp, 4
+            sub esi, edx
+            jne L00517f80
+    L00517f54:
+            mov al, byte ptr [ebx]
+            inc ebx
+            test al, al
+            je L00517f80
+            mov cl, byte ptr [edi]
+            inc edi
+            test cl, cl
+            je L00517f80
+            movsx edx, byte ptr [ebx]
+            push edx
+            call tolower
+            mov esi, eax
+            add esp, 4
+            movsx eax, byte ptr [edi]
+            push eax
+            call tolower
+            add esp, 4
+            sub esi, eax
+            je L00517f54
+    L00517f80:
+            test esi, esi
+            je L00517f8b
+            mov ebp, dword ptr [ebp]
+            test ebp, ebp
+            jne L00517f25
+    L00517f8b:
+            pop edi
+            mov eax, ebp
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 8
+            ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x00517fa0

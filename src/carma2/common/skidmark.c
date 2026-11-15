@@ -992,7 +992,8 @@ void C2_HOOK_FASTCALL SkidsPerFrame(void) {
     }
 }
 // FUNCTION: CARMA2_HW 0x004e9c40
-void C2_HOOK_FASTCALL InitSkids(void) {
+void C2_NAKED C2_HOOK_FASTCALL InitSkids(void) {
+#ifndef CARPOCALYPSE2_MATCHING
     int skid;
     int mat;
     int sl;
@@ -1061,6 +1062,246 @@ void C2_HOOK_FASTCALL InitSkids(void) {
         BrModelAdd(square);
         gSkids[skid].actor->model = square;
     }
+#else
+    __asm {
+            sub esp, 0xc
+            push ebx
+            push ebp
+            push esi
+            push edi
+            xor ebx, ebx
+            mov edi, offset gMaterial
+            xor esi, esi
+            mov dword ptr [esp + 0x14], edi
+            mov dword ptr [esp + 0x10], esi
+    L004e9c58:
+            cmp dword ptr ds:[0x75bb90], ebx
+            je L004e9c68
+            mov eax, dword ptr [esi + gBoring_material_name_0]
+            jmp L004e9c6e
+    L004e9c68:
+            mov eax, dword ptr [esi + gMaterial_names]
+    L004e9c6e:
+            push eax
+            call BrMaterialFind
+            add esp, 4
+            cmp eax, ebx
+            mov dword ptr [edi], eax
+            jne L004e9d88
+            cmp dword ptr ds:[0x75bb90], ebx
+            je L004e9c91
+            mov eax, dword ptr [esi + gBoring_material_name_0]
+            jmp L004e9c97
+    L004e9c91:
+            mov eax, dword ptr [esi + gMaterial_names]
+    L004e9c97:
+            push 0x58f45c
+            push eax
+            call strtok
+            mov ebp, eax
+            or ecx, 0xffffffff
+            mov edi, ebp
+            xor eax, eax
+            add esp, 8
+            repne scasb
+            not ecx
+            dec ecx
+            mov edi, 0x59b0b4
+            mov dword ptr [esp + 0x18], ecx
+            or ecx, 0xffffffff
+            repne scasb
+            not ecx
+            sub edi, ecx
+            mov esi, edi
+            mov edx, ecx
+            mov edi, ebp
+            or ecx, 0xffffffff
+            repne scasb
+            mov ecx, edx
+            dec edi
+            shr ecx, 2
+            rep movsd
+            mov ecx, edx
+            and ecx, 3
+            rep movsb
+            mov ecx, ebp
+            call LoadPixelmap
+            mov esi, eax
+            cmp esi, ebx
+            jne L004e9cf7
+            push ebp
+            push 0x4f
+            call FatalError
+            add esp, 8
+    L004e9cf7:
+            push esi
+            call BrMapAdd
+            mov eax, dword ptr [esp + 0x1c]
+            mov edi, 0x65fe80
+            or ecx, 0xffffffff
+            add esp, 4
+            mov byte ptr [ebp + eax], bl
+            xor eax, eax
+            repne scasb
+            not ecx
+            sub edi, ecx
+            mov esi, edi
+            mov edx, ecx
+            mov edi, ebp
+            or ecx, 0xffffffff
+            repne scasb
+            mov ecx, edx
+            dec edi
+            shr ecx, 2
+            rep movsd
+            mov ecx, edx
+            and ecx, 3
+            rep movsb
+            mov ecx, ebp
+            call LoadMaterial
+            mov esi, dword ptr [esp + 0x14]
+            cmp eax, ebx
+            mov dword ptr [esi], eax
+            jne L004e9d67
+            mov eax, dword ptr [esp + 0x10]
+            mov ecx, dword ptr [eax + gMaterial_names]
+            push ecx
+            push 0x65fe6c
+            push 0xd7
+            push 0x65fe48
+            call BrFatal
+            add esp, 0x10
+            jmp L004e9d75
+    L004e9d67:
+            push 4
+            mov edx, 1
+            mov ecx, esi
+            call GlorifyMaterial
+    L004e9d75:
+            mov edx, dword ptr [esi]
+            push edx
+            call BrMaterialAdd
+            mov edi, dword ptr [esp + 0x18]
+            mov esi, dword ptr [esp + 0x14]
+            add esp, 4
+    L004e9d88:
+            add edi, 4
+            add esi, 4
+            cmp edi, offset gHUDsquare_actor
+            mov dword ptr [esp + 0x10], esi
+            mov dword ptr [esp + 0x14], edi
+            jl L004e9c58
+            mov edi, offset gSkids
+            mov ebp, 0x3f800000
+    L004e9dac:
+            push ebx
+            push 1
+            call BrActorAllocate
+            add esp, 8
+            mov dword ptr [edi], eax
+            push eax
+            mov eax, dword ptr ds:[0x74d650]
+            push eax
+            call BrActorAdd
+            mov ecx, dword ptr [edi]
+            add esp, 8
+            push 2
+            push 4
+            push ebx
+            mov byte ptr [ecx + 0x20], 1
+            call BrModelAllocate
+            mov esi, eax
+            mov ecx, 0xbf000000
+            add esp, 0xc
+            mov edx, dword ptr [esi + 8]
+            push esi
+            mov dword ptr [edx], ecx
+            mov eax, dword ptr [esi + 8]
+            mov dword ptr [eax + 4], ebx
+            mov edx, dword ptr [esi + 8]
+            mov dword ptr [edx + 8], ecx
+            mov eax, dword ptr [esi + 8]
+            mov dword ptr [eax + 0x28], ecx
+            mov edx, dword ptr [esi + 8]
+            mov eax, 0x3f000000
+            mov dword ptr [edx + 0x2c], ebx
+            mov edx, dword ptr [esi + 8]
+            mov dword ptr [edx + 0x30], eax
+            mov edx, dword ptr [esi + 8]
+            mov dword ptr [edx + 0x50], eax
+            mov edx, dword ptr [esi + 8]
+            mov dword ptr [edx + 0x54], ebx
+            mov edx, dword ptr [esi + 8]
+            mov dword ptr [edx + 0x58], eax
+            mov edx, dword ptr [esi + 8]
+            mov dword ptr [edx + 0x78], eax
+            mov eax, dword ptr [esi + 8]
+            mov dword ptr [eax + 0x7c], ebx
+            mov edx, dword ptr [esi + 8]
+            mov dword ptr [edx + 0x80], ecx
+            mov eax, dword ptr [esi + 8]
+            mov dword ptr [eax + 0xc], ebx
+            mov ecx, dword ptr [esi + 8]
+            mov dword ptr [ecx + 0x10], ebx
+            mov edx, dword ptr [esi + 8]
+            mov dword ptr [edx + 0x34], ebx
+            mov eax, dword ptr [esi + 8]
+            mov dword ptr [eax + 0x38], ebp
+            mov ecx, dword ptr [esi + 8]
+            mov dword ptr [ecx + 0x5c], ebp
+            mov edx, dword ptr [esi + 8]
+            mov dword ptr [edx + 0x60], ebp
+            mov eax, dword ptr [esi + 8]
+            mov dword ptr [eax + 0x84], ebp
+            mov ecx, dword ptr [esi + 8]
+            mov eax, 1
+            mov dword ptr [ecx + 0x88], ebx
+            mov edx, dword ptr [esi + 0xc]
+            mov word ptr [edx], bx
+            mov ecx, dword ptr [esi + 0xc]
+            mov word ptr [ecx + 2], ax
+            mov edx, dword ptr [esi + 0xc]
+            mov ecx, 2
+            mov word ptr [edx + 4], cx
+            mov edx, dword ptr [esi + 0xc]
+            mov word ptr [edx + 6], ax
+            mov edx, dword ptr [esi + 0xc]
+            mov word ptr [edx + 0x28], bx
+            mov edx, dword ptr [esi + 0xc]
+            mov word ptr [edx + 0x2a], cx
+            mov edx, dword ptr [esi + 0xc]
+            mov word ptr [edx + 0x2c], 3
+            mov edx, dword ptr [esi + 0xc]
+            mov word ptr [edx + 0x2e], ax
+            or word ptr [esi + 0x20], cx
+            call BrModelAdd
+            mov eax, dword ptr [edi]
+            add edi, 0x1c
+            add esp, 4
+            cmp edi, 0x6a32e0
+            mov dword ptr [eax + 0x18], esi
+            jl L004e9dac
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            add esp, 0xc
+            ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // HideSkid

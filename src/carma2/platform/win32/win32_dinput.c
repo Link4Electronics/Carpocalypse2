@@ -5943,7 +5943,8 @@ int C2_NAKED C2_HOOK_FASTCALL FUN_00458150(int pEffect_index, int pStart_effect,
 }
 
 // FUNCTION: CARMA2_HW 0x00458460
-void C2_HOOK_FASTCALL FUN_00458460(void) {
+void C2_NAKED C2_HOOK_FASTCALL FUN_00458460(void) {
+#ifndef CARPOCALYPSE2_MATCHING
     tU32 duration;
     tJoystick_effect_description description;
     int effect_index;
@@ -5966,6 +5967,69 @@ void C2_HOOK_FASTCALL FUN_00458460(void) {
         Sleep(500);
         ResetDInputJoystickFFB(gJoystick_index);
     }
+#else
+    __asm {
+            sub esp, 0x64
+            mov ecx, dword ptr [gJoystick_index]
+            push esi
+            push 0x5960a0
+            lea edx, [esp + 0xc]
+            mov dword ptr [esp + 8], 0x3d090
+            mov dword ptr [esp + 0xc], 0
+            mov dword ptr [esp + 0x10], 0x1388
+            mov dword ptr [esp + 0x40], 0x7a120
+            mov dword ptr [esp + 0x44], 0x3e8
+            mov dword ptr [esp + 0x48], 0x2710
+            mov dword ptr [esp + 0x50], 0xffffffff
+            mov dword ptr [esp + 0x54], 0
+            mov dword ptr [esp + 0x58], 0x5a
+            call CreateDinputEffect
+            mov esi, eax
+            test esi, esi
+            jl L0045850d
+            push edi
+            mov ecx, esi
+            call StartDinputEffect
+            mov edi, dword ptr ds:[0x589094]
+            push 0x64
+            call edi
+            lea eax, [esp + 8]
+            mov edx, 1
+            push 0
+            push 0
+            push 0
+            push 0
+            push eax
+            push 0
+            mov ecx, esi
+            call FUN_00458150
+            mov ecx, esi
+            call StartDinputEffect
+            push 0x1f4
+            call edi
+            mov ecx, dword ptr [gJoystick_index]
+            call ResetDInputJoystickFFB
+            pop edi
+    L0045850d:
+            pop esi
+            add esp, 0x64
+            ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // FUNCTION: CARMA2_HW 0x004580e0

@@ -5455,7 +5455,7 @@ unsigned int C2_NAKED C2_HOOK_CDECL FUN_0056c820(void) {
     }
 #endif
 }
-// FUNCTION: CARMA2_HW 0x0056a900
+/* QuickTime trap wrapper; the matching annotation lives in external/dummyqt/src/dummy.c. */
 unsigned int C2_HOOK_CDECL FUN_0056a900(void) {
     if (gQuickTime_dispatcher != NULL) {
         gQuickTime_dispatcher();
@@ -5524,7 +5524,7 @@ Media C2_NAKED C2_HOOK_CDECL FUN_0056c6e0(Track pTrack, int pMedia_type, int pTi
 #endif
 }
 
-// FUNCTION: CARMA2_HW 0x0056b340
+/* QuickTime trap wrapper; the matching annotation lives in external/dummyqt/src/dummy.c. */
 int C2_HOOK_CDECL FUN_0056b340(Media pMedia) {
     if (gQuickTime_dispatcher != NULL) {
         gQuickTime_dispatcher();

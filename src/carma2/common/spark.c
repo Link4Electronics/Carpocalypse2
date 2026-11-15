@@ -768,13 +768,13 @@ void C2_NAKED C2_HOOK_FASTCALL InitSplash(FILE* pF) {
             xor esi, esi
             push 4
             mov ebx, ecx
-            push offset gDAT_00660148+0x104
+            push 0x66024c
             mov dword ptr [gSplash_flags], esi
             call BrModelAllocate
-            mov cx, word ptr [gSplit_triangle_vertex_orders+0x204]
-            mov dl, byte ptr [gSplit_triangle_vertex_orders+0x206]
+            mov cx, word ptr ds:[0x66010c]
+            mov dl, byte ptr ds:[0x66010e]
             mov dword ptr [gSplash_model], eax
-            mov eax, dword ptr [gSplit_triangle_vertex_orders+0x200]
+            mov eax, dword ptr ds:[0x660108]
             add esp, 0xc
             cmp ebx, esi
             mov dword ptr [gCurrent_load_directory], eax
@@ -834,11 +834,11 @@ void C2_NAKED C2_HOOK_FASTCALL InitSplash(FILE* pF) {
             jne L004fde4d
             jmp L004fdf18
     L004fdede:
-            mov eax, dword ptr [gDAT_00660148+0xf4]
-            mov ecx, dword ptr [gDAT_00660148+0xf8]
-            mov edx, dword ptr [gDAT_00660148+0xfc]
+            mov eax, dword ptr ds:[0x66023c]
+            mov ecx, dword ptr ds:[0x660240]
+            mov edx, dword ptr ds:[0x660244]
             mov dword ptr [esp + 0x64], eax
-            mov al, byte ptr [gDAT_00660148+0x100]
+            mov al, byte ptr ds:[0x660248]
             mov dword ptr [esp + 0x68], ecx
             mov dword ptr [esp + 0x6c], edx
             push 0x14
@@ -1031,7 +1031,8 @@ void C2_HOOK_FASTCALL FreeSmokeShadeTables(void) {
 }
 
 // FUNCTION: CARMA2_HW 0x004fdc10
-void C2_HOOK_FASTCALL LoadInKevStuff(FILE* pF) {
+void C2_NAKED C2_HOOK_FASTCALL LoadInKevStuff(FILE* pF) {
+#ifndef CARPOCALYPSE2_MATCHING
 
     PackFileRevertTiffLoading();
     PossibleService();
@@ -1043,6 +1044,165 @@ void C2_HOOK_FASTCALL LoadInKevStuff(FILE* pF) {
     PossibleService();
     InitSplash(pF);
     PackFileRerevertTiffLoading();
+#else
+    __asm {
+            push ecx
+            push ebx
+            push ebp
+            push esi
+            push edi
+            mov dword ptr [esp + 0x10], ecx
+            call PackFileRevertTiffLoading
+            call PossibleService
+            mov ecx, 0x6601a4
+            call LoadModel
+            mov ecx, eax
+            mov dword ptr [gShrapnel_model], eax
+            push 0x3f000000
+            call DRScaleModel
+            mov ecx, 0x660198
+            call LoadModel
+            mov ecx, eax
+            mov dword ptr ds:[0x6aa58c], eax
+            push 0x3f000000
+            call DRScaleModel
+            mov eax, dword ptr [gShrapnel_model]
+            push eax
+            call BrModelAdd
+            mov ecx, dword ptr ds:[0x6aa58c]
+            add esp, 4
+            push ecx
+            call BrModelAdd
+            add esp, 4
+            mov edx, 4
+            mov ecx, 0x660190
+            call GetSimpleMaterial
+            mov edx, dword ptr [gNon_track_actor]
+            mov dword ptr [gBlack_material], eax
+            mov dword ptr [edx + 0x1c], eax
+            call PossibleService
+            xor ebx, ebx
+            xor ebp, ebp
+            mov esi, offset gShrapnel
+    L004fdca1:
+            push ebx
+            push 1
+            call BrActorAllocate
+            mov dword ptr [esi], eax
+            mov dword ptr [eax + 0xc], ebx
+            mov ecx, dword ptr [esi]
+            mov eax, ebp
+            and eax, 1
+            add esp, 8
+            mov edx, dword ptr [eax*4 + gShrapnel_model]
+            push 0x660230
+            mov dword ptr [ecx + 0x18], edx
+            mov eax, dword ptr [esi]
+            mov byte ptr [eax + 0x20], bl
+            mov ecx, dword ptr [esi]
+            mov word ptr [ecx + 0x28], bx
+            call BrMaterialFind
+            mov edx, dword ptr [esi]
+            add esp, 4
+            push 0x40000000
+            mov dword ptr [edx + 0x1c], eax
+            push 0xc0000000
+            mov dword ptr [esi + 0x14], ebx
+            call FRandomBetween
+            fstp dword ptr [esi + 0x18]
+            push 0x40000000
+            push 0xc0000000
+            call FRandomBetween
+            fstp dword ptr [esi + 0x1c]
+            push 0x3f800000
+            push 0xbf800000
+            lea edi, [esi + 0x20]
+            call FRandomBetween
+            push ecx
+            _emit 0xd9
+        _emit 0x1c
+        _emit 0x24
+            push 0x3f800000
+            push 0xbf800000
+            call FRandomBetween
+            push ecx
+            _emit 0xd9
+        _emit 0x1c
+        _emit 0x24
+            push 0x3f800000
+            push 0xbf800000
+            call FRandomBetween
+            push ecx
+            _emit 0xd9
+        _emit 0x1c
+        _emit 0x24
+            push edi
+            call BrVector3SetFloat
+            _emit 0xd9
+        _emit 0x07
+            fld dword ptr [esi + 0x24]
+            fld dword ptr [esi + 0x28]
+            fld st(2)
+            fmulp st(3), st(0)
+            fld st(1)
+            fmul st(0), st(2)
+            add esp, 0x10
+            faddp st(3), st(0)
+            fld st(0)
+            fmul st(0), st(1)
+            faddp st(3), st(0)
+            fxch st(2)
+            fsqrt
+            fxch st(2)
+            fstp st(0)
+            fstp st(0)
+            fcom dword ptr [gFLOAT_0058b110]
+            fnstsw ax
+            test ah, 0x41
+            jne L004fdd9a
+            fdivr qword ptr [gDOUBLE_0058b010]
+            _emit 0xd9
+        _emit 0x07
+            fmul st(0), st(1)
+            _emit 0xd9
+        _emit 0x1f
+            fld dword ptr [esi + 0x24]
+            fmul st(0), st(1)
+            fstp dword ptr [esi + 0x24]
+            fld dword ptr [esi + 0x28]
+            fmul st(0), st(1)
+            fstp dword ptr [esi + 0x28]
+            fstp st(0)
+            jmp L004fdda8
+    L004fdd9a:
+            mov dword ptr [edi], 0x3f800000
+            mov dword ptr [esi + 0x24], ebx
+            fstp st(0)
+            mov dword ptr [esi + 0x28], ebx
+    L004fdda8:
+            add esi, 0x2c
+            inc ebp
+            cmp esi, offset gSmoke_column
+            jl L004fdca1
+            call PossibleService
+            call InitFlame
+            call PossibleService
+            mov ecx, dword ptr [esp + 0x10]
+            call InitSplash
+            call PackFileRerevertTiffLoading
+            pop edi
+            pop esi
+            pop ebp
+            pop ebx
+            pop ecx
+            ret
+            nop
+            nop
+            nop
+            nop
+            nop
+    }
+#endif
 }
 
 // UNLABELED: CARMA2_HW 0x004fc2e0
@@ -1087,7 +1247,7 @@ void C2_NAKED C2_HOOK_FASTCALL DisposeFlames(void) {
             call BrPixelmapFree
             add esi, 4
             add esp, 4
-            cmp esi, offset gFlame_map+0x50
+            cmp esi, 0x6a8688
             jl L004fc2e9
             xor ebp, ebp
             mov edi, offset gSmoke_column+0x24
@@ -1142,6 +1302,17 @@ void C2_NAKED C2_HOOK_FASTCALL DisposeFlames(void) {
             pop ebp
             pop ebx
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -1287,6 +1458,9 @@ void C2_NAKED C2_HOOK_FASTCALL DisposeKevStuff(void) {
             pop edi
             pop esi
             ret
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -1558,8 +1732,9 @@ int C2_HOOK_FASTCALL SetModelAFEUpdateCB(br_model* pModel) {
     return 1;
 }
 
-// UNLABELED: CARMA2_HW 0x004f9600
-int C2_HOOK_FASTCALL SetMaterialPrelitCB(br_material* pMaterial) {
+// FUNCTION: CARMA2_HW 0x004f9600
+int C2_NAKED C2_HOOK_FASTCALL SetMaterialPrelitCB(br_material* pMaterial) {
+#ifndef CARPOCALYPSE2_MATCHING
 
     if (pMaterial->flags & BR_MATF_PRELIT) {
         return 0;
@@ -1567,6 +1742,24 @@ int C2_HOOK_FASTCALL SetMaterialPrelitCB(br_material* pMaterial) {
     pMaterial->flags |= BR_MATF_PRELIT;
     BrMaterialUpdate(pMaterial, BR_MATU_RENDERING | BR_MATU_LIGHTING);
     return 1;
+#else
+    __asm {
+            mov eax, dword ptr [ecx + 0x20]
+            test al, 2
+            jne L004f961d
+            or al, 2
+            push 6
+            push ecx
+            mov dword ptr [ecx + 0x20], eax
+            call BrMaterialUpdate
+            add esp, 8
+            mov eax, 1
+            ret
+    L004f961d:
+            xor eax, eax
+            ret
+    }
+#endif
 }
 
 // UNLABELED: CARMA2_HW 0x004fec30
@@ -1784,7 +1977,7 @@ void C2_NAKED C2_HOOK_FASTCALL DisposeKevStuffCar(tCar_spec* pCar) {
             jl L004fe427
             mov ebx, dword ptr [esp + 0x14]
     L004fe485:
-            push offset gDAT_00660148+0x68
+            push 0x6601b0
             call BrMaterialFind
             add esp, 4
             test eax, eax
@@ -2671,7 +2864,7 @@ void C2_NAKED C2_HOOK_FASTCALL MungeShrapnel(tU32 pTime) {
             mov dword ptr [esp + 0x1c], eax
             mov dword ptr [esp + 0x20], edx
             fild qword ptr [esp + 0x1c]
-            fmul dword ptr [gFLOAT_0058afdc+0xc]
+            fmul dword ptr ds:[0x58afe8]
             fld dword ptr [esi - 8]
             fld dword ptr [esi - 4]
             fxch st(3)
@@ -2694,7 +2887,7 @@ void C2_NAKED C2_HOOK_FASTCALL MungeShrapnel(tU32 pTime) {
             mov dword ptr [esp + 0x24], eax
             add eax, ecx
             fild qword ptr [esp + 0x24]
-            fmul dword ptr [gFLOAT_0058afdc+0xc]
+            fmul dword ptr ds:[0x58afe8]
             fld dword ptr [esi - 8]
             fld dword ptr [esi - 4]
             fxch st(3)
@@ -2727,7 +2920,7 @@ void C2_NAKED C2_HOOK_FASTCALL MungeShrapnel(tU32 pTime) {
             fxch st(3)
             fadd dword ptr [edi + 0x2c]
             fxch st(2)
-            fmul dword ptr [gDOUBLE_0058b048+0x8]
+            fmul dword ptr ds:[0x58b050]
             fxch st(1)
             _emit 0xd9
         _emit 0x5d
@@ -2772,19 +2965,19 @@ void C2_NAKED C2_HOOK_FASTCALL MungeShrapnel(tU32 pTime) {
             faddp st(1), st(0)
             fsqrt
             fst dword ptr [esp + 0x14]
-            fmul dword ptr [gFLOAT_0058aff0+0x10]
+            fmul dword ptr ds:[0x58b000]
             fxch st(2)
             fmulp st(2), st(0)
             fxch st(1)
-            fmul dword ptr [gFLOAT_0058afdc+0xc]
+            fmul dword ptr ds:[0x58afe8]
             fsubr dword ptr [gFLOAT_0058afdc]
             fstp st(1)
-            fcom dword ptr [gFLOAT_0058aff0+0x14]
+            fcom dword ptr ds:[0x58b004]
             fnstsw ax
             test ah, 1
             je L004f9dfb
             fstp st(0)
-            fld dword ptr [gFLOAT_0058aff0+0x14]
+            fld dword ptr ds:[0x58b004]
     L004f9dfb:
             fld dword ptr [esi - 0xc]
             fmul st(0), st(1)
@@ -2831,6 +3024,14 @@ void C2_NAKED C2_HOOK_FASTCALL MungeShrapnel(tU32 pTime) {
             pop ebx
             add esp, 0x34
             ret
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -3595,12 +3796,12 @@ void C2_NAKED C2_HOOK_FASTCALL GenerateContinuousSmoke(tCar_spec* pCar, int pWhe
             faddp st(1), st(0)
             fxch st(1)
             faddp st(1), st(0)
-            fcom dword ptr [gFLOAT_0058b054+0x4]
+            fcom dword ptr ds:[0x58b058]
             fnstsw ax
             test ah, 1
             jne L004fa8c3
             fsqrt
-            fmul dword ptr [gFLOAT_0058b054+0x8]
+            fmul dword ptr ds:[0x58b05c]
             fst dword ptr [esp + 0xc]
             fcomp dword ptr [gFLOAT_0058afdc]
             fnstsw ax
@@ -3618,8 +3819,8 @@ void C2_NAKED C2_HOOK_FASTCALL GenerateContinuousSmoke(tCar_spec* pCar, int pWhe
             fxch st(3)
             fmul dword ptr [gFLOAT_0058b060]
             fxch st(2)
-            fmul qword ptr [gFLOAT_0058b060+0x8]
-            fld dword ptr [gFLOAT_0058b060+0x10]
+            fmul qword ptr ds:[0x58b068]
+            fld dword ptr ds:[0x58b070]
             fxch st(2)
             fmul dword ptr [gFLOAT_0058b060]
             fxch st(4)
@@ -3651,7 +3852,7 @@ void C2_NAKED C2_HOOK_FASTCALL GenerateContinuousSmoke(tCar_spec* pCar, int pWhe
     L004fa7af:
             fld dword ptr [esp + 0x10]
             fcomp dword ptr [gFLOAT_0058b008]
-            fld dword ptr [gFLOAT_0058b060+0x10]
+            fld dword ptr ds:[0x58b070]
             fnstsw ax
             test ah, 1
             je L004fa7cd
@@ -3751,6 +3952,8 @@ void C2_NAKED C2_HOOK_FASTCALL GenerateContinuousSmoke(tCar_spec* pCar, int pWhe
             pop ebx
             add esp, 0x34
             ret 4
+            nop
+            nop
     }
 #endif
 }
@@ -4355,7 +4558,7 @@ void C2_NAKED C2_HOOK_FASTCALL MungeSmokeColumn(tU32 pTime) {
             fstp dword ptr [esp + 0x40]
             fild dword ptr [esp + 0x18]
             push 0xbcf5c28f
-            fmul dword ptr [gDOUBLE_0058b0b0+0xc]
+            fmul dword ptr ds:[0x58b0bc]
             fsubr dword ptr [esi + 0x38]
             fstp dword ptr [esp + 0x48]
             call SRandomBetween
@@ -4388,7 +4591,7 @@ void C2_NAKED C2_HOOK_FASTCALL MungeSmokeColumn(tU32 pTime) {
             mov eax, dword ptr [esi + 0x14]
             fild dword ptr [esp + 0x14]
             cmp eax, 0xfa0
-            fsub dword ptr [gDOUBLE_0058b0b0+0x10]
+            fsub dword ptr ds:[0x58b0c0]
             fmul dword ptr [gFLOAT_0058afec]
             fstp dword ptr [esp + 0x14]
             jae L004fbcc0
@@ -4396,7 +4599,7 @@ void C2_NAKED C2_HOOK_FASTCALL MungeSmokeColumn(tU32 pTime) {
             mov dword ptr [esp + 0x1c], 0
             fild qword ptr [esp + 0x18]
             fmul dword ptr [esp + 0x14]
-            fmul dword ptr [gFLOAT_0058b060+0x14]
+            fmul dword ptr ds:[0x58b074]
             fstp dword ptr [esp + 0x14]
     L004fbcc0:
             mov eax, dword ptr [esi + 8]
@@ -4451,7 +4654,7 @@ void C2_NAKED C2_HOOK_FASTCALL MungeSmokeColumn(tU32 pTime) {
             fxch st(1)
             fadd dword ptr [esp + 0x44]
             fxch st(1)
-            fsub qword ptr [gDOUBLE_0058b0c8+0x8]
+            fsub qword ptr ds:[0x58b0d0]
             fxch st(1)
             fstp dword ptr [esp + 0x38]
             add esp, 0xc
@@ -4489,6 +4692,8 @@ void C2_NAKED C2_HOOK_FASTCALL MungeSmokeColumn(tU32 pTime) {
             pop ebx
             add esp, 0x38
             ret
+            nop
+            nop
     }
 #endif
 }
@@ -5518,7 +5723,7 @@ void C2_NAKED C2_HOOK_FASTCALL GetVelocitiesFromMatrices(br_vector3* pVel, br_ve
             fld dword ptr [eax + 0x28]
             fsub dword ptr [esi + 0x28]
             fxch st(1)
-            fmul qword ptr [gFLOAT_0058b130+0x8]
+            fmul qword ptr ds:[0x58b138]
             _emit 0xd9
         _emit 0x01
             fxch st(2)
@@ -7214,7 +7419,7 @@ int C2_NAKED C2_HOOK_FASTCALL DrawLine3DThroughBRender(br_vector3* start, br_vec
             mov dword ptr [esp + 0x28], edi
             call _ftol
             fld dword ptr [esp + 0x48]
-            fcomp dword ptr [gFloat_0058afb4+0x24]
+            fcomp dword ptr ds:[0x58afd8]
             mov ecx, dword ptr [esp + 0x38]
             sub ecx, eax
             mov dword ptr [esp + 0x14], ecx
@@ -7504,7 +7709,7 @@ int C2_NAKED C2_HOOK_FASTCALL DrawLine3DThroughBRender(br_vector3* start, br_vec
             mov ecx, dword ptr [esp + 0x40]
             setge al
             movsx edx, word ptr [ecx + 0x28]
-            fsub dword ptr [gFloat_0058afb4+0x24]
+            fsub dword ptr ds:[0x58afd8]
             dec eax
             mov ecx, dword ptr [esp + 0x44]
             and al, 0xfe
@@ -7559,7 +7764,7 @@ int C2_NAKED C2_HOOK_FASTCALL DrawLine3DThroughBRender(br_vector3* start, br_vec
             fsub st(0), st(2)
             xor eax, eax
             mov ax, word ptr [esi]
-            fmul dword ptr [gFLOAT_0058afdc+0x8]
+            fmul dword ptr ds:[0x58afe4]
             mov dword ptr [esp + 0x30], eax
             fild dword ptr [esp + 0x30]
             fld st(1)
@@ -7656,7 +7861,7 @@ int C2_NAKED C2_HOOK_FASTCALL DrawLine3DThroughBRender(br_vector3* start, br_vec
             fsub st(0), st(2)
             xor edx, edx
             mov dx, word ptr [esi]
-            fmul dword ptr [gFLOAT_0058afdc+0x8]
+            fmul dword ptr ds:[0x58afe4]
             mov dword ptr [esp + 0x2c], edx
             fild dword ptr [esp + 0x2c]
             fld st(1)
@@ -7744,6 +7949,17 @@ int C2_NAKED C2_HOOK_FASTCALL DrawLine3DThroughBRender(br_vector3* start, br_vec
             pop ebx
             add esp, 0x2c
             ret 0x10
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -8250,7 +8466,7 @@ void C2_NAKED C2_HOOK_FASTCALL RenderSparks(br_pixelmap* pRender_screen, br_pixe
             fld dword ptr [esi - 0x24]
             fld dword ptr [esi - 0x20]
             fxch st(2)
-            fmul dword ptr [gFLOAT_0058afdc+0xc]
+            fmul dword ptr ds:[0x58afe8]
             mov ecx, dword ptr [esi - 0x34]
             sub eax, ebx
             fld st(0)
@@ -8274,7 +8490,7 @@ void C2_NAKED C2_HOOK_FASTCALL RenderSparks(br_pixelmap* pRender_screen, br_pixe
             fld dword ptr [esi - 0x24]
             fld dword ptr [esi - 0x20]
             fxch st(2)
-            fmul dword ptr [gFLOAT_0058afdc+0xc]
+            fmul dword ptr ds:[0x58afe8]
             mov eax, dword ptr [esi - 0x34]
             fld st(0)
             fxch st(2)
@@ -8312,7 +8528,7 @@ void C2_NAKED C2_HOOK_FASTCALL RenderSparks(br_pixelmap* pRender_screen, br_pixe
             mov al, byte ptr [esi + 8]
             fild dword ptr [esp + 0x20]
             test al, al
-            fmul dword ptr [gFLOAT_0058afdc+0xc]
+            fmul dword ptr ds:[0x58afe8]
             je L004f78f0
             fmul dword ptr [gFLOAT_0058afec]
     L004f78f0:
@@ -8336,7 +8552,7 @@ void C2_NAKED C2_HOOK_FASTCALL RenderSparks(br_pixelmap* pRender_screen, br_pixe
             fxch st(1)
             fmul st(0), st(2)
             fxch st(1)
-            fmul qword ptr [gFLOAT_0058aff0+0x8]
+            fmul qword ptr ds:[0x58aff8]
             fxch st(1)
             fstp dword ptr [esi - 0x10]
             mov eax, dword ptr [esi + 4]
@@ -8552,16 +8768,16 @@ void C2_NAKED C2_HOOK_FASTCALL RenderSparks(br_pixelmap* pRender_screen, br_pixe
             faddp st(1), st(0)
             fsqrt
             fstp st(1)
-            fmul dword ptr [gFLOAT_0058aff0+0x10]
+            fmul dword ptr ds:[0x58b000]
             fmul dword ptr [esp + 0x20]
-            fmul dword ptr [gFLOAT_0058afdc+0xc]
+            fmul dword ptr ds:[0x58afe8]
             fsubr dword ptr [gFLOAT_0058afdc]
-            fcom dword ptr [gFLOAT_0058aff0+0x14]
+            fcom dword ptr ds:[0x58b004]
             fnstsw ax
             test ah, 1
             je L004f7bf4
             fstp st(0)
-            fld dword ptr [gFLOAT_0058aff0+0x14]
+            fld dword ptr ds:[0x58b004]
     L004f7bf4:
             fld dword ptr [esi - 0x24]
             fmul st(0), st(1)
@@ -8622,6 +8838,16 @@ void C2_NAKED C2_HOOK_FASTCALL RenderSparks(br_pixelmap* pRender_screen, br_pixe
             pop ebx
             add esp, 0x100
             ret 0xc
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -8922,11 +9148,11 @@ void C2_NAKED C2_HOOK_FASTCALL RenderSmoke(br_pixelmap* pRender_screen, br_pixel
             mov dword ptr [esp + 0x2c], 0
             fild qword ptr [esp + 0x28]
             fmul dword ptr [gFLOAT_0058afec]
-            fmul dword ptr [gFLOAT_0058b060+0x14]
+            fmul dword ptr ds:[0x58b074]
             fstp dword ptr [esp + 0x40]
     L004fa9d9:
             fld dword ptr [esi + 0x24]
-            fsub qword ptr [gFLOAT_0058b060+0x18]
+            fsub qword ptr ds:[0x58b078]
             mov eax, dword ptr [esi + 0x20]
             mov ecx, dword ptr [esi + 0x28]
             mov edi, dword ptr [gShade_list+0x1c]
@@ -9024,11 +9250,11 @@ void C2_NAKED C2_HOOK_FASTCALL RenderSmoke(br_pixelmap* pRender_screen, br_pixel
             test eax, edx
             je L004facc9
             fld dword ptr [esi - 0xc]
-            fsub dword ptr [gFLOAT_0058b060+0x20]
+            fsub dword ptr ds:[0x58b080]
             mov al, byte ptr [esi]
             test al, 0x10
-            fmul dword ptr [gFLOAT_0058b060+0x24]
-            fmul qword ptr [gFLOAT_0058b060+0x28]
+            fmul dword ptr ds:[0x58b084]
+            fmul qword ptr ds:[0x58b088]
             fsubr qword ptr [gDOUBLE_0058b010]
             fstp dword ptr [esp + 0x48]
             je L004fac16
@@ -9179,7 +9405,7 @@ void C2_NAKED C2_HOOK_FASTCALL RenderSmoke(br_pixelmap* pRender_screen, br_pixel
             fld dword ptr [edx + 0x10]
             fld dword ptr [edx + 0x14]
             fxch st(2)
-            fmul dword ptr [gFLOAT_0058afdc+0xc]
+            fmul dword ptr ds:[0x58afe8]
             fld dword ptr [edx + 0x18]
             fxch st(2)
             fmul st(0), st(1)
@@ -9199,7 +9425,7 @@ void C2_NAKED C2_HOOK_FASTCALL RenderSmoke(br_pixelmap* pRender_screen, br_pixel
             fld dword ptr [edx + 0x10]
             fld dword ptr [edx + 0x14]
             fxch st(2)
-            fmul dword ptr [gFLOAT_0058afdc+0xc]
+            fmul dword ptr ds:[0x58afe8]
             fld dword ptr [edx + 0x18]
             fxch st(2)
             fmul st(0), st(1)
@@ -9221,7 +9447,7 @@ void C2_NAKED C2_HOOK_FASTCALL RenderSmoke(br_pixelmap* pRender_screen, br_pixel
     L004fade8:
             add edx, 0x2c
             inc ecx
-            cmp edx, offset gSmoke+0x44c
+            cmp edx, 0x6a912c
             jl L004fad47
             mov dword ptr [esp + 0x40], ebp
             mov ebp, dword ptr [gN_BR_smoke_structs]
@@ -9293,11 +9519,11 @@ void C2_NAKED C2_HOOK_FASTCALL RenderSmoke(br_pixelmap* pRender_screen, br_pixel
     L004faead:
             _emit 0xd9
         _emit 0x06
-            fsub dword ptr [gFLOAT_0058b060+0x20]
+            fsub dword ptr ds:[0x58b080]
             mov al, byte ptr [esi + 0xc]
             test al, 0x10
-            fmul dword ptr [gFLOAT_0058b060+0x24]
-            fmul qword ptr [gFLOAT_0058b060+0x28]
+            fmul dword ptr ds:[0x58b084]
+            fmul qword ptr ds:[0x58b088]
             fsubr qword ptr [gDOUBLE_0058b010]
             fstp dword ptr [esp + 0x14]
             je L004faf7e
@@ -9406,16 +9632,16 @@ void C2_NAKED C2_HOOK_FASTCALL RenderSmoke(br_pixelmap* pRender_screen, br_pixel
             mov dword ptr [esp + 0x30], edx
             fild qword ptr [esp + 0x30]
             fld st(0)
-            fmul dword ptr [gFLOAT_0058afdc+0xc]
+            fmul dword ptr ds:[0x58afe8]
             fmul dword ptr [esi + 4]
-            fmul qword ptr [gFLOAT_0058b060+0x30]
+            fmul qword ptr ds:[0x58b090]
             _emit 0xd8
         _emit 0x06
             _emit 0xd9
         _emit 0x1e
             fld dword ptr [edi + 0x20]
             fmul st(0), st(1)
-            fmul dword ptr [gFLOAT_0058afdc+0xc]
+            fmul dword ptr ds:[0x58afe8]
             fsubr dword ptr [esi + 4]
             fstp dword ptr [esi + 4]
             _emit 0xd9
@@ -9438,7 +9664,7 @@ void C2_NAKED C2_HOOK_FASTCALL RenderSmoke(br_pixelmap* pRender_screen, br_pixel
             mov dword ptr [gSmoke_flags], eax
             jmp L004fb141
     L004fb0c6:
-            fmul dword ptr [gFLOAT_0058b060+0x38]
+            fmul dword ptr ds:[0x58b098]
             fsubr dword ptr [gFLOAT_0058afdc]
             fcom dword ptr [gFLOAT_0058afec]
             fnstsw ax
@@ -9459,7 +9685,7 @@ void C2_NAKED C2_HOOK_FASTCALL RenderSmoke(br_pixelmap* pRender_screen, br_pixel
             fstp st(0)
             fld dword ptr [esi - 8]
             fabs
-            fcomp dword ptr [gFLOAT_0058b060+0x3c]
+            fcomp dword ptr ds:[0x58b09c]
             fnstsw ax
             test ah, 1
             je L004fb141
@@ -9473,7 +9699,7 @@ void C2_NAKED C2_HOOK_FASTCALL RenderSmoke(br_pixelmap* pRender_screen, br_pixel
             test ah, 1
             je L004fb13a
             fld dword ptr [esi - 8]
-            fsub dword ptr [gFLOAT_0058b060+0x40]
+            fsub dword ptr ds:[0x58b0a0]
             fstp dword ptr [esi - 8]
             jmp L004fb141
     L004fb13a:
@@ -9515,6 +9741,9 @@ void C2_NAKED C2_HOOK_FASTCALL RenderSmoke(br_pixelmap* pRender_screen, br_pixel
             pop ebx
             add esp, 0x2c
             ret 0xc
+            nop
+            nop
+            nop
     }
 #endif
 }
@@ -10819,13 +11048,13 @@ void C2_NAKED C2_HOOK_FASTCALL InitSmokeStuff(void) {
             mov edi, 2
             push edi
             push 4
-            push offset gDAT_00660148+0xac
+            push 0x6601f4
             call BrModelAllocate
             add esp, 0xc
             mov dword ptr [gBlend_model], eax
             push 4
             push 6
-            push offset gDAT_00660148+0x9c
+            push 0x6601e4
             call BrModelAllocate
             add esp, 0xc
             xor ebx, ebx
@@ -10838,7 +11067,7 @@ void C2_NAKED C2_HOOK_FASTCALL InitSmokeStuff(void) {
             xor ebp, ebp
             mov esi, offset gBR_smoke_structs+0x1c
     L004fa013:
-            push offset gDAT_00660148+0x90
+            push 0x6601d8
             call BrMaterialAllocate
             add esp, 4
             cmp eax, ebx
@@ -11019,10 +11248,10 @@ void C2_NAKED C2_HOOK_FASTCALL InitSmokeStuff(void) {
             or word ptr [eax + 0x20], di
             mov eax, dword ptr [gBlend_model2]
             or word ptr [eax + 0x20], di
-            mov edx, dword ptr [gDAT_00660148+0x74]
-            mov eax, dword ptr [gDAT_00660148+0x78]
+            mov edx, dword ptr ds:[0x6601bc]
+            mov eax, dword ptr ds:[0x6601c0]
             mov dword ptr [esp + 0x14], edx
-            mov cx, word ptr [gDAT_00660148+0x7c]
+            mov cx, word ptr ds:[0x6601c4]
             mov dword ptr [esp + 0x18], eax
             mov word ptr [esp + 0x1c], cx
             lea ecx, [esp + 0x14]
@@ -11192,6 +11421,8 @@ void C2_NAKED C2_HOOK_FASTCALL InitSmokeStuff(void) {
             pop ebx
             add esp, 0x104
             ret
+            nop
+            nop
     }
 #endif
 }
@@ -11595,7 +11826,7 @@ void C2_NAKED C2_HOOK_FASTCALL SingleSplash(tPhysics_object* pObject, const br_m
 #else
     __asm {
             sub esp, 0x20
-            mov eax, dword ptr ds:[gSplash_next]
+            mov eax, dword ptr [gSplash_next]
             push ebx
             push ebp
             push esi
@@ -11656,9 +11887,9 @@ void C2_NAKED C2_HOOK_FASTCALL SingleSplash(tPhysics_object* pObject, const br_m
             fld dword ptr [eax + 4]
             _emit 0xd9
         _emit 0x00
-            fmul qword ptr ds:[gDOUBLE_0058b0c8]
+            fmul qword ptr [gDOUBLE_0058b0c8]
             fxch st(1)
-            fmul qword ptr ds:[gDOUBLE_0058b0c8]
+            fmul qword ptr [gDOUBLE_0058b0c8]
             fld dword ptr [eax + 8]
             fld dword ptr [esp + 0x18]
             fld dword ptr [esp + 0x1c]
@@ -11672,7 +11903,7 @@ void C2_NAKED C2_HOOK_FASTCALL SingleSplash(tPhysics_object* pObject, const br_m
             fxch st(1)
             fstp dword ptr [esp + 0x18]
             fxch st(1)
-            fmul qword ptr ds:[gDOUBLE_0058b0c8]
+            fmul qword ptr [gDOUBLE_0058b0c8]
             fxch st(1)
             fstp dword ptr [esp + 0x1c]
             fstp dword ptr [esp + 0x2c]
@@ -11709,12 +11940,12 @@ void C2_NAKED C2_HOOK_FASTCALL SingleSplash(tPhysics_object* pObject, const br_m
             fxch st(1)
             faddp st(1), st(0)
             fabs
-            fmul dword ptr ds:[gFLOAT_0058b120]
+            fmul dword ptr [gFLOAT_0058b120]
             fsubr dword ptr [esp + 0x3c]
-            fmul dword ptr ds:[gFLOAT_0058b124]
-            fsub dword ptr ds:[gFLOAT_0058b128]
+            fmul dword ptr [gFLOAT_0058b124]
+            fsub dword ptr [gFLOAT_0058b128]
             fst dword ptr [esp + 0x40]
-            fcomp dword ptr ds:[gFLOAT_0058afec]
+            fcomp dword ptr [gFLOAT_0058afec]
             fnstsw ax
             test ah, 0x41
             jne L004fd698
@@ -11735,17 +11966,17 @@ void C2_NAKED C2_HOOK_FASTCALL SingleSplash(tPhysics_object* pObject, const br_m
             fxch st(1)
             faddp st(2), st(0)
             faddp st(1), st(0)
-            fcomp dword ptr ds:[gFLOAT_0058b008]
+            fcomp dword ptr [gFLOAT_0058b008]
             fnstsw ax
             test ah, 1
             je L004fd6d3
             fld dword ptr [esp + 0x40]
-            fmul dword ptr ds:[gFLOAT_0058afec]
+            fmul dword ptr [gFLOAT_0058afec]
             fstp dword ptr [esp + 0x40]
     L004fd6d3:
-            mov eax, dword ptr ds:[gSplash_next]
+            mov eax, dword ptr [gSplash_next]
             fld dword ptr [esp + 0x40]
-            fmul dword ptr ds:[gFLOAT_0058afec]
+            fmul dword ptr [gFLOAT_0058afec]
             mov edi, eax
             shl edi, 3
             sub edi, eax
@@ -11757,34 +11988,34 @@ void C2_NAKED C2_HOOK_FASTCALL SingleSplash(tPhysics_object* pObject, const br_m
         _emit 0x1c
         _emit 0x24
             call SRandomBetween
-            mov ecx, dword ptr ds:[gSplash_next]
-            mov eax, dword ptr ds:[gSplash_flags]
+            mov ecx, dword ptr [gSplash_next]
+            mov eax, dword ptr [gSplash_flags]
             mov ebx, 1
-            fstp dword ptr [edi + 0x6a82cc]
+            fstp dword ptr [edi + gSplash+0x14]
             mov edx, ebx
             shl edx, cl
             test eax, edx
             jne L004fd734
             mov eax, dword ptr [edi + gSplash]
-            mov ecx, dword ptr ds:[gNon_track_actor]
+            mov ecx, dword ptr [gNon_track_actor]
             push eax
             push ecx
             call BrActorAdd
-            mov ecx, dword ptr ds:[gSplash_next]
+            mov ecx, dword ptr [gSplash_next]
             add esp, 8
     L004fd734:
-            mov eax, dword ptr ds:[gSplash_flags]
+            mov eax, dword ptr [gSplash_flags]
             mov edx, ebx
             shl edx, cl
             or eax, edx
-            mov dword ptr ds:[gSplash_flags], eax
+            mov dword ptr [gSplash_flags], eax
             mov eax, ecx
             shl eax, 3
             sub eax, ecx
             test ebp, ebp
-            mov dword ptr [eax*4 + 0x6a82c8], ebx
+            mov dword ptr [eax*4 + gSplash+0x10], ebx
             je L004fda12
-            mov eax, dword ptr ds:[gPed_676914]
+            mov eax, dword ptr [gPed_676914]
             test eax, eax
             jne L004fda12
             mov edi, dword ptr [ebp + 0x23c]
@@ -11804,13 +12035,13 @@ void C2_NAKED C2_HOOK_FASTCALL SingleSplash(tPhysics_object* pObject, const br_m
             mov dword ptr [esp + 0x14], 0
             mov dword ptr [esp + 0x10], ecx
             fild qword ptr [esp + 0x10]
-            fmul dword ptr ds:[gFLOAT_0058b0d8]
+            fmul dword ptr [gFLOAT_0058b0d8]
             fcompp
             fnstsw ax
             test ah, 0x41
             jne L004fda0c
             fld dword ptr [esp + 0x3c]
-            fmul dword ptr ds:[gFLOAT_0058b12c]
+            fmul dword ptr [gFLOAT_0058b12c]
             fld dword ptr [esp + 0x18]
             fld dword ptr [esp + 0x1c]
             fxch st(2)
@@ -11818,16 +12049,16 @@ void C2_NAKED C2_HOOK_FASTCALL SingleSplash(tPhysics_object* pObject, const br_m
             fld st(0)
             fld dword ptr [esp + 0x20]
             fxch st(1)
-            fmul dword ptr ds:[gFLOAT_0058b130]
+            fmul dword ptr [gFLOAT_0058b130]
             fxch st(3)
-            fmul dword ptr ds:[gFLOAT_0058b060]
+            fmul dword ptr [gFLOAT_0058b060]
             fxch st(4)
-            fmul dword ptr ds:[gFLOAT_0058b060]
+            fmul dword ptr [gFLOAT_0058b060]
             fxch st(3)
             fstp dword ptr [esp + 0x40]
-            fmul dword ptr ds:[gFLOAT_0058b060]
+            fmul dword ptr [gFLOAT_0058b060]
             fld dword ptr [esp + 0x40]
-            fcomp dword ptr ds:[gFLOAT_0058b130]
+            fcomp dword ptr [gFLOAT_0058b130]
             fxch st(3)
             fst dword ptr [esp + 0x18]
             fmul dword ptr ds:[0x58b0e8]
@@ -11854,7 +12085,7 @@ void C2_NAKED C2_HOOK_FASTCALL SingleSplash(tPhysics_object* pObject, const br_m
             push 0x40a00000
             fstp qword ptr [esp + 0x18]
             call SRandomBetween
-            fmul qword ptr ds:[gDOUBLE_0058b0b0]
+            fmul qword ptr [gDOUBLE_0058b0b0]
             mov eax, dword ptr [ebp]
             lea ecx, [esp + 0x24]
             add eax, 0x2c
@@ -11879,7 +12110,7 @@ void C2_NAKED C2_HOOK_FASTCALL SingleSplash(tPhysics_object* pObject, const br_m
             fxch st(2)
             fmul dword ptr [esp + 0x20]
             fxch st(2)
-            fmul dword ptr ds:[gFLOAT_0058afec]
+            fmul dword ptr [gFLOAT_0058afec]
             fxch st(4)
             fmul dword ptr [esp + 0x18]
             fxch st(4)
@@ -11889,7 +12120,7 @@ void C2_NAKED C2_HOOK_FASTCALL SingleSplash(tPhysics_object* pObject, const br_m
             fxch st(1)
             fmul dword ptr [esp + 0x18]
             fxch st(1)
-            fmul dword ptr ds:[gFLOAT_0058afec]
+            fmul dword ptr [gFLOAT_0058afec]
             fxch st(2)
             fmul dword ptr [esp + 0x1c]
             fxch st(2)
@@ -11898,7 +12129,7 @@ void C2_NAKED C2_HOOK_FASTCALL SingleSplash(tPhysics_object* pObject, const br_m
             fsubp st(1), st(0)
             fld dword ptr [esi + 8]
             fxch st(1)
-            fmul dword ptr ds:[gFLOAT_0058afec]
+            fmul dword ptr [gFLOAT_0058afec]
             fld dword ptr [esi + 4]
             fmul dword ptr [esp + 0x28]
             fxch st(1)
@@ -11912,7 +12143,7 @@ void C2_NAKED C2_HOOK_FASTCALL SingleSplash(tPhysics_object* pObject, const br_m
             faddp st(1), st(0)
             fxch st(1)
             faddp st(1), st(0)
-            fcomp dword ptr ds:[gFLOAT_0058b008]
+            fcomp dword ptr [gFLOAT_0058b008]
             fld dword ptr [esp + 0x18]
             fld dword ptr [esp + 0x1c]
             fld dword ptr [esp + 0x20]
@@ -11933,57 +12164,57 @@ void C2_NAKED C2_HOOK_FASTCALL SingleSplash(tPhysics_object* pObject, const br_m
             fxch st(2)
             fsub dword ptr [esp + 0x2c]
     L004fd958:
-            mov eax, dword ptr ds:[gSpark_next]
+            mov eax, dword ptr [gSpark_next]
             mov ecx, dword ptr [esi]
             shl eax, 6
             fxch st(1)
             fstp dword ptr [esp + 0x18]
-            mov dword ptr [eax + 0x6a9b84], ecx
+            mov dword ptr [eax + gSparks+0x4], ecx
             mov edx, dword ptr [esi + 4]
             fxch st(1)
             fstp dword ptr [esp + 0x1c]
-            mov dword ptr [eax + 0x6a9b88], edx
+            mov dword ptr [eax + gSparks+0x8], edx
             mov ecx, dword ptr [esi + 8]
             fstp dword ptr [esp + 0x20]
             push 0
             push 0
-            lea edx, [eax + 0x6a9ba8]
+            lea edx, [eax + gSparks+0x28]
             push 0
             push edx
-            mov dword ptr [eax + 0x6a9b8c], ecx
+            mov dword ptr [eax + gSparks+0xc], ecx
             call BrVector3SetFloat
-            mov ecx, dword ptr ds:[gSpark_next]
+            mov ecx, dword ptr [gSpark_next]
             mov edx, dword ptr [esp + 0x28]
             mov eax, ecx
-            mov esi, dword ptr ds:[gSpark_flags]
+            mov esi, dword ptr [gSpark_flags]
             shl eax, 6
             add esp, 0x10
-            mov dword ptr [eax + 0x6a9b90], edx
+            mov dword ptr [eax + gSparks+0x10], edx
             mov edx, dword ptr [esp + 0x1c]
-            mov dword ptr [eax + 0x6a9b94], edx
+            mov dword ptr [eax + gSparks+0x14], edx
             mov edx, dword ptr [esp + 0x20]
-            mov dword ptr [eax + 0x6a9b98], edx
+            mov dword ptr [eax + gSparks+0x18], edx
             mov edx, ebx
             shl edx, cl
             mov dword ptr [eax + gSparks], 0x1f4
-            mov dword ptr [eax + 0x6a9bb8], edi
-            mov dword ptr [eax + 0x6a9bb4], ebx
-            mov byte ptr [eax + 0x6a9bbc], bl
+            mov dword ptr [eax + gSparks+0x38], edi
+            mov dword ptr [eax + gSparks+0x34], ebx
+            mov byte ptr [eax + gSparks+0x3c], bl
             or esi, edx
             inc ecx
             cmp ecx, 0x20
-            mov dword ptr ds:[gSpark_flags], esi
-            mov dword ptr ds:[gSpark_next], ecx
+            mov dword ptr [gSpark_flags], esi
+            mov dword ptr [gSpark_next], ecx
             jl L004fda0c
-            mov dword ptr ds:[gSpark_next], 0
+            mov dword ptr [gSpark_next], 0
     L004fda0c:
-            mov ecx, dword ptr ds:[gSplash_next]
+            mov ecx, dword ptr [gSplash_next]
     L004fda12:
             inc ecx
             cmp ecx, 0x20
-            mov dword ptr ds:[gSplash_next], ecx
+            mov dword ptr [gSplash_next], ecx
             jb L004fda28
-            mov dword ptr ds:[gSplash_next], 0
+            mov dword ptr [gSplash_next], 0
     L004fda28:
             pop edi
             pop esi
@@ -11991,6 +12222,20 @@ void C2_NAKED C2_HOOK_FASTCALL SingleSplash(tPhysics_object* pObject, const br_m
             pop ebx
             add esp, 0x20
             ret 0x18
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
+            nop
     }
 #endif
 }
